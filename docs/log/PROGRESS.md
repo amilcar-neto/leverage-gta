@@ -20,3 +20,4 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - Próximo: Fase 2 (T-201 fontes/tokens, T-202 componente de dado).
 - T-201 concluída (fontes: Special Elite é Apache 2.0, não OFL; ver DECISIONS).
 - T-202 concluída: componente de dado + helper lvDie; galeria no Foundry real (175 dados, sem erros). Próximo: R-F2.
+- T-301 concluída (d05e9b3). Em andamento: T-302..T-305 (cabeçalho, escadas, listas, assets/pasta).
