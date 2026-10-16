@@ -20,7 +20,7 @@ async function buildGallery(systemId) {
   }
   const states = [
     ["normal", {}], ["muted", { muted: true }], ["deep", { muted: true, deep: true }],
-    ["kept", { kept: true }], ["one", { one: true, value: 1 }], ["money", { money: true }], ["empty", { money: true, empty: true }]
+    ["dropped", { dropped: true }], ["kept", { kept: true }], ["one", { one: true, value: 1 }], ["money", { money: true }], ["empty", { money: true, empty: true, value: undefined }]
   ];
   const root = document.createElement("div");
   root.className = "leverage-gta";
@@ -31,7 +31,7 @@ async function buildGallery(systemId) {
     html += `<section><h3 style="margin:0 0 6px">${size}px</h3>`;
     for (const [name, opts] of states) {
       html += `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;height:${size + 6}px"><span style="width:50px">${name}</span>`;
-      for (const d of LEVERAGE.dice) html += renderDie({ die: d, value: opts.value ?? d, size, ...opts });
+      for (const d of LEVERAGE.dice) html += renderDie({ die: d, value: "value" in opts ? opts.value : d, size, ...opts });
       html += "</div>";
     }
     html += "</section>";

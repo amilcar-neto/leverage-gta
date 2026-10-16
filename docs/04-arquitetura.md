@@ -54,7 +54,7 @@ leverage-gta/                       ← raiz do repositório = pasta do sistema 
 │       ├── hud/    leverage-hud.mjs
 │       └── gm/     opposition-roller.mjs  job-tracker.mjs  city-scales-config.mjs  price-list-config.mjs
 ├── templates/      actor/crew/*.hbs  item/*.hbs  chat/*.hbs  hud/*.hbs  gm/*.hbs  partials/*.hbs
-├── styles/         leverage-gta.css (índice) + tokens.css base.css sheets/*.css chat.css hud.css gm.css
+├── styles/         leverage-gta.css (índice) + fonts.css tokens.css base.css die.css sheets/*.css chat.css hud.css gm.css
 ├── fonts/          Anton, Barlow Condensed, Special Elite (OFL) + licenças
 ├── assets/         ícones e texturas próprios (parede do mugshot, etc.)
 ├── lang/           en.json  pt-BR.json

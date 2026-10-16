@@ -12,6 +12,7 @@
   --lv-paper: #d8d5c6;
   --lv-paper-ink: #1a2123;
   --lv-select: #f2efe4;
+  --lv-select-rgb: 242, 239, 228;
   --lv-stamp: #b3202a;
   --lv-life: #ff6f8e;
   --lv-vest: #c9d1d4;
@@ -23,6 +24,8 @@
   --lv-roll: #66d96b;
   --lv-line: rgba(233, 240, 237, 0.12);
   --lv-outline: #000;
+  --lv-die-ink: #10150f;
+  --lv-money-ink: #e2f7d9;
 
   /* Die colors, one per size (same everywhere; Grana uses --lv-money-die) */
   --lv-d4: #ee5a5a;
@@ -37,8 +40,8 @@
   --lv-font-paper: "Special Elite", "Courier New", monospace;
 
   /* Shape and spacing */
-  --lv-border: 3px solid #000;
-  --lv-shadow: 4px 4px 0 #000;
+  --lv-border: 3px solid var(--lv-outline);
+  --lv-shadow: 4px 4px 0 var(--lv-outline);
   --lv-gap: 16px;
   --lv-gutter: 8px;
   --lv-scrollbar: 8px;

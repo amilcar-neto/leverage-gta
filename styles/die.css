@@ -3,7 +3,7 @@
   --die-fill: var(--lv-d6);
   --die-stroke: var(--die-fill);
   --die-sw: 6;
-  --die-num: #10150f;
+  --die-num: var(--lv-die-ink);
   position: relative;
   display: inline-block;
   flex: none;
@@ -46,14 +46,18 @@
 }
 
 /* Unselected: same hue, darker and desaturated; number in a light tone of the hue. */
-.leverage-gta .lv-die--muted {
+.leverage-gta .lv-die--muted,
+.leverage-gta .lv-die--deep {
   --die-fill: hsl(var(--lv-die-hue) 38% 42%);
   --die-num: hsl(var(--lv-die-hue) 60% 88%);
   opacity: 0.55;
 }
 
-/* Unselected dice of a row that is in the Pool. */
+/* Unselected dice of a row that is in the Pool: muted look, dimmer. */
 .leverage-gta .lv-die--deep { opacity: 0.28; }
+
+/* Dropped (not counted in the roll): full color, faint, ring of its own color. */
+.leverage-gta .lv-die--dropped { --die-sw: 4; opacity: 0.45; }
 
 /* Kept in a roll: warm white ring. A 1: red ring. */
 .leverage-gta .lv-die--kept { --die-stroke: var(--lv-select); --die-sw: 7; }
@@ -64,7 +68,7 @@
   --die-fill: var(--lv-money-die);
   --die-stroke: var(--lv-outline);
   --die-sw: 7;
-  --die-num: #e2f7d9;
+  --die-num: var(--lv-money-ink);
 }
 
 /* Empty money slot: dashed outline, no fill. */
@@ -72,4 +76,18 @@
 .leverage-gta .lv-die--empty .lv-die-shape polygon {
   fill: transparent;
   stroke-dasharray: 10 8;
+}
+
+/* Interactive die (a <button>): same look as the span, no button chrome. */
+.leverage-gta button.lv-die {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.leverage-gta button.lv-die:focus-visible {
+  outline: 2px solid var(--lv-select);
+  outline-offset: 2px;
 }

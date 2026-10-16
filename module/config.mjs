@@ -24,19 +24,36 @@ const DIE_STYLES = Object.freeze({
 });
 
 /**
+ * HSL hue (0-359) of a `#rrggbb` color. Same math as hue() in reference/mockups/source/Main.dc.html.
+ * @param {string} hex
+ * @returns {number}
+ */
+export function hueOf(hex) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const mx = Math.max(r, g, b);
+  const d = mx - Math.min(r, g, b);
+  if (!d) return 0;
+  const h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return Math.round(h * 60 + 360) % 360;
+}
+
+/** Geometry entry with its hue derived from the die color. */
+const geo = (die, top, font) => Object.freeze({ top, font, hue: hueOf(DIE_STYLES[die].color) });
+
+/**
  * Die rendering geometry (docs/03; measured from reference/mockups/html). Fractions are relative to the die size:
- * `top` = number offset from the top, `font` = number font size, `hue` = HSL hue of the die color (used by the
+ * `top` = number offset from the top, `font` = number font size, `hue` = HSL hue derived from the die color (used by the
  * muted state, `hsl(hue, 38%, 42%)`). `sizes` are the allowed pixel sizes; stroke widths live in styles/die.css.
  */
 const DIE_GEOMETRY = Object.freeze({
   sizes: Object.freeze([28, 32, 36, 38, 50]),
   defaultSize: 32,
   perDie: Object.freeze({
-    4: Object.freeze({ top: 0.44, font: 0.4, hue: 0 }),
-    6: Object.freeze({ top: 0.25, font: 0.47, hue: 33 }),
-    8: Object.freeze({ top: 0.25, font: 0.47, hue: 135 }),
-    10: Object.freeze({ top: 0.31, font: 0.39, hue: 209 }),
-    12: Object.freeze({ top: 0.31, font: 0.39, hue: 267 })
+    4: geo(4, 0.44, 0.4),
+    6: geo(6, 0.25, 0.47),
+    8: geo(8, 0.25, 0.47),
+    10: geo(10, 0.31, 0.39),
+    12: geo(12, 0.31, 0.39)
   })
 });
 
