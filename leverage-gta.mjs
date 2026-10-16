@@ -7,6 +7,7 @@ import { LEVERAGE, SYSTEM_ID } from "./module/config.mjs";
 import { logger } from "./module/logger.mjs";
 import { registerSettings } from "./module/settings.mjs";
 import { migrateWorld } from "./module/migration.mjs";
+import { registerDieHelper } from "./module/applications/components/die.mjs";
 import * as actorModels from "./module/data/actor/_module.mjs";
 import * as itemModels from "./module/data/item/_module.mjs";
 import * as documents from "./module/documents/_module.mjs";
@@ -23,6 +24,7 @@ Hooks.once("init", () => {
     job: itemModels.JobData
   };
   registerSettings();
+  registerDieHelper();
   CONFIG.Actor.documentClass = documents.LeverageActor;
   CONFIG.Item.documentClass = documents.LeverageItem;
   CONFIG.Actor.trackableAttributes = {
@@ -30,7 +32,7 @@ Hooks.once("init", () => {
     npc: { bar: ["life", "vest"], value: [] },
     location: { bar: [], value: [] }
   };
-  // TODO(T-202/T-301): Handlebars helpers (lvDie), partials and sheet registration.
+  // TODO(T-202/T-301): Handlebars partials and sheet registration.
 });
 
 Hooks.once("setup", () => {

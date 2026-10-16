@@ -1,0 +1,75 @@
+/* Die component (module/applications/components/die.mjs). Sizes and number offsets arrive as custom properties. */
+.leverage-gta .lv-die {
+  --die-fill: var(--lv-d6);
+  --die-stroke: var(--die-fill);
+  --die-sw: 6;
+  --die-num: #10150f;
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: var(--lv-die-size);
+  height: var(--lv-die-size);
+  vertical-align: middle;
+}
+
+.leverage-gta .lv-die--d4 { --die-fill: var(--lv-d4); }
+.leverage-gta .lv-die--d6 { --die-fill: var(--lv-d6); }
+.leverage-gta .lv-die--d8 { --die-fill: var(--lv-d8); }
+.leverage-gta .lv-die--d10 { --die-fill: var(--lv-d10); }
+.leverage-gta .lv-die--d12 { --die-fill: var(--lv-d12); }
+
+.leverage-gta .lv-die-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.leverage-gta .lv-die-shape polygon {
+  fill: var(--die-fill);
+  stroke: var(--die-stroke);
+  stroke-width: var(--die-sw);
+}
+
+.leverage-gta .lv-die-num {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--lv-die-top);
+  text-align: center;
+  line-height: 1;
+  font-family: var(--lv-font-display);
+  font-size: var(--lv-die-fs);
+  color: var(--die-num);
+  pointer-events: none;
+}
+
+/* Unselected: same hue, darker and desaturated; number in a light tone of the hue. */
+.leverage-gta .lv-die--muted {
+  --die-fill: hsl(var(--lv-die-hue) 38% 42%);
+  --die-num: hsl(var(--lv-die-hue) 60% 88%);
+  opacity: 0.55;
+}
+
+/* Unselected dice of a row that is in the Pool. */
+.leverage-gta .lv-die--deep { opacity: 0.28; }
+
+/* Kept in a roll: warm white ring. A 1: red ring. */
+.leverage-gta .lv-die--kept { --die-stroke: var(--lv-select); --die-sw: 7; }
+.leverage-gta .lv-die--one { --die-stroke: var(--lv-d4); --die-sw: 7; opacity: 0.75; }
+
+/* Money: fixed green with a black outline, whatever the die size. */
+.leverage-gta .lv-die--money {
+  --die-fill: var(--lv-money-die);
+  --die-stroke: var(--lv-outline);
+  --die-sw: 7;
+  --die-num: #e2f7d9;
+}
+
+/* Empty money slot: dashed outline, no fill. */
+.leverage-gta .lv-die--empty { opacity: 0.6; }
+.leverage-gta .lv-die--empty .lv-die-shape polygon {
+  fill: transparent;
+  stroke-dasharray: 10 8;
+}

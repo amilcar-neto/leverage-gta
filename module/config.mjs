@@ -23,6 +23,23 @@ const DIE_STYLES = Object.freeze({
   12: Object.freeze({ color: "#b07cf0", shape: "50,8 89,30 89,70 50,92 11,70 11,30", label: "LEVERAGE.Die.d12" })
 });
 
+/**
+ * Die rendering geometry (docs/03; measured from reference/mockups/html). Fractions are relative to the die size:
+ * `top` = number offset from the top, `font` = number font size, `hue` = HSL hue of the die color (used by the
+ * muted state, `hsl(hue, 38%, 42%)`). `sizes` are the allowed pixel sizes; stroke widths live in styles/die.css.
+ */
+const DIE_GEOMETRY = Object.freeze({
+  sizes: Object.freeze([28, 32, 36, 38, 50]),
+  defaultSize: 32,
+  perDie: Object.freeze({
+    4: Object.freeze({ top: 0.44, font: 0.4, hue: 0 }),
+    6: Object.freeze({ top: 0.25, font: 0.47, hue: 33 }),
+    8: Object.freeze({ top: 0.25, font: 0.47, hue: 135 }),
+    10: Object.freeze({ top: 0.31, font: 0.39, hue: 209 }),
+    12: Object.freeze({ top: 0.31, font: 0.39, hue: 267 })
+  })
+});
+
 /** Builds a frozen map of `{ key: { label } }` using `${prefix}.${key}` as the i18n key. */
 function labelled(prefix, keys) {
   return Object.freeze(Object.fromEntries(keys.map((k) => [k, Object.freeze({ label: `${prefix}.${k}` })])));
@@ -125,6 +142,7 @@ export const LEVERAGE = Object.freeze({
   systemId: SYSTEM_ID,
   dice: DICE,
   dieStyles: DIE_STYLES,
+  dieGeometry: DIE_GEOMETRY,
   attributes: ATTRIBUTES,
   roles: ROLES,
   assetDurations: ASSET_DURATIONS,

@@ -19,3 +19,4 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - Concluídas (Fase 1): T-101, T-102, T-103, T-104, T-105, T-106 e revisão R-F1. Verificado no Foundry real (25 checagens em `npm run test:phase1`, console limpo). Commits: ver `git log`.
 - Próximo: Fase 2 (T-201 fontes/tokens, T-202 componente de dado).
 - T-201 concluída (fontes: Special Elite é Apache 2.0, não OFL; ver DECISIONS).
+- T-202 concluída: componente de dado + helper lvDie; galeria no Foundry real (175 dados, sem erros). Próximo: R-F2.
