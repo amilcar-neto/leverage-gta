@@ -16,7 +16,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   DataModel, ActorSheetV2/ItemSheetV2 + HandlebarsApplicationMixin, registro de fichas, settings e menus, controles de
   cena, hooks de chat, CSS layers, sockets, o que mudou da v13 para a v14) e `docs/research/dnd5e-patterns.md`
   (estrutura, `getRollData`, macros arrastáveis, migração, packs). *Par:* T-003.
-- [ ] **T-003 Pesquisa complementar.** `researcher`: `docs/research/other-systems.md` (pf2e, Lancer, cortexprime:
+- [x] **T-003 Pesquisa complementar.** `researcher`: `docs/research/other-systems.md` (pf2e, Lancer, cortexprime:
   só o que for útil para Pool de dados, HUD e cards) e `docs/research/dice-so-nice.md`. *Par:* T-002.
 - [ ] **T-004 Ambiente de teste.** `tester`: `tests/foundry/smoke.mjs` lê `.env`, abre o Foundry, entra no mundo com
   o usuário de teste, espera `game.ready`, coleta erros do console, tira print. `npm run deploy` funcionando
