@@ -1,0 +1,21 @@
+{
+  "name": "leverage-gta",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Leverage: Liberty City — Foundry VTT v14 game system",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test \"tests/unit/**/*.test.mjs\"",
+    "test:foundry": "node tests/foundry/smoke.mjs",
+    "build:dev": "node tools/release.mjs --dev",
+    "deploy": "node tools/release.mjs --dev && node tools/deploy.mjs",
+    "release": "node tools/release.mjs --zip"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "globals": "^17.13.0",
+    "playwright": "^1.64.1"
+  }
+}

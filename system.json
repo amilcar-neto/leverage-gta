@@ -1,0 +1,24 @@
+{
+  "id": "leverage-gta",
+  "title": "Leverage: Liberty City",
+  "description": "Leverage RPG (Cortex Plus) with GTA-style house rules: wanted stars, life and vest, money ladder.",
+  "version": "0.0.1",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14"
+  },
+  "authors": [{ "name": "amilcar" }],
+  "esmodules": ["leverage-gta.mjs"],
+  "styles": ["styles/leverage-gta.css"],
+  "languages": [
+    { "lang": "en", "name": "English", "path": "lang/en.json" },
+    { "lang": "pt-BR", "name": "Português (Brasil)", "path": "lang/pt-BR.json" }
+  ],
+  "documentTypes": {
+    "Actor": { "crew": {}, "npc": {}, "location": {} },
+    "Item": { "distinction": {}, "talent": {}, "specialty": {}, "asset": {}, "job": {} }
+  },
+  "primaryTokenAttribute": "life",
+  "grid": { "distance": 5, "units": "ft" },
+  "socket": true
+}

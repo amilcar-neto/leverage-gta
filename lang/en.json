@@ -1,0 +1,9 @@
+{
+  "TYPES": {
+    "Actor": { "crew": "Crewmember", "npc": "Supporting Character", "location": "Location" },
+    "Item": { "distinction": "Distinction", "talent": "Talent", "specialty": "Specialty", "asset": "Asset", "job": "Job" }
+  },
+  "LEVERAGE": {
+    "SystemTitle": "Leverage: Liberty City"
+  }
+}

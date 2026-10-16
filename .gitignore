@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.cache/
+.env
+docs/log/runner.log
+reference/books/*.pdf
+*.tgz

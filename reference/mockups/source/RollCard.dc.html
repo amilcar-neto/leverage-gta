@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Roll card · chat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+.hud{text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,0 3px 0 #000,3px 3px 0 #000}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 360px; height: 430px; padding: 14px; background: #0b1012; font-family: 'Barlow Condensed', sans-serif; color: #e9f0ed">
+
+<!-- One chat message: a Leverage pool roll -->
+<div style="background: linear-gradient(165deg, #27363f 0%, #0b1012 100%); border: 3px solid #000; border-radius: 6px; box-shadow: 4px 4px 0 rgba(0,0,0,.5); overflow: hidden">
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: #000">
+<span style="width: 34px; height: 40px; flex: none; background: #d9d6ca; border: 2px solid #d8c24a; background-image: repeating-linear-gradient(180deg, transparent 0 7px, rgba(0,0,0,.2) 7px 8px)"></span>
+<span style="flex: 1; min-width: 0; line-height: 1.05"><span class="hud" style="display: block; font-family: 'Anton', sans-serif; font-size: 20px; letter-spacing: .04em; color: #fff">ROSA DELGADO</span><span style="display: block; font-size: 13px; color: #9fb2ad">cracks the office safe</span></span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 10px 0">
+<sc-for list="{{traits}}" as="t" hint-placeholder-count="4">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: .08em; padding: 1px 7px; border-radius: 999px; border: 1px solid {{t.line}}; color: #e9f0ed; background: rgba(255,255,255,.06)">{{t.name}} <span style="color: {{t.color}}">{{t.die}}</span></span>
+</sc-for>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 8px; padding: 14px 10px 6px">
+<sc-for list="{{dice}}" as="x" hint-placeholder-count="5">
+<span style="display: flex; flex-direction: column; align-items: center; gap: 3px">
+<span title="{{x.tip}}" style="position: relative; width: 50px; height: 50px; flex: none; opacity: {{x.op}}"><svg viewBox="0 0 100 100" width="50" height="50" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="{{x.outer}}" fill="{{x.fill}}" stroke="{{x.ring}}" stroke-width="{{x.ringW}}" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: {{x.top}}; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: {{x.fpx}}; color: {{x.fg}}">{{x.value}}</span></span>
+<span style="font-size: 11px; font-weight: 700; letter-spacing: .1em; color: {{x.capInk}}">{{x.cap}}</span>
+</span>
+</sc-for>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 4px 10px 12px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: .12em; color: #9fb2ad">TOTAL</span>
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 48px; line-height: 1; color: #fff">{{total}}</span>
+<span style="font-size: 13px; line-height: 1.15; color: #9fb2ad">{{keptText}}</span>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px; margin: 0 10px 10px; padding: 7px 10px; border: 2px dashed #ee5a5a; border-radius: 4px; background: rgba(238,90,90,.08)">
+<span style="font-family: 'Anton', sans-serif; font-size: 18px; color: #ee5a5a">1</span>
+<span style="flex: 1; font-size: 14px; line-height: 1.15; color: #f2c7c7">One die came up 1. The Fixer may add a Complication and hand you a Plot Point.</span>
+</div>
+
+<div style="display: flex; gap: 6px; padding: 0 10px 10px">
+<button type="button" title="Spend a Plot Point to add the next highest die to the total" style="flex: 1; height: 34px; background: #d8c24a; color: #10150f; border: 2px solid #000; border-radius: 4px; font-size: 14px; font-weight: 700; letter-spacing: .08em; cursor: pointer">+1 PP · KEEP 3RD DIE</button>
+<button type="button" title="GM: create or step up a Complication and give 1 Plot Point" style="flex: 1; height: 34px; background: transparent; color: #ee8a8a; border: 2px solid #ee8a8a; border-radius: 4px; font-size: 14px; font-weight: 700; letter-spacing: .08em; cursor: pointer">GM · COMPLICATION</button>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":360,"height":430}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const COLOR = { 4: '#ee5a5a', 6: '#f2a03d', 8: '#4fbf6b', 10: '#4ba3f5', 12: '#b07cf0' };
+    const GEOM = {
+      4: { outer: '50,10 92,86 8,86', top: '22px', fpx: '19px' },
+      6: { outer: '14,14 86,14 86,86 14,86', top: '12px', fpx: '24px' },
+      8: { outer: '50,8 92,50 50,92 8,50', top: '12px', fpx: '24px' },
+      10: { outer: '50,8 92,38 77,92 23,92 8,38', top: '15px', fpx: '20px' },
+      12: { outer: '50,8 89,30 89,70 50,92 11,70 11,30', top: '14px', fpx: '20px' }
+    };
+    // Rolled pool: Agility d10, Thief d10, Safecracking d6, Old Docks Loyalty d8.
+    // Two highest are kept; 1s never count and are flagged for Complications.
+    const rolls = [[10, 9, 'AGILITY'], [10, 6, 'THIEF'], [6, 1, 'SAFECRACKING'], [8, 5, 'OLD DOCKS LOYALTY']];
+    const order = rolls.map((r, i) => [r[1] === 1 ? -1 : r[1], i]).sort((a, b) => b[0] - a[0]);
+    const kept = new Set(order.slice(0, 2).map((o) => o[1]));
+    const dice = rolls.map(([n, value, src], i) => {
+      const g = GEOM[n], c = COLOR[n];
+      const one = value === 1, keep = kept.has(i);
+      return {
+        value, outer: g.outer, top: g.top, fpx: g.fpx,
+        fill: c, fg: '#10150f',
+        ring: keep ? '#f2efe4' : one ? '#ee5a5a' : c,
+        ringW: keep ? 7 : one ? 7 : 4,
+        op: keep ? 1 : one ? 0.75 : 0.45,
+        cap: keep ? 'KEPT' : one ? '1 · OUT' : 'd' + n,
+        capInk: keep ? '#f2efe4' : one ? '#ee8a8a' : '#6f7f7b',
+        tip: src + ' · d' + n + ' rolled ' + value
+      };
+    });
+    const total = rolls.filter((_, i) => kept.has(i)).reduce((s, r) => s + r[1], 0);
+    const traits = rolls.map(([n, , name]) => ({ name, die: 'd' + n, color: COLOR[n], line: 'rgba(255,255,255,.18)' }));
+    return { dice, total, traits, keptText: '2 highest kept\n9 + 6' };
+  }
+}
+</script>
+</body>
+</html>

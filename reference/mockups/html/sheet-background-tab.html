@@ -1,0 +1,635 @@
+<!doctype html>
+<html><head><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=Special+Elite&amp;family=Titan+One&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Barlow+Condensed:wght@500;600;700&amp;family=Special+Elite&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+.hud{text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,0 3px 0 #000,3px 3px 0 #000}
+button{font-family:inherit}
+/* Delete buttons: always visible but quiet; red on hover. */
+.xb{width:20px;height:20px;flex:none;padding:0;background:transparent;border:0;border-radius:3px;color:#5f6f6c;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.xb:hover{color:#ff6b6b;background:rgba(255,107,107,.12)}
+.xb.paper{color:#8b8a7c}
+.xb.paper:hover{color:#b3202a;background:rgba(179,32,42,.1)}
+/* Scroll areas: the gutter is reserved up front so a scrollbar never covers content. */
+.scroll{overflow-y:auto;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#8a9b98 rgba(255,255,255,.07)}
+.scroll.paper{scrollbar-color:#6f6e62 rgba(0,0,0,.08)}
+.scroll::-webkit-scrollbar{width:8px}
+.scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.07);border-radius:4px}
+.scroll::-webkit-scrollbar-thumb{background:#8a9b98;border-radius:4px}
+.scroll.paper::-webkit-scrollbar-track{background:rgba(0,0,0,.08)}
+.scroll.paper::-webkit-scrollbar-thumb{background:#6f6e62}
+.card:hover{border-color:rgba(242,239,228,.35)!important}
+/* Folder tabs: plain radio buttons, so they work with no script. */
+.tabr{position:absolute;opacity:0;pointer-events:none}
+.tabs label{height:25px;margin-top:3px;padding:0 14px;display:flex;align-items:center;background:#a9a592;color:#3b4242;border:3px solid #000;border-bottom:0;border-radius:6px 6px 0 0;font-family:'Anton',sans-serif;font-size:15px;letter-spacing:.08em;cursor:pointer}
+#tBg:checked~.tabs label[for=tBg],#tJobs:checked~.tabs label[for=tJobs]{height:28px;margin-top:0;background:#d8d5c6;color:#1a2123}
+.pBg,.pJobs{display:none}
+#tBg:checked~.fpanel .pBg,#tJobs:checked~.fpanel .pJobs{display:flex}
+</style>
+</head><body style="margin:0"><div id="out">
+
+<div style="width: 1180px; height: 950px; position: relative; overflow: hidden; display: flex; flex-direction: column; background: linear-gradient(165deg, #27363f 0%, #0b1012 100%); border: 4px solid #000; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; color: #e9f0ed">
+
+<div style="position: absolute; inset: 0; pointer-events: none; z-index: 5; background-image: radial-gradient(rgba(0,0,0,.6) 1.1px, transparent 1.6px); background-size: 5px 5px; opacity: 0.14"></div>
+
+<!-- Foundry window title bar -->
+<div style="height: 32px; flex: none; background: #000; display: flex; align-items: center; gap: 10px; padding: 0 12px; position: relative; z-index: 2">
+<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#d8c24a" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l9 5v10l-9 5-9-5V7z"></path></svg>
+<span style="font-size: 17px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase">Rosa Delgado</span>
+<span style="flex: 1"></span>
+<span title="The GM locked traits. Attributes, Roles, Distinctions, Talents and Specialties cannot change right now." style="display: flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 3px; background: rgba(216,194,74,.12); color: #d8c24a; border: 1px solid #d8c24a; font-size: 12px; font-weight: 700; letter-spacing: .1em"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>TRAITS LOCKED</span>
+<button type="button" style="height: 22px; padding: 0 10px; background: transparent; color: #9fb2ad; border: 1px solid #9fb2ad; border-radius: 3px; font-size: 13px; letter-spacing: .08em; cursor: pointer">SHEET</button>
+<button type="button" style="height: 22px; padding: 0 10px; background: transparent; color: #9fb2ad; border: 1px solid #9fb2ad; border-radius: 3px; font-size: 13px; letter-spacing: .08em; cursor: pointer">TOKEN</button>
+<button type="button" aria-label="Close" style="width: 22px; height: 22px; padding: 0; background: transparent; color: #e9f0ed; border: 1px solid #9fb2ad; border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"></path></svg></button>
+</div>
+
+<!-- Header: mugshot, name, life + vest, booking card -->
+<div style="height: 164px; flex: none; position: relative; z-index: 2; background: #27363f; border-bottom: 4px solid #000; overflow: hidden; display: flex; align-items: center; gap: 22px; padding: 0 24px">
+
+<button type="button" title="Click to set a portrait. A PNG with a transparent background stands in front of the wall." style="position: relative; width: 112px; height: 140px; flex: none; padding: 0; background: #d9d6ca; border: 4px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.5); overflow: hidden; cursor: pointer">
+<span style="position: absolute; inset: 0; background: repeating-linear-gradient(180deg, transparent 0 13px, rgba(0,0,0,.18) 13px 14px)"></span>
+<span style="position: absolute; left: 0; right: 0; top: 18px; height: 2px; background: rgba(0,0,0,.55)"></span>
+<span style="position: absolute; left: 0; right: 0; top: 60px; height: 2px; background: rgba(0,0,0,.55)"></span>
+<span style="position: absolute; left: 0; right: 0; top: 102px; height: 2px; background: rgba(0,0,0,.55)"></span>
+<span style="position: absolute; left: 4px; top: 21px; font-family: 'Special Elite', monospace; font-size: 11px; color: rgba(0,0,0,.6)">6'</span>
+<span style="position: absolute; left: 4px; top: 63px; font-family: 'Special Elite', monospace; font-size: 11px; color: rgba(0,0,0,.6)">5'6</span>
+<span style="position: absolute; left: 4px; top: 105px; font-family: 'Special Elite', monospace; font-size: 11px; color: rgba(0,0,0,.6)">5'</span>
+<span style="position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-family: 'Special Elite', monospace; font-size: 11px; letter-spacing: .1em; color: rgba(0,0,0,.45)">NO PHOTO</span>
+</button>
+
+<div style="position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<div class="hud" style="font-family: 'Anton', sans-serif; font-size: 54px; line-height: 1.15; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">ROSA DELGADO</div>
+<div class="hud" style="font-family: 'Special Elite', monospace; font-size: 19px; color: #d7dfdb">a.k.a. “La Zorra”</div>
+<div style="display: flex; align-items: center; gap: 22px; margin-top: 6px">
+<button type="button" title="Life 14 of 18 (10 + Vitality). Click to edit." style="display: flex; align-items: center; gap: 7px; padding: 0; background: none; border: 0; cursor: pointer">
+<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.2 3.4 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 5.8 3.7 4.4 7.2C19.5 16.4 12 21 12 21z" fill="#ff6f8e" stroke="#000" stroke-width="2" stroke-linejoin="round"></path></svg>
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 30px; line-height: 1; color: #ff8fa6">14</span>
+<span style="font-size: 15px; font-weight: 700; color: #9fb2ad; align-self: flex-end; margin-bottom: 3px">/18</span>
+</button>
+<button type="button" title="Vest 4 of 6 · Standard vest. Takes damage before Life. Click to edit." style="display: flex; align-items: center; gap: 7px; padding: 0; background: none; border: 0; cursor: pointer">
+<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="#c9d1d4" stroke="#000" stroke-width="2" stroke-linejoin="round"></path></svg>
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 30px; line-height: 1; color: #e3e9eb">4</span>
+<span style="font-size: 15px; font-weight: 700; color: #9fb2ad; align-self: flex-end; margin-bottom: 3px">/6</span>
+</button>
+</div>
+</div>
+
+<div style="position: relative; z-index: 1; width: 440px; height: 134px; flex: none; transform: rotate(1.2deg); background: #d8d5c6; color: #1a2123; border: 3px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.5); display: flex; flex-direction: column">
+<div style="height: 24px; flex: none; background: #000; display: flex; align-items: center; padding: 0 10px"><span style="font-family: 'Anton', sans-serif; font-size: 14px; letter-spacing: .08em; color: #fff">BOOKING CARD</span><span style="margin-left: auto; font-family: 'Special Elite', monospace; font-size: 12px; color: #d8c24a">Nº 0471-RD</span></div>
+<div style="flex: 1; min-height: 0; display: flex; gap: 12px; padding: 6px 8px 6px 12px">
+<div style="flex: 1; min-width: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 12px; row-gap: 4px; align-content: start">
+
+<div style="grid-column: auto; min-width: 0; border-bottom: 1px dashed rgba(26,33,35,.5)"><div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #5d6866">HEIGHT</div><div style="font-family: 'Special Elite', monospace; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">5'6"</div></div>
+
+<div style="grid-column: auto; min-width: 0; border-bottom: 1px dashed rgba(26,33,35,.5)"><div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #5d6866">WEIGHT</div><div style="font-family: 'Special Elite', monospace; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">128 lb</div></div>
+
+<div style="grid-column: auto; min-width: 0; border-bottom: 1px dashed rgba(26,33,35,.5)"><div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #5d6866">AGE</div><div style="font-family: 'Special Elite', monospace; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">31</div></div>
+
+<div style="grid-column: auto; min-width: 0; border-bottom: 1px dashed rgba(26,33,35,.5)"><div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #5d6866">EYES</div><div style="font-family: 'Special Elite', monospace; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Brown</div></div>
+
+<div style="grid-column: auto; min-width: 0; border-bottom: 1px dashed rgba(26,33,35,.5)"><div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #5d6866">HAIR</div><div style="font-family: 'Special Elite', monospace; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Black</div></div>
+
+<div style="grid-column: auto; min-width: 0; border-bottom: 1px dashed rgba(26,33,35,.5)"><div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #5d6866">BUILD</div><div style="font-family: 'Special Elite', monospace; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Wiry</div></div>
+
+<div style="grid-column: 1 / -1; min-width: 0; border-bottom: 1px dashed rgba(26,33,35,.5)"><div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #5d6866">DISTINGUISHING MARKS</div><div style="font-family: 'Special Elite', monospace; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Fox tattoo, left wrist. Chipped front tooth.</div></div>
+
+</div>
+<div style="width: 72px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px">
+<div style="width: 72px; height: 76px; background: #eceade; border: 2px solid #1a2123; display: flex; align-items: center; justify-content: center; overflow: hidden">
+<svg viewBox="0 0 100 110" width="62" height="70" aria-hidden="true" style="transform: rotate(-9deg)"><defs><clipPath id="fpClip"><ellipse cx="50" cy="56" rx="40" ry="50"></ellipse></clipPath></defs><path clip-path="url(#fpClip)" d="M48.5,49.3 L49.0,49.2 L49.5,49.1 L50.0,49.1 L50.4,49.1 L50.9,49.2 L51.4,49.3 L51.9,49.5 M52.2,49.7 L52.6,50.1 L53.0,50.6 L53.2,51.1 L53.5,51.6 L53.6,52.2 L53.8,52.7 L53.9,53.3 L54.0,53.9 L54.0,54.5 L54.0,55.1 M53.9,55.6 L53.7,56.2 L53.4,56.7 L53.1,57.1 L52.7,57.5 L52.4,57.9 L52.0,58.2 L51.6,58.5 L51.1,58.8 L50.7,59.0 M50.1,59.1 L49.6,59.1 L49.0,58.9 L48.5,58.6 L48.0,58.2 M47.5,57.8 L47.1,57.4 L46.7,56.9 L46.4,56.4 L46.1,55.8 M46.0,55.1 L46.0,54.3 L46.1,53.6 L46.2,52.9 L46.4,52.2 M46.5,51.8 L46.7,51.3 L46.9,50.7 L47.2,50.2 L47.6,49.8 L48.0,49.5 L48.5,49.3 M47.3,45.5 L48.2,45.2 L49.1,45.0 L50.0,44.8 L51.0,44.8 L51.9,44.9 M52.8,45.1 L53.7,45.7 L54.5,46.4 L55.1,47.3 L55.7,48.3 L56.2,49.3 L56.7,50.4 L57.1,51.5 L57.4,52.7 L57.6,53.9 M57.5,55.9 L57.1,57.0 L56.7,58.1 L56.1,59.0 L55.5,59.9 L54.9,60.7 L54.2,61.5 L53.5,62.3 L52.7,62.9 L51.8,63.3 M50.7,63.5 L49.8,63.4 L48.9,63.2 L48.1,62.8 L47.3,62.4 L46.5,61.9 L45.7,61.4 L44.9,60.8 L44.2,60.1 L43.6,59.2 L43.2,58.2 L42.9,57.1 L42.7,56.0 L42.7,54.9 M42.7,54.1 L42.8,53.0 L42.9,51.9 L43.1,50.8 L43.3,49.7 L43.7,48.7 L44.2,47.8 L44.9,47.0 L45.6,46.3 L46.5,45.8 L47.3,45.5 M46.1,41.7 L47.4,41.0 L48.8,40.5 L50.2,40.2 L51.7,40.2 L53.1,40.6 M54.1,41.1 L55.4,42.1 L56.6,43.4 L57.6,44.7 L58.6,46.1 L59.5,47.6 L60.3,49.3 M61.0,51.8 L61.1,53.7 L60.9,55.7 L60.5,57.5 L59.8,59.2 L59.1,60.8 M58.2,62.6 L57.4,63.9 L56.5,65.1 L55.4,66.1 L54.2,66.9 L52.9,67.4 L51.6,67.6 L50.3,67.5 L49.0,67.3 L47.8,67.0 L46.5,66.6 M45.2,66.0 L43.9,65.4 L42.8,64.5 L41.8,63.4 L40.9,62.0 L40.3,60.5 L39.9,58.9 L39.6,57.3 L39.5,55.7 L39.4,54.0 M39.3,52.9 L39.4,50.9 L39.7,49.0 L40.3,47.2 L41.2,45.6 M42.0,44.5 L43.3,43.4 L44.7,42.4 L46.1,41.7 M44.8,37.5 L46.4,36.6 L48.0,36.0 L49.8,35.7 L51.6,35.8 L53.3,36.3 L54.9,37.2 L56.4,38.3 M58.2,39.9 L59.6,41.3 L60.9,42.7 L62.1,44.4 L63.2,46.2 L63.9,48.3 L64.4,50.5 L64.5,52.8 L64.2,55.0 M63.8,57.2 L63.3,59.2 L62.7,61.3 L62.0,63.3 L61.2,65.3 L60.1,67.1 L58.8,68.7 L57.2,69.9 L55.5,70.8 L53.8,71.2 L52.0,71.4 L50.2,71.5 M47.7,71.3 L45.9,71.0 L44.1,70.5 L42.4,69.6 L40.8,68.3 L39.5,66.7 L38.5,64.8 M37.5,62.2 L36.9,59.9 L36.3,57.7 L35.9,55.4 L35.7,53.0 L35.7,50.5 L36.1,48.1 L36.9,45.9 L38.1,43.9 M40.2,41.4 L41.7,40.0 L43.2,38.7 L44.8,37.5 M43.4,33.1 L45.4,32.0 L47.6,31.5 L49.8,31.4 L51.9,31.8 L54.0,32.6 L56.0,33.6 L57.9,34.7 L59.8,36.0 L61.6,37.4 L63.3,39.0 L64.8,41.0 L66.1,43.3 L66.9,45.8 M67.3,47.9 L67.5,51.0 L67.4,54.0 L67.2,57.0 L66.8,59.9 L66.2,62.9 L65.3,65.7 L64.0,68.4 M61.7,71.4 L59.6,72.9 L57.4,74.0 L55.1,74.8 L52.8,75.4 L50.5,75.8 M47.9,76.0 L45.5,75.8 L43.1,75.0 L40.9,73.7 L39.0,71.8 M36.9,68.8 L35.8,66.5 L34.7,64.2 L33.8,61.9 L32.9,59.4 L32.3,56.8 L31.9,54.1 L31.9,51.3 L32.4,48.6 L33.2,46.1 L34.3,43.7 L35.6,41.6 M37.5,39.0 L39.3,36.8 L41.2,34.8 L43.4,33.1 M42.0,28.7 L44.6,27.8 L47.4,27.5 L50.1,27.7 L52.7,28.2 L55.2,29.0 L57.7,29.9 L60.2,31.0 L62.7,32.5 L64.9,34.4 L66.9,36.9 M68.7,40.6 L69.6,43.8 L70.2,47.1 L70.5,50.4 L70.7,53.6 L70.7,56.9 L70.6,60.3 L70.1,63.6 L69.1,66.8 L67.7,69.7 M65.6,72.6 L63.3,74.6 L60.9,76.2 L58.4,77.6 L55.9,78.8 L53.4,79.8 L50.7,80.6 L47.9,80.8 L45.1,80.5 L42.4,79.4 L40.0,77.7 L37.8,75.5 M34.8,71.5 L33.1,68.9 L31.5,66.3 L30.1,63.4 L29.0,60.2 L28.4,56.8 L28.3,53.4 L28.8,50.0 L29.7,46.7 M31.3,42.7 L32.9,39.6 L34.5,36.5 L36.4,33.7 L38.7,31.1 M40.8,25.0 L43.8,24.2 L46.7,23.9 L49.7,23.9 L52.6,24.1 L55.5,24.5 L58.4,25.1 L61.3,26.2 L64.1,27.9 L66.5,30.1 L68.6,32.9 M71.3,38.9 L72.3,42.5 L73.2,46.2 L73.9,50.0 L74.4,53.8 L74.7,57.8 L74.4,61.7 L73.5,65.6 L72.0,69.2 L70.0,72.3 L67.7,75.0 L65.2,77.4 M62.8,79.4 L60.1,81.4 L57.2,83.3 L54.2,84.7 L50.9,85.5 L47.6,85.4 L44.3,84.5 L41.3,82.9 M37.7,80.0 L35.2,77.6 L32.8,75.1 L30.5,72.3 L28.4,69.2 M26.5,65.3 L25.4,61.2 L25.0,56.9 L25.3,52.6 L26.1,48.5 L27.2,44.6 M28.0,41.9 L29.4,38.0 L31.1,34.2 L33.2,30.7 L35.9,27.8 M40.1,25.2 L40.4,25.1 L40.6,25.0 L40.8,25.0 M23.0,48.6 L23.6,44.2 L24.6,39.7 L25.9,35.3 L27.9,31.2 L30.4,27.7 L33.5,24.9 L36.9,22.8 M42.3,20.9 L46.3,20.1 L50.3,19.5 L54.5,19.4 L58.6,20.0 M62.5,21.6 L65.6,23.8 L68.2,26.7 L70.4,30.1 L72.3,33.7 L73.9,37.4 L75.4,41.1 L76.7,45.0 L77.8,49.1 L78.5,53.4 M78.3,60.7 L77.2,65.1 L75.5,69.1 L73.4,72.7 L71.1,76.0 L68.6,79.1 L66.0,82.1 L63.2,84.8 L60.1,87.2 L56.7,88.9 L53.2,89.7 L49.5,89.7 M43.9,88.1 L40.5,86.3 L37.2,84.2 L34.0,82.0 L30.8,79.4 L27.9,76.3 L25.5,72.6 M23.6,68.3 L22.6,63.9 L22.2,59.3 L22.3,54.8 L22.7,50.5 L23.3,46.2 L24.1,41.9 L25.2,37.6 M27.9,31.2 L30.4,27.7 L33.4,24.9 L36.7,22.9 L40.2,21.6 L43.7,20.6 L47.2,19.9 L50.7,19.5 L54.3,19.4 L58.0,19.9 L61.6,21.1 L64.9,23.2 L67.8,26.2 M69.7,28.8 L71.8,32.5 L73.5,36.3 L75.1,40.3 L76.5,44.3 L77.7,48.5 M19.3,47.9 L19.7,43.0 L20.7,38.1 L22.2,33.4 L24.5,29.2 L27.4,25.7 L30.7,22.8 M34.9,20.2 L38.6,18.3 L42.3,16.7 L46.1,15.4 L50.0,14.5 L54.1,14.2 L58.2,14.9 L62.1,16.7 L65.6,19.3 L68.7,22.5 M71.2,25.8 L73.7,29.6 L76.1,33.4 L78.2,37.5 L80.1,41.9 M81.6,47.1 L82.3,52.3 L82.1,57.5 L81.0,62.5 L79.4,67.3 L77.5,71.7 L75.3,75.8 L72.9,79.9 M69.7,84.6 L66.6,88.1 L63.1,90.8 L59.2,92.7 L55.1,93.5 L51.0,93.4 L47.0,92.6 L43.1,91.5 L39.3,90.1 L35.5,88.4 L31.8,86.3 L28.3,83.5 L25.3,80.0 M22.2,74.1 L20.7,69.1 L19.8,63.9 L19.4,58.7 L19.3,53.6 L19.3,48.4 L19.7,43.2 L20.7,38.0 L22.4,33.1 M25.6,27.8 L28.6,24.5 L32.0,21.9 L35.5,19.8 L39.1,18.1 L42.7,16.5 L46.5,15.3 L50.3,14.4 L54.3,14.2 L58.3,15.0 L62.1,16.7 M64.5,18.4 L67.9,21.6 L70.9,25.4 L73.6,29.4 L76.1,33.5 L78.4,37.9 L80.4,42.6 L81.8,47.7 M15.2,47.1 L15.7,41.7 L17.0,36.5 L19.1,31.7 L21.8,27.5 L25.0,23.9 L28.4,20.7 L31.9,17.9 L35.5,15.3 L39.2,12.9 L43.2,11.0 L47.4,9.7 L51.7,9.3 M58.5,10.8 L62.8,13.2 L66.7,16.3 L70.4,19.7 L73.8,23.4 L77.1,27.4 L80.2,31.8 L82.7,36.7 M84.6,42.3 L85.4,47.7 L85.4,53.2 L84.7,58.6 L83.5,63.7 L82.0,68.6 M79.7,75.2 L77.4,80.7 L74.5,85.8 L70.9,90.2 L66.6,93.6 M63.7,95.1 L59.4,96.3 L55.2,96.8 L51.0,96.8 L46.8,96.4 L42.7,95.8 L38.6,94.9 M35.1,93.8 L31.0,91.6 L27.2,88.6 L24.0,84.7 L21.5,80.1 L19.6,75.2 L18.2,70.0 L17.0,64.9 M16.4,61.2 L15.6,56.0 L15.2,50.5 L15.3,45.0 L16.1,39.5 M17.5,35.3 L19.7,30.6 L22.6,26.5 L25.8,23.0 L29.3,20.0 L32.8,17.2 M36.7,14.5 L40.9,12.0 L45.3,10.2 L49.9,9.3 L54.7,9.6 M61.5,12.4 L65.2,15.0 L68.6,18.0 L71.8,21.2 L74.8,24.6 L77.8,28.3 L80.5,32.3 L82.8,36.8 L84.4,41.8 L85.3,47.0 M11.1,46.3 L12.3,40.1 L14.5,34.4 L17.3,29.2 L20.6,24.5 L24.0,20.3 L27.7,16.2 M31.5,12.5 L35.7,9.1 L40.3,6.6 L45.2,5.2 L50.3,5.0 L55.2,6.1 L60.0,8.0 L64.4,10.6 M67.6,12.7 L71.8,15.8 L76.0,19.2 L79.8,23.3 L83.2,28.0 L85.8,33.5 L87.4,39.6 L88.1,45.9 L88.0,52.2 L87.4,58.3 L86.5,64.3 L85.4,70.3 M82.5,80.2 L80.0,85.5 L76.7,90.2 L72.7,93.9 L68.3,96.6 L63.6,98.5 L58.9,99.7 L54.2,100.5 L49.5,101.0 M43.8,101.2 L38.1,100.3 L32.6,98.1 L27.6,94.3 L23.4,89.2 M21.2,85.6 L18.7,80.4 L16.6,75.2 L14.7,69.8 L13.0,64.3 L11.7,58.5 L11.0,52.5 L11.1,46.3 M12.2,40.7 L14.2,35.0 L16.9,29.8 L20.1,25.1 L23.6,20.8 L27.1,16.8 L30.9,13.0 L35.0,9.6 L39.6,6.9 L44.4,5.3 L49.5,5.0 L54.4,5.8 M58.3,7.2 L62.9,9.7 L67.3,12.5 L71.6,15.6 L75.7,19.0 M81.8,25.9 L85.2,32.1 L87.3,39.1 L88.1,46.5" fill="none" stroke="#1d2a2e" stroke-width="2.4" stroke-linecap="round" opacity=".88"></path></svg>
+</div>
+<div style="font-size: 10px; font-weight: 700; letter-spacing: .14em; color: #5d6866">R. THUMB</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- Body: three columns -->
+<div style="flex: 1; min-height: 0; display: flex; gap: 16px; padding: 14px 24px 12px; position: relative; z-index: 2">
+
+<!-- Left: attributes + roles (fixed lists, nothing to add or delete) -->
+<div style="width: 376px; flex: none; display: flex; flex-direction: column; gap: 12px">
+
+<div style="background: rgba(10,16,18,.92); border: 3px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.45)">
+<div style="display: flex; align-items: center; height: 34px; padding: 0 12px; background: #d8c24a; border-bottom: 3px solid #000">
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 21px; letter-spacing: .06em; color: #fff">ATTRIBUTES</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 7px">
+
+<div title="Grace · speed · fine control" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: rgba(255,255,255,.05); border: 2px solid #f2efe4; box-shadow: inset 0 0 0 1px #f2efe4, 0 0 10px rgba(242,239,228,.35); border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">AGILITY</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="hsl(33, 38%, 42%)" stroke="hsl(33, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(33, 60%, 88%)">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="hsl(135, 38%, 42%)" stroke="hsl(135, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(135, 60%, 88%)">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="#4ba3f5" stroke="#4ba3f5" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: #10150f">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Noticing what is off" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">ALERTNESS</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="hsl(33, 38%, 42%)" stroke="hsl(33, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(33, 60%, 88%)">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="#4fbf6b" stroke="#4fbf6b" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="hsl(209, 38%, 42%)" stroke="hsl(209, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(209, 60%, 88%)">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Knowledge · memory · logic" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">INTELLIGENCE</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="#f2a03d" stroke="#f2a03d" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="hsl(135, 38%, 42%)" stroke="hsl(135, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(135, 60%, 88%)">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="hsl(209, 38%, 42%)" stroke="hsl(209, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(209, 60%, 88%)">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Force · presence" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">STRENGTH</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="#f2a03d" stroke="#f2a03d" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="hsl(135, 38%, 42%)" stroke="hsl(135, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(135, 60%, 88%)">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="hsl(209, 38%, 42%)" stroke="hsl(209, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(209, 60%, 88%)">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Endurance · toughness" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">VITALITY</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="hsl(33, 38%, 42%)" stroke="hsl(33, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(33, 60%, 88%)">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="#4fbf6b" stroke="#4fbf6b" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="hsl(209, 38%, 42%)" stroke="hsl(209, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(209, 60%, 88%)">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Nerve · persuasion" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">WILLPOWER</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="hsl(33, 38%, 42%)" stroke="hsl(33, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(33, 60%, 88%)">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="hsl(135, 38%, 42%)" stroke="hsl(135, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(135, 60%, 88%)">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="#4ba3f5" stroke="#4ba3f5" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: #10150f">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+</div>
+</div>
+
+<div style="background: rgba(10,16,18,.92); border: 3px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.45)">
+<div style="display: flex; align-items: center; height: 34px; padding: 0 12px; background: #d8c24a; border-bottom: 3px solid #000">
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 21px; letter-spacing: .06em; color: #fff">ROLES</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 7px">
+
+<div title="Deals in trust" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">GRIFTER</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="hsl(33, 38%, 42%)" stroke="hsl(33, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(33, 60%, 88%)">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="#4fbf6b" stroke="#4fbf6b" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="hsl(209, 38%, 42%)" stroke="hsl(209, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(209, 60%, 88%)">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Deals in information" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">HACKER</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="hsl(33, 38%, 42%)" stroke="hsl(33, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(33, 60%, 88%)">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="hsl(135, 38%, 42%)" stroke="hsl(135, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(135, 60%, 88%)">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="hsl(209, 38%, 42%)" stroke="hsl(209, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(209, 60%, 88%)">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Deals in force" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">HITTER</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="#f2a03d" stroke="#f2a03d" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="hsl(135, 38%, 42%)" stroke="hsl(135, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(135, 60%, 88%)">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="hsl(209, 38%, 42%)" stroke="hsl(209, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(209, 60%, 88%)">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Deals in plans" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">MASTERMIND</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="#ee5a5a" stroke="#ee5a5a" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: #10150f">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="hsl(33, 38%, 42%)" stroke="hsl(33, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(33, 60%, 88%)">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="hsl(135, 38%, 42%)" stroke="hsl(135, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(135, 60%, 88%)">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="hsl(209, 38%, 42%)" stroke="hsl(209, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(209, 60%, 88%)">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.55"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+<div title="Deals in access" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px 0 12px; background: rgba(255,255,255,.05); border: 2px solid #f2efe4; box-shadow: inset 0 0 0 1px #f2efe4, 0 0 10px rgba(242,239,228,.35); border-radius: 4px">
+<button type="button" title="Add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 19px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">THIEF</button>
+<div style="display: flex; gap: 3px; flex: none">
+
+<button type="button" aria-label="Set to d4" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></button>
+
+<button type="button" aria-label="Set to d6" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="hsl(33, 38%, 42%)" stroke="hsl(33, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(33, 60%, 88%)">6</span></button>
+
+<button type="button" aria-label="Set to d8" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="hsl(135, 38%, 42%)" stroke="hsl(135, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: hsl(135, 60%, 88%)">8</span></button>
+
+<button type="button" aria-label="Set to d10" aria-pressed="true" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="#4ba3f5" stroke="#4ba3f5" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: #10150f">10</span></button>
+
+<button type="button" aria-label="Set to d12" aria-pressed="false" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 89,30 89,70 50,92 11,70 11,30" fill="hsl(267, 38%, 42%)" stroke="hsl(267, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 10px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 12px; color: hsl(267, 60%, 88%)">12</span></button>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+
+<!-- Middle: distinctions, talents, specialties -->
+<div style="width: 400px; flex: none; display: flex; flex-direction: column; gap: 12px; min-height: 0">
+
+<div style="flex: none; background: rgba(10,16,18,.92); border: 3px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.45)">
+<div style="display: flex; align-items: center; height: 34px; padding: 0 12px; background: #d8c24a; border-bottom: 3px solid #000">
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 21px; letter-spacing: .06em; color: #fff">DISTINCTIONS</span>
+<span style="margin-left: auto; font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #10150f">3 / 3</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 7px">
+
+<div class="card" style="padding: 5px 6px 6px 12px; background: rgba(255,255,255,.05); border: 2px solid #f2efe4; box-shadow: inset 0 0 0 1px #f2efe4, 0 0 10px rgba(242,239,228,.35); border-radius: 4px; display: flex; flex-direction: column; gap: 3px">
+<div style="display: flex; align-items: center; gap: 6px">
+<span title="Click to rename" style="font-size: 19px; font-weight: 700; letter-spacing: .04em; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: text">OLD DOCKS LOYALTY</span>
+<button type="button" aria-label="Works in your favor: add a d8" title="Works in your favor: add a d8" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="#4fbf6b" stroke="#4fbf6b" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">8</span></button>
+<button type="button" aria-label="Works against you: add a d4 and gain 1 Plot Point" title="Works against you: add a d4 and gain 1 Plot Point" style="display: flex; align-items: center; gap: 3px; height: 32px; padding: 0; background: none; border: 0; cursor: pointer; color: #5c6b68"><span style="position: relative; width: 32px; height: 32px; flex: none; opacity: 0.28"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="hsl(0, 38%, 42%)" stroke="hsl(0, 38%, 42%)" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: hsl(0, 60%, 88%)">4</span></span><span style="font-size: 13px; font-weight: 700; letter-spacing: .06em; white-space: nowrap">+1 PP</span></button>
+<button type="button" class="xb" aria-label="Delete distinction" style="display: none"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div title="Helps when calling in favors from the old neighborhood. Hurts when someone needs rescuing." style="font-size: 14px; line-height: 1.2; color: #9fb2ad; padding-right: 26px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: text">Helps when calling in favors from the old neighborhood. Hurts when someone needs rescuing.</div>
+</div>
+
+<div class="card" style="padding: 5px 6px 6px 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px; display: flex; flex-direction: column; gap: 3px">
+<div style="display: flex; align-items: center; gap: 6px">
+<span title="Click to rename" style="font-size: 19px; font-weight: 700; letter-spacing: .04em; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: text">ADRENALINE JUNKIE</span>
+<button type="button" aria-label="Works in your favor: add a d8" title="Works in your favor: add a d8" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="#4fbf6b" stroke="#4fbf6b" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">8</span></button>
+<button type="button" aria-label="Works against you: add a d4 and gain 1 Plot Point" title="Works against you: add a d4 and gain 1 Plot Point" style="display: flex; align-items: center; gap: 3px; height: 32px; padding: 0; background: none; border: 0; cursor: pointer; color: #d8c24a"><span style="position: relative; width: 32px; height: 32px; flex: none; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="#ee5a5a" stroke="#ee5a5a" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: #10150f">4</span></span><span style="font-size: 13px; font-weight: 700; letter-spacing: .06em; white-space: nowrap">+1 PP</span></button>
+<button type="button" class="xb" aria-label="Delete distinction" style="display: none"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div title="Helps on any dangerous stunt. Hurts when the plan calls for patience." style="font-size: 14px; line-height: 1.2; color: #9fb2ad; padding-right: 26px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: text">Helps on any dangerous stunt. Hurts when the plan calls for patience.</div>
+</div>
+
+<div class="card" style="padding: 5px 6px 6px 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px; display: flex; flex-direction: column; gap: 3px">
+<div style="display: flex; align-items: center; gap: 6px">
+<span title="Click to rename" style="font-size: 19px; font-weight: 700; letter-spacing: .04em; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: text">WANTED IN THREE STATES</span>
+<button type="button" aria-label="Works in your favor: add a d8" title="Works in your favor: add a d8" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="#4fbf6b" stroke="#4fbf6b" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">8</span></button>
+<button type="button" aria-label="Works against you: add a d4 and gain 1 Plot Point" title="Works against you: add a d4 and gain 1 Plot Point" style="display: flex; align-items: center; gap: 3px; height: 32px; padding: 0; background: none; border: 0; cursor: pointer; color: #d8c24a"><span style="position: relative; width: 32px; height: 32px; flex: none; opacity: 1"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,10 92,86 8,86" fill="#ee5a5a" stroke="#ee5a5a" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 13px; color: #10150f">4</span></span><span style="font-size: 13px; font-weight: 700; letter-spacing: .06em; white-space: nowrap">+1 PP</span></button>
+<button type="button" class="xb" aria-label="Delete distinction" style="display: none"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div title="Helps with street cred. Hurts every time a cop looks twice." style="font-size: 14px; line-height: 1.2; color: #9fb2ad; padding-right: 26px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: text">Helps with street cred. Hurts every time a cop looks twice.</div>
+</div>
+
+</div>
+</div>
+
+<div style="flex: 1; min-height: 0; background: rgba(10,16,18,.92); border: 3px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.45); display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; height: 34px; flex: none; padding: 0 12px; background: #d8c24a; border-bottom: 3px solid #000">
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 21px; letter-spacing: .06em; color: #fff">TALENTS</span>
+<span style="margin-left: auto; font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #10150f">click to open</span><button type="button" title="New Talent" style="display: none; height: 22px; margin-left: 8px; padding: 0 8px; background: #10150f; color: #d8c24a; border: 2px solid #000; border-radius: 3px; font-size: 13px; font-weight: 700; letter-spacing: .08em; cursor: pointer">+ ADD</button>
+</div>
+<div class="scroll" style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 5px; padding: 7px 6px 7px 7px">
+
+<div class="card" title="Open GHOST IN THE HALLWAY" style="flex: none; display: flex; align-items: center; gap: 8px; padding: 6px 6px 7px 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; border-radius: 4px; cursor: pointer">
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: center; gap: 6px">
+<span style="flex: 1; min-width: 0; font-size: 18px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">GHOST IN THE HALLWAY</span>
+<span style="display: none; font-size: 12px; font-weight: 700; letter-spacing: .1em; padding: 0 7px; border-radius: 999px; background: #d8c24a; color: #10150f; border: 2px solid #000">1 PP</span>
+<span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; padding: 0 7px; border-radius: 999px; background: #d8c24a; color: #10150f; border: 2px solid #000">THIEF</span>
+</div>
+<div style="font-size: 14px; color: #9fb2ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span style="font-weight: 700; letter-spacing: .1em; color: #7fc2b4">WHEN </span>You sneak past a Supporting Character who has not noticed you.</div>
+</div>
+<button type="button" class="xb" aria-label="Delete talent" style="display: none"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div class="card" title="Open WHEELMAN’S NERVE" style="flex: none; display: flex; align-items: center; gap: 8px; padding: 6px 6px 7px 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; border-radius: 4px; cursor: pointer">
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: center; gap: 6px">
+<span style="flex: 1; min-width: 0; font-size: 18px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">WHEELMAN’S NERVE</span>
+<span style="display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .1em; padding: 0 7px; border-radius: 999px; background: #d8c24a; color: #10150f; border: 2px solid #000">1 PP</span>
+<span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; padding: 0 7px; border-radius: 999px; background: #d8d5c6; color: #10150f; border: 2px solid #000">OPEN</span>
+</div>
+<div style="font-size: 14px; color: #9fb2ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span style="font-weight: 700; letter-spacing: .1em; color: #7fc2b4">WHEN </span>You are behind the wheel during a chase. Spend a Plot Point.</div>
+</div>
+<button type="button" class="xb" aria-label="Delete talent" style="display: none"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div class="card" title="Open SOFT HANDS" style="flex: none; display: flex; align-items: center; gap: 8px; padding: 6px 6px 7px 12px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; border-radius: 4px; cursor: pointer">
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: center; gap: 6px">
+<span style="flex: 1; min-width: 0; font-size: 18px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">SOFT HANDS</span>
+<span style="display: none; font-size: 12px; font-weight: 700; letter-spacing: .1em; padding: 0 7px; border-radius: 999px; background: #d8c24a; color: #10150f; border: 2px solid #000">1 PP</span>
+<span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; padding: 0 7px; border-radius: 999px; background: #d8c24a; color: #10150f; border: 2px solid #000">THIEF</span>
+</div>
+<div style="font-size: 14px; color: #9fb2ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span style="font-weight: 700; letter-spacing: .1em; color: #7fc2b4">WHEN </span>You lift something small from someone within arm’s reach.</div>
+</div>
+<button type="button" class="xb" aria-label="Delete talent" style="display: none"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+</div>
+</div>
+
+<div style="flex: none; height: 122px; background: rgba(10,16,18,.92); border: 3px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.45); display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; height: 34px; flex: none; padding: 0 12px; background: #d8c24a; border-bottom: 3px solid #000">
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 21px; letter-spacing: .06em; color: #fff">SPECIALTIES</span>
+<span style="margin-left: auto; font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #10150f">+d6 with its Role</span><button type="button" title="New Specialty" style="display: none; height: 22px; margin-left: 8px; padding: 0 8px; background: #10150f; color: #d8c24a; border: 2px solid #000; border-radius: 3px; font-size: 13px; font-weight: 700; letter-spacing: .08em; cursor: pointer">+ ADD</button>
+</div>
+<div class="scroll" style="flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 32px; align-content: start; gap: 5px; padding: 7px 6px 7px 7px">
+
+<div class="card" style="min-width: 0; display: flex; align-items: center; gap: 5px; padding: 0 0 0 8px; background: rgba(255,255,255,.05); border: 2px solid #f2efe4; box-shadow: inset 0 0 0 1px #f2efe4, 0 0 10px rgba(242,239,228,.35); border-radius: 4px">
+<button type="button" title="SAFECRACKING · add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 15px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">SAFECRACKING</button>
+<button type="button" title="Which Role this Specialty goes with. Click to change." style="flex: none; height: 20px; padding: 0 4px; background: rgba(255,255,255,.06); color: #c9d5d2; border: 1px solid rgba(255,255,255,.2); border-radius: 3px; font-size: 11px; font-weight: 700; letter-spacing: .08em; cursor: pointer">THIEF</button>
+<button type="button" class="xb" aria-label="Delete specialty" style="display: none"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div class="card" style="min-width: 0; display: flex; align-items: center; gap: 5px; padding: 0 0 0 8px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="GETAWAY DRIVING · add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 15px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">GETAWAY DRIVING</button>
+<button type="button" title="Which Role this Specialty goes with. Click to change." style="flex: none; height: 20px; padding: 0 4px; background: rgba(255,255,255,.06); color: #c9d5d2; border: 1px solid rgba(255,255,255,.2); border-radius: 3px; font-size: 11px; font-weight: 700; letter-spacing: .08em; cursor: pointer">HITTER</button>
+<button type="button" class="xb" aria-label="Delete specialty" style="display: none"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div class="card" style="min-width: 0; display: flex; align-items: center; gap: 5px; padding: 0 0 0 8px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<button type="button" title="PICKPOCKETING · add to the dice pool" style="flex: 1; min-width: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; font-size: 15px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">PICKPOCKETING</button>
+<button type="button" title="Which Role this Specialty goes with. Click to change." style="flex: none; height: 20px; padding: 0 4px; background: rgba(255,255,255,.06); color: #c9d5d2; border: 1px solid rgba(255,255,255,.2); border-radius: 3px; font-size: 11px; font-weight: 700; letter-spacing: .08em; cursor: pointer">THIEF</button>
+<button type="button" class="xb" aria-label="Delete specialty" style="display: none"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+</div>
+</div>
+
+</div>
+
+<!-- Right: assets, folder -->
+<div style="width: 316px; flex: none; display: flex; flex-direction: column; gap: 12px; min-height: 0">
+
+<div style="flex: 1.15 1 0; min-height: 0; background: rgba(10,16,18,.92); border: 3px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.45); display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; height: 34px; flex: none; padding: 0 12px; background: #d8c24a; border-bottom: 3px solid #000">
+<span class="hud" style="font-family: 'Anton', sans-serif; font-size: 21px; letter-spacing: .06em; color: #fff">ASSETS</span>
+<span style="margin-left: auto; font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #10150f">5</span><button type="button" title="New Asset: Signature (permanent), Job (2 PP) or Scene (1 PP)" style="height: 22px; margin-left: 8px; padding: 0 8px; background: #10150f; color: #d8c24a; border: 2px solid #000; border-radius: 3px; font-size: 13px; font-weight: 700; letter-spacing: .08em; cursor: pointer">+ ADD</button>
+</div>
+<div class="scroll" style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; padding: 7px 6px 5px 7px">
+
+<div class="card" style="flex: none; display: flex; align-items: center; gap: 7px; height: 48px; padding: 0 4px 0 10px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<span title="Click to edit" style="flex: 1; min-width: 0; line-height: 1.1; cursor: text"><span style="display: block; font-size: 16px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">BORROWED HATCHBACK</span><span style="display: flex; align-items: center; gap: 6px; margin-top: 2px"><span title="Permanent. Comes with her to every Job." style="flex: none; font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 0 5px; line-height: 15px; border-radius: 3px; background: #d8c24a; color: #10150f; border: 1px solid #000">SIGNATURE</span><span style="min-width: 0; font-size: 13px; color: #9fb2ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Rusty, loud, and it never stalls.</span></span></span>
+<button type="button" title="Add to the dice pool" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="#4fbf6b" stroke="#4fbf6b" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">8</span></button>
+<button type="button" class="xb" aria-label="Delete asset"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div class="card" style="flex: none; display: flex; align-items: center; gap: 7px; height: 48px; padding: 0 4px 0 10px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<span title="Click to edit" style="flex: 1; min-width: 0; line-height: 1.1; cursor: text"><span style="display: block; font-size: 16px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">LOCKPICK ROLL</span><span style="display: flex; align-items: center; gap: 6px; margin-top: 2px"><span title="Permanent. Comes with her to every Job." style="flex: none; font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 0 5px; line-height: 15px; border-radius: 3px; background: #d8c24a; color: #10150f; border: 1px solid #000">SIGNATURE</span><span style="min-width: 0; font-size: 13px; color: #9fb2ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Her father’s old set, leather and brass.</span></span></span>
+<button type="button" title="Add to the dice pool" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="#f2a03d" stroke="#f2a03d" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">6</span></button>
+<button type="button" class="xb" aria-label="Delete asset"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div class="card" style="flex: none; display: flex; align-items: center; gap: 7px; height: 48px; padding: 0 4px 0 10px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<span title="Click to edit" style="flex: 1; min-width: 0; line-height: 1.1; cursor: text"><span style="display: block; font-size: 16px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">FAKE INSPECTOR BADGE</span><span style="display: flex; align-items: center; gap: 6px; margin-top: 2px"><span title="Lasts until the end of this Job (2 PP)." style="flex: none; font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 0 5px; line-height: 15px; border-radius: 3px; background: rgba(127,194,180,.18); color: #a9e0d4; border: 1px solid #7fc2b4">JOB</span><span style="min-width: 0; font-size: 13px; color: #9fb2ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Good for one walk through the front door.</span></span></span>
+<button type="button" title="Add to the dice pool" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="#f2a03d" stroke="#f2a03d" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">6</span></button>
+<button type="button" class="xb" aria-label="Delete asset"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div class="card" style="flex: none; display: flex; align-items: center; gap: 7px; height: 48px; padding: 0 4px 0 10px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<span title="Click to edit" style="flex: 1; min-width: 0; line-height: 1.1; cursor: text"><span style="display: block; font-size: 16px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">CROWBAR</span><span style="display: flex; align-items: center; gap: 6px; margin-top: 2px"><span title="Lasts until the end of this scene (1 PP)." style="flex: none; font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 0 5px; line-height: 15px; border-radius: 3px; background: transparent; color: #9fb2ad; border: 1px solid #9fb2ad">SCENE</span><span style="min-width: 0; font-size: 13px; color: #9fb2ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Picked up behind the loading dock.</span></span></span>
+<button type="button" title="Add to the dice pool" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="#f2a03d" stroke="#f2a03d" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">6</span></button>
+<button type="button" class="xb" aria-label="Delete asset"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div class="card" style="flex: none; display: flex; align-items: center; gap: 7px; height: 48px; padding: 0 4px 0 10px; background: linear-gradient(rgba(255,255,255,.08), rgba(255,255,255,.08)) no-repeat center bottom / calc(100% - 16px) 1px; border: 2px solid transparent; box-shadow: none; border-radius: 4px">
+<span title="Click to edit" style="flex: 1; min-width: 0; line-height: 1.1; cursor: text"><span style="display: block; font-size: 16px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">UNLOCKED SERVICE DOOR</span><span style="display: flex; align-items: center; gap: 6px; margin-top: 2px"><span title="Lasts until the end of this scene (1 PP)." style="flex: none; font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 0 5px; line-height: 15px; border-radius: 3px; background: transparent; color: #9fb2ad; border: 1px solid #9fb2ad">SCENE</span><span style="min-width: 0; font-size: 13px; color: #9fb2ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">The night guard propped it open to smoke.</span></span></span>
+<button type="button" title="Add to the dice pool" style="position: relative; width: 32px; height: 32px; flex: none; padding: 0; border: 0; background: none; cursor: pointer"><svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="#f2a03d" stroke="#f2a03d" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 8px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 15px; color: #10150f">6</span></button>
+<button type="button" class="xb" aria-label="Delete asset"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+</div>
+</div>
+
+<!-- Case folder: BACKGROUND (first) / JOBS (the book's "Record"). Tabs are radio buttons. -->
+<div style="flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; position: relative">
+<input type="radio" name="folder" id="tBg" class="tabr" checked="" style="">
+<input type="radio" name="folder" id="tJobs" class="tabr" style="">
+<div class="tabs" style="display: flex; align-items: flex-end; gap: 4px; padding-left: 10px; position: relative; z-index: 1; margin-bottom: -3px">
+<label for="tBg">BACKGROUND</label>
+<label for="tJobs">JOBS</label>
+</div>
+<div class="fpanel" style="position: relative; flex: 1; min-height: 0; background: #d8d5c6; color: #1a2123; border: 3px solid #000; box-shadow: 5px 5px 0 rgba(0,0,0,.45); overflow: hidden; display: flex">
+
+<div class="pBg" style="flex: 1; min-width: 0; flex-direction: column">
+<div style="flex: none; display: flex; justify-content: flex-end; padding: 8px 10px 0"><button type="button" style="height: 22px; padding: 0 8px; background: transparent; color: #1a2123; border: 2px solid #1a2123; border-radius: 3px; font-size: 13px; font-weight: 700; letter-spacing: .1em; cursor: pointer">EDIT</button></div>
+<div class="scroll paper" style="flex: 1; min-height: 0; padding: 4px 10px 10px 14px; font-family: 'Special Elite', monospace; font-size: 14px; line-height: 1.5">
+<p style="margin: 0 0 6px"><b>RAISED:</b> Dock Row, port district. Father, longshoreman. Mother ran the corner bakery.</p>
+<p style="margin: 0 0 6px"><b>SCHOOLING:</b> School of Hard Knocks. Two semesters of <span style="display: inline-block; width: 60px; height: 13px; background: #000; vertical-align: -1px"></span> night classes.</p>
+<p style="margin: 0 0 6px"><b>PRIORS:</b> 14 counts petty theft. 2 counts grand theft <span style="display: inline-block; width: 52px; height: 13px; background: #000; vertical-align: -1px"></span>. Wanted in three states.</p>
+<p style="margin: 0 0 6px"><b>SEALED:</b> one warrant, <span style="display: inline-block; width: 70px; height: 13px; background: #000; vertical-align: -1px"></span> County. She has not been told.</p>
+<p style="margin: 0 0 6px"><b>KNOWN ASSOCIATES:</b> "Fat" Sal Moretti (fence, Saint Mark's). A cousin who drives a tow truck and asks no questions.</p>
+<p style="margin: 0"><b>NOTES:</b> Recruited after the Dockside Job. Will not work with anyone who hurts kids.</p>
+</div>
+</div>
+
+<div class="pJobs" style="flex: 1; min-width: 0; flex-direction: column; padding: 8px 0 8px 10px; gap: 4px">
+<div style="flex: none; display: flex; align-items: center; gap: 8px; padding-right: 10px">
+<span style="font-family: 'Special Elite', monospace; font-size: 14px">9 JOBS · 6 UNSPENT</span>
+<button type="button" title="Spend unspent Jobs on a new Specialty, Talent, Signature Asset, or a step up" style="margin-left: auto; height: 22px; padding: 0 8px; background: #1a2123; color: #d8d5c6; border: 2px solid #000; border-radius: 3px; font-size: 12px; font-weight: 700; letter-spacing: .1em; cursor: pointer">TRAIN UP</button><button type="button" title="Log a finished Job: name, payout and the split" style="height: 22px; padding: 0 8px; background: transparent; color: #1a2123; border: 2px solid #1a2123; border-radius: 3px; font-size: 12px; font-weight: 700; letter-spacing: .1em; cursor: pointer">+ LOG</button>
+</div>
+<div style="flex: none; display: flex; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .12em; color: #5d6866; border-bottom: 2px solid #1a2123; padding-bottom: 2px; margin-right: 18px"><span style="flex: 1">JOB</span><span style="width: 30px; text-align: right" title="Money steps she got from this Job">$</span><span style="width: 56px; text-align: right" title="One callback per Job per session">CALLBACK</span><span style="width: 20px"></span></div>
+<div class="scroll paper" style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding-right: 6px">
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; color: #1a2123; cursor: pointer">The Dockside Job</span>
+<span style="display: none; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+2</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="true" style="display: flex; width: 18px; height: 18px; padding: 0; background: #1a2123; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; color: #1a2123; cursor: pointer">The Charity Gala Job</span>
+<span style="display: none; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+3</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="false" style="display: flex; width: 18px; height: 18px; padding: 0; background: transparent; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: line-through; color: #6f7774; cursor: pointer">The Tow-Truck Job</span>
+<span style="display: inline-block; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+1</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="false" style="display: none; width: 18px; height: 18px; padding: 0; background: transparent; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: line-through; color: #6f7774; cursor: pointer">The Museum Night Job</span>
+<span style="display: inline-block; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+2</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="false" style="display: none; width: 18px; height: 18px; padding: 0; background: transparent; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; color: #1a2123; cursor: pointer">The Pawnshop Job</span>
+<span style="display: none; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+1</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="false" style="display: flex; width: 18px; height: 18px; padding: 0; background: transparent; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; color: #1a2123; cursor: pointer">The Ferry Terminal Job</span>
+<span style="display: none; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+2</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="false" style="display: flex; width: 18px; height: 18px; padding: 0; background: transparent; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: line-through; color: #6f7774; cursor: pointer">The Casino Comp Job</span>
+<span style="display: inline-block; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+4</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="false" style="display: none; width: 18px; height: 18px; padding: 0; background: transparent; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; color: #1a2123; cursor: pointer">The Radio Tower Job</span>
+<span style="display: none; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+1</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="false" style="display: flex; width: 18px; height: 18px; padding: 0; background: transparent; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 8px; height: 26px; border-bottom: 1px dashed rgba(26,33,35,.45)">
+<span title="Click to open the Job: payout and how it was split" style="flex: 1; min-width: 0; font-family: 'Special Elite', monospace; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; color: #1a2123; cursor: pointer">The Bail Bondsman Job</span>
+<span style="display: none; transform: rotate(-6deg); border: 2px solid #b3202a; color: #b3202a; font-family: 'Anton', sans-serif; font-size: 11px; letter-spacing: .08em; padding: 0 4px; line-height: 1.3">SPENT</span>
+<span style="width: 30px; text-align: right; font-family: 'Anton', sans-serif; font-size: 14px; color: #2c6e33">+2</span>
+<span style="width: 56px; display: flex; justify-content: flex-end; padding-right: 16px"><button type="button" aria-label="Callback used this session" aria-pressed="false" style="display: flex; width: 18px; height: 18px; padding: 0; background: transparent; border: 2px solid #1a2123; border-radius: 2px; cursor: pointer; align-items: center; justify-content: center; color: #d8d5c6"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none"><path d="M5 12l5 5 9-10"></path></svg></button></span>
+<button type="button" class="xb paper" aria-label="Delete job"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- Dice pool tray -->
+<div style="height: 76px; flex: none; position: relative; z-index: 2; background: rgba(0,0,0,.9); border-top: 4px solid #d8c24a; display: flex; align-items: center; gap: 8px; padding: 0 20px">
+<div style="margin-right: 2px; line-height: 1.1"><div class="hud" style="font-family: 'Anton', sans-serif; font-size: 21px; color: #fff">POOL</div><div style="font-size: 13px; font-weight: 600; letter-spacing: .06em; color: #9fb2ad; white-space: nowrap">4 dice · keep 2</div></div>
+
+<span style="display: none; font-family: 'Anton', sans-serif; font-size: 22px; color: #f2efe4">+</span>
+<span style="display: none; width: 2px; height: 36px; background: rgba(255,255,255,.2); margin: 0 2px"></span>
+<button type="button" title="Required: one Attribute." style="display: flex; align-items: center; gap: 7px; height: 50px; padding: 0 6px 0 12px; background: rgba(255,255,255,.08); color: #e9f0ed; text-align: left; border: 2px solid #f2efe4; border-radius: 999px; cursor: pointer">
+<span style="line-height: 1.05"><span style="display: block; font-size: 12px; letter-spacing: .12em; color: #9fb2ad">ATTRIBUTE</span><span style="display: block; font-size: 17px; font-weight: 700; letter-spacing: .03em; white-space: nowrap">AGILITY</span></span>
+<span style="position: relative; width: 36px; height: 36px; flex: none"><svg viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="#4ba3f5" stroke="#4ba3f5" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 11px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 14px; color: #10150f">10</span></span>
+</button>
+
+<span style="display: inline; font-family: 'Anton', sans-serif; font-size: 22px; color: #f2efe4">+</span>
+<span style="display: none; width: 2px; height: 36px; background: rgba(255,255,255,.2); margin: 0 2px"></span>
+<button type="button" title="Required: one Role." style="display: flex; align-items: center; gap: 7px; height: 50px; padding: 0 6px 0 12px; background: rgba(255,255,255,.08); color: #e9f0ed; text-align: left; border: 2px solid #f2efe4; border-radius: 999px; cursor: pointer">
+<span style="line-height: 1.05"><span style="display: block; font-size: 12px; letter-spacing: .12em; color: #9fb2ad">ROLE</span><span style="display: block; font-size: 17px; font-weight: 700; letter-spacing: .03em; white-space: nowrap">THIEF</span></span>
+<span style="position: relative; width: 36px; height: 36px; flex: none"><svg viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,38 77,92 23,92 8,38" fill="#4ba3f5" stroke="#4ba3f5" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 11px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 14px; color: #10150f">10</span></span>
+</button>
+
+<span style="display: none; font-family: 'Anton', sans-serif; font-size: 22px; color: #f2efe4">+</span>
+<span style="display: inline-block; width: 2px; height: 36px; background: rgba(255,255,255,.2); margin: 0 2px"></span>
+<button type="button" title="Optional. Click to remove." style="display: flex; align-items: center; gap: 7px; height: 50px; padding: 0 6px 0 12px; background: rgba(255,255,255,.08); color: #e9f0ed; text-align: left; border: 2px dashed #f2efe4; border-radius: 999px; cursor: pointer">
+<span style="line-height: 1.05"><span style="display: block; font-size: 12px; letter-spacing: .12em; color: #9fb2ad">SPECIALTY</span><span style="display: block; font-size: 17px; font-weight: 700; letter-spacing: .03em; white-space: nowrap">SAFECRACKING</span></span>
+<span style="position: relative; width: 36px; height: 36px; flex: none"><svg viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="14,14 86,14 86,86 14,86" fill="#f2a03d" stroke="#f2a03d" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 9px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 17px; color: #10150f">6</span></span>
+</button>
+
+<span style="display: none; font-family: 'Anton', sans-serif; font-size: 22px; color: #f2efe4">+</span>
+<span style="display: none; width: 2px; height: 36px; background: rgba(255,255,255,.2); margin: 0 2px"></span>
+<button type="button" title="Optional. Click to swap d8 / d4 or remove." style="display: flex; align-items: center; gap: 7px; height: 50px; padding: 0 6px 0 12px; background: rgba(255,255,255,.08); color: #e9f0ed; text-align: left; border: 2px dashed #f2efe4; border-radius: 999px; cursor: pointer">
+<span style="line-height: 1.05"><span style="display: block; font-size: 12px; letter-spacing: .12em; color: #9fb2ad">DISTINCTION</span><span style="display: block; font-size: 17px; font-weight: 700; letter-spacing: .03em; white-space: nowrap">OLD DOCKS LOYALTY</span></span>
+<span style="position: relative; width: 36px; height: 36px; flex: none"><svg viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="position: absolute; left: 0; top: 0"><polygon points="50,8 92,50 50,92 8,50" fill="#4fbf6b" stroke="#4fbf6b" stroke-width="6" stroke-linejoin="round"></polygon></svg><span style="position: absolute; left: 0; right: 0; top: 9px; text-align: center; line-height: 1; font-family: 'Anton', sans-serif; font-size: 17px; color: #10150f">8</span></span>
+</button>
+
+<button type="button" title="Add any other die that applies: a Talent effect, a scene or location Trait, a die handed over by a crewmate." style="height: 50px; padding: 0 12px; background: transparent; color: #9fb2ad; border: 2px dashed #9fb2ad; border-radius: 999px; font-size: 14px; font-weight: 700; letter-spacing: .1em; cursor: pointer; white-space: nowrap">+ DIE</button>
+<span style="flex: 1"></span>
+<button type="button" style="flex: none; height: 50px; padding: 0 20px; background: #66d96b; color: #06210f; border: 3px solid #000; border-radius: 6px; box-shadow: 0 4px 0 #000; font-family: 'Anton', sans-serif; font-size: 26px; letter-spacing: .06em; cursor: pointer">ROLL</button>
+</div>
+
+</div>
+</div>
+
+</body></html>

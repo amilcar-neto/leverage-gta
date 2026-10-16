@@ -1,0 +1,50 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-16T18:40:00Z"
+  },
+  "title": "Leverage RPG \u2013 Rap Sheet (Liberty City)",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1180,
+      "h": 950,
+      "title": "Rap Sheet \u00b7 Liberty City (GTA III)"
+    },
+    "PlotHud.dc.html": {
+      "x": 0,
+      "y": 1010,
+      "w": 1180,
+      "h": 380,
+      "title": "HUD \u00b7 top right, anchored to the sidebar"
+    },
+    "TalentItem.dc.html": {
+      "x": 1240,
+      "y": 0,
+      "w": 520,
+      "h": 520,
+      "title": "Talent \u00b7 opens as an item window"
+    },
+    "RollCard.dc.html": {
+      "x": 1240,
+      "y": 580,
+      "w": 360,
+      "h": 430,
+      "title": "Roll card \u00b7 chat message"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "TalentItem.dc.html",
+    "RollCard.dc.html",
+    "PlotHud.dc.html"
+  ],
+  "notes": {},
+  "designSystems": []
+}
