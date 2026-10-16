@@ -1,1 +1,7 @@
-/* Leverage: Liberty City — style index. Component files are added by the build tasks (docs/04-arquitetura.md). */
+/* Leverage: Liberty City - style index (docs/04-arquitetura.md).
+   Everything lives in the "system" cascade layer (see docs/research/foundry-v14-essentials.md 2.8) and is
+   scoped to .leverage-gta. Add new component files below as the build tasks create them. */
+@layer system;
+@import url("fonts.css") layer(system);
+@import url("tokens.css") layer(system);
+@import url("base.css") layer(system);

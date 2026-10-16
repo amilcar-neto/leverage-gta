@@ -44,7 +44,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 2 — Componentes visuais base
 
-- [ ] **T-201 Fontes e tokens.** `fonts/` (Anton, Barlow Condensed, Special Elite + licenças OFL), `styles/tokens.css`,
+- [x] **T-201 Fontes e tokens.** `fonts/` (Anton, Barlow Condensed, Special Elite + licenças OFL), `styles/tokens.css`,
   `styles/base.css` com as classes de `docs/04` (painel, cabeçalho de painel, linha plana/acesa, chip, papel, X,
   scroll). *Dep:* T-101.
 - [ ] **T-202 Componente de dado.** `applications/components/die.mjs` + helper `{{lvDie}}` + CSS: formas, cores,

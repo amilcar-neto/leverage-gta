@@ -1,0 +1,133 @@
+/* Reusable components (docs/04-arquitetura.md). Every selector is scoped to .leverage-gta. */
+
+.leverage-gta {
+  font-family: var(--lv-font-ui);
+  font-weight: 500;
+  color: var(--lv-ink);
+}
+
+/* Panel: dark body with a yellow title strip */
+.leverage-gta .lv-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--lv-panel);
+  border: var(--lv-border);
+  box-shadow: var(--lv-shadow);
+}
+
+.leverage-gta .lv-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: none;
+  padding: 2px 8px;
+  background: var(--lv-header);
+  color: #000;
+  border-bottom: var(--lv-border);
+  font-family: var(--lv-font-display);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.leverage-gta .lv-panel-head > :first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Row: flat at rest, lit border when it is in the Pool */
+.leverage-gta .lv-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--lv-line);
+  background: transparent;
+}
+
+.leverage-gta .lv-row:is([data-action], .is-clickable) {
+  cursor: pointer;
+}
+
+.leverage-gta .lv-row:is([data-action], .is-clickable):hover {
+  border-color: rgba(242, 239, 228, 0.3);
+}
+
+.leverage-gta .lv-row.is-pooled {
+  border-color: var(--lv-select);
+  background: rgba(242, 239, 228, 0.06);
+  box-shadow: 0 0 6px rgba(242, 239, 228, 0.35);
+}
+
+/* Chip: Pool tray item. Solid white = required, dashed = optional */
+.leverage-gta .lv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 2px 8px;
+  border: 2px solid var(--lv-select);
+  border-radius: 4px;
+  color: var(--lv-ink);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-chip.is-optional {
+  border-style: dashed;
+}
+
+/* Paper: typewriter documents (Booking Card, folder) */
+.leverage-gta .lv-paper {
+  background: var(--lv-paper);
+  color: var(--lv-paper-ink);
+  border: 2px solid #000;
+  font-family: var(--lv-font-paper);
+  box-shadow: 3px 3px 0 #000;
+}
+
+/* Delete button: discreet, red on hover */
+.leverage-gta .lv-xbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lv-muted);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-xbtn:hover,
+.leverage-gta .lv-xbtn:focus-visible {
+  color: var(--lv-stamp);
+}
+
+/* Scroll area: gutter always reserved so the bar never covers an X or a die */
+.leverage-gta .lv-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding-inline-end: var(--lv-gutter);
+  scrollbar-width: thin;
+  scrollbar-color: var(--lv-muted) transparent;
+}
+
+/* Long text: ellipsis (put the full text in a tooltip) */
+.leverage-gta .lv-ellipsis {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
