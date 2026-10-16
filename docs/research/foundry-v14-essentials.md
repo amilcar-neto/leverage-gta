@@ -195,11 +195,11 @@ Não existe mais `activeTool` no estilo v11. Se quisermos grupo próprio, `contr
 - **CSS fora de qualquer layer vence todas as layers** (regra do CSS). Se não usarmos `@layer`, nosso CSS ganha de tudo do núcleo
   e não precisamos de hacks de especificidade, mas também deixamos de "perder" para `exceptions`.
   O dnd5e só declara `@layer variables { ... }` para as variáveis e escreve o resto sem layer, com escopo `.dnd5e2`.
-- **Recomendação para nós:** declarar no início do `styles/leverage-gta.css`
-  `@layer system;` e envolver tokens/base/sheets em `@layer system { @import ... }`? Cuidado: `@import` com `layer()`:
-  `@import url("tokens.css") layer(system);`. Se algo do nosso CSS precisar vencer um estilo do núcleo que está em `applications`,
-  estar em `system` já basta (vem depois). Decisão: usar `layer(system)` para tudo; escopo `.leverage-gta` continua obrigatório.
-  Isso mantém `.window-content` etc. do núcleo sob controle e permite `exceptions` de terceiros vencerem. Registrar em DECISIONS.md.
+- **Recomendação para nós:** `styles/leverage-gta.css` importa os parciais dentro da layer `system`:
+  `@import url("tokens.css") layer(system);` (idem base, sheets, chat, hud, gm). A layer `system` vem depois de `applications`,
+  então ganha do núcleo sem hacks de especificidade, e ainda deixa `modules`/`exceptions` vencerem. O núcleo já declara a ordem
+  das layers antes (a folha dele carrega primeiro), então só citar `system` não a reordena. Escopo `.leverage-gta` continua obrigatório.
+  Registrar em DECISIONS.md e conferir no Foundry real (`getComputedStyle` de um elemento da ficha) que nada do núcleo sobrepõe.
 - `all: revert-layer` (usado no dnd5e) desfaz a camada atual, útil para zerar estilo de `h1` do núcleo dentro de uma ficha.
 - Variáveis do núcleo (tema claro/escuro) ficam em `:root`/`.themed`; nossas cores ficam em `tokens.css` sob `.leverage-gta`.
 

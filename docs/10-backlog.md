@@ -12,7 +12,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   `test` (node --test tests/unit), `test:foundry` (Playwright), `deploy` (`tools/release.mjs --dev` + `tools/deploy.mjs`), `release`.
   ESLint (config plana, regras recomendadas + `no-unused-vars`). Playwright como devDependency (instale só o Chromium).
   *Pronto:* `npm run lint` e `npm test` rodam (mesmo sem testes ainda).
-- [ ] **T-002 Pesquisa da v14 e do dnd5e.** `researcher` produz `docs/research/foundry-v14-essentials.md` (manifesto,
+- [x] **T-002 Pesquisa da v14 e do dnd5e.** `researcher` produz `docs/research/foundry-v14-essentials.md` (manifesto,
   DataModel, ActorSheetV2/ItemSheetV2 + HandlebarsApplicationMixin, registro de fichas, settings e menus, controles de
   cena, hooks de chat, CSS layers, sockets, o que mudou da v13 para a v14) e `docs/research/dnd5e-patterns.md`
   (estrutura, `getRollData`, macros arrastáveis, migração, packs). *Par:* T-003.
