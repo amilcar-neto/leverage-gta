@@ -1,0 +1,25 @@
+<header class="lv-header">
+  <div class="lv-mugshot{{#if hasPhoto}} has-photo{{/if}}">
+    {{#if hasPhoto}}<img class="lv-mugshot-img" src="{{actor.img}}" alt="{{actor.name}}">{{else}}<span class="lv-mugshot-empty">{{localize "LEVERAGE.Sheet.Header.noPhoto"}}</span>{{/if}}
+  </div>
+  <div class="lv-identity">
+    <div class="lv-name lv-hud lv-ellipsis" title="{{actor.name}}">{{actor.name}}</div>
+    <div class="lv-alias lv-hud lv-ellipsis">{{#if system.alias}}{{localize "LEVERAGE.Sheet.Header.aka"}} “{{system.alias}}”{{/if}}</div>
+    <div class="lv-vitals">
+      <span class="lv-vital lv-vital--life" title="{{localize 'LEVERAGE.Sheet.Header.life'}}">
+        <i class="fa-solid fa-heart lv-vital-icon"></i><span class="lv-vital-value lv-hud">{{system.life.value}}</span><span class="lv-vital-max">/{{system.life.max}}</span>
+      </span>
+      <span class="lv-vital lv-vital--vest" title="{{localize 'LEVERAGE.Sheet.Header.vest'}}{{#if vestLabel}} · {{localize vestLabel}}{{/if}}">
+        <i class="fa-solid fa-shield lv-vital-icon"></i><span class="lv-vital-value lv-hud">{{system.vest.value}}</span><span class="lv-vital-max">/{{system.vest.max}}</span>
+      </span>
+    </div>
+  </div>
+  <div class="lv-booking lv-paper">
+    <div class="lv-booking-head"><span>{{localize "LEVERAGE.Sheet.Header.bookingCard"}}</span><span class="lv-booking-number">{{#if system.booking.number}}Nº {{system.booking.number}}{{/if}}</span></div>
+    <dl class="lv-booking-grid">
+      {{#each booking}}{{#unless (eq key "number")}}
+      <div class="lv-booking-field lv-booking-field--{{key}}"><dt>{{localize label}}</dt><dd class="lv-ellipsis" title="{{value}}">{{value}}</dd></div>
+      {{/unless}}{{/each}}
+    </dl>
+  </div>
+</header>

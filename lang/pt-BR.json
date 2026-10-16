@@ -329,6 +329,52 @@
       }
     },
     "SystemTitle": "Leverage: Liberty City",
+    "Sheet": {
+      "Crew": "Ficha da Equipe",
+      "Seal": {
+        "locked": "Traços travados",
+        "lockedHint": "O mestre travou os Traços. Attributes, Roles, Distinctions, Talents e Specialties não podem mudar agora.",
+        "unlocked": "Edição ligada",
+        "unlockedHint": "O mestre liberou a edição. Os Traços podem ser adicionados, removidos e reclassificados."
+      },
+      "Header": {
+        "noPhoto": "Sem foto",
+        "aka": "vulgo",
+        "life": "Vida",
+        "vest": "Colete",
+        "bookingCard": "Booking Card"
+      },
+      "Panel": {
+        "attributes": "Attributes",
+        "roles": "Roles",
+        "distinctions": "Distinctions",
+        "talents": "Talents",
+        "specialties": "Specialties",
+        "assets": "Assets"
+      },
+      "Hint": {
+        "clickToOpen": "clique para abrir",
+        "specialtyDie": "+d6 com a sua Role",
+        "when": "Quando"
+      },
+      "Empty": {
+        "distinctions": "Nenhuma Distinction ainda. O mestre pode destravar a ficha para adicionar.",
+        "talents": "Nenhum Talent ainda. O mestre pode destravar a ficha para adicionar.",
+        "specialties": "Nenhuma Specialty ainda. O mestre pode destravar a ficha para adicionar.",
+        "assets": "Nenhum Asset ainda.",
+        "background": "Nenhum background escrito ainda."
+      },
+      "Folder": {
+        "background": "Background",
+        "jobs": "Jobs"
+      },
+      "Tray": {
+        "pool": "Pool",
+        "count": "{count} dados · mantém {keep}",
+        "empty": "Escolha um Traço para montar a Pool.",
+        "roll": "Rolar"
+      }
+    },
     "Vest": {
       "heavy": "Pesado",
       "light": "Leve",

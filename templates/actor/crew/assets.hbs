@@ -1,0 +1,13 @@
+<section class="lv-panel lv-assets">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.assets"}}</span><span class="lv-panel-hint">{{assets.length}}</span></h2>
+  <div class="lv-panel-body lv-list lv-scroll">
+    {{#each assets}}
+    <div class="lv-row lv-row--stack" data-item-id="{{id}}">
+      <span class="lv-row-main"><span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span><span class="lv-row-note lv-ellipsis" title="{{system.note}}">{{system.note}}</span></span>
+      <span class="lv-ladder">{{lvDie system.die die=system.die size=32}}</span>
+    </div>
+    {{else}}
+    <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.assets"}}</p>
+    {{/each}}
+  </div>
+</section>

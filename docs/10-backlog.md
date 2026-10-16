@@ -54,7 +54,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 3 — Ficha da Equipe
 
-- [ ] **T-301 Estrutura da ficha.** `applications/actor/base-actor-sheet.mjs` e `crew-sheet.mjs` com PARTS, tamanhos,
+- [x] **T-301 Estrutura da ficha.** `applications/actor/base-actor-sheet.mjs` e `crew-sheet.mjs` com PARTS, tamanhos,
   barra de título com selo da trava, registro da ficha. Templates vazios por parte. *Dep:* T-104, T-202.
 - [ ] **T-302 Cabeçalho.** Mugshot (parede + régua + imagem ancorada embaixo, FilePicker), nome, apelido, Vida e
   Colete (popover), Booking Card com digital (SVG em `assets/`). *Dep:* T-301. *Par:* T-303, T-304, T-305.

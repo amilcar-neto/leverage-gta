@@ -1,0 +1,8 @@
+<footer class="lv-tray"{{#unless isOwner}} hidden{{/unless}}>
+  <div class="lv-tray-title">
+    <span class="lv-tray-label">{{localize "LEVERAGE.Sheet.Tray.pool"}}</span>
+    <span class="lv-tray-count">{{localize "LEVERAGE.Sheet.Tray.count" count=pool.count keep=pool.keep}}</span>
+  </div>
+  <div class="lv-tray-chips"><span class="lv-empty">{{localize "LEVERAGE.Sheet.Tray.empty"}}</span></div>
+  <button type="button" class="lv-roll-btn" disabled>{{localize "LEVERAGE.Sheet.Tray.roll"}}</button>
+</footer>

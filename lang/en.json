@@ -329,6 +329,52 @@
       }
     },
     "SystemTitle": "Leverage: Liberty City",
+    "Sheet": {
+      "Crew": "Crew sheet",
+      "Seal": {
+        "locked": "Traits locked",
+        "lockedHint": "The GM locked traits. Attributes, Roles, Distinctions, Talents and Specialties cannot change right now.",
+        "unlocked": "Editing on",
+        "unlockedHint": "The GM allowed edits. Traits can be added, removed and re-rated."
+      },
+      "Header": {
+        "noPhoto": "No photo",
+        "aka": "a.k.a.",
+        "life": "Life",
+        "vest": "Vest",
+        "bookingCard": "Booking Card"
+      },
+      "Panel": {
+        "attributes": "Attributes",
+        "roles": "Roles",
+        "distinctions": "Distinctions",
+        "talents": "Talents",
+        "specialties": "Specialties",
+        "assets": "Assets"
+      },
+      "Hint": {
+        "clickToOpen": "click to open",
+        "specialtyDie": "+d6 with its Role",
+        "when": "When"
+      },
+      "Empty": {
+        "distinctions": "No Distinctions yet. The GM can unlock the sheet to add one.",
+        "talents": "No talents yet. The GM can unlock the sheet to add one.",
+        "specialties": "No specialties yet. The GM can unlock the sheet to add one.",
+        "assets": "No assets yet.",
+        "background": "No background written yet."
+      },
+      "Folder": {
+        "background": "Background",
+        "jobs": "Jobs"
+      },
+      "Tray": {
+        "pool": "Pool",
+        "count": "{count} dice · keep {keep}",
+        "empty": "Pick a Trait to start a Pool.",
+        "roll": "Roll"
+      }
+    },
     "Vest": {
       "heavy": "Heavy",
       "light": "Light",

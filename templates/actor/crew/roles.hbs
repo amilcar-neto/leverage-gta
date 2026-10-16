@@ -1,0 +1,11 @@
+<section class="lv-panel lv-roles">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.roles"}}</span></h2>
+  <div class="lv-panel-body lv-list">
+    {{#each roles}}
+    <div class="lv-row lv-ladder-row{{#if blank}} is-blank{{/if}}" data-key="{{key}}">
+      <span class="lv-row-name lv-ellipsis">{{localize label}}</span>
+      <span class="lv-ladder">{{#each ladder}}{{lvDie die die=die size=32 muted=muted}}{{/each}}</span>
+    </div>
+    {{/each}}
+  </div>
+</section>

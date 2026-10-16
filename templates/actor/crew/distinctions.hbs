@@ -1,0 +1,13 @@
+<section class="lv-panel lv-distinctions">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.distinctions"}}</span><span class="lv-panel-hint">{{distinctions.length}} / {{maxDistinctions}}</span></h2>
+  <div class="lv-panel-body lv-list">
+    {{#each distinctions}}
+    <div class="lv-row lv-row--stack" data-item-id="{{id}}">
+      <span class="lv-row-main"><span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span><span class="lv-row-note lv-ellipsis" title="{{system.note}}">{{system.note}}</span></span>
+      <span class="lv-ladder">{{lvDie 8 die=8 size=32}}{{lvDie 4 die=4 size=32}}</span>
+    </div>
+    {{else}}
+    <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.distinctions"}}</p>
+    {{/each}}
+  </div>
+</section>

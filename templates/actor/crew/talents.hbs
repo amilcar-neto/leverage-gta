@@ -1,0 +1,12 @@
+<section class="lv-panel lv-talents">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.talents"}}</span><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.clickToOpen"}}</span></h2>
+  <div class="lv-panel-body lv-list lv-scroll">
+    {{#each talents}}
+    <div class="lv-row lv-row--stack" data-item-id="{{id}}">
+      <span class="lv-row-main"><span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span><span class="lv-row-note lv-ellipsis" title="{{system.activation}}">{{#if system.activation}}<b class="lv-when">{{localize "LEVERAGE.Sheet.Hint.when"}}</b> {{system.activation}}{{/if}}</span></span>
+    </div>
+    {{else}}
+    <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.talents"}}</p>
+    {{/each}}
+  </div>
+</section>

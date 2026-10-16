@@ -1,0 +1,11 @@
+<section class="lv-folder">
+  <div class="lv-folder-tabs" role="tablist">
+    <span class="lv-folder-tab is-active" role="tab" aria-selected="true">{{localize "LEVERAGE.Sheet.Folder.background"}}</span>
+    <span class="lv-folder-tab" role="tab" aria-selected="false">{{localize "LEVERAGE.Sheet.Folder.jobs"}}</span>
+  </div>
+  <div class="lv-folder-page lv-paper">
+    <div class="lv-folder-text lv-scroll">
+      {{#if background}}{{{background}}}{{else}}<p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.background"}}</p>{{/if}}
+    </div>
+  </div>
+</section>
