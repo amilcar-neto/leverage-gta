@@ -1,1 +1,1 @@
-IN PROGRESS: R-F2 — revisão da Fase 2
+IN PROGRESS: correções do R-F2 e T-301 (estrutura da ficha) em paralelo

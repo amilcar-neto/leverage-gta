@@ -50,7 +50,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 - [x] **T-202 Componente de dado.** `applications/components/die.mjs` + helper `{{lvDie}}` + CSS: formas, cores,
   estados (`value`, `muted`, `deep`, `kept`, `one`, `money`), número dentro, tamanhos 28/32/36/38/50. Página de
   teste visual (`tests/foundry/die-gallery`) com todos os estados, comparada a `docs/03`. *Dep:* T-201.
-- [ ] **R-F2 Revisão de fase.**
+- [x] **R-F2 Revisão de fase.**
 
 ## Fase 3 — Ficha da Equipe
 
