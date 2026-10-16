@@ -4,6 +4,7 @@
  */
 import { LEVERAGE } from "../../config.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
+import { partActions, preparePartContexts } from "./parts/_module.mjs";
 
 const TEMPLATES = `systems/${LEVERAGE.systemId}/templates/actor/crew`;
 
@@ -40,6 +41,7 @@ export class CrewSheet extends LeverageActorSheet {
   /** @override */
   static DEFAULT_OPTIONS = {
     classes: ["crew-sheet"],
+    actions: partActions,
     position: { width: 1180, height: 950 }
   };
 
@@ -86,7 +88,7 @@ export class CrewSheet extends LeverageActorSheet {
     const { actor, system } = context;
     const jobs = itemsOf(actor, "job");
     const hasPhoto = Boolean(actor.img) && !actor.img.includes("mystery-man");
-    return Object.assign(context, {
+    Object.assign(context, {
       hasPhoto,
       attributes: traitRows(system.attributes, LEVERAGE.attributes),
       roles: traitRows(system.roles, LEVERAGE.roles),
@@ -106,5 +108,7 @@ export class CrewSheet extends LeverageActorSheet {
       }),
       pool: { count: 0, keep: LEVERAGE.keepDefault }
     });
+    await preparePartContexts(context, this);
+    return context;
   }
 }
