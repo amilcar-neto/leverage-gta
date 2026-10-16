@@ -8,7 +8,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 0 — Preparação
 
-- [ ] **T-001 Repositório e ferramentas.** `git init`, commit inicial do pacote. `package.json` com scripts `lint`,
+- [x] **T-001 Repositório e ferramentas.** `git init`, commit inicial do pacote. `package.json` com scripts `lint`,
   `test` (node --test tests/unit), `test:foundry` (Playwright), `deploy` (`tools/release.mjs --dev` + `tools/deploy.mjs`), `release`.
   ESLint (config plana, regras recomendadas + `no-unused-vars`). Playwright como devDependency (instale só o Chromium).
   *Pronto:* `npm run lint` e `npm test` rodam (mesmo sem testes ainda).
