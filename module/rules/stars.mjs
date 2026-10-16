@@ -3,24 +3,6 @@
  */
 import { LEVERAGE } from "../config.mjs";
 
-/** Heat removed by each money die spent on silence (docs/02). */
-const STARS_PER_SILENCE_DIE = 2;
-
-/**
- * Waiting/disguise rules (not stored on the scale; silence and bail are). Cities without an entry
- * behave like Liberty City.
- */
-const LOWERING = Object.freeze({
-  carcer: { waitScenes: 1, disguise: "clear" },
-  venturas: { waitScenes: 2, disguise: 1, disguiseBoth: 2 },
-  liberty: { waitScenes: null, disguise: 1 }
-});
-
-/** Lowering rule for a city id (falls back to Liberty City). */
-function loweringFor(cityId) {
-  return LOWERING[cityId] ?? LOWERING.liberty;
-}
-
 /**
  * Clamps to an integer in the star range.
  * @param {number} n
@@ -54,7 +36,9 @@ export function lowerStars(stars, by = 1) {
  * Finds a city scale by id; unknown ids fall back to the default city.
  * @param {string} cityId
  * @param {object[]} [scales] defaults to `LEVERAGE.defaultCityScales` (settings may override).
- * @returns {{id: string, name: string, levels: number[][]}}
+ * @returns {{id: string, name: string, levels: number[][], silence?: number[]|null, bail?: boolean,
+ *   wait?: number|null, disguise?: number|"clear", disguiseBoth?: number|null, starsPerSilenceDie?: number,
+ *   sketchBlocksDisguise?: boolean}} the scale object itself (not a copy).
  */
 export function getCityScale(cityId, scales = LEVERAGE.defaultCityScales) {
   return scales.find((c) => c.id === cityId)
@@ -88,32 +72,34 @@ export function mainDie(cityId, stars, scales) {
 }
 
 /**
- * Stars after waiting out of sight. Carcer: -1 per scene; Las Venturas: -1 per 2 scenes;
- * Liberty City: only between sessions (-1).
+ * Stars after waiting out of sight, from the scale's `wait` (scenes per star; null = only between sessions, -1).
  * @param {string} cityId
  * @param {number} stars
  * @param {{scenes?: number, betweenSessions?: boolean}} [wait]
+ * @param {object[]} [scales]
  * @returns {number}
  */
-export function starsAfterWaiting(cityId, stars, { scenes = 0, betweenSessions = false } = {}) {
-  const rule = loweringFor(cityId);
-  if (rule.waitScenes === null) return lowerStars(stars, betweenSessions ? 1 : 0);
-  return lowerStars(stars, Math.floor(Math.max(0, scenes) / rule.waitScenes));
+export function starsAfterWaiting(cityId, stars, { scenes = 0, betweenSessions = false } = {}, scales) {
+  const perStar = getCityScale(cityId, scales).wait;
+  if (!perStar) return lowerStars(stars, betweenSessions ? 1 : 0);
+  return lowerStars(stars, Math.floor(Math.max(0, scenes) / perStar));
 }
 
 /**
- * Stars after a successful disguise roll. Carcer clears; Las Venturas -1 (-2 changing car and clothes);
- * Liberty -1, and only if nobody has a composite sketch (`sketched` true -> no change).
+ * Stars after a successful disguise roll, from the scale: `disguise` ("clear" or a number), `disguiseBoth`
+ * (changing car and clothes) and `sketchBlocksDisguise` (a composite sketch -> no change).
  * @param {string} cityId
  * @param {number} stars
  * @param {{carAndClothes?: boolean, sketched?: boolean}} [opts]
+ * @param {object[]} [scales]
  * @returns {number}
  */
-export function starsAfterDisguise(cityId, stars, { carAndClothes = false, sketched = false } = {}) {
-  const rule = loweringFor(cityId);
-  if (rule.disguise === "clear") return LEVERAGE.stars.min;
-  if (cityId === "venturas") return lowerStars(stars, carAndClothes ? rule.disguiseBoth : rule.disguise);
-  return sketched ? clampStars(stars) : lowerStars(stars, rule.disguise);
+export function starsAfterDisguise(cityId, stars, { carAndClothes = false, sketched = false } = {}, scales) {
+  const scale = getCityScale(cityId, scales);
+  const { disguise = 1, disguiseBoth = null } = scale;
+  if (disguise === "clear") return LEVERAGE.stars.min;
+  if (sketched && scale.sketchBlocksDisguise) return clampStars(stars);
+  return lowerStars(stars, carAndClothes && disguiseBoth != null ? disguiseBoth : disguise);
 }
 
 /**
@@ -124,8 +110,9 @@ export function starsAfterDisguise(cityId, stars, { carAndClothes = false, sketc
  * @returns {{stars: number, dice: number[]}|null}
  */
 export function bribeRule(cityId, scales) {
-  const dice = getCityScale(cityId, scales).silence;
-  return Array.isArray(dice) && dice.length ? { stars: STARS_PER_SILENCE_DIE, dice: [...dice] } : null;
+  const scale = getCityScale(cityId, scales);
+  const dice = scale.silence;
+  return Array.isArray(dice) && dice.length ? { stars: scale.starsPerSilenceDie ?? LEVERAGE.stars.starsPerSilenceDie, dice: [...dice] } : null;
 }
 
 /**

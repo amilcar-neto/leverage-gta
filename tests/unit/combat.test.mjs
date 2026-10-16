@@ -8,6 +8,7 @@ test("max life is 10 + Vitality die", () => {
   assert.equal(maxLife(4), 14);
   assert.equal(maxLife(8), 18);
   assert.equal(maxLife(12), 22);
+  assert.equal(maxLife(8, 12), 20);
   assert.throws(() => maxLife(7), RangeError);
 });
 
@@ -59,8 +60,8 @@ test("rest scene heals half max, capped", () => {
   assert.equal(restScene(1, 15), 8);
 });
 
-test("Wasted for non-police", () => {
-  const r = resolveDown({ police: false, max: 18 });
+test("Wasted when not taken down by the police; hospital price comes from the caller", () => {
+  const r = resolveDown({ byPolice: false, max: 18, hospitalSteps: 1, bailSteps: 2 });
   assert.equal(r.kind, "wasted");
   assert.equal(r.costSteps, 1);
   assert.equal(r.life, 18);
@@ -70,11 +71,11 @@ test("Wasted for non-police", () => {
 });
 
 test("Busted for police; bail not allowed in Liberty City", () => {
-  const r = resolveDown({ police: true, max: 16 });
+  const r = resolveDown({ byPolice: true, max: 16, hospitalSteps: 1, bailSteps: 2 });
   assert.equal(r.kind, "busted");
   assert.equal(r.bailCostSteps, 2);
   assert.equal(r.rescueRaisesStars, 1);
-  assert.equal(resolveDown({ police: true, max: 16, bailAllowed: false }).bailCostSteps, null);
+  assert.equal(resolveDown({ byPolice: true, max: 16, hospitalSteps: 1, bailSteps: 2, bailAllowed: false }).bailCostSteps, null);
 });
 
 test("give in", () => {

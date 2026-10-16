@@ -1,26 +1,18 @@
 /**
- * LeverageActor: Actor document with Plot Point and Money helpers, the Distinction cap and the Trait lock
- * (docs/04 "Trava", docs/03). The lock is enforced here, not only in the UI.
+ * LeverageActor: Actor document with Plot Point and Money helpers, the Trait lock on `system` dice and the
+ * Distinction cap for batch creation (docs/04 "Trava", docs/03). Per-Item vetoes live in LeverageItem
+ * (`_preCreate`/`_preUpdate`/`_preDelete` returning `false`), because the Actor's descendant hooks cannot cancel.
  */
-import { LEVERAGE, SYSTEM_ID } from "../config.mjs";
+import { LEVERAGE } from "../config.mjs";
+import { readSetting } from "../data/fields.mjs";
+import { maxLife } from "../rules/combat.mjs";
 import * as money from "../rules/money.mjs";
-
-/** Item types that are Traits (locked by `traitsLocked`). Assets and Jobs are always free. */
-export const TRAIT_ITEM_TYPES = Object.freeze(["distinction", "talent", "specialty"]);
-
-/** Top-level `system` keys that are Traits (die values edited on the sheet). */
-const TRAIT_SYSTEM_KEYS = Object.freeze(["attributes", "roles"]);
-
-/** Shows a localized warning, if the UI exists. */
-function warn(key, data) {
-  const i18n = game.i18n;
-  ui.notifications?.warn(data ? i18n.format(key, data) : i18n.localize(key));
-}
+import { canEditTraits, checkItemBatch, warnBatchFailure, warnUser } from "./guards.mjs";
 
 export class LeverageActor extends Actor {
   /** Whether the world setting currently locks Traits. */
   static get traitsLocked() {
-    return game.settings.get(SYSTEM_ID, "traitsLocked");
+    return Boolean(readSetting("traitsLocked", false));
   }
 
   /**
@@ -29,7 +21,7 @@ export class LeverageActor extends Actor {
    * @returns {boolean}
    */
   static canEditTraits(user = game.user) {
-    return Boolean(user?.isGM) || !LeverageActor.traitsLocked;
+    return canEditTraits(user);
   }
 
   /** @override */
@@ -38,11 +30,12 @@ export class LeverageActor extends Actor {
   }
 
   /**
-   * Adds (or removes, when negative) Plot Points; never below 0.
+   * Adds (or removes, when negative) Plot Points; never below 0. Crew only; other types are left untouched.
    * @param {number} n
    * @returns {Promise<LeverageActor>}
    */
   async addPlotPoints(n) {
+    if (this.type !== "crew") return this;
     const current = this.system.plotPoints?.value ?? 0;
     const next = Math.max(0, current + Math.trunc(Number(n) || 0));
     return this.update({ "system.plotPoints.value": next });
@@ -55,19 +48,24 @@ export class LeverageActor extends Actor {
   get money() {
     const steps = () => this.system.money?.steps ?? 0;
     const save = (value) => this.update({ "system.money.steps": value });
+    /** A price is steps (number) or a list of dice such as `[12, 6]`. */
+    const toSteps = (price) => (Array.isArray(price) ? money.priceToSteps(price) : price);
     return {
       steps: steps(),
       dice: money.stepsToDice(steps()),
-      canAfford: (price) => money.canAfford(steps(), price),
+      canAfford: (price) => money.canAfford(steps(), toSteps(price)),
       /** Adds steps (capped); resolves to the steps that actually fit. */
       add: async (amount) => {
         const { steps: next, gained } = money.earn(steps(), amount);
         await save(next);
         return gained;
       },
-      /** Pays a price in steps; resolves to `{ok, steps, shortBy}`. Nothing is spent when short. */
+      /**
+       * Pays a price given in steps (number) or as a dice list (e.g. `[12, 6]`, converted with
+       * `priceToSteps`). Resolves to `{ok, steps, shortBy}`. Nothing is spent when short.
+       */
       pay: async (price) => {
-        const result = money.pay(steps(), price);
+        const result = money.pay(steps(), toSteps(price));
         if (result.ok) await save(result.steps);
         return result;
       },
@@ -80,53 +78,49 @@ export class LeverageActor extends Actor {
   }
 
   /** @override */
+  async _preCreate(data, options, user) {
+    const allowed = await super._preCreate(data, options, user);
+    if (allowed === false) return false;
+    if (this.type === "crew") this.#seedCrewStart(data);
+  }
+
+  /** Fills starting Money and Life from the world settings when the creation data does not set them. */
+  #seedCrewStart(data) {
+    const update = {};
+    if (!foundry.utils.hasProperty(data, "system.money.steps")) {
+      update["system.money.steps"] = money.clampSteps(readSetting("moneyStart", LEVERAGE.money.startSteps));
+    }
+    if (!foundry.utils.hasProperty(data, "system.life.value")) {
+      const base = readSetting("lifeBase", LEVERAGE.lifeBase);
+      update["system.life.value"] = maxLife(this.system.attributes.vitality.die, base);
+    }
+    if (Object.keys(update).length) this.updateSource(update);
+  }
+
+  /** @override */
   async _preUpdate(changes, options, user) {
     const allowed = await super._preUpdate(changes, options, user);
     if (allowed === false) return false;
-    const touchesTraits = TRAIT_SYSTEM_KEYS.some((key) => foundry.utils.hasProperty(changes, `system.${key}`));
-    if (touchesTraits && !LeverageActor.canEditTraits(user)) {
-      warn("LEVERAGE.Warn.traitsLocked");
+    const touchesTraits = LEVERAGE.traitSystemKeys.some((key) => foundry.utils.hasProperty(changes, `system.${key}`));
+    if (touchesTraits && !canEditTraits(user)) {
+      warnUser(user, "LEVERAGE.Warn.traitsLocked");
       return false;
     }
   }
 
-  /** @override */
-  async _preCreateDescendantDocuments(parent, collection, data, options, userId) {
-    const allowed = await super._preCreateDescendantDocuments(parent, collection, data, options, userId);
-    if (allowed === false || collection !== "items" || parent !== this) return allowed;
-    const traits = data.filter((d) => TRAIT_ITEM_TYPES.includes(d.type));
-    if (traits.length && !LeverageActor.canEditTraits(game.users.get(userId))) {
-      warn("LEVERAGE.Warn.traitsLocked");
-      return false;
+  /**
+   * Batch creation of embedded Items: checks the lock and counts the whole batch against the Distinction cap
+   * before anything is sent (LeverageItem#_preCreate only sees one item at a time). The GM always passes.
+   * @override
+   */
+  async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {
+    if (embeddedName === "Item" && data.length > 1) {
+      const check = checkItemBatch(this, data, game.user);
+      if (!check.ok) {
+        warnBatchFailure(game.user, check.reason);
+        return [];
+      }
     }
-    const incoming = data.filter((d) => d.type === "distinction").length;
-    const existing = this.items.filter((i) => i.type === "distinction").length;
-    if (incoming && existing + incoming > LEVERAGE.maxDistinctions) {
-      warn("LEVERAGE.Warn.maxDistinctions", { max: LEVERAGE.maxDistinctions });
-      return false;
-    }
-  }
-
-  /** @override */
-  async _preUpdateDescendantDocuments(parent, collection, changes, options, userId) {
-    const allowed = await super._preUpdateDescendantDocuments(parent, collection, changes, options, userId);
-    if (allowed === false || collection !== "items" || parent !== this) return allowed;
-    const ids = changes.map((c) => c._id);
-    const touched = ids.some((id) => TRAIT_ITEM_TYPES.includes(this.items.get(id)?.type));
-    if (touched && !LeverageActor.canEditTraits(game.users.get(userId))) {
-      warn("LEVERAGE.Warn.traitsLocked");
-      return false;
-    }
-  }
-
-  /** @override */
-  async _preDeleteDescendantDocuments(parent, collection, ids, options, userId) {
-    const allowed = await super._preDeleteDescendantDocuments(parent, collection, ids, options, userId);
-    if (allowed === false || collection !== "items" || parent !== this) return allowed;
-    const touched = ids.some((id) => TRAIT_ITEM_TYPES.includes(this.items.get(id)?.type));
-    if (touched && !LeverageActor.canEditTraits(game.users.get(userId))) {
-      warn("LEVERAGE.Warn.traitsLocked");
-      return false;
-    }
+    return super.createEmbeddedDocuments(embeddedName, data, operation);
   }
 }

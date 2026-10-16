@@ -1,5 +1,6 @@
 import { LEVERAGE } from "../../config.mjs";
-import { DieField, attributesField, rolesField, traitsField, deriveRoleRanks, snapshot } from "../fields.mjs";
+import { deriveRoleRanks } from "../../rules/roles.mjs";
+import { DieField, attributesField, rolesField, traitsField, snapshot } from "../fields.mjs";
 
 const { NumberField, SchemaField, StringField, BooleanField, HTMLField } = foundry.data.fields;
 

@@ -25,22 +25,22 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 1 — Esqueleto e dados
 
-- [ ] **T-101 Manifesto e entrada.** `system.json` completo (documentTypes, primaryTokenAttribute `life`, idiomas,
+- [x] **T-101 Manifesto e entrada.** `system.json` completo (documentTypes, primaryTokenAttribute `life`, idiomas,
   estilos, fontes empacotadas), `leverage-gta.mjs` com init/setup/ready, `module/config.mjs` (dados, cores, formas,
   traços, tipos, escalas e preços padrão), logger. *Dep:* T-002.
-- [ ] **T-102 Campos e modelos de Actor.** `module/data/fields.mjs` (DieField), `data/actor/crew.mjs`, `npc.mjs`,
+- [x] **T-102 Campos e modelos de Actor.** `module/data/fields.mjs` (DieField), `data/actor/crew.mjs`, `npc.mjs`,
   `location.mjs` conforme `docs/05`, com `prepareDerivedData` (Vida máx., Roles primária/secundária, dados de Grana).
   *Dep:* T-101. *Par:* T-103.
-- [ ] **T-103 Modelos de Item.** `data/item/distinction.mjs`, `talent.mjs`, `specialty.mjs`, `asset.mjs`, `job.mjs`.
+- [x] **T-103 Modelos de Item.** `data/item/distinction.mjs`, `talent.mjs`, `specialty.mjs`, `asset.mjs`, `job.mjs`.
   *Dep:* T-101. *Par:* T-102 (um builder por 2–3 tipos).
-- [ ] **T-104 Documents.** `documents/actor.mjs` (getRollData, helpers: `addPlotPoints`, `money.*`, limite de 3
+- [x] **T-104 Documents.** `documents/actor.mjs` (getRollData, helpers: `addPlotPoints`, `money.*`, limite de 3
   Distinctions, sugestão d8/d6 de Signature Asset), `documents/item.mjs`. *Dep:* T-102, T-103.
-- [ ] **T-105 Lógica pura + testes.** `dice/die.mjs`, `dice/pool-roll.mjs` (mantidos, 1s, PP extras),
+- [x] **T-105 Lógica pura + testes.** `dice/die.mjs`, `dice/pool-roll.mjs` (mantidos, 1s, PP extras),
   `rules/money.mjs` (degraus ↔ dados, preços, pagar, emprestar), `rules/stars.mjs`, `rules/combat.mjs`, com testes
   em `tests/unit/` cobrindo casos de borda. *Dep:* T-101. *Par:* T-102, T-103.
-- [ ] **T-106 Configurações.** `module/settings.mjs` com todas as chaves de `docs/09` (menus podem ser stubs aqui).
+- [x] **T-106 Configurações.** `module/settings.mjs` com todas as chaves de `docs/09` (menus podem ser stubs aqui).
   *Dep:* T-101.
-- [ ] **R-F1 Revisão de fase** (`integration-reviewer`).
+- [x] **R-F1 Revisão de fase** (`integration-reviewer`).
 
 ## Fase 2 — Componentes visuais base
 

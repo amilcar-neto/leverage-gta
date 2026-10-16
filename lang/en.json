@@ -254,7 +254,7 @@
         "Hint": "Current Job and its Complications (hidden; used by the Job Tracker).",
         "Name": "Active Job"
       },
-      "cityScales": {
+      "cityScalesMenu": {
         "Hint": "Edit the cities and the Pool for each star level.",
         "Label": "Edit city scales",
         "Name": "City scales"
@@ -309,12 +309,12 @@
           "Name": "Keep Pool after roll"
         }
       },
-      "prices": {
+      "pricesMenu": {
         "Hint": "Edit the prices in dice.",
         "Label": "Edit price list",
         "Name": "Price list"
       },
-      "trainingCosts": {
+      "trainingCostsMenu": {
         "Hint": "Cost in Jobs of each advancement.",
         "Label": "Edit training costs",
         "Name": "Training costs"

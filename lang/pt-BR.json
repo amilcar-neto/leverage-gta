@@ -254,7 +254,7 @@
         "Hint": "Job atual e suas Complications (escondido; usado pelo Rastreador do Job).",
         "Name": "Job ativo"
       },
-      "cityScales": {
+      "cityScalesMenu": {
         "Hint": "Edita as cidades e a Pool de cada estrela.",
         "Label": "Editar escalas das cidades",
         "Name": "Escalas das cidades"
@@ -309,12 +309,12 @@
           "Name": "Manter a Pool depois de rolar"
         }
       },
-      "prices": {
+      "pricesMenu": {
         "Hint": "Edita os preços em dados.",
         "Label": "Editar tabela de preços",
         "Name": "Tabela de preços"
       },
-      "trainingCosts": {
+      "trainingCostsMenu": {
         "Hint": "Custo em Jobs de cada evolução.",
         "Label": "Editar custos de treinamento",
         "Name": "Custos de treinamento"

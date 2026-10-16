@@ -70,3 +70,15 @@ test("bail reads the scale", () => {
   assert.equal(bailAllowed("x", [{ id: "x", levels: [[4]], bail: true }]), true);
   assert.equal(bailAllowed("x", [{ id: "x", levels: [[4]] }]), false);
 });
+
+test("custom cities use their own waiting, disguise and silence values", () => {
+  const custom = [{
+    id: "x", name: "X", levels: [[4]], wait: 3, disguise: 2, disguiseBoth: 3, starsPerSilenceDie: 1,
+    sketchBlocksDisguise: true, silence: [6]
+  }];
+  assert.equal(starsAfterWaiting("x", 5, { scenes: 7 }, custom), 3);
+  assert.equal(starsAfterDisguise("x", 5, {}, custom), 3);
+  assert.equal(starsAfterDisguise("x", 5, { carAndClothes: true }, custom), 2);
+  assert.equal(starsAfterDisguise("x", 5, { sketched: true }, custom), 5);
+  assert.deepEqual(bribeRule("x", custom), { stars: 1, dice: [6] });
+});

@@ -5,20 +5,14 @@
 import { LEVERAGE } from "../config.mjs";
 import { assertDie } from "../dice/die.mjs";
 
-/** Winning by this much or more is an Extraordinary Success. */
-export const EXTRAORDINARY_MARGIN = 5;
-
-/** Money steps charged by Wasted (hospital d4) and Busted bail (d6). */
-const WASTED_COST_STEPS = LEVERAGE.money.stepsPerDie[4];
-const BAIL_COST_STEPS = LEVERAGE.money.stepsPerDie[6];
-
 /**
- * Max Life = 10 + Vitality die size.
+ * Max Life = base + Vitality die size.
  * @param {number} vitalityDie
+ * @param {number} [base] defaults to `LEVERAGE.lifeBase` (the world setting may override).
  * @returns {number}
  */
-export function maxLife(vitalityDie) {
-  return LEVERAGE.lifeBase + assertDie(vitalityDie);
+export function maxLife(vitalityDie, base = LEVERAGE.lifeBase) {
+  return base + assertDie(vitalityDie);
 }
 
 /**
@@ -29,7 +23,7 @@ export function maxLife(vitalityDie) {
  */
 export function contestResult(playerTotal, opposedTotal) {
   const margin = playerTotal - opposedTotal;
-  return { margin, passed: margin > 0, extraordinary: margin >= EXTRAORDINARY_MARGIN };
+  return { margin, passed: margin > 0, extraordinary: margin >= LEVERAGE.extraordinaryMargin };
 }
 
 /**
@@ -79,26 +73,28 @@ export function restScene(life, max) {
 }
 
 /**
- * What happens when Life hits 0. Non-police: Wasted (hospital d4 = 1 step). Police: Busted (bail d6 = 2 steps
- * at the end of the scene unless the city has no bail, or rescue, which raises 1 star). Both: full Life,
- * +1 Plot Point, weapon Assets of the scene lost.
+ * What happens when Life hits 0. Taken down by anyone but the police: Wasted (pays the hospital). Taken down by
+ * the police: Busted (pays bail at the end of the scene unless the city has no bail, or rescue, which raises
+ * 1 star). Both: full Life, +1 Plot Point, weapon Assets of the scene lost.
  * @param {object} p
- * @param {boolean} p.police whether the character is police (Busted instead of Wasted)
+ * @param {boolean} p.byPolice whether the police took the character down (Busted instead of Wasted)
  * @param {number} p.max max Life
+ * @param {number} p.hospitalSteps hospital price in money steps (from the price list)
+ * @param {number} p.bailSteps bail price in money steps (from the price list)
  * @param {boolean} [p.bailAllowed=true] the city scale's `bail` flag (see `bailAllowed` in stars.mjs)
  * @returns {{kind: "wasted"|"busted", life: number, plotPoints: number, loseWeaponAssets: boolean,
  *   costSteps: number, bailCostSteps: number|null, rescueRaisesStars: number}}
  */
-export function resolveDown({ police, max, bailAllowed = true }) {
-  const base = { life: max, plotPoints: 1, loseWeaponAssets: true };
-  if (!police) {
-    return { ...base, kind: "wasted", costSteps: WASTED_COST_STEPS, bailCostSteps: null, rescueRaisesStars: 0 };
+export function resolveDown({ byPolice, max, hospitalSteps, bailSteps, bailAllowed = true }) {
+  const base = { life: max, plotPoints: LEVERAGE.policeBustPlotPoints, loseWeaponAssets: true };
+  if (!byPolice) {
+    return { ...base, kind: "wasted", costSteps: hospitalSteps, bailCostSteps: null, rescueRaisesStars: 0 };
   }
   return {
     ...base,
     kind: "busted",
     costSteps: 0,
-    bailCostSteps: bailAllowed ? BAIL_COST_STEPS : null,
+    bailCostSteps: bailAllowed ? bailSteps : null,
     rescueRaisesStars: 1
   };
 }
@@ -108,7 +104,7 @@ export function resolveDown({ police, max, bailAllowed = true }) {
  * @returns {{complicationDie: number, plotPoints: number}}
  */
 export function giveIn() {
-  return { complicationDie: 6, plotPoints: 1 };
+  return { complicationDie: LEVERAGE.complicationDie, plotPoints: LEVERAGE.policeBustPlotPoints };
 }
 
 /**
@@ -120,7 +116,7 @@ export function giveIn() {
  */
 export function thugsDown(margin, remaining) {
   if (margin <= 0 || remaining <= 0) return 0;
-  const extraordinary = margin >= EXTRAORDINARY_MARGIN;
+  const extraordinary = margin >= LEVERAGE.extraordinaryMargin;
   if (remaining === 1) return extraordinary ? 1 : 0;
   return Math.min(remaining, extraordinary ? 2 : 1);
 }

@@ -1,6 +1,8 @@
 import { LEVERAGE } from "../../config.mjs";
+import { maxLife } from "../../rules/combat.mjs";
 import { stepsToDice } from "../../rules/money.mjs";
-import { attributesField, rolesField, deriveRoleRanks, snapshot } from "../fields.mjs";
+import { deriveRoleRanks } from "../../rules/roles.mjs";
+import { attributesField, rolesField, readSetting, snapshot } from "../fields.mjs";
 
 const { NumberField, SchemaField, StringField, HTMLField } = foundry.data.fields;
 
@@ -9,7 +11,10 @@ const count = (initial = 0, extra = {}) => new NumberField({ required: true, int
 
 /**
  * Data model of the `crew` Actor (player character, docs/05).
- * Derived (not meaningfully saved): `life.max`, `roles.*.primary/secondary`, `money.dice`.
+ * Derived (recomputed on every prepare, never trust the saved value): `life.max`, `vest.max`,
+ * `roles.*.primary/secondary`, `money.dice`.
+ * Limitation: `life.value` and `vest.value` are clamped to their maximum only in memory (derived); the saved value
+ * is untouched, so lowering Vitality or the vest kind does not rewrite the stored current value.
  */
 export class CrewData extends foundry.abstract.TypeDataModel {
   /** @override */
@@ -18,10 +23,10 @@ export class CrewData extends foundry.abstract.TypeDataModel {
   /** @override */
   static defineSchema() {
     const booking = Object.fromEntries(
-      ["number", "height", "weight", "age", "eyes", "hair", "build", "marks"]
+      LEVERAGE.bookingFields
         .map((key) => [key, new StringField({ required: true, blank: true, initial: "" })])
     );
-    const startLife = LEVERAGE.lifeBase + 6;
+    const startLife = maxLife(LEVERAGE.defaultDie);
     return {
       alias: new StringField({ required: true, blank: true, initial: "" }),
       attributes: attributesField(),
@@ -46,9 +51,11 @@ export class CrewData extends foundry.abstract.TypeDataModel {
 
   /** @override */
   prepareDerivedData() {
-    const vitality = this.attributes.vitality.die ?? 0;
-    this.life.max = LEVERAGE.lifeBase + vitality;
+    const base = readSetting("lifeBase", LEVERAGE.lifeBase);
+    this.life.max = maxLife(this.attributes.vitality.die, base);
     this.life.value = Math.min(this.life.value, this.life.max);
+    // Vest capacity comes from the kind; `max` stays in the schema so token bars can track it.
+    this.vest.max = LEVERAGE.vestKinds[this.vest.kind]?.points ?? 0;
     this.vest.value = Math.min(this.vest.value, this.vest.max);
     deriveRoleRanks(this.roles);
     this.money.dice = stepsToDice(this.money.steps);

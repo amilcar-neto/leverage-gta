@@ -15,3 +15,6 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - Concluída: T-001 (abef0bb), T-003. T-004 parcial (falta usuário Claude no mundo; ver ISSUES.md)
 
 - T-004 concluída: smoke passou no Foundry real (usuário Gamemaster, sem erros no console).
+
+- Concluídas (Fase 1): T-101, T-102, T-103, T-104, T-105, T-106 e revisão R-F1. Verificado no Foundry real (25 checagens em `npm run test:phase1`, console limpo). Commits: ver `git log`.
+- Próximo: Fase 2 (T-201 fontes/tokens, T-202 componente de dado).

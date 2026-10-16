@@ -2,10 +2,8 @@
  * Pure Pool math (docs/01, docs/08): roll with an injectable rng, drop 1s, keep the two highest,
  * keep extra dice by spending Plot Points. No Foundry dependency.
  */
+import { LEVERAGE } from "../config.mjs";
 import { assertDie } from "./die.mjs";
-
-/** Number of dice kept by default. */
-export const KEEP_DEFAULT = 2;
 
 /**
  * @typedef {object} DieResult
@@ -56,7 +54,7 @@ function byValueDesc(a, b) {
  * @param {number} [keep=2]
  * @returns {PoolOutcome}
  */
-export function evaluatePool(results, extraKept = 0, keep = KEEP_DEFAULT) {
+export function evaluatePool(results, extraKept = 0, keep = LEVERAGE.keepDefault) {
   const ones = results.filter((r) => r.value === 1).map((r) => r.index);
   const eligible = results.filter((r) => r.value !== 1).sort(byValueDesc);
   const slots = Math.max(0, keep + Math.max(0, extraKept));

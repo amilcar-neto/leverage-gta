@@ -33,7 +33,8 @@ const ATTRIBUTES = labelled("LEVERAGE.Attribute",
   ["agility", "alertness", "intelligence", "strength", "vitality", "willpower"]);
 
 /** Role keys, in sheet order (also the tie-break order for primary/secondary Role). */
-const ROLES = labelled("LEVERAGE.Role", ["grifter", "hacker", "hitter", "mastermind", "thief"]);
+const ROLE_KEYS = ["grifter", "hacker", "hitter", "mastermind", "thief"];
+const ROLES = labelled("LEVERAGE.Role", ROLE_KEYS);
 
 /** Asset durations. */
 const ASSET_DURATIONS = labelled("LEVERAGE.Asset", ["signature", "job", "scene"]);
@@ -61,12 +62,28 @@ function deepFreeze(value) {
 /**
  * Default police Pool per star level (index 0 = 1 star) for each city (docs/02).
  * Each level is a list of die sizes. `silence` is the list of Money die sizes that buy -2 of heat per die
- * (`null` = buying silence does not work). `bail` tells whether Busted can be settled with bail.
+ * (`null` = buying silence does not work), each removing `starsPerSilenceDie` stars. `bail` tells whether
+ * Busted can be settled with bail. `wait` is the scenes out of sight per star lowered (`null` = only between
+ * sessions). `disguise` is the stars removed by a disguise roll (`"clear"` = all); `disguiseBoth` is the amount
+ * when changing car and clothes (`null` = same as `disguise`). `sketchBlocksDisguise`: a composite sketch
+ * stops the disguise from working.
  */
 const DEFAULT_CITY_SCALES = deepFreeze([
-  { id: "carcer", name: "Carcer City", levels: [[4, 6], [6, 6], [8, 6], [10, 6], [12, 6]], silence: [6], bail: true },
-  { id: "venturas", name: "Las Venturas", levels: [[6, 6], [8, 6], [10, 6], [12, 6], [12, 12]], silence: [10], bail: true },
-  { id: "liberty", name: "Liberty City", levels: [[8, 6], [10, 6], [12, 6], [12, 12], [12, 12, 8]], silence: null, bail: false }
+  {
+    id: "carcer", name: "Carcer City", levels: [[4, 6], [6, 6], [8, 6], [10, 6], [12, 6]],
+    silence: [6], bail: true, wait: 1, disguise: "clear", disguiseBoth: null, starsPerSilenceDie: 2,
+    sketchBlocksDisguise: false
+  },
+  {
+    id: "venturas", name: "Las Venturas", levels: [[6, 6], [8, 6], [10, 6], [12, 6], [12, 12]],
+    silence: [10], bail: true, wait: 2, disguise: 1, disguiseBoth: 2, starsPerSilenceDie: 2,
+    sketchBlocksDisguise: false
+  },
+  {
+    id: "liberty", name: "Liberty City", levels: [[8, 6], [10, 6], [12, 6], [12, 12], [12, 12, 8]],
+    silence: null, bail: false, wait: null, disguise: 1, disguiseBoth: null, starsPerSilenceDie: 2,
+    sketchBlocksDisguise: true
+  }
 ]);
 
 /**
@@ -129,7 +146,27 @@ export const LEVERAGE = Object.freeze({
   }),
   /** Life rule: max = lifeBase + Vitality die. */
   lifeBase: 10,
-  stars: Object.freeze({ min: 0, max: 5, defaultCity: "liberty" }),
+  stars: Object.freeze({ min: 0, max: 5, defaultCity: "liberty", starsPerSilenceDie: 2 }),
+  /** Winning a contest by this much or more is an Extraordinary Success. */
+  extraordinaryMargin: 5,
+  /** Dice kept from a Pool by default. */
+  keepDefault: 2,
+  /** Role keys plus "open" (a Talent that belongs to no single Role). */
+  talentRoles: Object.freeze([...ROLE_KEYS, "open"]),
+  /** Item types that count as Traits in a Pool. */
+  traitItemTypes: Object.freeze(["distinction", "talent", "specialty"]),
+  /** Actor `system` keys that hold Traits. */
+  traitSystemKeys: Object.freeze(["attributes", "roles"]),
+  /** Booking Card fields, in display order. */
+  bookingFields: Object.freeze(["number", "height", "weight", "age", "eyes", "hair", "build", "marks"]),
+  /** Default die for a new trait. */
+  defaultDie: 6,
+  /** A full die on the money ladder. */
+  fullDie: 12,
+  /** Die of the Complication taken by giving in. */
+  complicationDie: 6,
+  /** Plot Points granted when Life hits 0 (Wasted/Busted) and when giving in. */
+  policeBustPlotPoints: 1,
   /** Plot Points each player receives when a Job starts (world setting `jobStartPlotPoints`). */
   jobStartPlotPoints: 1,
   /** Plot Points a brand-new Crew actor is created with (differs from the per-Job grant above). */

@@ -8,9 +8,9 @@ export class TrainingCostsConfig extends ApplicationV2 {
   /** @override */
   static DEFAULT_OPTIONS = {
     id: "leverage-training-costs-config",
-    classes: ["leverage", "leverage-gm-config"],
+    classes: ["leverage-gta", "leverage-gm-config"],
     tag: "div",
-    window: { title: "LEVERAGE.Settings.trainingCosts.Name", resizable: true },
+    window: { title: "LEVERAGE.Settings.trainingCostsMenu.Name", resizable: true },
     position: { width: 480, height: "auto" }
   };
 

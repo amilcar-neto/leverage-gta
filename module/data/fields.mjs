@@ -18,7 +18,7 @@ export class DieField extends NumberField {
       integer: true,
       choices: [...LEVERAGE.dice],
       nullable: false,
-      initial: options.nullable ? null : 6,
+      initial: options.nullable ? null : LEVERAGE.defaultDie,
       ...options
     }, context);
   }
@@ -58,23 +58,21 @@ export function traitsField() {
   }));
 }
 
-/**
- * Marks the highest Role die as `primary` and the second highest as `secondary` (derived, not saved).
- * Ties are broken by the fixed Role order of `CONFIG.LEVERAGE.roles`. Blank Roles never rank.
- * @param {Record<string, {die: number|null}>} roles `system.roles`; mutated in place.
- */
-export function deriveRoleRanks(roles) {
-  const ranked = Object.keys(LEVERAGE.roles)
-    .map((key, order) => ({ key, order, die: roles[key]?.die }))
-    .filter((r) => r.die)
-    .sort((a, b) => (b.die - a.die) || (a.order - b.order));
-  for (const key of Object.keys(LEVERAGE.roles)) {
-    roles[key].primary = ranked[0]?.key === key;
-    roles[key].secondary = ranked[1]?.key === key;
-  }
-}
-
-/** Shallow-independent copy of a model for `getRollData` (docs/04 "@-references"). */
+/** Deep copy (`deepClone`) of the model's own properties, for `getRollData` (docs/04 "@-references"). */
 export function snapshot(model) {
   return foundry.utils.deepClone({ ...model });
+}
+
+/**
+ * Reads a world setting, falling back when settings are not ready or the key is unregistered.
+ * @param {string} key Setting key in the system namespace.
+ * @param {*} fallback Value used when the read fails or is nullish.
+ * @returns {*}
+ */
+export function readSetting(key, fallback) {
+  try {
+    return game?.settings?.get(LEVERAGE.systemId, key) ?? fallback;
+  } catch {
+    return fallback;
+  }
 }

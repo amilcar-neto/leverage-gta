@@ -6,7 +6,7 @@ import { LEVERAGE } from "../config.mjs";
 import { assertDie } from "../dice/die.mjs";
 
 const { stepsPerDie, maxSteps } = LEVERAGE.money;
-const FULL_DIE = 12;
+const FULL_DIE = LEVERAGE.fullDie;
 const FULL_STEPS = stepsPerDie[FULL_DIE];
 
 /** Die size whose step value is `n` (1..4), or undefined. */

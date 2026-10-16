@@ -8,9 +8,9 @@ export class PriceListConfig extends ApplicationV2 {
   /** @override */
   static DEFAULT_OPTIONS = {
     id: "leverage-price-list-config",
-    classes: ["leverage", "leverage-gm-config"],
+    classes: ["leverage-gta", "leverage-gm-config"],
     tag: "div",
-    window: { title: "LEVERAGE.Settings.prices.Name", resizable: true },
+    window: { title: "LEVERAGE.Settings.pricesMenu.Name", resizable: true },
     position: { width: 480, height: "auto" }
   };
 

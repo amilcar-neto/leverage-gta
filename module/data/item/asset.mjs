@@ -18,7 +18,7 @@ export class AssetData extends foundry.abstract.TypeDataModel {
   /** @inheritdoc */
   static defineSchema() {
     return {
-      die: new DieField({ nullable: false, initial: 6 }),
+      die: new DieField({ nullable: false, initial: LEVERAGE.defaultDie }),
       duration: new StringField({
         required: true, blank: false, choices: Object.keys(LEVERAGE.assetDurations), initial: "scene"
       }),

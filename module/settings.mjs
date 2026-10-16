@@ -24,14 +24,15 @@ function worldBoolean(key, fallback, onChange) {
 /** Registers a visible world Number. */
 function worldNumber(key, fallback) {
   game.settings.register(SYSTEM_ID, key, {
-    ...labels(key), scope: "world", config: true, type: Number, default: fallback
+    ...labels(key), scope: "world", config: true, default: fallback,
+    type: new (fields().NumberField)({ integer: true, min: 0, nullable: false, initial: fallback })
   });
 }
 
 /** Registers a hidden world setting holding structured data. */
 function hiddenWorld(key, type, fallback, onChange) {
   game.settings.register(SYSTEM_ID, key, {
-    ...labels(key), scope: "world", config: false, type, default: fallback, onChange
+    scope: "world", config: false, type, default: fallback, onChange
   });
 }
 
@@ -70,7 +71,7 @@ function registerWorldSettings() {
   hiddenWorld("prices", new (fields().ArrayField)(new (fields().ObjectField)()),
     foundry.utils.deepClone(LEVERAGE.defaultPrices));
   hiddenWorld("trainingCosts", new (fields().ObjectField)(), { ...LEVERAGE.defaultTrainingCosts });
-  hiddenWorld("activeJob", new (fields().ObjectField)(), {}, notify("activeJobChanged"));
+  hiddenWorld("activeJob", new (fields().ObjectField)(), { name: "", complications: [] }, notify("activeJobChanged"));
   game.settings.register(SYSTEM_ID, "systemMigrationVersion", {
     scope: "world", config: false, type: String, default: ""
   });
@@ -88,9 +89,9 @@ function registerClientSettings() {
 }
 
 function registerMenus() {
-  menu("cityScales", CityScalesConfig, "fa-solid fa-city");
-  menu("prices", PriceListConfig, "fa-solid fa-tags");
-  menu("trainingCosts", TrainingCostsConfig, "fa-solid fa-graduation-cap");
+  menu("cityScalesMenu", CityScalesConfig, "fa-solid fa-city");
+  menu("pricesMenu", PriceListConfig, "fa-solid fa-tags");
+  menu("trainingCostsMenu", TrainingCostsConfig, "fa-solid fa-graduation-cap");
 }
 
 /** Registers every system setting and menu. Call from the `init` hook. */

@@ -6,6 +6,7 @@
 import { LEVERAGE, SYSTEM_ID } from "./module/config.mjs";
 import { logger } from "./module/logger.mjs";
 import { registerSettings } from "./module/settings.mjs";
+import { migrateWorld } from "./module/migration.mjs";
 import * as actorModels from "./module/data/actor/_module.mjs";
 import * as itemModels from "./module/data/item/_module.mjs";
 import * as documents from "./module/documents/_module.mjs";
@@ -24,15 +25,20 @@ Hooks.once("init", () => {
   registerSettings();
   CONFIG.Actor.documentClass = documents.LeverageActor;
   CONFIG.Item.documentClass = documents.LeverageItem;
-  // TODO(T-301/T-202): sheet registration, Handlebars helpers and partials.
-  // TODO(T-104): sheet registration, Handlebars helpers and partials.
+  CONFIG.Actor.trackableAttributes = {
+    crew: { bar: ["life", "vest"], value: ["plotPoints.value", "money.steps"] },
+    npc: { bar: ["life", "vest"], value: [] },
+    location: { bar: [], value: [] }
+  };
+  // TODO(T-202/T-301): Handlebars helpers (lvDie), partials and sheet registration.
 });
 
 Hooks.once("setup", () => {
-  // TODO(T-103): game.leverage = api (before macros run).
+  // TODO(T-505): game.leverage = api (before macros run).
 });
 
-Hooks.once("ready", () => {
+Hooks.once("ready", async () => {
   logger.info("Ready");
-  // TODO(T-103): socket listener, migration check.
+  await migrateWorld();
+  // TODO(T-503): socket listener.
 });
