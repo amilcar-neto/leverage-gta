@@ -19,7 +19,7 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - **Gravidade:** importante · **Situação:** aberto
 - **Detalhe:** os documentos citam caminhos de API da v13. Confirmar tudo na v14 (tarefa T-002) antes de codar.
 
-## 2026-10-16 — Smoke test: usuário Gamemaster ocupado (aberto, aguardando dono)
+## 2026-10-16 — Smoke test: usuário Gamemaster ocupado (resolvido: dono deslogou; smoke passou)
 - Deploy via `npm run deploy` funciona (OpenSSH do Windows + chown foundry).
 - O login do Playwright falha porque a opção `Gamemaster` fica desabilitada enquanto o dono está logado nele.
 - Dono precisa: criar um usuário `Claude` (Mestre do Jogo, sem senha) no mundo e avisar; depois trocar `FOUNDRY_USER=Claude` no `.env`.

@@ -18,7 +18,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   (estrutura, `getRollData`, macros arrastáveis, migração, packs). *Par:* T-003.
 - [x] **T-003 Pesquisa complementar.** `researcher`: `docs/research/other-systems.md` (pf2e, Lancer, cortexprime:
   só o que for útil para Pool de dados, HUD e cards) e `docs/research/dice-so-nice.md`. *Par:* T-002.
-- [ ] **T-004 Ambiente de teste.** `tester`: `tests/foundry/smoke.mjs` lê `.env`, abre o Foundry, entra no mundo com
+- [x] **T-004 Ambiente de teste.** `tester`: `tests/foundry/smoke.mjs` lê `.env`, abre o Foundry, entra no mundo com
   o usuário de teste, espera `game.ready`, coleta erros do console, tira print. `npm run deploy` funcionando
   (veja `docs/13`). Se o `.env` não existir, registre em `ISSUES.md` e siga sem testes no Foundry.
   *Dep:* T-001. *Pronto:* um print do mundo carregado em `tests/foundry/screenshots/T-004-world.png`.
