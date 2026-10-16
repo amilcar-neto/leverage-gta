@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+  <defs><clipPath id="fp"><ellipse cx="50" cy="56" rx="40" ry="50"/></clipPath></defs>
+  <g clip-path="url(#fp)" transform="rotate(-9 50 55)" fill="none" stroke="#1d2a2e" stroke-width="2.4" stroke-linecap="round" opacity="0.88">
+    <ellipse cx="50" cy="55" rx="4" ry="6"/>
+    <ellipse cx="50" cy="55" rx="8" ry="11" stroke-dasharray="30 5 20 6"/>
+    <ellipse cx="50" cy="55" rx="12" ry="16" stroke-dasharray="44 5 30 8"/>
+    <ellipse cx="50" cy="55" rx="16" ry="21" stroke-dasharray="60 6 40 9"/>
+    <ellipse cx="50" cy="55" rx="20" ry="26" stroke-dasharray="80 6 44 7"/>
+    <ellipse cx="50" cy="55" rx="24" ry="31" stroke-dasharray="100 7 50 8"/>
+    <ellipse cx="50" cy="55" rx="28" ry="36" stroke-dasharray="120 6 60 10"/>
+    <ellipse cx="50" cy="55" rx="32" ry="41" stroke-dasharray="140 8 70 9"/>
+    <ellipse cx="50" cy="55" rx="36" ry="46" stroke-dasharray="160 6 80 12"/>
+    <ellipse cx="50" cy="55" rx="40" ry="51" stroke-dasharray="180 9 90 10"/>
+  </g>
+</svg>

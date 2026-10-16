@@ -328,9 +328,51 @@
         "Name": "Wanted level"
       }
     },
+    "Chat": {
+      "callbackUsed": "{name} calls back the Job {job}: it counts as one Plot Point spent on this roll.",
+      "trainedUp": "{name} trains up: {option} ({cost} Jobs spent)."
+    },
+    "Dialog": {
+      "Asset": {
+        "title": "New Asset",
+        "name": "Name",
+        "namePlaceholder": "Every Asset needs a name",
+        "duration": "Duration",
+        "durationCost": "{name} ({cost} PP)",
+        "die": "Die",
+        "plotPoints": "You have {value} Plot Points.",
+        "confirm": "Create"
+      },
+      "Delete": {
+        "title": "Delete",
+        "body": "Delete {name}?"
+      },
+      "deleteTrait": {
+        "title": "Delete",
+        "content": "Delete <strong>{name}</strong>? This cannot be undone."
+      },
+      "TrainUp": {
+        "title": "Train up",
+        "unspent": "Unspent Jobs: {n}",
+        "job": "Job",
+        "jobs": "Jobs",
+        "confirm": "Spend",
+        "Option": {
+          "signatureAsset": "Signature Asset",
+          "specialty": "Specialty",
+          "talent": "Talent",
+          "attribute": "Attribute step",
+          "role": "Role step"
+        }
+      }
+    },
     "SystemTitle": "Leverage: Liberty City",
     "Sheet": {
       "Crew": "Crew sheet",
+      "add": "+ Add",
+      "addToPool": "Add to the dice pool",
+      "delete": "Delete",
+      "Add": "+ Add",
       "Seal": {
         "locked": "Traits locked",
         "lockedHint": "The GM locked traits. Attributes, Roles, Distinctions, Talents and Specialties cannot change right now.",
@@ -342,7 +384,78 @@
         "aka": "a.k.a.",
         "life": "Life",
         "vest": "Vest",
-        "bookingCard": "Booking Card"
+        "bookingCard": "Booking Card",
+        "pickPhoto": "Choose photo",
+        "name": "Name",
+        "namePlaceholder": "Name",
+        "alias": "Alias",
+        "aliasPlaceholder": "alias",
+        "decrease": "Decrease",
+        "increase": "Increase",
+        "thumb": "R. Thumb"
+      },
+      "Ladders": {
+        "locked": "Traits are locked by the GM.",
+        "blankHint": "Blank: not in the Pool. Click a die to rate it.",
+        "dieLabel": "{trait}: d{die}"
+      },
+      "Attributes": {
+        "agility": "Balance, reflexes and speed.",
+        "alertness": "Awareness, perception and spotting what is wrong.",
+        "intelligence": "Reasoning, memory and book smarts.",
+        "strength": "Raw physical power.",
+        "vitality": "Health and endurance. Sets your Life.",
+        "willpower": "Mental toughness and nerve."
+      },
+      "Roles": {
+        "grifter": "Cons, lies and fast talk.",
+        "hacker": "Computers, electronics and surveillance.",
+        "hitter": "Fighting, guns and muscle.",
+        "mastermind": "Plans, leadership and reading people.",
+        "thief": "Stealth, locks and getting in and out."
+      },
+      "New": {
+        "distinction": "New Distinction",
+        "talent": "New Talent",
+        "specialty": "New Specialty"
+      },
+      "Distinction": {
+        "helps": "Helps you: add a d8",
+        "hurts": "Works against you: add a d4 and gain 1 Plot Point",
+        "pp": "+1 PP"
+      },
+      "Talent": {
+        "cost": "1 PP",
+        "die": "Add this Talent's die to the Pool"
+      },
+      "Specialty": {
+        "changeRole": "Change Role"
+      },
+      "Assets": {
+        "addHint": "New Asset: Signature (permanent), Job (2 PP) or Scene (1 PP)",
+        "dblclick": "Double-click to open",
+        "delete": "Delete asset",
+        "tip": {
+          "signature": "Permanent. Comes with her to every Job.",
+          "job": "Lasts for this Job.",
+          "scene": "Lasts for this Scene."
+        }
+      },
+      "Jobs": {
+        "summary": "{jobs} JOBS · {unspent} UNSPENT",
+        "trainUp": "Train up",
+        "trainUpHint": "Spend unspent Jobs on a new Specialty, Talent, Signature Asset, or a step up",
+        "log": "+ Log",
+        "logHint": "Log a finished Job: name, payout and the split",
+        "newJob": "New Job",
+        "colJob": "Job",
+        "colShareHint": "Money steps she got from this Job",
+        "colCallback": "Callback",
+        "colCallbackHint": "One callback per Job per session",
+        "openHint": "click to open the Job",
+        "spent": "Spent",
+        "callbackLabel": "Callback used this session",
+        "delete": "Delete job"
       },
       "Panel": {
         "attributes": "Attributes",
@@ -362,11 +475,14 @@
         "talents": "No talents yet. The GM can unlock the sheet to add one.",
         "specialties": "No specialties yet. The GM can unlock the sheet to add one.",
         "assets": "No assets yet.",
-        "background": "No background written yet."
+        "background": "No background written yet.",
+        "jobs": "No Jobs logged yet."
       },
       "Folder": {
         "background": "Background",
-        "jobs": "Jobs"
+        "jobs": "Jobs",
+        "edit": "Edit",
+        "save": "Save"
       },
       "Tray": {
         "pool": "Pool",
@@ -383,7 +499,9 @@
     },
     "Warn": {
       "traitsLocked": "Traits are locked by the GM.",
-      "maxDistinctions": "A character can have at most {max} Distinctions."
+      "maxDistinctions": "A character can have at most {max} Distinctions.",
+      "notEnoughPlotPoints": "Not enough Plot Points: it costs {cost} and you have {have}.",
+      "noUnspentJobs": "No unspent Jobs to spend."
     }
   }
 }

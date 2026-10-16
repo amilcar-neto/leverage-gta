@@ -1,0 +1,39 @@
+/* Attributes and Roles (docs/06): rows of five 32px dice. Rows share the column height, no dead space. */
+.leverage-gta.crew-sheet .lv-col--left .lv-attributes { flex: 6 1 0; }
+.leverage-gta.crew-sheet .lv-col--left .lv-roles { flex: 5 1 0; }
+
+.leverage-gta.crew-sheet .lv-attributes .lv-list,
+.leverage-gta.crew-sheet .lv-roles .lv-list {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+.leverage-gta.crew-sheet .lv-ladder-row {
+  flex: 1 1 0;
+  min-height: 42px;
+}
+
+/* Name as a plain-looking button (Pool toggle) */
+.leverage-gta.crew-sheet .lv-name-btn {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.leverage-gta.crew-sheet .lv-name-btn:focus-visible {
+  outline: 2px solid var(--lv-select);
+  outline-offset: 2px;
+}
+
+.leverage-gta.crew-sheet .lv-ladder-row.is-blank .lv-row-name { cursor: default; }
+
+/* Locked or read-only dice are spans: default cursor, no hover feedback */
+.leverage-gta.crew-sheet .lv-ladder span.lv-die { cursor: default; }

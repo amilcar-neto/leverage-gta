@@ -24,3 +24,8 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - O login do Playwright falha porque a opção `Gamemaster` fica desabilitada enquanto o dono está logado nele.
 - Dono precisa: criar um usuário `Claude` (Mestre do Jogo, sem senha) no mundo e avisar; depois trocar `FOUNDRY_USER=Claude` no `.env`.
 - Até lá: seguir com testes de unidade e revisão de código; repetir o smoke ao fim de cada fase.
+
+## I-005 - Custos de Training Up sao provisorios (T-305)
+- **Gravidade:** media - **Situacao:** aberto (ligado a I-002)
+- **Detalhe:** o dialogo TRAIN UP le `trainingCosts` (padrao em `LEVERAGE.defaultTrainingCosts`: Signature Asset 1, Specialty 1, Talent 1, Attribute 2, Role 2). So o Signature Asset esta confirmado no livro. O dialogo so gasta os Jobs (marca `spent`, os mais antigos primeiro) e avisa no chat; o item novo (Specialty, Talent...) e criado depois na ficha, destravada. Attribute/Role: ajustar o dado a mao.
+- **Dono:** conferir a tabela no PDF e ajustar o menu de custos.

@@ -1,0 +1,161 @@
+/* Crew sheet — Distinctions, Talents, Specialties (T-304). Scoped to .leverage-gta. */
+
+/* Header tools: hint + "+ ADD" */
+.leverage-gta .lv-panel-tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.leverage-gta .lv-addbtn {
+  display: flex;
+  align-items: center;
+  height: 22px;
+  margin: 0;
+  padding: 0 8px;
+  background: var(--lv-outline);
+  color: var(--lv-header);
+  border: 2px solid #000;
+  border-radius: 3px;
+  font-family: var(--lv-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-addbtn:hover,
+.leverage-gta .lv-addbtn:focus-visible { filter: brightness(1.3); }
+
+/* Text buttons that look like plain text */
+.leverage-gta .lv-link {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: start;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+/* Dice that go to the Pool: no chrome around the die */
+.leverage-gta .lv-pool-btn {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--lv-header);
+  cursor: pointer;
+}
+
+.leverage-gta .lv-pool-btn:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 1px; }
+
+/* Role / cost tags */
+.leverage-gta .lv-tag {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 18px;
+  padding: 0 7px;
+  background: var(--lv-header);
+  color: var(--lv-outline);
+  border: 2px solid #000;
+  border-radius: 999px;
+  font-family: var(--lv-font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leverage-gta button.lv-tag { margin: 0; cursor: pointer; }
+.leverage-gta button.lv-tag:hover,
+.leverage-gta button.lv-tag:focus-visible { filter: brightness(1.12); }
+
+.leverage-gta .lv-tags {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+/* Rows: first line (name + controls) and a note line below */
+.leverage-gta .lv-row-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.leverage-gta .lv-row-line .lv-row-name,
+.leverage-gta .lv-row-main > .lv-row-line { flex: 1 1 0; }
+
+.leverage-gta .lv-row--dist {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding-block: 4px 6px;
+}
+
+.leverage-gta .lv-row--dist .lv-row-name { font-size: 18px; }
+.leverage-gta .lv-row--dist .lv-row-note { display: block; }
+
+.leverage-gta .lv-dist-pp {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-row--talent { cursor: pointer; }
+.leverage-gta .lv-row--talent .lv-row-main { gap: 2px; }
+
+/* Specialties: a row is name + tag + X inside half the panel */
+.leverage-gta .lv-specialties .lv-row { padding-block: 6px; }
+.leverage-gta .lv-specialties .lv-row-name { flex: 1 1 0; }
+
+/* Role menu (Specialty tag) */
+.leverage-gta .lv-role-menu {
+  position: absolute;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+  padding: 4px;
+  background: var(--lv-panel);
+  border: var(--lv-border);
+  box-shadow: var(--lv-shadow);
+}
+
+.leverage-gta .lv-role-menu-item {
+  margin: 0;
+  padding: 4px 10px;
+  background: none;
+  border: 0;
+  border-radius: 3px;
+  color: var(--lv-ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: start;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-role-menu-item:hover,
+.leverage-gta .lv-role-menu-item:focus-visible { background: rgba(255, 255, 255, 0.1); }
+.leverage-gta .lv-role-menu-item.is-current { color: var(--lv-header); }

@@ -21,19 +21,6 @@ const COLUMNS = Object.freeze({
   right: ["assets", "folder"]
 });
 
-/** Rows of a die ladder: one entry per die size, the current one is not muted. */
-function buildLadder(current) {
-  return LEVERAGE.dice.map((die) => ({ die, muted: die !== current }));
-}
-
-/** Rows for Attributes or Roles from a `{key: {die}}` map and the config labels. */
-function traitRows(values, defs) {
-  return Object.keys(defs).map((key) => {
-    const die = values[key]?.die ?? null;
-    return { key, label: defs[key].label, die, blank: die === null, ladder: buildLadder(die) };
-  });
-}
-
 /** Simple item list for a part, sorted like the sidebar. */
 const itemsOf = (actor, type) => actor.itemTypes[type].slice().sort((a, b) => a.sort - b.sort);
 
@@ -90,8 +77,6 @@ export class CrewSheet extends LeverageActorSheet {
     const hasPhoto = Boolean(actor.img) && !actor.img.includes("mystery-man");
     Object.assign(context, {
       hasPhoto,
-      attributes: traitRows(system.attributes, LEVERAGE.attributes),
-      roles: traitRows(system.roles, LEVERAGE.roles),
       distinctions: itemsOf(actor, "distinction"),
       maxDistinctions: LEVERAGE.maxDistinctions,
       talents: itemsOf(actor, "talent"),

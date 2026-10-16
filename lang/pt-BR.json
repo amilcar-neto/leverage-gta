@@ -328,9 +328,51 @@
         "Name": "Nível de procurado"
       }
     },
+    "Chat": {
+      "callbackUsed": "{name} chama de volta o Job {job}: conta como um Plot Point gasto nesta rolagem.",
+      "trainedUp": "{name} evolui: {option} ({cost} Jobs gastos)."
+    },
+    "Dialog": {
+      "Asset": {
+        "title": "Novo Asset",
+        "name": "Nome",
+        "namePlaceholder": "Todo Asset precisa de um nome",
+        "duration": "Duração",
+        "durationCost": "{name} ({cost} PP)",
+        "die": "Dado",
+        "plotPoints": "Você tem {value} Plot Points.",
+        "confirm": "Criar"
+      },
+      "Delete": {
+        "title": "Excluir",
+        "body": "Excluir {name}?"
+      },
+      "deleteTrait": {
+        "title": "Excluir",
+        "content": "Excluir <strong>{name}</strong>? Não tem volta."
+      },
+      "TrainUp": {
+        "title": "Train up",
+        "unspent": "Jobs sem gastar: {n}",
+        "job": "Job",
+        "jobs": "Jobs",
+        "confirm": "Gastar",
+        "Option": {
+          "signatureAsset": "Signature Asset",
+          "specialty": "Specialty",
+          "talent": "Talent",
+          "attribute": "Degrau de Attribute",
+          "role": "Degrau de Role"
+        }
+      }
+    },
     "SystemTitle": "Leverage: Liberty City",
     "Sheet": {
       "Crew": "Ficha da Equipe",
+      "add": "+ Adicionar",
+      "addToPool": "Adicionar à Pool",
+      "delete": "Excluir",
+      "Add": "+ Adicionar",
       "Seal": {
         "locked": "Traços travados",
         "lockedHint": "O mestre travou os Traços. Attributes, Roles, Distinctions, Talents e Specialties não podem mudar agora.",
@@ -342,7 +384,78 @@
         "aka": "vulgo",
         "life": "Vida",
         "vest": "Colete",
-        "bookingCard": "Booking Card"
+        "bookingCard": "Booking Card",
+        "pickPhoto": "Escolher foto",
+        "name": "Nome",
+        "namePlaceholder": "Nome",
+        "alias": "Apelido",
+        "aliasPlaceholder": "apelido",
+        "decrease": "Diminuir",
+        "increase": "Aumentar",
+        "thumb": "R. Thumb"
+      },
+      "Ladders": {
+        "locked": "Os Traços estão travados pelo mestre.",
+        "blankHint": "Vazio: fora da Pool. Clique em um dado para classificar.",
+        "dieLabel": "{trait}: d{die}"
+      },
+      "Attributes": {
+        "agility": "Equilíbrio, reflexos e velocidade.",
+        "alertness": "Atenção, percepção e notar o que está errado.",
+        "intelligence": "Raciocínio, memória e conhecimento.",
+        "strength": "Força física bruta.",
+        "vitality": "Saúde e resistência. Define sua Vida.",
+        "willpower": "Firmeza mental e sangue frio."
+      },
+      "Roles": {
+        "grifter": "Golpes, mentiras e lábia.",
+        "hacker": "Computadores, eletrônica e vigilância.",
+        "hitter": "Briga, armas e força bruta.",
+        "mastermind": "Planos, liderança e ler pessoas.",
+        "thief": "Furtividade, fechaduras e entrar e sair."
+      },
+      "New": {
+        "distinction": "Nova Distinction",
+        "talent": "Novo Talent",
+        "specialty": "Nova Specialty"
+      },
+      "Distinction": {
+        "helps": "Ajuda você: adiciona um d8",
+        "hurts": "Atua contra você: adiciona um d4 e ganha 1 Plot Point",
+        "pp": "+1 PP"
+      },
+      "Talent": {
+        "cost": "1 PP",
+        "die": "Adiciona o dado deste Talent à Pool"
+      },
+      "Specialty": {
+        "changeRole": "Trocar Role"
+      },
+      "Assets": {
+        "addHint": "Novo Asset: Signature (permanente), Job (2 PP) ou Cena (1 PP)",
+        "dblclick": "Clique duplo para abrir",
+        "delete": "Excluir asset",
+        "tip": {
+          "signature": "Permanente. Vai com o personagem em todo Job.",
+          "job": "Dura este Job.",
+          "scene": "Dura esta Cena."
+        }
+      },
+      "Jobs": {
+        "summary": "{jobs} JOBS · {unspent} SEM GASTAR",
+        "trainUp": "Train up",
+        "trainUpHint": "Gaste os Jobs não gastos em uma nova Specialty, Talent, Signature Asset ou um degrau de evolução",
+        "log": "+ Registrar",
+        "logHint": "Registra um Job concluído: nome, rendimento e a divisão",
+        "newJob": "Novo Job",
+        "colJob": "Job",
+        "colShareHint": "Degraus de Grana que o personagem recebeu deste Job",
+        "colCallback": "Callback",
+        "colCallbackHint": "Um Callback por Job por sessão",
+        "openHint": "clique para abrir o Job",
+        "spent": "Gasto",
+        "callbackLabel": "Callback usado nesta sessão",
+        "delete": "Excluir job"
       },
       "Panel": {
         "attributes": "Attributes",
@@ -362,11 +475,14 @@
         "talents": "Nenhum Talent ainda. O mestre pode destravar a ficha para adicionar.",
         "specialties": "Nenhuma Specialty ainda. O mestre pode destravar a ficha para adicionar.",
         "assets": "Nenhum Asset ainda.",
-        "background": "Nenhum background escrito ainda."
+        "background": "Nenhum background escrito ainda.",
+        "jobs": "Nenhum Job registrado ainda."
       },
       "Folder": {
         "background": "Background",
-        "jobs": "Jobs"
+        "jobs": "Jobs",
+        "edit": "Editar",
+        "save": "Salvar"
       },
       "Tray": {
         "pool": "Pool",
@@ -383,7 +499,9 @@
     },
     "Warn": {
       "traitsLocked": "Os Traços estão travados pelo mestre.",
-      "maxDistinctions": "Um personagem pode ter no máximo {max} Distinctions."
+      "maxDistinctions": "Um personagem pode ter no máximo {max} Distinctions.",
+      "notEnoughPlotPoints": "Plot Points insuficientes: custa {cost} e você tem {have}.",
+      "noUnspentJobs": "Nenhum Job sem gastar para gastar."
     }
   }
 }

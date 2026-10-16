@@ -1,8 +1,13 @@
 <section class="lv-panel lv-specialties">
-  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.specialties"}}</span><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.specialtyDie"}}</span></h2>
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.specialties"}}</span><span class="lv-panel-tools"><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.specialtyDie"}}</span>{{#if canEdit}}<button type="button" class="lv-addbtn" data-action="addTraitItem" data-type="specialty" title="{{localize "LEVERAGE.Sheet.New.specialty"}}">{{localize "LEVERAGE.Sheet.add"}}</button>{{/if}}</span></h2>
   <div class="lv-panel-body lv-grid-2 lv-scroll">
     {{#each specialties}}
-    <div class="lv-row" data-item-id="{{id}}"><span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span></div>
+    <div class="lv-row" data-item-id="{{id}}">
+      <button type="button" class="lv-row-name lv-link lv-ellipsis" data-action="togglePool" data-pool-ref="item:{{id}}" aria-pressed="false" title="{{name}}">{{name}}</button>
+      {{#if @root.canEdit}}<button type="button" class="lv-tag lv-tag--btn" data-action="pickSpecialtyRole" aria-haspopup="menu" title="{{localize "LEVERAGE.Sheet.Specialty.changeRole"}}">{{localize (lookup @root.roleLabels system.role)}}</button>
+      {{else}}<span class="lv-tag">{{localize (lookup @root.roleLabels system.role)}}</span>{{/if}}
+      {{#if @root.canEdit}}<button type="button" class="lv-xbtn" data-action="deleteTraitItem" title="{{localize "LEVERAGE.Sheet.delete"}}" aria-label="{{localize "LEVERAGE.Sheet.delete"}}">&times;</button>{{/if}}
+    </div>
     {{else}}
     <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.specialties"}}</p>
     {{/each}}

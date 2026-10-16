@@ -36,3 +36,10 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   `leverage.traitsLockedChanged` (que também re-renderiza a ficha). Botões SHEET/TOKEN do mockup continuam nos controles
   nativos da janela (menu "⋮" e ícone); só estilizamos a barra.
 - **Partials:** nenhuma parte compartilhada por enquanto; o ApplicationV2 carrega os templates das PARTS sozinho.
+
+## 2026-10-16 - Assets, pasta e callback (T-305)
+- **Callback:** ao marcar a caixa, a ficha so avisa no chat (o Job citado vale 1 PP gasto na rolagem). Nao ha PP temporario automatico; desmarcar nao gera mensagem. Alternativa descartada: PP temporario so para a proxima rolagem (exigiria estado na Pool, T-501).
+- **Orelha da pasta:** guardada em localStorage por usuario e ator (com try/catch). Alternativa descartada: flag de usuario (gravaria no servidor a cada clique).
+- **Duplo clique** num Asset abre o item (listener delegado no hook renderCrewSheet; data-action so trata clique simples).
+- **Asset sem PP suficiente:** o aviso aparece e nada e criado nem cobrado. Signature nao custa PP.
+- **Trava:** Assets e Jobs nao sao Traits; a trava nao os afeta.

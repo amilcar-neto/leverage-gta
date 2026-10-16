@@ -1,0 +1,186 @@
+/* Crew sheet header: mugshot, inline-editable name/alias/booking fields, Life/Vest popovers, fingerprint. */
+
+.leverage-gta.crew-sheet .lv-header {
+  position: relative;
+  z-index: 5;
+  overflow: visible;
+}
+
+/* ---- Mugshot: wall with height ruler, image anchored at the bottom ---- */
+.leverage-gta.crew-sheet .lv-mugshot {
+  padding: 0;
+  background: #d9d6ca url("../../assets/sheet/mugshot-wall.svg") center / 100% 100% no-repeat;
+  color: inherit;
+}
+
+.leverage-gta.crew-sheet button.lv-mugshot { cursor: pointer; }
+
+.leverage-gta.crew-sheet button.lv-mugshot:hover,
+.leverage-gta.crew-sheet button.lv-mugshot:focus-visible {
+  outline: 3px solid var(--lv-header);
+  outline-offset: 2px;
+}
+
+/* ---- Inline inputs: look like text until hovered or focused ---- */
+.leverage-gta.crew-sheet .lv-inline {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px dotted transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-shadow: inherit;
+}
+
+.leverage-gta.crew-sheet .lv-inline:hover { border-bottom-color: rgba(233, 240, 237, 0.35); }
+.leverage-gta.crew-sheet .lv-inline:focus { border-bottom-color: var(--lv-header); outline: none; }
+.leverage-gta.crew-sheet .lv-inline::placeholder { color: var(--lv-muted); opacity: 0.6; text-shadow: none; }
+
+.leverage-gta.crew-sheet .lv-booking .lv-inline:hover { border-bottom-color: rgba(26, 33, 35, 0.4); }
+.leverage-gta.crew-sheet .lv-booking .lv-inline:focus { border-bottom-color: var(--lv-stamp); }
+
+.leverage-gta.crew-sheet input.lv-name { height: 62px; line-height: 1.15; }
+
+.leverage-gta.crew-sheet .lv-alias {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+}
+
+.leverage-gta.crew-sheet .lv-alias-prefix { flex: none; }
+.leverage-gta.crew-sheet .lv-alias-input { flex: 1; }
+
+/* ---- Life / Vest ---- */
+.leverage-gta.crew-sheet .lv-vital { position: relative; }
+
+.leverage-gta.crew-sheet .lv-vital-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: auto;
+  margin: 0;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  line-height: 1;
+}
+
+.leverage-gta.crew-sheet .lv-vital-btn:not(:disabled) { cursor: pointer; }
+.leverage-gta.crew-sheet .lv-vital-btn:not(:disabled):hover,
+.leverage-gta.crew-sheet .lv-vital.is-open .lv-vital-btn { background: rgba(255, 255, 255, 0.1); }
+.leverage-gta.crew-sheet .lv-vital-btn:disabled { cursor: default; opacity: 1; }
+
+.leverage-gta.crew-sheet .lv-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background: var(--lv-panel);
+  border: var(--lv-border);
+  box-shadow: var(--lv-shadow);
+  color: var(--lv-ink);
+}
+
+.leverage-gta.crew-sheet .lv-pop:not(.lv-pop--vest) { flex-direction: row; align-items: center; gap: 8px; }
+.leverage-gta.crew-sheet .lv-pop-row { display: flex; align-items: center; gap: 8px; }
+
+.leverage-gta.crew-sheet .lv-pop-step {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--lv-outline);
+  background: var(--lv-header);
+  color: var(--lv-outline);
+  font-family: var(--lv-font-display);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.leverage-gta.crew-sheet .lv-pop-step:hover,
+.leverage-gta.crew-sheet .lv-pop-step:focus-visible { background: #fff; }
+
+.leverage-gta.crew-sheet .lv-pop-value {
+  width: 52px;
+  height: 30px;
+  margin: 0;
+  padding: 0 4px;
+  border: 2px solid var(--lv-line);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--lv-ink);
+  font-family: var(--lv-font-display);
+  font-size: 20px;
+  text-align: center;
+}
+
+.leverage-gta.crew-sheet .lv-pop-kinds { display: flex; gap: 6px; }
+
+.leverage-gta.crew-sheet .lv-pop-kind {
+  height: 26px;
+  margin: 0;
+  padding: 0 8px;
+  border: 2px solid var(--lv-line);
+  background: transparent;
+  color: var(--lv-muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.leverage-gta.crew-sheet .lv-pop-kind b { color: var(--lv-ink); }
+.leverage-gta.crew-sheet .lv-pop-kind:hover { border-color: var(--lv-ink); }
+.leverage-gta.crew-sheet .lv-pop-kind.is-active { border-color: var(--lv-header); color: var(--lv-header); }
+
+/* ---- Booking Card ---- */
+.leverage-gta.crew-sheet .lv-booking { position: relative; }
+
+.leverage-gta.crew-sheet .lv-booking-number { display: flex; align-items: center; gap: 4px; margin: 0; }
+.leverage-gta.crew-sheet label.lv-booking-number .lv-booking-input { width: 96px; text-align: right; color: var(--lv-header); }
+.leverage-gta.crew-sheet .lv-booking-head .lv-inline:hover { border-bottom-color: rgba(216, 194, 74, 0.5); }
+.leverage-gta.crew-sheet .lv-booking-head .lv-inline:focus { border-bottom-color: var(--lv-header); }
+
+.leverage-gta.crew-sheet .lv-booking-grid { padding-right: 96px; }
+.leverage-gta.crew-sheet .lv-booking-field--marks { grid-column: 1 / -1; }
+.leverage-gta.crew-sheet .lv-booking-field dd { display: flex; align-items: center; }
+.leverage-gta.crew-sheet .lv-booking-field dd > * { flex: 1; min-width: 0; }
+
+.leverage-gta.crew-sheet .lv-fingerprint {
+  position: absolute;
+  top: 32px;
+  right: 12px;
+  width: 70px;
+  height: 78px;
+  background: url("../../assets/sheet/fingerprint.svg") center / contain no-repeat;
+}
+
+.leverage-gta.crew-sheet .lv-fingerprint-label {
+  position: absolute;
+  inset: auto 0 -14px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  color: rgba(26, 33, 35, 0.6);
+}

@@ -1,25 +1,77 @@
 <header class="lv-header">
+  {{#if canEditHeader}}
+  <button type="button" class="lv-mugshot lv-mugshot--edit{{#if hasPhoto}} has-photo{{/if}}" data-action="pickPhoto" data-tooltip="LEVERAGE.Sheet.Header.pickPhoto" aria-label="{{localize 'LEVERAGE.Sheet.Header.pickPhoto'}}">
+    {{#if hasPhoto}}<img class="lv-mugshot-img" src="{{actor.img}}" alt="{{actor.name}}">{{else}}<span class="lv-mugshot-empty">{{localize "LEVERAGE.Sheet.Header.noPhoto"}}</span>{{/if}}
+  </button>
+  {{else}}
   <div class="lv-mugshot{{#if hasPhoto}} has-photo{{/if}}">
     {{#if hasPhoto}}<img class="lv-mugshot-img" src="{{actor.img}}" alt="{{actor.name}}">{{else}}<span class="lv-mugshot-empty">{{localize "LEVERAGE.Sheet.Header.noPhoto"}}</span>{{/if}}
   </div>
+  {{/if}}
   <div class="lv-identity">
+    {{#if canEditHeader}}
+    <input type="text" class="lv-name lv-hud lv-ellipsis lv-inline" name="name" value="{{actor.name}}" title="{{actor.name}}" placeholder="{{localize 'LEVERAGE.Sheet.Header.namePlaceholder'}}" aria-label="{{localize 'LEVERAGE.Sheet.Header.name'}}">
+    <label class="lv-alias lv-hud">
+      <span class="lv-alias-prefix">{{localize "LEVERAGE.Sheet.Header.aka"}}</span>
+      <input type="text" class="lv-alias-input lv-ellipsis lv-inline" name="system.alias" value="{{system.alias}}" title="{{system.alias}}" placeholder="{{localize 'LEVERAGE.Sheet.Header.aliasPlaceholder'}}" aria-label="{{localize 'LEVERAGE.Sheet.Header.alias'}}">
+    </label>
+    {{else}}
     <div class="lv-name lv-hud lv-ellipsis" title="{{actor.name}}">{{actor.name}}</div>
     <div class="lv-alias lv-hud lv-ellipsis">{{#if system.alias}}{{localize "LEVERAGE.Sheet.Header.aka"}} “{{system.alias}}”{{/if}}</div>
+    {{/if}}
+    {{#if showVitals}}
     <div class="lv-vitals">
-      <span class="lv-vital lv-vital--life" title="{{localize 'LEVERAGE.Sheet.Header.life'}}">
-        <i class="fa-solid fa-heart lv-vital-icon"></i><span class="lv-vital-value lv-hud">{{system.life.value}}</span><span class="lv-vital-max">/{{system.life.max}}</span>
-      </span>
-      <span class="lv-vital lv-vital--vest" title="{{localize 'LEVERAGE.Sheet.Header.vest'}}{{#if vestLabel}} · {{localize vestLabel}}{{/if}}">
-        <i class="fa-solid fa-shield lv-vital-icon"></i><span class="lv-vital-value lv-hud">{{system.vest.value}}</span><span class="lv-vital-max">/{{system.vest.max}}</span>
-      </span>
+      <div class="lv-vital lv-vital--life{{#if openLife}} is-open{{/if}}">
+        <button type="button" class="lv-vital-btn" {{#if canEditHeader}}data-action="toggleVital" data-vital="life" aria-expanded="{{#if openLife}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.life'}}">
+          <i class="fa-solid fa-heart lv-vital-icon"></i><span class="lv-vital-value lv-hud">{{system.life.value}}</span><span class="lv-vital-max">/{{system.life.max}}</span>
+        </button>
+        {{#if openLife}}
+        <div class="lv-pop" role="group" aria-label="{{localize 'LEVERAGE.Sheet.Header.life'}}">
+          <button type="button" class="lv-pop-step" data-action="adjustVital" data-vital="life" data-delta="-1" aria-label="{{localize 'LEVERAGE.Sheet.Header.decrease'}}">−</button>
+          <input type="number" class="lv-pop-value" data-vital-input="life" value="{{system.life.value}}" min="0" max="{{system.life.max}}" step="1" aria-label="{{localize 'LEVERAGE.Sheet.Header.life'}}">
+          <button type="button" class="lv-pop-step" data-action="adjustVital" data-vital="life" data-delta="1" aria-label="{{localize 'LEVERAGE.Sheet.Header.increase'}}">+</button>
+        </div>
+        {{/if}}
+      </div>
+      <div class="lv-vital lv-vital--vest{{#if openVest}} is-open{{/if}}">
+        <button type="button" class="lv-vital-btn" {{#if canEditHeader}}data-action="toggleVital" data-vital="vest" aria-expanded="{{#if openVest}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.vest'}}{{#if vestLabel}} · {{localize vestLabel}}{{/if}}">
+          <i class="fa-solid fa-shield lv-vital-icon"></i><span class="lv-vital-value lv-hud">{{system.vest.value}}</span><span class="lv-vital-max">/{{system.vest.max}}</span>
+        </button>
+        {{#if openVest}}
+        <div class="lv-pop lv-pop--vest" role="group" aria-label="{{localize 'LEVERAGE.Sheet.Header.vest'}}">
+          <div class="lv-pop-row">
+            <button type="button" class="lv-pop-step" data-action="adjustVital" data-vital="vest" data-delta="-1" aria-label="{{localize 'LEVERAGE.Sheet.Header.decrease'}}">−</button>
+            <input type="number" class="lv-pop-value" data-vital-input="vest" value="{{system.vest.value}}" min="0" max="{{system.vest.max}}" step="1" aria-label="{{localize 'LEVERAGE.Sheet.Header.vest'}}">
+            <button type="button" class="lv-pop-step" data-action="adjustVital" data-vital="vest" data-delta="1" aria-label="{{localize 'LEVERAGE.Sheet.Header.increase'}}">+</button>
+          </div>
+          <div class="lv-pop-kinds">
+            {{#each vestKinds}}
+            <button type="button" class="lv-pop-kind{{#if active}} is-active{{/if}}" data-action="setVestKind" data-kind="{{key}}" aria-pressed="{{#if active}}true{{else}}false{{/if}}">{{localize label}} <b>{{points}}</b></button>
+            {{/each}}
+          </div>
+        </div>
+        {{/if}}
+      </div>
     </div>
+    {{/if}}
   </div>
   <div class="lv-booking lv-paper">
-    <div class="lv-booking-head"><span>{{localize "LEVERAGE.Sheet.Header.bookingCard"}}</span><span class="lv-booking-number">{{#if system.booking.number}}Nº {{system.booking.number}}{{/if}}</span></div>
+    <div class="lv-booking-head">
+      <span>{{localize "LEVERAGE.Sheet.Header.bookingCard"}}</span>
+      {{#if canEditHeader}}
+      <label class="lv-booking-number">Nº <input type="text" class="lv-booking-input lv-inline" name="system.booking.number" value="{{bookingNumber.value}}" title="{{localize bookingNumber.label}}" aria-label="{{localize bookingNumber.label}}"></label>
+      {{else}}
+      <span class="lv-booking-number">{{#if bookingNumber.value}}Nº {{bookingNumber.value}}{{/if}}</span>
+      {{/if}}
+    </div>
     <dl class="lv-booking-grid">
-      {{#each booking}}{{#unless (eq key "number")}}
-      <div class="lv-booking-field lv-booking-field--{{key}}"><dt>{{localize label}}</dt><dd class="lv-ellipsis" title="{{value}}">{{value}}</dd></div>
-      {{/unless}}{{/each}}
+      {{#each bookingFields}}
+      <div class="lv-booking-field lv-booking-field--{{key}}">
+        <dt>{{localize label}}</dt>
+        <dd>{{#if @root.canEditHeader}}<input type="text" class="lv-booking-input lv-ellipsis lv-inline" name="system.booking.{{key}}" value="{{value}}" title="{{value}}" aria-label="{{localize label}}">{{else}}<span class="lv-ellipsis" title="{{value}}">{{value}}</span>{{/if}}</dd>
+      </div>
+      {{/each}}
     </dl>
+    <span class="lv-fingerprint" aria-hidden="true"><span class="lv-fingerprint-label">{{localize "LEVERAGE.Sheet.Header.thumb"}}</span></span>
   </div>
 </header>

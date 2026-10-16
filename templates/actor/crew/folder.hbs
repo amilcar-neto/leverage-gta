@@ -1,11 +1,47 @@
 <section class="lv-folder">
   <div class="lv-folder-tabs" role="tablist">
-    <span class="lv-folder-tab is-active" role="tab" aria-selected="true">{{localize "LEVERAGE.Sheet.Folder.background"}}</span>
-    <span class="lv-folder-tab" role="tab" aria-selected="false">{{localize "LEVERAGE.Sheet.Folder.jobs"}}</span>
+    <button type="button" class="lv-folder-tab{{#if tabBackground}} is-active{{/if}}" role="tab" aria-selected="{{#if tabBackground}}true{{else}}false{{/if}}" data-action="folderTab" data-tab="background">{{localize "LEVERAGE.Sheet.Folder.background"}}</button>
+    <button type="button" class="lv-folder-tab{{#if tabJobs}} is-active{{/if}}" role="tab" aria-selected="{{#if tabJobs}}true{{else}}false{{/if}}" data-action="folderTab" data-tab="jobs">{{localize "LEVERAGE.Sheet.Folder.jobs"}}</button>
   </div>
   <div class="lv-folder-page lv-paper">
-    <div class="lv-folder-text lv-scroll">
+    {{#if tabJobs}}
+    <div class="lv-jobs-bar">
+      <span class="lv-jobs-summary lv-ellipsis" title="{{jobsSummary}}">{{jobsSummary}}</span>
+      {{#if assetsEditable}}
+      <button type="button" class="lv-paper-btn lv-paper-btn--solid" data-action="trainUp" title="{{localize 'LEVERAGE.Sheet.Jobs.trainUpHint'}}">{{localize "LEVERAGE.Sheet.Jobs.trainUp"}}</button>
+      <button type="button" class="lv-paper-btn" data-action="logJob" title="{{localize 'LEVERAGE.Sheet.Jobs.logHint'}}">{{localize "LEVERAGE.Sheet.Jobs.log"}}</button>
+      {{/if}}
+    </div>
+    <div class="lv-jobs-cols" aria-hidden="true">
+      <span class="lv-jobs-col-name">{{localize "LEVERAGE.Sheet.Jobs.colJob"}}</span>
+      <span class="lv-jobs-col-share" title="{{localize 'LEVERAGE.Sheet.Jobs.colShareHint'}}">$</span>
+      <span class="lv-jobs-col-callback" title="{{localize 'LEVERAGE.Sheet.Jobs.colCallbackHint'}}">{{localize "LEVERAGE.Sheet.Jobs.colCallback"}}</span>
+      <span class="lv-jobs-col-x"></span>
+    </div>
+    <div class="lv-folder-text lv-scroll lv-jobs-list">
+      {{#each jobRows}}
+      <div class="lv-job{{#if spent}} is-spent{{/if}}" data-item-id="{{id}}">
+        <button type="button" class="lv-job-name lv-ellipsis" data-action="openJob" title="{{name}} - {{localize 'LEVERAGE.Sheet.Jobs.openHint'}}">{{name}}</button>
+        {{#if spent}}<span class="lv-stamp-spent">{{localize "LEVERAGE.Sheet.Jobs.spent"}}</span>{{/if}}
+        <span class="lv-job-share">{{#if share}}+{{share}}{{/if}}</span>
+        <span class="lv-job-callback">{{#unless spent}}<button type="button" class="lv-check{{#if callbackUsed}} is-on{{/if}}" data-action="toggleCallback" aria-pressed="{{#if callbackUsed}}true{{else}}false{{/if}}" aria-label="{{localize 'LEVERAGE.Sheet.Jobs.callbackLabel'}}" title="{{localize 'LEVERAGE.Sheet.Jobs.callbackLabel'}}"{{#unless ../assetsEditable}} disabled{{/unless}}><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></button>{{/unless}}</span>
+        <span class="lv-job-x">{{#if ../assetsEditable}}<button type="button" class="lv-xbtn" data-action="deleteJob" aria-label="{{localize 'LEVERAGE.Sheet.Jobs.delete'}}" title="{{localize 'LEVERAGE.Sheet.Jobs.delete'}}"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>{{/if}}</span>
+      </div>
+      {{else}}
+      <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.jobs"}}</p>
+      {{/each}}
+    </div>
+    {{else}}
+    {{#if assetsEditable}}
+    <div class="lv-bg-bar"><button type="button" class="lv-paper-btn" data-action="editBackground">{{#if bgEditing}}{{localize "LEVERAGE.Sheet.Folder.save"}}{{else}}{{localize "LEVERAGE.Sheet.Folder.edit"}}{{/if}}</button></div>
+    {{/if}}
+    {{#if bgEditing}}
+    <prose-mirror class="lv-bg-editor" value="{{bgRaw}}"></prose-mirror>
+    {{else}}
+    <div class="lv-folder-text lv-scroll lv-bg-text">
       {{#if background}}{{{background}}}{{else}}<p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.background"}}</p>{{/if}}
     </div>
+    {{/if}}
+    {{/if}}
   </div>
 </section>
