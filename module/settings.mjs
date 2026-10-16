@@ -1,0 +1,101 @@
+/**
+ * System settings registration (docs/09). Call `registerSettings()` once during `init`.
+ * Text lives in lang files under `LEVERAGE.Settings.<key>.Name/Hint`; defaults come from `LEVERAGE` (config.mjs).
+ */
+import { LEVERAGE, SYSTEM_ID } from "./config.mjs";
+import { CityScalesConfig } from "./applications/gm/city-scales-config.mjs";
+import { PriceListConfig } from "./applications/gm/price-list-config.mjs";
+import { TrainingCostsConfig } from "./applications/gm/training-costs-config.mjs";
+
+const fields = () => foundry.data.fields;
+
+/** Builds the common `name`/`hint` pair for a setting key. */
+function labels(key) {
+  return { name: `LEVERAGE.Settings.${key}.Name`, hint: `LEVERAGE.Settings.${key}.Hint` };
+}
+
+/** Registers a visible world Boolean (house-rule toggles). */
+function worldBoolean(key, fallback, onChange) {
+  game.settings.register(SYSTEM_ID, key, {
+    ...labels(key), scope: "world", config: true, type: Boolean, default: fallback, onChange
+  });
+}
+
+/** Registers a visible world Number. */
+function worldNumber(key, fallback) {
+  game.settings.register(SYSTEM_ID, key, {
+    ...labels(key), scope: "world", config: true, type: Number, default: fallback
+  });
+}
+
+/** Registers a hidden world setting holding structured data. */
+function hiddenWorld(key, type, fallback, onChange) {
+  game.settings.register(SYSTEM_ID, key, {
+    ...labels(key), scope: "world", config: false, type, default: fallback, onChange
+  });
+}
+
+/** Registers a client Boolean. */
+function clientBoolean(key, fallback, onChange) {
+  game.settings.register(SYSTEM_ID, key, {
+    ...labels(key), scope: "client", config: true, type: Boolean, default: fallback, onChange
+  });
+}
+
+/** Registers a GM menu button that opens an ApplicationV2. */
+function menu(key, type, icon) {
+  game.settings.registerMenu(SYSTEM_ID, key, {
+    name: `LEVERAGE.Settings.${key}.Name`,
+    label: `LEVERAGE.Settings.${key}.Label`,
+    hint: `LEVERAGE.Settings.${key}.Hint`,
+    icon, type, restricted: true
+  });
+}
+
+/** Re-renders interested UI when a setting changes. */
+const notify = (name) => () => Hooks.callAll(`leverage.${name}`);
+
+function registerWorldSettings() {
+  worldBoolean("houseRules.stars", true, notify("houseRulesChanged"));
+  worldBoolean("houseRules.life", true, notify("houseRulesChanged"));
+  worldBoolean("houseRules.money", true, notify("houseRulesChanged"));
+  worldNumber("lifeBase", LEVERAGE.lifeBase);
+  worldNumber("moneyStart", LEVERAGE.money.startSteps);
+  worldNumber("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints);
+  worldBoolean("traitsLocked", true, notify("traitsLockedChanged"));
+  hiddenWorld("wanted", new (fields().ObjectField)(), { city: LEVERAGE.stars.defaultCity, level: LEVERAGE.stars.min },
+    notify("starsChanged"));
+  hiddenWorld("cityScales", new (fields().ArrayField)(new (fields().ObjectField)()),
+    foundry.utils.deepClone(LEVERAGE.defaultCityScales));
+  hiddenWorld("prices", new (fields().ArrayField)(new (fields().ObjectField)()),
+    foundry.utils.deepClone(LEVERAGE.defaultPrices));
+  hiddenWorld("trainingCosts", new (fields().ObjectField)(), { ...LEVERAGE.defaultTrainingCosts });
+  hiddenWorld("activeJob", new (fields().ObjectField)(), {}, notify("activeJobChanged"));
+  game.settings.register(SYSTEM_ID, "systemMigrationVersion", {
+    scope: "world", config: false, type: String, default: ""
+  });
+}
+
+function registerClientSettings() {
+  clientBoolean("hud.showStars", true, notify("hudChanged"));
+  clientBoolean("hud.showMoney", true, notify("hudChanged"));
+  clientBoolean("hud.showPlotPoints", true, notify("hudChanged"));
+  game.settings.register(SYSTEM_ID, "hud.minimized", {
+    scope: "client", config: false, type: Boolean, default: false, onChange: notify("hudChanged")
+  });
+  clientBoolean("pool.keepAfterRoll", false);
+  clientBoolean("debug", false);
+}
+
+function registerMenus() {
+  menu("cityScales", CityScalesConfig, "fa-solid fa-city");
+  menu("prices", PriceListConfig, "fa-solid fa-tags");
+  menu("trainingCosts", TrainingCostsConfig, "fa-solid fa-graduation-cap");
+}
+
+/** Registers every system setting and menu. Call from the `init` hook. */
+export function registerSettings() {
+  registerWorldSettings();
+  registerClientSettings();
+  registerMenus();
+}

@@ -15,10 +15,27 @@
     { "lang": "pt-BR", "name": "Português (Brasil)", "path": "lang/pt-BR.json" }
   ],
   "documentTypes": {
-    "Actor": { "crew": {}, "npc": {}, "location": {} },
-    "Item": { "distinction": {}, "talent": {}, "specialty": {}, "asset": {}, "job": {} }
+    "Actor": {
+      "crew": { "htmlFields": ["background"] },
+      "npc": { "htmlFields": ["notes"] },
+      "location": { "htmlFields": ["notes"] }
+    },
+    "Item": {
+      "distinction": { "htmlFields": ["description"] },
+      "talent": { "htmlFields": ["effect"] },
+      "specialty": { "htmlFields": ["description"] },
+      "asset": {},
+      "job": { "htmlFields": ["notes"] }
+    }
   },
   "primaryTokenAttribute": "life",
+  "secondaryTokenAttribute": "vest",
   "grid": { "distance": 5, "units": "ft" },
-  "socket": true
+  "socket": true,
+  "flags": {
+    "hotReload": {
+      "extensions": ["css", "hbs", "json"],
+      "paths": ["styles", "templates", "lang"]
+    }
+  }
 }

@@ -1,9 +1,343 @@
 {
   "TYPES": {
-    "Actor": { "crew": "Membro da Equipe", "npc": "Personagem de Apoio", "location": "Local" },
-    "Item": { "distinction": "Distinction", "talent": "Talent", "specialty": "Specialty", "asset": "Asset", "job": "Job" }
+    "Actor": {
+      "crew": "Membro da Equipe",
+      "npc": "Personagem de Apoio",
+      "location": "Local"
+    },
+    "Item": {
+      "distinction": "Distinction",
+      "talent": "Talent",
+      "specialty": "Specialty",
+      "asset": "Asset",
+      "job": "Job"
+    }
   },
   "LEVERAGE": {
-    "SystemTitle": "Leverage: Liberty City"
+    "Asset": {
+      "job": "Job",
+      "scene": "Cena",
+      "signature": "Signature"
+    },
+    "Attribute": {
+      "agility": "Agility",
+      "alertness": "Alertness",
+      "intelligence": "Intelligence",
+      "strength": "Strength",
+      "vitality": "Vitality",
+      "willpower": "Willpower"
+    },
+    "Crew": {
+      "FIELDS": {
+        "alias": {
+          "label": "Apelido"
+        },
+        "background": {
+          "label": "Histórico"
+        },
+        "booking": {
+          "age": {
+            "label": "Idade"
+          },
+          "build": {
+            "label": "Porte"
+          },
+          "eyes": {
+            "label": "Olhos"
+          },
+          "hair": {
+            "label": "Cabelo"
+          },
+          "height": {
+            "label": "Altura"
+          },
+          "marks": {
+            "label": "Marcas"
+          },
+          "number": {
+            "label": "Número"
+          },
+          "weight": {
+            "label": "Peso"
+          }
+        },
+        "life": {
+          "max": {
+            "label": "Vida máxima"
+          },
+          "value": {
+            "label": "Vida"
+          }
+        },
+        "money": {
+          "steps": {
+            "label": "Degraus de Grana"
+          }
+        },
+        "plotPoints": {
+          "value": {
+            "label": "Plot Points"
+          }
+        },
+        "vest": {
+          "kind": {
+            "label": "Tipo de colete"
+          },
+          "max": {
+            "label": "Colete máximo"
+          },
+          "value": {
+            "label": "Colete"
+          }
+        }
+      }
+    },
+    "Die": {
+      "d4": "d4",
+      "d6": "d6",
+      "d8": "d8",
+      "d10": "d10",
+      "d12": "d12"
+    },
+    "Item": {
+      "asset": {
+        "FIELDS": {
+          "die": {
+            "label": "Dado"
+          },
+          "duration": {
+            "label": "Duração"
+          },
+          "note": {
+            "label": "Nota"
+          },
+          "purchased": {
+            "label": "Comprado"
+          },
+          "weapon": {
+            "label": "Arma"
+          }
+        }
+      },
+      "distinction": {
+        "FIELDS": {
+          "description": {
+            "label": "Descrição"
+          },
+          "note": {
+            "label": "Nota"
+          }
+        }
+      },
+      "job": {
+        "FIELDS": {
+          "callbackUsed": {
+            "label": "Callback usado"
+          },
+          "notes": {
+            "label": "Notas"
+          },
+          "payout": {
+            "share": {
+              "label": "Parte"
+            },
+            "total": {
+              "label": "Rendimento total"
+            }
+          },
+          "spent": {
+            "label": "Gasto"
+          }
+        }
+      },
+      "specialty": {
+        "FIELDS": {
+          "description": {
+            "label": "Descrição"
+          },
+          "role": {
+            "label": "Role"
+          }
+        }
+      },
+      "talent": {
+        "FIELDS": {
+          "activation": {
+            "label": "Ativação"
+          },
+          "cost": {
+            "label": "Custo"
+          },
+          "die": {
+            "label": "Dado"
+          },
+          "effect": {
+            "label": "Efeito"
+          },
+          "role": {
+            "label": "Role"
+          }
+        }
+      }
+    },
+    "Location": {
+      "FIELDS": {
+        "city": {
+          "label": "Cidade"
+        },
+        "notes": {
+          "label": "Notas"
+        },
+        "traits": {
+          "label": "Traços"
+        }
+      }
+    },
+    "Npc": {
+      "extra": "Extra",
+      "foil": "Foil",
+      "mark": "Mark",
+      "agent": "Agent",
+      "FIELDS": {
+        "gang": {
+          "die": {
+            "label": "Dado da gangue"
+          },
+          "size": {
+            "label": "Tamanho da gangue"
+          }
+        },
+        "notes": {
+          "label": "Notas"
+        },
+        "police": {
+          "label": "Polícia"
+        },
+        "tier": {
+          "label": "Tipo"
+        },
+        "traits": {
+          "label": "Traços"
+        },
+        "weapon": {
+          "die": {
+            "label": "Dado da arma"
+          }
+        }
+      }
+    },
+    "Price": {
+      "bail": "Fiança (Busted)",
+      "buyMiddle": "Compra: imóvel médio",
+      "buyPoor": "Compra: imóvel pobre",
+      "buyRich": "Compra: imóvel de milionário",
+      "hospital": "Hospital (Wasted)",
+      "rentMiddle": "Aluguel: casa média",
+      "rentPoor": "Aluguel: casa pobre",
+      "rentRich": "Aluguel: casa de rico",
+      "signatureAsset": "Signature Asset",
+      "vestHeavy": "Colete pesado",
+      "vestLight": "Colete leve",
+      "vestStandard": "Colete comum",
+      "weaponHard": "Arma difícil de achar"
+    },
+    "Role": {
+      "grifter": "Grifter",
+      "hacker": "Hacker",
+      "hitter": "Hitter",
+      "mastermind": "Mastermind",
+      "open": "Livre",
+      "thief": "Thief"
+    },
+    "Settings": {
+      "activeJob": {
+        "Hint": "Job atual e suas Complications (escondido; usado pelo Rastreador do Job).",
+        "Name": "Job ativo"
+      },
+      "cityScales": {
+        "Hint": "Edita as cidades e a Pool de cada estrela.",
+        "Label": "Editar escalas das cidades",
+        "Name": "Escalas das cidades"
+      },
+      "debug": {
+        "Hint": "Log detalhado no console.",
+        "Name": "Log de depuração"
+      },
+      "hud": {
+        "showMoney": {
+          "Hint": "Mostra a escada de Grana no HUD.",
+          "Name": "Mostrar Grana"
+        },
+        "showPlotPoints": {
+          "Hint": "Mostra os Plot Points no HUD.",
+          "Name": "Mostrar Plot Points"
+        },
+        "showStars": {
+          "Hint": "Mostra as estrelas de procurado no HUD.",
+          "Name": "Mostrar Estrelas"
+        }
+      },
+      "houseRules": {
+        "life": {
+          "Hint": "Liga Vida e Colete (cabeçalho da ficha, barra do token, dano).",
+          "Name": "Vida e Colete"
+        },
+        "money": {
+          "Hint": "Liga a Grana (HUD, bandeja, preços, Wasted/Busted pagos).",
+          "Name": "Grana em escada"
+        },
+        "stars": {
+          "Hint": "Liga as Estrelas (HUD, dado da polícia).",
+          "Name": "Estrelas de procurado"
+        }
+      },
+      "jobStartPlotPoints": {
+        "Hint": "Plot Points que cada personagem ganha quando um novo Job começa.",
+        "Name": "Plot Points por Job"
+      },
+      "lifeBase": {
+        "Hint": "Vida máxima = este valor + o dado de Vitality.",
+        "Name": "Vida base"
+      },
+      "moneyStart": {
+        "Hint": "Degraus de Grana com que começam os novos personagens.",
+        "Name": "Grana inicial"
+      },
+      "pool": {
+        "keepAfterRoll": {
+          "Hint": "Não limpa a Pool depois de rolar.",
+          "Name": "Manter a Pool depois de rolar"
+        }
+      },
+      "prices": {
+        "Hint": "Edita os preços em dados.",
+        "Label": "Editar tabela de preços",
+        "Name": "Tabela de preços"
+      },
+      "trainingCosts": {
+        "Hint": "Custo em Jobs de cada evolução.",
+        "Label": "Editar custos de treinamento",
+        "Name": "Custos de treinamento"
+      },
+      "traitsLocked": {
+        "Hint": "Ninguém pode adicionar, remover ou alterar Traços. O mestre ainda pode.",
+        "Name": "Trava de Traços"
+      },
+      "wanted": {
+        "Hint": "Nível atual de procurado (escondido; mudado pelo HUD ou pelo controle do mestre).",
+        "Name": "Nível de procurado"
+      }
+    },
+    "SystemTitle": "Leverage: Liberty City",
+    "Vest": {
+      "heavy": "Pesado",
+      "light": "Leve",
+      "none": "Nenhum",
+      "standard": "Comum"
+    },
+    "Warn": {
+      "traitsLocked": "Os Traços estão travados pelo mestre.",
+      "maxDistinctions": "Um personagem pode ter no máximo {max} Distinctions."
+    }
   }
 }

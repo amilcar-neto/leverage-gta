@@ -1,1 +1,1 @@
-IN PROGRESS: T-001..T-004 — setup, pesquisa e ambiente de teste (sessão 1)
+IN PROGRESS: Fase 1 — tester (Foundry real) e R-F1 rodando; depois corrigir e fechar

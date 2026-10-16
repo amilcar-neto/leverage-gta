@@ -1,9 +1,343 @@
 {
   "TYPES": {
-    "Actor": { "crew": "Crewmember", "npc": "Supporting Character", "location": "Location" },
-    "Item": { "distinction": "Distinction", "talent": "Talent", "specialty": "Specialty", "asset": "Asset", "job": "Job" }
+    "Actor": {
+      "crew": "Crewmember",
+      "npc": "Supporting Character",
+      "location": "Location"
+    },
+    "Item": {
+      "distinction": "Distinction",
+      "talent": "Talent",
+      "specialty": "Specialty",
+      "asset": "Asset",
+      "job": "Job"
+    }
   },
   "LEVERAGE": {
-    "SystemTitle": "Leverage: Liberty City"
+    "Asset": {
+      "job": "Job",
+      "scene": "Scene",
+      "signature": "Signature"
+    },
+    "Attribute": {
+      "agility": "Agility",
+      "alertness": "Alertness",
+      "intelligence": "Intelligence",
+      "strength": "Strength",
+      "vitality": "Vitality",
+      "willpower": "Willpower"
+    },
+    "Crew": {
+      "FIELDS": {
+        "alias": {
+          "label": "Alias"
+        },
+        "background": {
+          "label": "Background"
+        },
+        "booking": {
+          "age": {
+            "label": "Age"
+          },
+          "build": {
+            "label": "Build"
+          },
+          "eyes": {
+            "label": "Eyes"
+          },
+          "hair": {
+            "label": "Hair"
+          },
+          "height": {
+            "label": "Height"
+          },
+          "marks": {
+            "label": "Marks"
+          },
+          "number": {
+            "label": "Number"
+          },
+          "weight": {
+            "label": "Weight"
+          }
+        },
+        "life": {
+          "max": {
+            "label": "Max life"
+          },
+          "value": {
+            "label": "Life"
+          }
+        },
+        "money": {
+          "steps": {
+            "label": "Money steps"
+          }
+        },
+        "plotPoints": {
+          "value": {
+            "label": "Plot Points"
+          }
+        },
+        "vest": {
+          "kind": {
+            "label": "Vest kind"
+          },
+          "max": {
+            "label": "Max vest"
+          },
+          "value": {
+            "label": "Vest"
+          }
+        }
+      }
+    },
+    "Die": {
+      "d4": "d4",
+      "d6": "d6",
+      "d8": "d8",
+      "d10": "d10",
+      "d12": "d12"
+    },
+    "Item": {
+      "asset": {
+        "FIELDS": {
+          "die": {
+            "label": "Die"
+          },
+          "duration": {
+            "label": "Duration"
+          },
+          "note": {
+            "label": "Note"
+          },
+          "purchased": {
+            "label": "Purchased"
+          },
+          "weapon": {
+            "label": "Weapon"
+          }
+        }
+      },
+      "distinction": {
+        "FIELDS": {
+          "description": {
+            "label": "Description"
+          },
+          "note": {
+            "label": "Note"
+          }
+        }
+      },
+      "job": {
+        "FIELDS": {
+          "callbackUsed": {
+            "label": "Callback used"
+          },
+          "notes": {
+            "label": "Notes"
+          },
+          "payout": {
+            "share": {
+              "label": "Share"
+            },
+            "total": {
+              "label": "Total payout"
+            }
+          },
+          "spent": {
+            "label": "Spent"
+          }
+        }
+      },
+      "specialty": {
+        "FIELDS": {
+          "description": {
+            "label": "Description"
+          },
+          "role": {
+            "label": "Role"
+          }
+        }
+      },
+      "talent": {
+        "FIELDS": {
+          "activation": {
+            "label": "Activation"
+          },
+          "cost": {
+            "label": "Cost"
+          },
+          "die": {
+            "label": "Die"
+          },
+          "effect": {
+            "label": "Effect"
+          },
+          "role": {
+            "label": "Role"
+          }
+        }
+      }
+    },
+    "Location": {
+      "FIELDS": {
+        "city": {
+          "label": "City"
+        },
+        "notes": {
+          "label": "Notes"
+        },
+        "traits": {
+          "label": "Traits"
+        }
+      }
+    },
+    "Npc": {
+      "extra": "Extra",
+      "foil": "Foil",
+      "mark": "Mark",
+      "agent": "Agent",
+      "FIELDS": {
+        "gang": {
+          "die": {
+            "label": "Gang die"
+          },
+          "size": {
+            "label": "Gang size"
+          }
+        },
+        "notes": {
+          "label": "Notes"
+        },
+        "police": {
+          "label": "Police"
+        },
+        "tier": {
+          "label": "Tier"
+        },
+        "traits": {
+          "label": "Traits"
+        },
+        "weapon": {
+          "die": {
+            "label": "Weapon die"
+          }
+        }
+      }
+    },
+    "Price": {
+      "bail": "Bail (Busted)",
+      "buyMiddle": "Buy: middle-class home",
+      "buyPoor": "Buy: poor home",
+      "buyRich": "Buy: millionaire home",
+      "hospital": "Hospital (Wasted)",
+      "rentMiddle": "Rent: middle-class home",
+      "rentPoor": "Rent: poor home",
+      "rentRich": "Rent: rich home",
+      "signatureAsset": "Signature Asset",
+      "vestHeavy": "Heavy vest",
+      "vestLight": "Light vest",
+      "vestStandard": "Standard vest",
+      "weaponHard": "Hard-to-find weapon"
+    },
+    "Role": {
+      "grifter": "Grifter",
+      "hacker": "Hacker",
+      "hitter": "Hitter",
+      "mastermind": "Mastermind",
+      "open": "Open",
+      "thief": "Thief"
+    },
+    "Settings": {
+      "activeJob": {
+        "Hint": "Current Job and its Complications (hidden; used by the Job Tracker).",
+        "Name": "Active Job"
+      },
+      "cityScales": {
+        "Hint": "Edit the cities and the Pool for each star level.",
+        "Label": "Edit city scales",
+        "Name": "City scales"
+      },
+      "debug": {
+        "Hint": "Detailed log in the console.",
+        "Name": "Debug log"
+      },
+      "hud": {
+        "showMoney": {
+          "Hint": "Show the money ladder on the HUD.",
+          "Name": "Show money"
+        },
+        "showPlotPoints": {
+          "Hint": "Show the Plot Points on the HUD.",
+          "Name": "Show Plot Points"
+        },
+        "showStars": {
+          "Hint": "Show the wanted stars on the HUD.",
+          "Name": "Show stars"
+        }
+      },
+      "houseRules": {
+        "life": {
+          "Hint": "Turns on Life and Vest (sheet header, token bar, damage).",
+          "Name": "Life and vest"
+        },
+        "money": {
+          "Hint": "Turns on Money (HUD, tray, prices, paid Wasted/Busted).",
+          "Name": "Money ladder"
+        },
+        "stars": {
+          "Hint": "Turns on Stars (HUD, police die).",
+          "Name": "Wanted stars"
+        }
+      },
+      "jobStartPlotPoints": {
+        "Hint": "Plot Points each character gets when a new Job starts.",
+        "Name": "Plot Points per Job"
+      },
+      "lifeBase": {
+        "Hint": "Maximum life = this value + the Vitality die.",
+        "Name": "Base life"
+      },
+      "moneyStart": {
+        "Hint": "Money steps new characters start with.",
+        "Name": "Starting money"
+      },
+      "pool": {
+        "keepAfterRoll": {
+          "Hint": "Do not clear the Pool after rolling.",
+          "Name": "Keep Pool after roll"
+        }
+      },
+      "prices": {
+        "Hint": "Edit the prices in dice.",
+        "Label": "Edit price list",
+        "Name": "Price list"
+      },
+      "trainingCosts": {
+        "Hint": "Cost in Jobs of each advancement.",
+        "Label": "Edit training costs",
+        "Name": "Training costs"
+      },
+      "traitsLocked": {
+        "Hint": "Players cannot add, remove or change Traits. The GM still can.",
+        "Name": "Lock Traits"
+      },
+      "wanted": {
+        "Hint": "Current wanted level (hidden; changed by the HUD or the GM control).",
+        "Name": "Wanted level"
+      }
+    },
+    "SystemTitle": "Leverage: Liberty City",
+    "Vest": {
+      "heavy": "Heavy",
+      "light": "Light",
+      "none": "None",
+      "standard": "Standard"
+    },
+    "Warn": {
+      "traitsLocked": "Traits are locked by the GM.",
+      "maxDistinctions": "A character can have at most {max} Distinctions."
+    }
   }
 }
