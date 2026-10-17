@@ -23,6 +23,27 @@ export function requireEnv(keys = ["FOUNDRY_URL", "FOUNDRY_USER"]) {
 export const baseUrl = (env) => env.FOUNDRY_URL.replace(/\/$/, "");
 
 /** Launches Chromium and a 1920x1080 page (Caddy basic auth applied when configured). Exits 2 without playwright. */
+const LOCK = ".cache/foundry.lock";
+
+/**
+ * Only one browser may be logged in as the test user at a time. Waits for the lock (a directory, atomic to
+ * create), steals it when older than 20 minutes, and releases it when the browser closes or the process exits.
+ */
+async function acquireLock() {
+  const { mkdirSync, rmSync, statSync } = await import("node:fs");
+  mkdirSync(".cache", { recursive: true });
+  const deadline = Date.now() + 15 * 60 * 1000;
+  for (;;) {
+    try { mkdirSync(LOCK); break; } catch {
+      try { if (Date.now() - statSync(LOCK).mtimeMs > 20 * 60 * 1000) rmSync(LOCK, { recursive: true, force: true }); } catch { /* raced */ }
+      if (Date.now() > deadline) throw new Error("Timed out waiting for the Foundry test lock");
+      await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
+  let released = false;
+  return () => { if (!released) { released = true; try { rmSync(LOCK, { recursive: true, force: true }); } catch { /* ignore */ } } };
+}
+
 export async function openBrowser(env) {
   let chromium;
   try {
@@ -31,7 +52,11 @@ export async function openBrowser(env) {
     console.log("FOUNDRY: playwright not installed (npm i -D playwright && npx playwright install chromium)");
     process.exit(2);
   }
+  const release = await acquireLock();
+  process.on("exit", release);
   const browser = await chromium.launch();
+  const close = browser.close.bind(browser);
+  browser.close = async () => { try { await close(); } finally { release(); } };
   const httpCredentials = env.FOUNDRY_HTTP_USER
     ? { username: env.FOUNDRY_HTTP_USER, password: env.FOUNDRY_HTTP_PASSWORD ?? "" } : undefined;
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, httpCredentials });

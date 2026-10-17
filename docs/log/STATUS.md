@@ -1,1 +1,1 @@
-IN PROGRESS: Fase 3 — T-302..T-305 em paralelo (builders); depois integrar, deploy, testes, T-306, T-307
+IN PROGRESS: Fase 3 — corrigindo diferenças visuais da ficha (T-307) com base nos prints F3-*; depois T-306, R-F3
