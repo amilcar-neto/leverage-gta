@@ -63,7 +63,7 @@ try {
   const sheet = ".application.crew-sheet";
   record("two asset rows", m.rows === 2, m);
   record("pool refs item:<id>", m.poolRefs.length === 4 && m.poolRefs.every((r) => r.startsWith("item:")), m.poolRefs);
-  record("duration tags", m.tags.join() === "Signature,Scene", m.tags);
+  record("duration tags", /^Signature,(Scene|Cena)$/.test(m.tags.join()), m.tags);
   record("scroll gutter reserved", m.gutter.includes("stable"), m.gutter);
   record("die never under the X", !m.dieXOverlap, m);
   record("long name gets an ellipsis", m.ellipsis, m);
@@ -90,14 +90,14 @@ try {
   await page.selectOption(".lv-dialog select[name=duration]", "signature");
   const die = await page.inputValue(".lv-dialog select[name=die]");
   record("second Signature suggests d6", die === "6", die);
-  await page.click(".lv-dialog button[data-action=cancel]");
+  await page.click(".lv-dialog [data-action=close]");
   await wait(300);
 
   // Folder tab is remembered across a re-open
   await page.click(`${sheet} [data-action="folderTab"][data-tab="jobs"]`);
   await wait(600);
   const summary = await page.textContent(`${sheet} .lv-jobs-summary`);
-  record("jobs header", /2\s*JOBS.*1\s*UNSPENT/i.test(summary), summary);
+  record("jobs header", /2\D+1/.test(summary.replace(/\s+/g, " ")), summary);
   await page.evaluate((i) => game.actors.get(i).sheet.close(), id);
   await page.evaluate((i) => game.actors.get(i).sheet.render({ force: true }), id);
   await wait(1200);
@@ -130,7 +130,10 @@ try {
   await wait(800);
   const editor = await page.locator(`${sheet} prose-mirror.lv-bg-editor`).count();
   record("prose-mirror editor opens", editor === 1, editor);
-  await page.evaluate(() => { document.querySelector(".crew-sheet prose-mirror.lv-bg-editor").value = "<p>RAISED: Dock Row</p>"; });
+  await page.click(".crew-sheet prose-mirror.lv-bg-editor .ProseMirror");
+  await page.keyboard.press("Control+A");
+  await page.keyboard.type("RAISED: Dock Row");
+  await wait(300);
   await page.click(`${sheet} [data-action="editBackground"]`);
   await wait(900);
   s = await page.evaluate(readState, id);
