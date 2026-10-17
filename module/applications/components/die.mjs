@@ -39,7 +39,7 @@ const toPx = (n) => `${Math.round(n * 10) / 10}px`;
  * @param {boolean} [options.dropped] Die outside the count of a roll card: full color, 0.45 opacity, own-color ring.
  * @param {boolean} [options.money] Money die: fixed green, black outline (die size still picks the shape).
  * @param {boolean} [options.empty] Money placeholder: dashed outline with no fill (value defaults to 0).
- * @param {string} [options.action] `data-action` name; makes the die a `<button type="button">`.
+ * @param {string} [options.action] `data-action` name; makes the die a `<button type="button">` that carries `data-die`.
  * @param {boolean} [options.pressed] `aria-pressed` of the button (only with `action`).
  * @param {string} [options.label] `aria-label` of the button (only with `action`).
  * @param {string} [options.title] Tooltip text (already translated).
@@ -65,7 +65,7 @@ export function renderDie({ die, value, size, muted, deep, kept, one, dropped, m
   const attrs = `class="${classes.join(" ")}" style="${vars}"${tip}`;
   if (!action) return `<span ${attrs}>${inner}</span>`;
   const aria = ` aria-pressed="${pressed ? "true" : "false"}"${label ? ` aria-label="${escapeHtml(label)}"` : ""}`;
-  return `<button type="button" ${attrs} data-action="${escapeHtml(action)}"${aria}>${inner}</button>`;
+  return `<button type="button" ${attrs} data-action="${escapeHtml(action)}" data-die="${sides}"${aria}>${inner}</button>`;
 }
 
 /**

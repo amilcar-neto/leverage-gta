@@ -23,3 +23,4 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - T-301 concluída (d05e9b3). Em andamento: T-302..T-305 (cabeçalho, escadas, listas, assets/pasta).
 - T-302..T-305 concluídos e testados no Foundry real; fidelidade visual da ficha ajustada (F3-*.png). Em andamento: T-306, T-401.
 - T-306, T-401, T-501 concluídos. Em andamento: T-502, R-F3/T-307 (revisão visual).
+- T-502, T-503 concluídos. R-F3 onda A commitada. Em andamento: onda B, T-504, T-702.
