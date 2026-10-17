@@ -4,7 +4,9 @@
  */
 import { LEVERAGE } from "../../config.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
-import { drag, partActions, preparePartContexts } from "./parts/_module.mjs";
+import { closeFloatMenu } from "../components/float-menu.mjs";
+import { afterRenderParts, attachParts, drag, partActions, preparePartContexts } from "./parts/_module.mjs";
+import { activateOnKey } from "./parts/shared.mjs";
 
 const TEMPLATES = `systems/${LEVERAGE.systemId}/templates/actor/crew`;
 
@@ -54,17 +56,36 @@ export class CrewSheet extends LeverageActorSheet {
   /** `data-pool-ref` of the element the pointer last went down on (tells which die of a row is being dragged). */
   #dragOrigin = null;
 
-  /** @override */
+  /** Aborted when the sheet closes: removes every listener and hook registered in `_onFirstRender`. */
+  #abort = null;
+
+  /**
+   * The one place where the sheet's long-lived listeners are registered (its own, and the parts' through
+   * `attachParts`). `_onClose` undoes all of them.
+   * @override
+   */
   _onFirstRender(context, options) {
     super._onFirstRender(context, options);
+    this.#abort = new AbortController();
+    const { signal } = this.#abort;
     this.element.addEventListener("pointerdown", (event) => {
       this.#dragOrigin = event.target.closest?.("[data-pool-ref]")?.dataset.poolRef ?? null;
-    });
+    }, { signal });
     const clear = () => drag.clearDropMarks(this.element);
     this.element.addEventListener("dragleave", (event) => {
       if (!this.element.contains(event.relatedTarget)) clear();
-    });
-    this.element.addEventListener("dragend", clear);
+    }, { signal });
+    this.element.addEventListener("dragend", clear, { signal });
+    this.element.addEventListener("keydown", activateOnKey, { signal });
+    attachParts(this, signal);
+  }
+
+  /** @override */
+  _onClose(options) {
+    super._onClose(options);
+    this.#abort?.abort();
+    this.#abort = null;
+    closeFloatMenu(this);
   }
 
   /** Anyone who can see the sheet may drag a Trait to the hotbar; dropping needs edit permission (core default). */
@@ -94,6 +115,7 @@ export class CrewSheet extends LeverageActorSheet {
   async _onRender(context, options) {
     await super._onRender(context, options);
     this.#groupColumns();
+    afterRenderParts(this);
   }
 
   /** Wraps the body parts in their three column elements (idempotent; runs after every render). */
@@ -135,8 +157,7 @@ export class CrewSheet extends LeverageActorSheet {
       vestLabel: LEVERAGE.vestKinds[system.vest.kind]?.label,
       background: await foundry.applications.ux.TextEditor.implementation.enrichHTML(system.background, {
         relativeTo: actor, secrets: actor.isOwner
-      }),
-      pool: { count: 0, keep: LEVERAGE.keepDefault }
+      })
     });
     await preparePartContexts(context, this);
     return context;

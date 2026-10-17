@@ -591,6 +591,100 @@
     },
     "Socket": {
       "noGM": "No Fixer is connected to process this action."
+    },
+    "GM": {
+      "Controls": {
+        "title": "Leverage"
+      },
+      "Tool": {
+        "traitsLock": "Trait lock",
+        "wanted": "Wanted level",
+        "opposition": "Opposition roller",
+        "tracker": "Job Tracker",
+        "endScene": "End scene",
+        "newJob": "New Job",
+        "endJob": "End Job",
+        "newSession": "New session",
+        "givePlotPoint": "Give Plot Point"
+      },
+      "Warn": {
+        "gmOnly": "Only the Fixer can do this.",
+        "soon": "Coming soon.",
+        "noCrew": "There are no Crew characters."
+      },
+      "Chat": {
+        "speaker": "Fixer",
+        "traitsLocked": "The Fixer locked the Traits.",
+        "traitsUnlocked": "The Fixer unlocked the Traits.",
+        "plotPoints": "{names} receive {count} Plot Point(s).",
+        "newSession": "New session. Callbacks reset on {count} Job(s).",
+        "endScene": "Scene over. Scene Assets removed: {count}.",
+        "newJob": "New Job: {name}. Each character gets {count} Plot Point(s).",
+        "endJob": "Job over: {name}. Payout: {total} steps."
+      },
+      "Dialog": {
+        "PlotPoint": {
+          "title": "Give Plot Point",
+          "hint": "Who gets 1 Plot Point?",
+          "confirm": "Give"
+        },
+        "EndScene": {
+          "title": "End scene",
+          "body": "Remove {count} scene Asset(s) from the Crew?"
+        },
+        "NewJob": {
+          "title": "New Job",
+          "name": "Job name",
+          "hint": "Starts the Job, clears old Complications and gives Plot Points.",
+          "confirm": "Start"
+        },
+        "EndJob": {
+          "title": "End Job",
+          "name": "Job name",
+          "total": "Total payout (Money steps)",
+          "hint": "Share per character (Money steps):",
+          "divided": "Divided: {sum} of {total}",
+          "confirm": "End Job"
+        },
+        "Wanted": {
+          "title": "Wanted level",
+          "level": "Stars",
+          "city": "City",
+          "confirm": "Set"
+        }
+      }
+    },
+    "Opposition": {
+      "title": "Opposition roller",
+      "fixer": "FIXER",
+      "gmOnly": "Only the Fixer can roll opposition.",
+      "dieLabel": "Opposition",
+      "defaultFlavor": "Opposition",
+      "noneLabel": "No opposition",
+      "dice": "Dice",
+      "more": "More",
+      "fewer": "Fewer",
+      "shortcuts": "Shortcuts",
+      "none": "2d6 (no opposition)",
+      "police": "Police",
+      "policeStars": "Police ({stars} ★)",
+      "policeNone": "No stars: the police are not after you",
+      "gang": "Gang",
+      "gangSize": "Gang size",
+      "gangDie": "Gang die",
+      "npc": "NPC",
+      "npcEmpty": "This NPC has no dice.",
+      "useGang": "Gang: {size} × d{die}",
+      "location": "Location",
+      "complications": "Complications",
+      "traitFallback": "Trait",
+      "poolCount": "{count} dice · keep 2",
+      "poolEmpty": "No dice",
+      "poolDefault": "Nothing chosen: rolls 2d6",
+      "clear": "Clear",
+      "label": "Description",
+      "labelPlaceholder": "What is the opposition doing?",
+      "roll": "Roll"
     }
   }
 }

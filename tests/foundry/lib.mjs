@@ -44,7 +44,13 @@ async function acquireLock() {
   return () => { if (!released) { released = true; try { rmSync(LOCK, { recursive: true, force: true }); } catch { /* ignore */ } } };
 }
 
-export async function openBrowser(env) {
+/**
+ * Opens a browser. Pass `{ secondary: true }` for a second browser of the SAME test run (e.g. a player next to the
+ * GM): it skips the lock, which the first browser of the run already holds (waiting for it would deadlock).
+ * @param {object} env Result of `requireEnv()`.
+ * @param {{secondary?: boolean}} [options]
+ */
+export async function openBrowser(env, { secondary = false } = {}) {
   let chromium;
   try {
     ({ chromium } = await import("playwright"));
@@ -52,7 +58,7 @@ export async function openBrowser(env) {
     console.log("FOUNDRY: playwright not installed (npm i -D playwright && npx playwright install chromium)");
     process.exit(2);
   }
-  const release = await acquireLock();
+  const release = secondary ? () => {} : await acquireLock();
   process.on("exit", release);
   const browser = await chromium.launch();
   const close = browser.close.bind(browser);

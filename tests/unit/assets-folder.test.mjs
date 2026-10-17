@@ -1,3 +1,4 @@
+import "./helpers/foundry-stub.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { suggestAssetDie, resolveTrainingCosts, pickJobsToSpend, assetCostOf } from "../../module/applications/actor/parts/assets.mjs";

@@ -1,0 +1,84 @@
+{{#*inline "sources"}}
+<ul class="lv-opp-checks">
+  {{#each sources}}
+  <li><label class="lv-opp-check{{#if on}} is-on{{/if}}" title="{{tip}}">
+    <input type="checkbox" data-action="toggle" data-key="{{key}}"{{#if on}} checked{{/if}}>
+    <span class="lv-opp-check-name">{{label}}</span>
+    <span class="lv-opp-check-die lv-opp-check-die--{{cls}}">{{dieText}}</span>
+  </label></li>
+  {{/each}}
+</ul>
+{{/inline}}
+<div class="lv-opp">
+  <section class="lv-opp-sec">
+    <h3 class="lv-opp-title">{{localize "LEVERAGE.Opposition.dice"}}</h3>
+    <div class="lv-opp-counters">
+      {{#each counters}}
+      <div class="lv-opp-counter">
+        {{{html}}}
+        <span class="lv-opp-ctrl">
+          <button type="button" class="lv-opp-step" data-action="step" data-die="{{die}}" data-delta="-1" aria-label="{{localize "LEVERAGE.Opposition.fewer"}} d{{die}}"{{#unless count}} disabled{{/unless}}>&minus;</button>
+          <output class="lv-opp-count">{{count}}</output>
+          <button type="button" class="lv-opp-step" data-action="step" data-die="{{die}}" data-delta="1" aria-label="{{localize "LEVERAGE.Opposition.more"}} d{{die}}">+</button>
+        </span>
+      </div>
+      {{/each}}
+    </div>
+  </section>
+
+  <section class="lv-opp-sec">
+    <h3 class="lv-opp-title">{{localize "LEVERAGE.Opposition.shortcuts"}}</h3>
+    <div class="lv-opp-shortcuts">
+      <button type="button" class="lv-opp-chip" data-action="noOpposition">{{localize "LEVERAGE.Opposition.none"}}</button>
+      <button type="button" class="lv-opp-chip{{#if police.on}} is-on{{/if}}" data-action="togglePolice" aria-pressed="{{police.on}}"{{#if police.disabled}} disabled title="{{localize "LEVERAGE.Opposition.policeNone"}}"{{else}} title="{{police.dice}}"{{/if}}>
+        <span class="lv-opp-chip-name">{{localize "LEVERAGE.Opposition.policeStars" stars=police.stars}}</span>
+        {{#unless police.disabled}}<span class="lv-opp-chip-dice">{{police.dice}}</span>{{/unless}}
+      </button>
+    </div>
+    <div class="lv-opp-gang">
+      <button type="button" class="lv-opp-chip{{#if gang.on}} is-on{{/if}}" data-action="toggleGang" aria-pressed="{{gang.on}}">{{localize "LEVERAGE.Opposition.gang"}}</button>
+      <input type="number" class="lv-opp-input" name="gangSize" value="{{gang.size}}" min="0" max="12" aria-label="{{localize "LEVERAGE.Opposition.gangSize"}}">
+      <span aria-hidden="true">&times;</span>
+      <select class="lv-opp-input" name="gangDie" aria-label="{{localize "LEVERAGE.Opposition.gangDie"}}">
+        {{#each gang.options}}<option value="{{value}}"{{#if selected}} selected{{/if}}>d{{value}}</option>{{/each}}
+      </select>
+    </div>
+  </section>
+
+  {{#if npc}}
+  <section class="lv-opp-sec">
+    <h3 class="lv-opp-title"><span class="lv-opp-title-text">{{localize "LEVERAGE.Opposition.npc"}}</span><span class="lv-opp-title-sub" title="{{npc.name}}">{{npc.name}}</span></h3>
+    {{#if npc.gang}}<button type="button" class="lv-opp-chip lv-opp-chip--wide" data-action="useNpcGang">{{localize "LEVERAGE.Opposition.useGang" size=npc.gang.size die=npc.gang.die}}</button>{{/if}}
+    {{#if npc.sources.length}}<div class="lv-opp-list lv-scroll">{{> sources sources=npc.sources}}</div>
+    {{else}}<p class="lv-opp-empty">{{localize "LEVERAGE.Opposition.npcEmpty"}}</p>{{/if}}
+  </section>
+  {{/if}}
+
+  {{#each locations}}{{#if sources.length}}
+  <section class="lv-opp-sec">
+    <h3 class="lv-opp-title"><span class="lv-opp-title-text">{{localize "LEVERAGE.Opposition.location"}}</span><span class="lv-opp-title-sub" title="{{name}}">{{name}}</span></h3>
+    <div class="lv-opp-list lv-scroll">{{> sources sources=sources}}</div>
+  </section>
+  {{/if}}{{/each}}
+
+  {{#if complications.length}}
+  <section class="lv-opp-sec">
+    <h3 class="lv-opp-title"><span class="lv-opp-title-text">{{localize "LEVERAGE.Opposition.complications"}}</span>{{#if job}}<span class="lv-opp-title-sub" title="{{job}}">{{job}}</span>{{/if}}</h3>
+    <div class="lv-opp-list lv-scroll">{{> sources sources=complications}}</div>
+  </section>
+  {{/if}}
+
+  <footer class="lv-opp-foot">
+    <div class="lv-opp-pool">
+      <div class="lv-opp-pool-dice">
+        {{#each pool.dice}}{{{this}}}{{else}}<span class="lv-opp-empty">{{localize "LEVERAGE.Opposition.poolDefault"}}</span>{{/each}}
+      </div>
+      <span class="lv-opp-pool-text">{{pool.text}}</span>
+      {{#unless pool.empty}}<button type="button" class="lv-opp-clear" data-action="clear">{{localize "LEVERAGE.Opposition.clear"}}</button>{{/unless}}
+    </div>
+    <div class="lv-opp-roll-row">
+      <input type="text" class="lv-opp-input lv-opp-label" name="label" value="{{label}}" maxlength="80" placeholder="{{localize "LEVERAGE.Opposition.labelPlaceholder"}}" aria-label="{{localize "LEVERAGE.Opposition.label"}}">
+      <button type="button" class="lv-opp-roll" data-action="roll">{{localize "LEVERAGE.Opposition.roll"}}</button>
+    </div>
+  </footer>
+</div>

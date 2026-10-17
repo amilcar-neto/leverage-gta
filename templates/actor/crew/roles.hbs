@@ -6,7 +6,7 @@
       {{#if blank}}
       <span class="lv-row-name lv-ellipsis" title="{{nameTitle}}">{{label}}</span>
       {{else}}
-      <button type="button" class="lv-row-name lv-ellipsis lv-name-btn" data-action="togglePool" data-pool-ref="{{poolRef}}" title="{{nameTitle}}">{{label}}</button>
+      <button type="button" class="lv-row-name lv-ellipsis lv-name-btn" data-action="togglePool" data-pool-ref="{{poolRef}}" aria-pressed="false" title="{{nameTitle}}">{{label}}</button>
       {{/if}}
       <span class="lv-ladder">{{#each ladder}}{{lvDie die die=die size=32 muted=muted action=action pressed=pressed label=label title=title}}{{/each}}</span>
     </div>

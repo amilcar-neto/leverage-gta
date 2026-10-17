@@ -3,21 +3,21 @@
     <span>{{localize "LEVERAGE.Sheet.Panel.assets"}}</span>
     <span class="lv-head-tools">
       <span class="lv-panel-hint">{{assetRows.length}}</span>
-      {{#if assetsEditable}}<button type="button" class="lv-add-btn" data-action="addAsset" title="{{localize 'LEVERAGE.Sheet.Assets.addHint'}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}
+      {{#if canEdit}}<button type="button" class="lv-add-btn" data-action="addAsset" title="{{localize 'LEVERAGE.Sheet.Assets.addHint'}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}
     </span>
   </h2>
   <div class="lv-panel-body lv-list lv-scroll">
     {{#each assetRows}}
     <div class="lv-row lv-asset draggable" data-item-id="{{id}}" title="{{localize 'LEVERAGE.Sheet.Assets.dblclick'}}">
       <span class="lv-row-main" data-action="togglePool" data-pool-ref="item:{{id}}">
-        <span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span>
+        <span class="lv-row-name lv-ellipsis" role="button" tabindex="0" data-action="togglePool" data-pool-ref="item:{{id}}" aria-pressed="false" title="{{name}}">{{name}}</span>
         <span class="lv-asset-meta">
           <span class="lv-tag lv-tag--{{duration}}" title="{{durationTip}}">{{durationLabel}}</span>
           {{#if note}}<span class="lv-row-note lv-ellipsis" title="{{note}}">{{note}}</span>{{/if}}
         </span>
       </span>
-      <button type="button" class="lv-die-btn" data-action="togglePool" data-pool-ref="item:{{id}}" aria-label="{{localize 'LEVERAGE.Sheet.addToPool'}}" title="{{localize 'LEVERAGE.Sheet.addToPool'}}">{{lvDie die die=die size=32}}</button>
-      {{#if ../assetsEditable}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteAsset" label=(localize "LEVERAGE.Sheet.Assets.delete")}}{{/if}}
+      <button type="button" class="lv-die-btn" data-action="togglePool" data-pool-ref="item:{{id}}" aria-pressed="false" aria-label="{{localize 'LEVERAGE.Sheet.addToPool'}}" title="{{localize 'LEVERAGE.Sheet.addToPool'}}">{{lvDie die die=die size=32}}</button>
+      {{#if @root.canEdit}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteAsset" label=(localize "LEVERAGE.Sheet.Assets.delete")}}{{/if}}
     </div>
     {{else}}
     <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.assets"}}</p>

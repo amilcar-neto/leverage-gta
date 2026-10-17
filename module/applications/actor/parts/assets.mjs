@@ -3,17 +3,18 @@
  * Pure helpers (costs, die suggestion, which Jobs to spend) are exported for unit tests; the rest is sheet glue.
  */
 import { LEVERAGE } from "../../../config.mjs";
+import { readSetting } from "../../../data/fields.mjs";
+import { deleteWithConfirm } from "../../components/confirm-delete.mjs";
 import { escapeHtml } from "../../components/die.mjs";
+import { t } from "../../components/i18n.mjs";
 import { assetCostOf, promptCreateAsset } from "../../dialogs/create-asset-dialog.mjs";
 import { promptTrainUp } from "../../dialogs/train-up-dialog.mjs";
+import { itemOf, openItem } from "./shared.mjs";
 
 export { assetCostOf };
 
 const TABS = ["background", "jobs"];
 const DEFAULT_TAB = "background";
-
-/** @param {string} key @param {object} [data] */
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
 
 /* ---------------------------------------------------------------- pure helpers */
 
@@ -55,8 +56,21 @@ export function pickJobsToSpend(jobs, count) {
 
 /* ---------------------------------------------------------------- folder state */
 
-/** Background edit mode per sheet (not persisted). */
-const editing = new WeakMap();
+/**
+ * BACKGROUND editing per sheet: present while the editor is on, holding the text typed so far. The text is
+ * copied from the live editor before every render (see `captureDraft`), so a re-render of any part (an update
+ * from another window, the lock changing, a tab switch) never throws away what was typed. Not persisted.
+ */
+const drafts = new WeakMap();
+
+const EDITOR = "prose-mirror.lv-bg-editor";
+
+/** Copies the text of the live editor (if it is on screen) into the draft. */
+function captureDraft(sheet) {
+  if (!drafts.has(sheet)) return;
+  const field = sheet.element?.querySelector(EDITOR);
+  if (field) drafts.set(sheet, field.value);
+}
 
 const tabKey = (sheet) => `${LEVERAGE.systemId}.folderTab.${game.user.id}.${sheet.actor.id}`;
 
@@ -80,19 +94,6 @@ function writeTab(sheet, tab) {
 
 /* ---------------------------------------------------------------- helpers with Foundry */
 
-/** Item of this actor under `target` (the element carrying `data-item-id`). */
-const itemOf = (sheet, target) => sheet.actor.items.get(target.closest("[data-item-id]")?.dataset.itemId);
-
-/** Asks to delete an Item, then deletes it. */
-async function confirmDelete(item) {
-  const yes = await foundry.applications.api.DialogV2.confirm({
-    window: { title: t("LEVERAGE.Dialog.Delete.title") },
-    content: `<p>${t("LEVERAGE.Dialog.Delete.body", { name: escapeHtml(item.name) })}</p>`,
-    rejectClose: false
-  });
-  if (yes) await item.delete();
-}
-
 /** Posts a short line in the chat as the actor (`data` values must already be escaped). */
 function say(sheet, key, data) {
   return ChatMessage.create({
@@ -101,8 +102,23 @@ function say(sheet, key, data) {
   });
 }
 
-/** Opens an Item sheet, if the item exists. */
-const openItem = (item) => item?.sheet.render({ force: true });
+/**
+ * Creates an Asset after taking its Plot Point cost; the cost goes back if the Asset could not be created.
+ * @param {Actor} actor
+ * @param {{name: string, duration: string, die: number}} choice
+ * @param {number} cost Plot Points to pay (0 for a Signature Asset).
+ */
+async function createAssetPaying(actor, choice, cost) {
+  if (cost) await actor.addPlotPoints(-cost);
+  let created = [];
+  try {
+    created = await actor.createEmbeddedDocuments("Item", [{
+      name: choice.name, type: "asset", system: { duration: choice.duration, die: choice.die }
+    }]);
+  } finally {
+    if (cost && !created.length) await actor.addPlotPoints(cost);
+  }
+}
 
 /* ---------------------------------------------------------------- actions */
 
@@ -124,17 +140,14 @@ export const actions = {
       ui.notifications.warn(t("LEVERAGE.Warn.notEnoughPlotPoints", { cost, have }));
       return;
     }
-    await actor.createEmbeddedDocuments("Item", [{
-      name: choice.name, type: "asset", system: { duration: choice.duration, die: choice.die }
-    }]);
-    if (cost) await actor.addPlotPoints(-cost);
+    await createAssetPaying(actor, choice, cost);
   },
 
-  /** Deletes an Asset after confirming. */
+  /** Deletes an Asset (asks first only for a Signature Asset). */
   async deleteAsset(_event, target) {
     if (!this.isEditable) return;
     const item = itemOf(this, target);
-    if (item) await confirmDelete(item);
+    if (item) await deleteWithConfirm(item);
   },
 
   /** Switches the folder tab and remembers it. */
@@ -148,12 +161,12 @@ export const actions = {
   /** EDIT / SAVE of the BACKGROUND text. */
   async editBackground() {
     if (!this.isEditable) return;
-    if (editing.get(this)) {
-      const field = this.element.querySelector("prose-mirror.lv-bg-editor");
-      if (field) await this.actor.update({ "system.background": field.value });
-      editing.delete(this);
+    if (drafts.has(this)) {
+      captureDraft(this);
+      await this.actor.update({ "system.background": drafts.get(this) });
+      drafts.delete(this);
     } else {
-      editing.set(this, true);
+      drafts.set(this, this.actor.system.background);
     }
     return this.render({ parts: ["folder"] });
   },
@@ -167,7 +180,7 @@ export const actions = {
       ui.notifications.warn(t("LEVERAGE.Warn.noUnspentJobs"));
       return;
     }
-    const costs = resolveTrainingCosts(game.settings.get(LEVERAGE.systemId, "trainingCosts"));
+    const costs = resolveTrainingCosts(readSetting("trainingCosts", {}));
     const pick = await promptTrainUp({ unspent, costs });
     if (!pick) return;
     const ids = pickJobsToSpend(jobs, pick.cost);
@@ -209,7 +222,7 @@ export const actions = {
   async deleteJob(_event, target) {
     if (!this.isEditable) return;
     const item = itemOf(this, target);
-    if (item) await confirmDelete(item);
+    if (item) await deleteWithConfirm(item);
   }
 };
 
@@ -241,31 +254,31 @@ const jobRow = (item) => ({
 export async function prepare(context, sheet) {
   const jobs = context.jobs.map(jobRow);
   const tab = readTab(sheet);
+  captureDraft(sheet);
+  const bgEditing = drafts.has(sheet) && sheet.isEditable;
   Object.assign(context, {
     assetRows: context.assets.map(assetRow),
-    assetsEditable: sheet.isEditable,
     tabBackground: tab === "background",
     tabJobs: tab === "jobs",
-    bgEditing: Boolean(editing.get(sheet)) && sheet.isEditable,
-    bgRaw: context.system.background,
+    bgEditing,
+    bgRaw: bgEditing ? drafts.get(sheet) : context.system.background,
     jobRows: jobs,
     jobsSummary: t("LEVERAGE.Sheet.Jobs.summary", { jobs: jobs.length, unspent: context.jobsUnspent })
   });
 }
 
-/* ---------------------------------------------------------------- double click opens an Asset */
+/* ---------------------------------------------------------------- listeners */
 
-/** Delegated double click on an Asset row (ApplicationV2 `data-action` only reacts to single clicks). */
-function onAssetDoubleClick(event) {
-  const row = event.target.closest(".lv-asset[data-item-id]");
-  if (!row) return;
-  const sheet = foundry.applications.instances.get(row.closest(".application")?.id);
-  openItem(sheet?.actor.items.get(row.dataset.itemId));
+/**
+ * Listeners of the part, registered once per sheet: a double click on an Asset row opens the Asset
+ * (`data-action` only reacts to single clicks). The draft is forgotten when the sheet closes.
+ * @param {ApplicationV2} sheet The crew sheet.
+ * @param {AbortSignal} signal Aborted when the sheet closes.
+ */
+export function attach(sheet, signal) {
+  sheet.element.addEventListener("dblclick", (event) => {
+    const row = event.target.closest(".lv-asset[data-item-id]");
+    if (row) openItem(sheet.actor.items.get(row.dataset.itemId));
+  }, { signal });
+  signal.addEventListener("abort", () => drafts.delete(sheet));
 }
-
-const wired = new WeakSet();
-globalThis.Hooks?.on("renderCrewSheet", (_sheet, element) => {
-  if (wired.has(element)) return;
-  wired.add(element);
-  element.addEventListener("dblclick", onAssetDoubleClick);
-});

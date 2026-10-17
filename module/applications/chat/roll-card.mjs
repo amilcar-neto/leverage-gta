@@ -50,13 +50,14 @@ export function dieContext(entry, t) {
 export function rollCardContext(data, { t, isOwner = false, isGM = false, plotPoints = 0 }) {
   const entries = data.entries ?? [];
   const keptValues = entries.filter((e) => e.kept).map((e) => e.result).sort((a, b) => b - a);
-  const unresolved = unresolvedOnes(data).length;
+  const unresolved = data.opposition ? 0 : unresolvedOnes(data).length;
   const spare = entries.some((e) => !e.kept && !e.one);
   const photo = data.actorImg && !data.actorImg.includes(NO_PHOTO) ? data.actorImg : "";
-  const showKeep = isOwner && plotPoints > 0 && spare;
-  const showComplication = isGM && unresolved > 0;
+  const opposition = Boolean(data.opposition);
+  const showKeep = !opposition && isOwner && plotPoints > 0 && spare;
+  const showComplication = !opposition && isGM && unresolved > 0;
   return {
-    name: data.actorName, img: photo, flavor: data.flavor,
+    opposition, name: data.actorName, img: opposition ? "" : photo, flavor: data.flavor,
     chips: entries.map((e) => ({ label: e.label, die: `d${e.faces}`, faces: e.faces })),
     dice: entries.map((e) => dieContext(e, t)),
     total: data.total,

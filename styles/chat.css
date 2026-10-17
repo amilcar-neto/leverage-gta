@@ -151,3 +151,7 @@
 .leverage-gta .lv-roll-btn--keep { background: var(--lv-header); color: var(--lv-die-ink); }
 .leverage-gta .lv-roll-btn--gm { background: transparent; color: #ee8a8a; border-color: #ee8a8a; }
 .leverage-gta .lv-roll-btn:hover { filter: brightness(1.12); }
+
+/* Opposition card (T-504): same card, headed FIXER, with a discreet red accent and no portrait. */
+.leverage-gta.lv-roll-card--opposition .lv-roll-head { box-shadow: inset 5px 0 0 var(--lv-stamp); padding-inline-start: 15px; }
+.leverage-gta.lv-roll-card--opposition .lv-roll-name { color: #ee8a8a; }

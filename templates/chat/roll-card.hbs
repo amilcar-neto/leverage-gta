@@ -1,6 +1,6 @@
-<div class="leverage-gta lv-roll-card">
+<div class="leverage-gta lv-roll-card{{#if opposition}} lv-roll-card--opposition{{/if}}">
   <header class="lv-roll-head">
-    {{#if img}}<img class="lv-roll-mug" src="{{img}}" alt="{{name}}">{{else}}<span class="lv-roll-mug lv-roll-mug--empty" aria-hidden="true"></span>{{/if}}
+    {{#if opposition}}{{else if img}}<img class="lv-roll-mug" src="{{img}}" alt="{{name}}">{{else}}<span class="lv-roll-mug lv-roll-mug--empty" aria-hidden="true"></span>{{/if}}
     <span class="lv-roll-who">
       <span class="lv-roll-name hud" title="{{name}}">{{name}}</span>
       <span class="lv-roll-flavor" title="{{flavor}}">{{flavor}}</span>

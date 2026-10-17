@@ -1,12 +1,12 @@
 <section class="lv-panel lv-specialties">
-  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.specialties"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.specialtyDie"}}</span>{{#if canEdit}}<button type="button" class="lv-add-btn" data-action="addTraitItem" data-type="specialty" title="{{localize "LEVERAGE.Sheet.New.specialty"}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}</span></h2>
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.specialties"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.specialtyDie"}}</span>{{#if canEditTraits}}<button type="button" class="lv-add-btn" data-action="addTraitItem" data-type="specialty" title="{{localize "LEVERAGE.Sheet.New.specialty"}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}</span></h2>
   <div class="lv-panel-body lv-grid-2 lv-scroll">
     {{#each specialties}}
     <div class="lv-row draggable" data-item-id="{{id}}">
       <button type="button" class="lv-row-name lv-link lv-ellipsis" data-action="togglePool" data-pool-ref="item:{{id}}" aria-pressed="false" title="{{name}}">{{name}}</button>
-      {{#if @root.canEdit}}<button type="button" class="lv-tag lv-tag--spec" data-action="pickSpecialtyRole" aria-haspopup="menu" title="{{localize "LEVERAGE.Sheet.Specialty.changeRole"}}">{{localize (lookup @root.roleLabels system.role)}}</button>
+      {{#if @root.canEditTraits}}<button type="button" class="lv-tag lv-tag--spec" data-action="pickSpecialtyRole" aria-haspopup="menu" title="{{localize "LEVERAGE.Sheet.Specialty.changeRole"}}">{{localize (lookup @root.roleLabels system.role)}}</button>
       {{else}}<span class="lv-tag lv-tag--spec">{{localize (lookup @root.roleLabels system.role)}}</span>{{/if}}
-      {{#if @root.canEdit}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteTraitItem" label=(localize "LEVERAGE.Sheet.delete") small=true}}{{/if}}
+      {{#if @root.canEditTraits}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteTraitItem" label=(localize "LEVERAGE.Sheet.delete") small=true}}{{/if}}
     </div>
     {{else}}
     <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.specialties"}}</p>

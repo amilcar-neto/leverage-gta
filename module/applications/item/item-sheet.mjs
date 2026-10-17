@@ -6,12 +6,11 @@
  */
 import { LEVERAGE } from "../../config.mjs";
 import { canEditTraits, isTraitType } from "../../documents/guards.mjs";
+import { deleteWithConfirm } from "../components/confirm-delete.mjs";
+import { LockSeal } from "../components/lock-seal.mjs";
 
-const { HandlebarsApplicationMixin, DialogV2 } = foundry.applications.api;
+const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
-
-/** Hook fired by the `traitsLocked` setting (see module/settings.mjs). */
-const LOCK_HOOK = "leverage.traitsLockedChanged";
 
 /** Folder of the Item part templates. */
 export const ITEM_TEMPLATES = `systems/${LEVERAGE.systemId}/templates/item`;
@@ -61,11 +60,10 @@ export class LeverageItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   /** Rich-text fields (system keys) that the body shows enriched when read-only. */
   static RICH_FIELDS = [];
 
-  /** Hook id of the lock listener. */
-  #lockHookId = null;
-
-  /** Seal element in the title bar (only for owned Traits). */
-  #seal = null;
+  /** Seal in the title bar (mounted only for owned Traits); the lock hook re-renders the fields. */
+  #seal = new LockSeal(() => {
+    if (this.rendered) this.render();
+  });
 
   /** @override */
   get title() {
@@ -138,52 +136,20 @@ export class LeverageItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   /** @override */
   async _renderFrame(options) {
     const frame = await super._renderFrame(options);
-    if (this.document.parent && isTraitType(this.document.type)) {
-      this.#seal = this.#buildSeal();
-      frame.querySelector(".window-title")?.after(this.#seal);
-      this.#syncSeal();
-    }
+    if (this.document.parent && isTraitType(this.document.type)) this.#seal.mount(frame);
     return frame;
   }
 
   /** @override */
   _onFirstRender(context, options) {
     super._onFirstRender(context, options);
-    this.#lockHookId = Hooks.on(LOCK_HOOK, () => this.#onLockChanged());
+    this.#seal.watch();
   }
 
   /** @override */
   _onClose(options) {
     super._onClose(options);
-    if (this.#lockHookId !== null) Hooks.off(LOCK_HOOK, this.#lockHookId);
-    this.#lockHookId = null;
-  }
-
-  /** Creates the empty seal: lock icon + label (filled by `#syncSeal`). */
-  #buildSeal() {
-    const seal = document.createElement("span");
-    seal.className = "lv-lock-seal";
-    seal.append(Object.assign(document.createElement("i"), { className: "lv-lock-seal-icon" }));
-    seal.append(Object.assign(document.createElement("span"), { className: "lv-lock-seal-label" }));
-    return seal;
-  }
-
-  /** Updates the seal from the current lock state. */
-  #syncSeal() {
-    if (!this.#seal) return;
-    const locked = !canEditTraits(game.user);
-    const key = locked ? "locked" : "unlocked";
-    this.#seal.classList.toggle("is-locked", locked);
-    this.#seal.classList.toggle("is-unlocked", !locked);
-    this.#seal.title = game.i18n.localize(`LEVERAGE.Sheet.Seal.${key}Hint`);
-    this.#seal.querySelector(".lv-lock-seal-icon").className = `lv-lock-seal-icon fa-solid ${locked ? "fa-lock" : "fa-lock-open"}`;
-    this.#seal.querySelector(".lv-lock-seal-label").textContent = game.i18n.localize(`LEVERAGE.Sheet.Seal.${key}`);
-  }
-
-  /** The Trait lock changed: refresh seal and fields. */
-  #onLockChanged() {
-    this.#syncSeal();
-    if (this.rendered) this.render();
+    this.#seal.unwatch();
   }
 
   /** Builds an action handler that writes `data-value` (converted) to `system.<path>`. */
@@ -203,15 +169,9 @@ export class LeverageItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     if (this.document.system.die !== die) await this.document.update({ "system.die": die });
   }
 
-  /** Footer button: confirms, then deletes the Item (the window closes with it). */
+  /** Footer button: deletes the Item (asks first for a Job or Signature Asset); the window closes with it. */
   static async #onDelete() {
     if (!this.canEdit || !this.document.isOwner) return;
-    const name = foundry.utils.escapeHTML(this.document.name);
-    const yes = await DialogV2.confirm({
-      window: { title: game.i18n.localize("LEVERAGE.Dialog.deleteTrait.title") },
-      content: `<p>${game.i18n.format("LEVERAGE.Dialog.deleteTrait.content", { name })}</p>`,
-      rejectClose: false
-    });
-    if (yes) await this.document.delete();
+    await deleteWithConfirm(this.document);
   }
 }

@@ -134,6 +134,11 @@ try {
   await page.keyboard.press("Control+A");
   await page.keyboard.type("RAISED: Dock Row");
   await wait(300);
+  // A render of the whole sheet while editing must not throw the typed text away.
+  await page.evaluate((actorId) => game.actors.get(actorId).sheet.render(), id);
+  await wait(1200);
+  const kept = await page.evaluate(() => document.querySelector(".crew-sheet prose-mirror.lv-bg-editor")?.value ?? null);
+  record("background: typed text survives a full re-render", /Dock Row/.test(kept ?? ""), kept);
   await page.click(`${sheet} [data-action="editBackground"]`);
   await wait(900);
   s = await page.evaluate(readState, id);

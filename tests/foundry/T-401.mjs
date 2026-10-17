@@ -208,19 +208,31 @@ try {
   const looseName = await page.evaluate((id) => game.items.get(id).name, state.looseId);
   record("loose talent: rename persists", looseName === "[TEST] Loose Renamed", looseName);
 
-  // Delete from the footer: cancel keeps it, confirm deletes
-  await page.click(`${lw} [data-action=deleteItem]`);
+  // Delete from the footer. docs/03: only Jobs and Signature Assets ask first. A Talent goes at once.
+  const jobId = await page.evaluate(async () => {
+    const job = await Item.create({ name: "[TEST] Loose Job", type: "job" });
+    await job.sheet.render({ force: true });
+    return job.id;
+  });
+  await wait(1200);
+  const jw = `.application.lv-item-sheet[id$="${jobId}"]`;
+  await page.click(`${jw} [data-action=deleteItem]`);
   await page.waitForSelector("dialog.application, .application.dialog-v2, .application.dialog", { timeout: 5000 });
   await page.click('.application button[data-action="no"]');
   await wait(600);
-  let exists = await page.evaluate((id) => Boolean(game.items.get(id)), state.looseId);
-  record("delete: cancel keeps the item", exists);
-  await page.click(`${lw} [data-action=deleteItem]`);
+  let exists = await page.evaluate((id) => Boolean(game.items.get(id)), jobId);
+  record("delete job: cancel keeps the item", exists);
+  await page.click(`${jw} [data-action=deleteItem]`);
   await page.waitForSelector('.application button[data-action="yes"]', { timeout: 5000 });
   await page.click('.application button[data-action="yes"]');
   await wait(900);
+  exists = await page.evaluate((id) => Boolean(game.items.get(id)), jobId);
+  record("delete job: confirm removes the item", !exists);
+  await page.click(`${lw} [data-action=deleteItem]`);
+  await wait(900);
+  const dialogs = await page.locator('.application button[data-action="yes"]').count();
   exists = await page.evaluate((id) => Boolean(game.items.get(id)), state.looseId);
-  record("delete: confirm removes the item", !exists);
+  record("delete talent: no dialog, removed at once", !exists && dialogs === 0, { exists, dialogs });
 
   record("no system errors in console", log.own().length === 0, log.own());
 } catch (err) {

@@ -1,15 +1,15 @@
 <section class="lv-panel lv-distinctions">
-  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.distinctions"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{distinctions.length}} / {{maxDistinctions}}</span>{{#if canEdit}}{{#if (lt distinctions.length maxDistinctions)}}<button type="button" class="lv-add-btn" data-action="addTraitItem" data-type="distinction" title="{{localize "LEVERAGE.Sheet.New.distinction"}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}{{/if}}</span></h2>
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.distinctions"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{distinctions.length}} / {{maxDistinctions}}</span>{{#if canEditTraits}}{{#if (lt distinctions.length maxDistinctions)}}<button type="button" class="lv-add-btn" data-action="addTraitItem" data-type="distinction" title="{{localize "LEVERAGE.Sheet.New.distinction"}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}{{/if}}</span></h2>
   <div class="lv-panel-body lv-list">
     {{#each distinctions}}
     <div class="lv-row lv-row--dist draggable" data-item-id="{{id}}">
       <span class="lv-row-line">
         <button type="button" class="lv-row-name lv-link lv-ellipsis" data-action="openTraitItem" title="{{name}}">{{name}}</button>
         <span class="lv-ladder">
-          <button type="button" class="lv-pool-btn" data-action="togglePool" data-pool-ref="item:{{id}}:d8" aria-pressed="false" title="{{localize "LEVERAGE.Sheet.Distinction.helps"}}" aria-label="{{localize "LEVERAGE.Sheet.Distinction.helps"}}">{{lvDie 8 die=8 size=32}}</button>
-          <button type="button" class="lv-pool-btn" data-action="togglePool" data-pool-ref="item:{{id}}:d4" aria-pressed="false" title="{{localize "LEVERAGE.Sheet.Distinction.hurts"}}" aria-label="{{localize "LEVERAGE.Sheet.Distinction.hurts"}}">{{lvDie 4 die=4 size=32}}<span class="lv-dist-pp">{{localize "LEVERAGE.Sheet.Distinction.pp"}}</span></button>
+          <button type="button" class="lv-pool-btn" data-action="togglePool" data-pool-ref="item:{{id}}:d{{@root.distinctionDice.helps}}" aria-pressed="false" title="{{localize "LEVERAGE.Sheet.Distinction.helps"}}" aria-label="{{localize "LEVERAGE.Sheet.Distinction.helps"}}">{{lvDie @root.distinctionDice.helps die=@root.distinctionDice.helps size=32}}</button>
+          <button type="button" class="lv-pool-btn" data-action="togglePool" data-pool-ref="item:{{id}}:d{{@root.distinctionDice.hinders}}" aria-pressed="false" title="{{localize "LEVERAGE.Sheet.Distinction.hurts"}}" aria-label="{{localize "LEVERAGE.Sheet.Distinction.hurts"}}">{{lvDie @root.distinctionDice.hinders die=@root.distinctionDice.hinders size=32}}<span class="lv-dist-pp">{{localize "LEVERAGE.Sheet.Distinction.pp"}}</span></button>
         </span>
-        {{#if @root.canEdit}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteTraitItem" label=(localize "LEVERAGE.Sheet.delete")}}{{/if}}
+        {{#if @root.canEditTraits}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteTraitItem" label=(localize "LEVERAGE.Sheet.delete")}}{{/if}}
       </span>
       <button type="button" class="lv-row-note lv-link lv-ellipsis" data-action="openTraitItem" title="{{system.note}}">{{system.note}}</button>
     </div>

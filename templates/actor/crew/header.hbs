@@ -1,5 +1,5 @@
 <header class="lv-header">
-  {{#if canEditHeader}}
+  {{#if canEdit}}
   <button type="button" class="lv-mugshot lv-mugshot--edit{{#if hasPhoto}} has-photo{{/if}}" data-action="pickPhoto" data-tooltip="LEVERAGE.Sheet.Header.pickPhoto" aria-label="{{localize 'LEVERAGE.Sheet.Header.pickPhoto'}}">
     {{#if hasPhoto}}<img class="lv-mugshot-img" src="{{actor.img}}" alt="{{actor.name}}">{{else}}<span class="lv-mugshot-empty">{{localize "LEVERAGE.Sheet.Header.noPhoto"}}</span>{{/if}}
   </button>
@@ -9,7 +9,7 @@
   </div>
   {{/if}}
   <div class="lv-identity">
-    {{#if canEditHeader}}
+    {{#if canEdit}}
     <input type="text" class="lv-name lv-hud lv-ellipsis lv-inline" name="name" value="{{actor.name}}" title="{{actor.name}}" placeholder="{{localize 'LEVERAGE.Sheet.Header.namePlaceholder'}}" aria-label="{{localize 'LEVERAGE.Sheet.Header.name'}}">
     <label class="lv-alias lv-hud">
       <span class="lv-alias-prefix">{{localize "LEVERAGE.Sheet.Header.aka"}} “</span>
@@ -22,7 +22,7 @@
     {{#if showVitals}}
     <div class="lv-vitals">
       <div class="lv-vital lv-vital--life{{#if openLife}} is-open{{/if}}">
-        <button type="button" class="lv-vital-btn" {{#if canEditHeader}}data-action="toggleVital" data-vital="life" aria-expanded="{{#if openLife}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.life'}}">
+        <button type="button" class="lv-vital-btn" {{#if canEdit}}data-action="toggleVital" data-vital="life" aria-expanded="{{#if openLife}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.life'}}">
           <svg class="lv-vital-icon" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.2 3.4 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 5.8 3.7 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg><span class="lv-vital-value lv-hud">{{system.life.value}}</span><span class="lv-vital-max">/{{system.life.max}}</span>
         </button>
         {{#if openLife}}
@@ -34,7 +34,7 @@
         {{/if}}
       </div>
       <div class="lv-vital lv-vital--vest{{#if openVest}} is-open{{/if}}">
-        <button type="button" class="lv-vital-btn" {{#if canEditHeader}}data-action="toggleVital" data-vital="vest" aria-expanded="{{#if openVest}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.vest'}}{{#if vestLabel}} · {{localize vestLabel}}{{/if}}">
+        <button type="button" class="lv-vital-btn" {{#if canEdit}}data-action="toggleVital" data-vital="vest" aria-expanded="{{#if openVest}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.vest'}}{{#if vestLabel}} · {{localize vestLabel}}{{/if}}">
           <svg class="lv-vital-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z"/></svg><span class="lv-vital-value lv-hud">{{system.vest.value}}</span><span class="lv-vital-max">/{{system.vest.max}}</span>
         </button>
         {{#if openVest}}
@@ -58,7 +58,7 @@
   <div class="lv-booking lv-paper">
     <div class="lv-booking-head">
       <span>{{localize "LEVERAGE.Sheet.Header.bookingCard"}}</span>
-      {{#if canEditHeader}}
+      {{#if canEdit}}
       <label class="lv-booking-number">{{localize "LEVERAGE.Sheet.Header.number"}} <input type="text" class="lv-booking-input lv-inline" name="system.booking.number" value="{{bookingNumber.value}}" title="{{localize bookingNumber.label}}" aria-label="{{localize bookingNumber.label}}"></label>
       {{else}}
       <span class="lv-booking-number">{{#if bookingNumber.value}}{{localize "LEVERAGE.Sheet.Header.number"}} {{bookingNumber.value}}{{/if}}</span>
@@ -69,7 +69,7 @@
       {{#each bookingFields}}
       <div class="lv-booking-field lv-booking-field--{{key}}">
         <dt>{{localize label}}</dt>
-        <dd>{{#if @root.canEditHeader}}<input type="text" class="lv-booking-input lv-ellipsis lv-inline" name="system.booking.{{key}}" value="{{value}}" title="{{value}}" aria-label="{{localize label}}">{{else}}<span class="lv-ellipsis" title="{{value}}">{{value}}</span>{{/if}}</dd>
+        <dd>{{#if @root.canEdit}}<input type="text" class="lv-booking-input lv-ellipsis lv-inline" name="system.booking.{{key}}" value="{{value}}" title="{{value}}" aria-label="{{localize label}}">{{else}}<span class="lv-ellipsis" title="{{value}}">{{value}}</span>{{/if}}</dd>
       </div>
       {{/each}}
     </dl>

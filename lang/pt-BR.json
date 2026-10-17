@@ -591,6 +591,100 @@
     },
     "Socket": {
       "noGM": "Nenhum Fixer conectado para processar esta ação."
+    },
+    "GM": {
+      "Controls": {
+        "title": "Leverage"
+      },
+      "Tool": {
+        "traitsLock": "Trava de Traços",
+        "wanted": "Nível de procurado",
+        "opposition": "Rolador de oposição",
+        "tracker": "Rastreador do Job",
+        "endScene": "Encerrar cena",
+        "newJob": "Novo Job",
+        "endJob": "Encerrar Job",
+        "newSession": "Nova sessão",
+        "givePlotPoint": "Dar Plot Point"
+      },
+      "Warn": {
+        "gmOnly": "Só o Fixer pode fazer isso.",
+        "soon": "Em breve.",
+        "noCrew": "Não há personagens na Equipe."
+      },
+      "Chat": {
+        "speaker": "Fixer",
+        "traitsLocked": "O Fixer travou os Traços.",
+        "traitsUnlocked": "O Fixer destravou os Traços.",
+        "plotPoints": "{names} recebem {count} Plot Point(s).",
+        "newSession": "Nova sessão. Callbacks zerados em {count} Job(s).",
+        "endScene": "Cena encerrada. Assets de cena removidos: {count}.",
+        "newJob": "Novo Job: {name}. Cada personagem recebe {count} Plot Point(s).",
+        "endJob": "Job encerrado: {name}. Rendimento: {total} degraus."
+      },
+      "Dialog": {
+        "PlotPoint": {
+          "title": "Dar Plot Point",
+          "hint": "Quem recebe 1 Plot Point?",
+          "confirm": "Dar"
+        },
+        "EndScene": {
+          "title": "Encerrar cena",
+          "body": "Remover {count} Asset(s) de cena da Equipe?"
+        },
+        "NewJob": {
+          "title": "Novo Job",
+          "name": "Nome do Job",
+          "hint": "Inicia o Job, limpa as Complications antigas e dá Plot Points.",
+          "confirm": "Iniciar"
+        },
+        "EndJob": {
+          "title": "Encerrar Job",
+          "name": "Nome do Job",
+          "total": "Rendimento total (degraus de Grana)",
+          "hint": "Parte de cada personagem (degraus de Grana):",
+          "divided": "Dividido: {sum} de {total}",
+          "confirm": "Encerrar Job"
+        },
+        "Wanted": {
+          "title": "Nível de procurado",
+          "level": "Estrelas",
+          "city": "Cidade",
+          "confirm": "Definir"
+        }
+      }
+    },
+    "Opposition": {
+      "title": "Rolador de oposição",
+      "fixer": "FIXER",
+      "gmOnly": "Só o Fixer pode rolar a oposição.",
+      "dieLabel": "Oposição",
+      "defaultFlavor": "Oposição",
+      "noneLabel": "Sem oposição",
+      "dice": "Dados",
+      "more": "Mais",
+      "fewer": "Menos",
+      "shortcuts": "Atalhos",
+      "none": "2d6 (nenhuma oposição)",
+      "police": "Polícia",
+      "policeStars": "Polícia ({stars} ★)",
+      "policeNone": "Sem estrelas: a polícia não está atrás de você",
+      "gang": "Gangue",
+      "gangSize": "Tamanho da gangue",
+      "gangDie": "Dado da gangue",
+      "npc": "NPC",
+      "npcEmpty": "Este NPC não tem dados.",
+      "useGang": "Gangue: {size} × d{die}",
+      "location": "Local",
+      "complications": "Complicações",
+      "traitFallback": "Traço",
+      "poolCount": "{count} dados · mantém 2",
+      "poolEmpty": "Sem dados",
+      "poolDefault": "Nada escolhido: rola 2d6",
+      "clear": "Limpar",
+      "label": "Descrição",
+      "labelPlaceholder": "O que a oposição está fazendo?",
+      "roll": "Rolar"
     }
   }
 }

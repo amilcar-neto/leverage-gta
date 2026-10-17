@@ -58,3 +58,17 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - Caminho "+1 PP · KEEP 3RD DIE": quem pode editar a mensagem aplica local; os demais pedem ao mestre pelo socket, que confere se o solicitante é dono do ator. PP é devolvido se a escrita falhar.
 - Complication roda só no cliente do mestre: grava `activeJob`, dá 1 PP ao ator, marca o 1 como resolvido.
 - Risco aceito: o id do solicitante vai dentro do pacote do socket; o mestre revalida a posse do ator.
+
+## T-504 — Rolador de oposição (decisões)
+
+- **Card de disputa (opcional): não feito.** Ligar a rolagem do jogador à do mestre exige saber qual rolagem responde a qual
+  (hoje as duas são cards independentes) e o desfecho útil (margem, +5, dano) já é da T-602 (APPLY DAMAGE) e do Ganging Up.
+  Alternativa descartada: card extra no chat; aumenta ruído sem a regra de quem vence estar modelada. Revisitar na T-602.
+- **Sem escolha = 2d6.** Rolar sem nenhum dado (rolador ou `rollOpposition({})`) usa 2d6 ("nenhuma oposição", docs/02). Por isso o
+  botão ROLL nunca fica desabilitado.
+- **Local da cena:** Traços do Local vêm do token `location` selecionado; sem seleção, dos atores `location` com token na cena
+  atual. Não existe flag de "local da cena" nos docs.
+- **Card de oposição:** mesmo template do card de Pool; flags `opposition: true` e `source` (ex.: `manual+police+gang+picked`),
+  `actorUuid` vazio. Sem botões de PP e sem aviso de 1s (os 1s do mestre só não contam).
+- **Núcleo de rolagem compartilhado:** `module/dice/roll-core.mjs` (fórmula, valores, `buildRollData`, `evaluateDice`); o
+  `roll-handler.mjs` reexporta para manter os testes.

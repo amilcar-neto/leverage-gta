@@ -3,6 +3,7 @@
  * The pure helpers (`nextDie`, `buildRows`) take no Foundry globals so they can be unit tested.
  */
 import { LEVERAGE } from "../../../config.mjs";
+import { t } from "../../components/i18n.mjs";
 
 /** Which groups may be blank (docs/05: Roles yes, Attributes never). */
 const BLANKABLE = Object.freeze({ attributes: false, roles: true });
@@ -58,12 +59,12 @@ export function buildRows({ group, values, canEdit, locked, t }) {
 export const actions = {
   /** Click on a ladder die: writes the new value (or clears a Role) through actor.update. */
   async setDie(_event, target) {
-    if (!this.isEditable) return;
+    if (!this.canEditTraits) return;
     const row = target.closest("[data-key]");
     const group = row?.dataset.group;
     if (!(group in BLANKABLE)) return;
     const key = row.dataset.key;
-    const clicked = Number(target.querySelector(".lv-die-num")?.textContent);
+    const clicked = Number(target.dataset.die);
     const next = nextDie(group, this.document.system[group][key]?.die ?? null, clicked);
     if (next === undefined) return;
     await this.document.update({ [`system.${group}.${key}.die`]: next });
@@ -76,9 +77,8 @@ export const actions = {
  * @param {object} sheet the CrewSheet
  */
 export async function prepare(context, sheet) {
-  const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
-  const { canEdit, locked } = context;
+  const { canEditTraits, locked } = context;
   for (const group of ["attributes", "roles"]) {
-    context[group] = buildRows({ group, values: sheet.document.system[group], canEdit, locked, t });
+    context[group] = buildRows({ group, values: sheet.document.system[group], canEdit: canEditTraits, locked, t });
   }
 }

@@ -3,12 +3,16 @@
  * Name, alias and Booking Card fields are plain named inputs: the sheet form submits them on change (blur/Enter).
  */
 import { LEVERAGE } from "../../../config.mjs";
+import { readSetting } from "../../../data/fields.mjs";
 
 /** Vitals that have a popover. */
 const VITALS = Object.freeze(["life", "vest"]);
 
-/** Open popover per sheet (`"life"`, `"vest"` or absent), plus the listeners that close it. */
+/** Open popover per sheet: `"life"` or `"vest"` (absent when closed). */
 const openState = new WeakMap();
+
+/** Hook fired by the house-rule settings. */
+const HOUSE_RULES_HOOK = "leverage.houseRulesChanged";
 
 /**
  * Keeps a vital value inside 0..max (whole numbers only).
@@ -34,47 +38,57 @@ export function vestKindUpdate(kind) {
 
 /** True when the Life/Vest house rule is on (safe before settings are ready). */
 export function vitalsEnabled() {
-  try {
-    return Boolean(game?.settings?.get(LEVERAGE.systemId, "houseRules.life") ?? true);
-  } catch {
-    return true;
-  }
+  return Boolean(readSetting("houseRules.life", true));
 }
 
 /** Re-renders only the header part. */
 const refresh = (sheet) => sheet.render({ parts: ["header"] });
 
-/** Closes the popover and removes the listeners tied to it. */
+/** Closes the popover. */
 function closePopover(sheet) {
-  const state = openState.get(sheet);
-  state?.abort?.abort();
   openState.delete(sheet);
   if (sheet.rendered) refresh(sheet);
 }
 
-/** Applies a typed value from a popover input. */
-async function onVitalInput(sheet, event) {
-  const input = event.target.closest?.("[data-vital-input]");
-  if (!input || !sheet.isEditable) return;
-  const key = input.dataset.vitalInput;
-  const max = sheet.actor.system[key].max;
-  await sheet.actor.update({ [`system.${key}.value`]: clampVital(input.value, max) });
-  refresh(sheet);
+/**
+ * Writes a new value of a vital. An update re-renders the whole sheet by itself; the header is only redrawn here
+ * when nothing changed (so a typed, clamped number goes back to the real value).
+ */
+async function setVital(sheet, key, wanted) {
+  const { value, max } = sheet.actor.system[key];
+  const next = clampVital(wanted, max);
+  if (next === value) return refresh(sheet);
+  await sheet.actor.update({ [`system.${key}.value`]: next });
 }
 
-/** Starts the listeners that close the popover (outside click, Escape) and handle typed values. */
-function openPopover(sheet, key) {
-  const abort = new AbortController();
-  const { signal } = abort;
-  openState.get(sheet)?.abort?.abort();
-  openState.set(sheet, { key, abort });
+/** Applies a typed value from a popover input. */
+function onVitalInput(sheet, event) {
+  const input = event.target.closest?.("[data-vital-input]");
+  if (!input || !sheet.isEditable) return;
+  return setVital(sheet, input.dataset.vitalInput, input.value);
+}
+
+/**
+ * Listeners of the header, registered once per sheet: outside click and Escape close the popover, typed values
+ * are applied, and the house-rule hook redraws the header.
+ * @param {ApplicationV2} sheet The crew sheet.
+ * @param {AbortSignal} signal Aborted when the sheet closes.
+ */
+export function attach(sheet, signal) {
   document.addEventListener("pointerdown", (event) => {
-    if (!sheet.rendered) return abort.abort();
-    if (!event.target.closest?.(".lv-vital")) closePopover(sheet);
+    if (openState.has(sheet) && !event.target.closest?.(".lv-vital")) closePopover(sheet);
   }, { signal });
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePopover(sheet); }, { signal });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && openState.has(sheet)) closePopover(sheet);
+  }, { signal });
   sheet.element.addEventListener("change", (event) => onVitalInput(sheet, event), { signal });
-  refresh(sheet);
+  const hookId = Hooks.on(HOUSE_RULES_HOOK, () => {
+    if (sheet.rendered) refresh(sheet);
+  });
+  signal.addEventListener("abort", () => {
+    Hooks.off(HOUSE_RULES_HOOK, hookId);
+    openState.delete(sheet);
+  });
 }
 
 /** ApplicationV2 `data-action` handlers (called with `this` = the sheet). */
@@ -94,18 +108,16 @@ export const actions = {
   toggleVital(event, target) {
     const key = target.dataset.vital;
     if (!VITALS.includes(key) || !this.isEditable) return;
-    if (openState.get(this)?.key === key) return closePopover(this);
-    return openPopover(this, key);
+    if (openState.get(this) === key) return closePopover(this);
+    openState.set(this, key);
+    return refresh(this);
   },
 
   /** The − / + buttons in a popover. */
-  async adjustVital(event, target) {
+  adjustVital(event, target) {
     const key = target.dataset.vital;
     if (!VITALS.includes(key) || !this.isEditable) return;
-    const { value, max } = this.actor.system[key];
-    const next = clampVital(value + Number(target.dataset.delta), max);
-    if (next !== value) await this.actor.update({ [`system.${key}.value`]: next });
-    return refresh(this);
+    return setVital(this, key, this.actor.system[key].value + Number(target.dataset.delta));
   },
 
   /** A vest kind button in the Vest popover. */
@@ -113,7 +125,6 @@ export const actions = {
     if (!this.isEditable) return;
     const data = vestKindUpdate(target.dataset.kind);
     if (data && target.dataset.kind !== this.actor.system.vest.kind) await this.actor.update(data);
-    return refresh(this);
   }
 };
 
@@ -123,10 +134,9 @@ export const actions = {
  * @param {object} sheet The CrewSheet.
  */
 export async function prepare(context, sheet) {
-  const open = openState.get(sheet)?.key;
+  const open = openState.get(sheet);
   const current = context.system.vest.kind;
   Object.assign(context, {
-    canEditHeader: sheet.isEditable,
     showVitals: vitalsEnabled(),
     openLife: open === "life",
     openVest: open === "vest",
@@ -134,14 +144,5 @@ export async function prepare(context, sheet) {
       .map(([key, def]) => ({ key, label: def.label, points: def.points, active: key === current })),
     bookingNumber: context.booking.find((f) => f.key === "number") ?? { key: "number", value: "" },
     bookingFields: context.booking.filter((f) => f.key !== "number")
-  });
-}
-
-/** Houserule toggled: redraw the header of every open crew sheet. */
-if (typeof Hooks !== "undefined") {
-  Hooks.on("leverage.houseRulesChanged", () => {
-    for (const app of foundry.applications.instances.values()) {
-      if (app.rendered && app.options.classes?.includes("crew-sheet")) app.render({ parts: ["header"] });
-    }
   });
 }

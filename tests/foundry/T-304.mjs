@@ -26,7 +26,7 @@ async function inspectLists() {
   const out = {
     counter: el.querySelector(".lv-distinctions .lv-panel-hint").textContent.trim(),
     poolRefs: [...q(".lv-distinctions [data-pool-ref]")].map((b) => b.dataset.poolRef),
-    addButtons: q(".lv-addbtn").length,
+    addButtons: q(".lv-add-btn").length,
     xButtons: q(".lv-distinctions .lv-xbtn, .lv-talents .lv-xbtn, .lv-specialties .lv-xbtn").length,
     tags: [...q(".lv-talents .lv-tag")].map((t) => t.textContent.trim()),
     overflow: [...q(".lv-panel")].filter((n) => n.scrollWidth > n.clientWidth + 1).map((n) => n.className)

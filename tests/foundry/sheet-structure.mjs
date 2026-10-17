@@ -80,7 +80,7 @@ try {
   record("seal shows locked state", /is-locked/.test(m.sealClass ?? ""), m.seal);
   record("no horizontal overflow", m.overflowing.length === 0, m.overflowing);
   record("layer: .lv-panel-head is ours (yellow, Anton)", m.head.bg === "rgb(216, 194, 74)" && /Anton/.test(m.head.font), m.head);
-  record("layer: button.lv-xbtn is ours (18px, no border)", m.xbtn.w === "18px" && m.xbtn.border === "0px" && m.xbtn.bg === "rgba(0, 0, 0, 0)", m.xbtn);
+  record("layer: button.lv-xbtn is ours (20px, no border)", m.xbtn.w === "20px" && m.xbtn.border === "0px" && m.xbtn.bg === "rgba(0, 0, 0, 0)", m.xbtn);
   const t = await page.evaluate(toggleLock);
   record("seal follows the setting", t.cls.includes("is-unlocked") === t.before && t.text !== t.back && t.parts === 9, t);
   record("no system errors in console", log.own().length === 0, log.own());

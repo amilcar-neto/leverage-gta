@@ -16,6 +16,7 @@ import * as itemSheets from "./module/applications/item/_module.mjs";
 import { registerRollHandler } from "./module/dice/roll-handler.mjs";
 import { registerSocket } from "./module/socket.mjs";
 import { registerRollCard } from "./module/applications/chat/roll-card.mjs";
+import { registerSceneControls } from "./module/applications/gm/controls.mjs";
 
 /** Registers one default sheet per Item type (T-401). */
 function registerItemSheets() {
@@ -59,6 +60,7 @@ Hooks.once("init", () => {
   itemSheets.registerItemIcons();
   registerRollHandler();
   registerRollCard();
+  registerSceneControls();
 });
 
 Hooks.once("setup", () => {

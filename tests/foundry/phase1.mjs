@@ -140,7 +140,7 @@ try {
     await crew.deleteEmbeddedDocuments("Item", crew.items.filter((i) => i.type === "distinction").map((i) => i.id));
     await game.settings.set("leverage-gta", "traitsLocked", false);
   });
-  const playerBrowser = await openBrowser(env);
+  const playerBrowser = await openBrowser(env, { secondary: true });
   const pp = playerBrowser.page;
   const playerLog = collectConsole(pp);
   const checkPlayer = async (name, fn, arg) => {

@@ -94,7 +94,7 @@ Ao entrar na Pool soma **d6** (`CONFIG.LEVERAGE.specialtyDie`).
 - `wanted`: `{ city: "liberty", level: 0..5 }`
 - `cityScales`: `[{ id, name, levels: [[8,6],[10,6],[12,6],[12,12],[12,12,8]] }, …]` (padrão: as três cidades)
 - `prices`: `[{ id, label, dice: [6] }, …]` (padrão: tabela de `docs/02`)
-- `activeJob`: `{ name, complications: [{ id, name, die }] }`
+- `activeJob`: `{ name, complications: [{ id, name, die }], sceneTraits: [] }`
 - `traitsLocked`: Boolean
 
 ## Mensagem de chat de rolagem — `flags.leverage-gta.roll`

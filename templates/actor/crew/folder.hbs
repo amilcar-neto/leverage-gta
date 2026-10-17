@@ -7,7 +7,7 @@
     {{#if tabJobs}}
     <div class="lv-jobs-bar">
       <span class="lv-jobs-summary lv-ellipsis" title="{{jobsSummary}}">{{jobsSummary}}</span>
-      {{#if assetsEditable}}
+      {{#if canEdit}}
       <span class="lv-jobs-actions">
       <button type="button" class="lv-paper-btn lv-paper-btn--solid" data-action="trainUp" title="{{localize 'LEVERAGE.Sheet.Jobs.trainUpHint'}}">{{localize "LEVERAGE.Sheet.Jobs.trainUp"}}</button>
       <button type="button" class="lv-paper-btn" data-action="logJob" title="{{localize 'LEVERAGE.Sheet.Jobs.logHint'}}">{{localize "LEVERAGE.Sheet.Jobs.log"}}</button>
@@ -26,15 +26,15 @@
         <button type="button" class="lv-job-name lv-ellipsis" data-action="openJob" title="{{name}} - {{localize 'LEVERAGE.Sheet.Jobs.openHint'}}">{{name}}</button>
         {{#if spent}}<span class="lv-stamp-spent">{{localize "LEVERAGE.Sheet.Jobs.spent"}}</span>{{/if}}
         <span class="lv-job-share">{{#if share}}+{{share}}{{/if}}</span>
-        <span class="lv-job-callback">{{#unless spent}}<button type="button" class="lv-check{{#if callbackUsed}} is-on{{/if}}" data-action="toggleCallback" aria-pressed="{{#if callbackUsed}}true{{else}}false{{/if}}" aria-label="{{localize 'LEVERAGE.Sheet.Jobs.callbackLabel'}}" title="{{localize 'LEVERAGE.Sheet.Jobs.callbackLabel'}}"{{#unless ../assetsEditable}} disabled{{/unless}}><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></button>{{/unless}}</span>
-        <span class="lv-job-x">{{#if ../assetsEditable}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteJob" label=(localize "LEVERAGE.Sheet.Jobs.delete") small=true}}{{/if}}</span>
+        <span class="lv-job-callback">{{#unless spent}}<button type="button" class="lv-check{{#if callbackUsed}} is-on{{/if}}" data-action="toggleCallback" aria-pressed="{{#if callbackUsed}}true{{else}}false{{/if}}" aria-label="{{localize 'LEVERAGE.Sheet.Jobs.callbackLabel'}}" title="{{localize 'LEVERAGE.Sheet.Jobs.callbackLabel'}}"{{#unless @root.canEdit}} disabled{{/unless}}><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></button>{{/unless}}</span>
+        <span class="lv-job-x">{{#if @root.canEdit}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteJob" label=(localize "LEVERAGE.Sheet.Jobs.delete") small=true}}{{/if}}</span>
       </div>
       {{else}}
       <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.jobs"}}</p>
       {{/each}}
     </div>
     {{else}}
-    {{#if assetsEditable}}
+    {{#if canEdit}}
     <div class="lv-bg-bar"><button type="button" class="lv-paper-btn" data-action="editBackground">{{#if bgEditing}}{{localize "LEVERAGE.Sheet.Folder.save"}}{{else}}{{localize "LEVERAGE.Sheet.Folder.edit"}}{{/if}}</button></div>
     {{/if}}
     {{#if bgEditing}}

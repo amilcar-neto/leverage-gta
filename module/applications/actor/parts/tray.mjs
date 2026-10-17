@@ -3,33 +3,27 @@
  * sheet in a WeakMap), the tray context, and the click actions. The real roll is T-502: ROLL only announces the
  * Pool with the `leverage.rollRequested` hook.
  *
- * Feedback without a full re-render: a click re-renders only the `tray` part and a `renderCrewSheet` hook then
- * toggles `.is-pooled` on the rows (matched by `data-pool-ref`) of every part.
+ * Feedback without a full re-render: a click re-renders only the `tray` part and `afterRender` (called by the
+ * sheet after every render) toggles `.is-pooled` on the rows (matched by `data-pool-ref`) of every part.
  */
 import { LEVERAGE } from "../../../config.mjs";
 import { DicePool, resolvePoolRef } from "../../../dice/pool.mjs";
-import { renderDie } from "../../components/die.mjs";
+import { readSetting } from "../../../data/fields.mjs";
+import { renderDie, escapeHtml } from "../../components/die.mjs";
+import { openFloatMenu } from "../../components/float-menu.mjs";
+import { t } from "../../components/i18n.mjs";
+
+/** Elements where Enter keeps its own meaning (so it does not roll the Pool). */
+const INTERACTIVE = "button, input, textarea, select, a, prose-mirror, [contenteditable], [role='button'], [role='menu']";
 
 /** Hook announcing a Pool the player wants to roll. Payload: `{ actor, sheet, refs, entries }`. */
 export const ROLL_REQUESTED_HOOK = "leverage.rollRequested";
 
-/** CSS class of the floating "+ DIE" menu. */
-const MENU_CLASS = "lv-pool-menu";
-
 /** Pool of each open sheet. */
 const pools = new WeakMap();
 
-/** Whether the page-wide hooks were registered. */
-let hooked = false;
-
 /** Whether the Money house rule is on (safe before settings are ready). */
-function moneyEnabled() {
-  try {
-    return Boolean(game.settings.get(LEVERAGE.systemId, "houseRules.money") ?? true);
-  } catch {
-    return true;
-  }
-}
+const moneyEnabled = () => Boolean(readSetting("houseRules.money", true));
 
 /**
  * The Pool of a sheet, created on first use. Other tasks (roll, macros) read it through this.
@@ -71,10 +65,11 @@ export function chipOf(entry, t) {
  * @returns {object}
  */
 export function trayContext(pool, t) {
-  const chips = pool.entries().map((entry) => chipOf(entry, t));
+  const entries = pool.entries();
+  const chips = entries.map((entry) => chipOf(entry, t));
   const problems = pool.problems;
   return {
-    count: pool.count,
+    count: entries.filter((entry) => !entry.blank).length,
     keep: pool.keep,
     empty: chips.length === 0,
     attribute: chips.find((c) => c.kind === "attribute") ?? null,
@@ -89,10 +84,9 @@ export function trayContext(pool, t) {
   };
 }
 
-/** Adds the Pool to the sheet context (`context.pool`) and makes sure the page hooks exist. */
+/** Adds the Pool to the sheet context (`context.pool`); the Pool is read once per render. */
 export async function prepare(context, sheet) {
-  registerHooks();
-  context.pool = trayContext(poolOf(sheet), (key, data) => game.i18n.format(key, data));
+  context.pool = trayContext(poolOf(sheet), t);
 }
 
 /* -------------------------------------------------------------------- rows */
@@ -127,35 +121,31 @@ function refresh(sheet) {
   return sheet.render({ parts: ["tray"] });
 }
 
-/* ------------------------------------------------------------------- hooks */
+/* --------------------------------------------------------------- listeners */
 
 /** Enter on a sheet that is not on a button or field rolls the Pool. */
 function onEnter(sheet, event) {
-  if (event.key !== "Enter" || event.target.closest("button, input, textarea, select, a, prose-mirror, [contenteditable]")) return;
+  if (event.key !== "Enter" || event.target.closest(INTERACTIVE)) return;
   actions.roll.call(sheet);
 }
 
-/** Registers (once) the hooks that keep rows in sync after any render and drop the Pool when the sheet closes. */
-function registerHooks() {
-  if (hooked) return;
-  hooked = true;
-  Hooks.on("renderCrewSheet", (sheet, element) => {
-    const pool = pools.get(sheet);
-    if (!pool) return;
-    syncRows(element, pool);
-    if (element.dataset.poolKeys) return;
-    element.dataset.poolKeys = "1";
-    element.addEventListener("keydown", (event) => onEnter(sheet, event));
-  });
-  Hooks.on("closeCrewSheet", (sheet) => pools.delete(sheet));
+/**
+ * Listeners of the tray, registered once per sheet: Enter rolls. The Pool is forgotten when the sheet closes.
+ * @param {ApplicationV2} sheet The crew sheet.
+ * @param {AbortSignal} signal Aborted when the sheet closes.
+ */
+export function attach(sheet, signal) {
+  sheet.element.addEventListener("keydown", (event) => onEnter(sheet, event), { signal });
+  signal.addEventListener("abort", () => pools.delete(sheet));
+}
+
+/** After every render: lights the rows and presses the buttons of the Pool. */
+export function afterRender(sheet) {
+  const pool = pools.get(sheet);
+  if (pool) syncRows(sheet.element, pool);
 }
 
 /* -------------------------------------------------------------- + DIE menu */
-
-/** Closes the "+ DIE" menu of this sheet. */
-function closeMenu(sheet) {
-  sheet.element?.querySelectorAll(`.${MENU_CLASS}`).forEach((menu) => menu.remove());
-}
 
 /**
  * Entries of the "+ DIE" menu: the loose dice, plus Money when the actor can add it.
@@ -170,40 +160,24 @@ export function dieMenuEntries(actor, withMoney) {
   return dice;
 }
 
-/** Builds the floating menu above `anchor`. */
-function buildMenu(sheet, anchor) {
-  const menu = Object.assign(document.createElement("div"), { className: MENU_CLASS });
-  menu.setAttribute("role", "menu");
-  for (const entry of dieMenuEntries(sheet.actor, moneyEnabled())) {
-    const button = Object.assign(document.createElement("button"), { type: "button", className: "lv-pool-menu-item" });
-    button.setAttribute("role", "menuitem");
-    const label = entry.label.startsWith("LEVERAGE.") ? game.i18n.localize(entry.label) : entry.label;
-    button.innerHTML = `${renderDie({ die: entry.die, size: 28, money: entry.money })}<span>${foundry.utils.escapeHTML(label)}</span>`;
-    button.addEventListener("click", () => {
-      closeMenu(sheet);
-      poolOf(sheet).add(entry.ref);
-      refresh(sheet);
-    });
-    menu.append(button);
-  }
-  const frame = sheet.element.getBoundingClientRect();
-  const box = anchor.getBoundingClientRect();
-  menu.style.left = `${Math.round(box.left - frame.left)}px`;
-  menu.style.bottom = `${Math.round(frame.bottom - box.top + 4)}px`;
-  return menu;
-}
-
-/** Closes the menu on the next outside click or Escape. */
-function dismissOnOutside(sheet, menu) {
-  const off = () => {
-    closeMenu(sheet);
-    document.removeEventListener("pointerdown", onDown, true);
-    document.removeEventListener("keydown", onKey, true);
-  };
-  const onDown = (event) => { if (!menu.contains(event.target)) off(); };
-  const onKey = (event) => { if (event.key === "Escape") off(); };
-  document.addEventListener("pointerdown", onDown, true);
-  document.addEventListener("keydown", onKey, true);
+/** Opens the "+ DIE" menu above `anchor`. */
+function openDieMenu(sheet, anchor) {
+  openFloatMenu(sheet, {
+    anchor,
+    className: "lv-pool-menu",
+    itemClass: "lv-pool-menu-item",
+    placement: "above",
+    items: dieMenuEntries(sheet.actor, moneyEnabled()).map((entry) => {
+      const label = entry.label.startsWith("LEVERAGE.") ? t(entry.label) : entry.label;
+      return {
+        html: `${renderDie({ die: entry.die, size: 28, money: entry.money })}<span>${escapeHtml(label)}</span>`,
+        onSelect: () => {
+          poolOf(sheet).add(entry.ref);
+          refresh(sheet);
+        }
+      };
+    })
+  });
 }
 
 /* ----------------------------------------------------------------- actions */
@@ -229,10 +203,7 @@ export const actions = {
   /** "+ DIE": opens the menu of loose dice (and Money). */
   addDie(_event, target) {
     if (!this.actor.isOwner) return;
-    closeMenu(this);
-    const menu = buildMenu(this, target);
-    this.element.append(menu);
-    dismissOnOutside(this, menu);
+    openDieMenu(this, target);
   },
 
   /** Empties the Pool. */
