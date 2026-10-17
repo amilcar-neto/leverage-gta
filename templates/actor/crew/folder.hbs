@@ -8,8 +8,10 @@
     <div class="lv-jobs-bar">
       <span class="lv-jobs-summary lv-ellipsis" title="{{jobsSummary}}">{{jobsSummary}}</span>
       {{#if assetsEditable}}
+      <span class="lv-jobs-actions">
       <button type="button" class="lv-paper-btn lv-paper-btn--solid" data-action="trainUp" title="{{localize 'LEVERAGE.Sheet.Jobs.trainUpHint'}}">{{localize "LEVERAGE.Sheet.Jobs.trainUp"}}</button>
       <button type="button" class="lv-paper-btn" data-action="logJob" title="{{localize 'LEVERAGE.Sheet.Jobs.logHint'}}">{{localize "LEVERAGE.Sheet.Jobs.log"}}</button>
+      </span>
       {{/if}}
     </div>
     <div class="lv-jobs-cols" aria-hidden="true">

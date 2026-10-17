@@ -8,7 +8,7 @@
           <span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span>
           <span class="lv-tags">
             {{#if system.cost}}<span class="lv-tag">{{localize "LEVERAGE.Sheet.Talent.cost"}}</span>{{/if}}
-            <span class="lv-tag">{{localize (lookup @root.roleLabels system.role)}}</span>
+            <span class="lv-tag{{#if (eq system.role "open")}} lv-tag--open{{/if}}">{{localize (lookup @root.roleLabels system.role)}}</span>
           </span>
         </span>
         <span class="lv-row-note lv-ellipsis" title="{{system.activation}}">{{#if system.activation}}<b class="lv-when">{{localize "LEVERAGE.Sheet.Hint.when"}}</b> {{system.activation}}{{/if}}</span>

@@ -14,21 +14,32 @@
   min-height: 42px;
 }
 
-/* Name as a plain-looking button (Pool toggle) */
-.leverage-gta.crew-sheet .lv-name-btn {
+/* Row names (Attributes, Roles): Barlow Condensed bold caps, left aligned. The button is reset
+   piece by piece (never `font: inherit`, which would drop the size and the caps). */
+.leverage-gta.crew-sheet .lv-ladder-row .lv-row-name {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
   background: none;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
   text-align: left;
-  text-transform: inherit;
+  text-transform: uppercase;
   cursor: pointer;
 }
 
-.leverage-gta.crew-sheet .lv-name-btn:focus-visible {
+.leverage-gta.crew-sheet .lv-ladder-row.is-blank .lv-row-name { color: var(--lv-muted); }
+
+.leverage-gta.crew-sheet .lv-ladder { margin-inline-start: auto; justify-content: flex-end; }
+
+.leverage-gta.crew-sheet .lv-ladder-row .lv-name-btn:focus-visible {
   outline: 2px solid var(--lv-select);
   outline-offset: 2px;
 }

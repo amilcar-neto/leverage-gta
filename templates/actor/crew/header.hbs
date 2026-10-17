@@ -12,8 +12,8 @@
     {{#if canEditHeader}}
     <input type="text" class="lv-name lv-hud lv-ellipsis lv-inline" name="name" value="{{actor.name}}" title="{{actor.name}}" placeholder="{{localize 'LEVERAGE.Sheet.Header.namePlaceholder'}}" aria-label="{{localize 'LEVERAGE.Sheet.Header.name'}}">
     <label class="lv-alias lv-hud">
-      <span class="lv-alias-prefix">{{localize "LEVERAGE.Sheet.Header.aka"}}</span>
-      <input type="text" class="lv-alias-input lv-ellipsis lv-inline" name="system.alias" value="{{system.alias}}" title="{{system.alias}}" placeholder="{{localize 'LEVERAGE.Sheet.Header.aliasPlaceholder'}}" aria-label="{{localize 'LEVERAGE.Sheet.Header.alias'}}">
+      <span class="lv-alias-prefix">{{localize "LEVERAGE.Sheet.Header.aka"}} “</span>
+      <input type="text" class="lv-alias-input lv-ellipsis lv-inline" name="system.alias" value="{{system.alias}}" title="{{system.alias}}" placeholder="{{localize 'LEVERAGE.Sheet.Header.aliasPlaceholder'}}" aria-label="{{localize 'LEVERAGE.Sheet.Header.alias'}}"><span class="lv-alias-suffix">”</span>
     </label>
     {{else}}
     <div class="lv-name lv-hud lv-ellipsis" title="{{actor.name}}">{{actor.name}}</div>
@@ -23,7 +23,7 @@
     <div class="lv-vitals">
       <div class="lv-vital lv-vital--life{{#if openLife}} is-open{{/if}}">
         <button type="button" class="lv-vital-btn" {{#if canEditHeader}}data-action="toggleVital" data-vital="life" aria-expanded="{{#if openLife}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.life'}}">
-          <i class="fa-solid fa-heart lv-vital-icon"></i><span class="lv-vital-value lv-hud">{{system.life.value}}</span><span class="lv-vital-max">/{{system.life.max}}</span>
+          <svg class="lv-vital-icon" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.2 3.4 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 5.8 3.7 4.4 7.2C19.5 16.4 12 21 12 21z" fill="#ff6f8e" stroke="#000" stroke-width="2" stroke-linejoin="round"/></svg><span class="lv-vital-value lv-hud">{{system.life.value}}</span><span class="lv-vital-max">/{{system.life.max}}</span>
         </button>
         {{#if openLife}}
         <div class="lv-pop" role="group" aria-label="{{localize 'LEVERAGE.Sheet.Header.life'}}">
@@ -35,7 +35,7 @@
       </div>
       <div class="lv-vital lv-vital--vest{{#if openVest}} is-open{{/if}}">
         <button type="button" class="lv-vital-btn" {{#if canEditHeader}}data-action="toggleVital" data-vital="vest" aria-expanded="{{#if openVest}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.vest'}}{{#if vestLabel}} · {{localize vestLabel}}{{/if}}">
-          <i class="fa-solid fa-shield lv-vital-icon"></i><span class="lv-vital-value lv-hud">{{system.vest.value}}</span><span class="lv-vital-max">/{{system.vest.max}}</span>
+          <svg class="lv-vital-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="#c9d1d4" stroke="#000" stroke-width="2" stroke-linejoin="round"/></svg><span class="lv-vital-value lv-hud">{{system.vest.value}}</span><span class="lv-vital-max">/{{system.vest.max}}</span>
         </button>
         {{#if openVest}}
         <div class="lv-pop lv-pop--vest" role="group" aria-label="{{localize 'LEVERAGE.Sheet.Header.vest'}}">
@@ -64,6 +64,7 @@
       <span class="lv-booking-number">{{#if bookingNumber.value}}Nº {{bookingNumber.value}}{{/if}}</span>
       {{/if}}
     </div>
+    <div class="lv-booking-body">
     <dl class="lv-booking-grid">
       {{#each bookingFields}}
       <div class="lv-booking-field lv-booking-field--{{key}}">
@@ -72,6 +73,7 @@
       </div>
       {{/each}}
     </dl>
-    <span class="lv-fingerprint" aria-hidden="true"><span class="lv-fingerprint-label">{{localize "LEVERAGE.Sheet.Header.thumb"}}</span></span>
+    <div class="lv-fingerprint-col" aria-hidden="true"><span class="lv-fingerprint"></span><span class="lv-fingerprint-label">{{localize "LEVERAGE.Sheet.Header.thumb"}}</span></div>
+    </div>
   </div>
 </header>

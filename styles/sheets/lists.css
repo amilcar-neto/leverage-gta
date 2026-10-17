@@ -32,13 +32,17 @@
 
 /* Text buttons that look like plain text */
 .leverage-gta .lv-link {
+  display: block;
+  justify-content: flex-start;
   min-width: 0;
   margin: 0;
   padding: 0;
   background: none;
   border: 0;
   color: inherit;
-  font: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
   letter-spacing: inherit;
   text-align: start;
   text-transform: inherit;
@@ -82,6 +86,17 @@
   white-space: nowrap;
 }
 
+.leverage-gta .lv-tag--open { background: #e8e6da; color: var(--lv-outline); }
+.leverage-gta .lv-specialties .lv-tag {
+  height: 20px;
+  padding: 0 5px;
+  background: transparent;
+  color: #c9d3d1;
+  border: 1px solid #8a9b98;
+  border-radius: 3px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
 .leverage-gta button.lv-tag { margin: 0; cursor: pointer; }
 .leverage-gta button.lv-tag:hover,
 .leverage-gta button.lv-tag:focus-visible { filter: brightness(1.12); }
@@ -110,10 +125,27 @@
   padding-block: 4px 6px;
 }
 
-.leverage-gta .lv-row--dist .lv-row-name { font-size: 18px; }
+.leverage-gta.crew-sheet .lv-row--dist .lv-row-name,
+.leverage-gta.crew-sheet .lv-row--talent .lv-row-name,
+.leverage-gta.crew-sheet .lv-specialties .lv-row-name {
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-align: left;
+  text-transform: uppercase;
+}
+.leverage-gta.crew-sheet .lv-row--dist .lv-row-name { font-size: 20px; }
+.leverage-gta.crew-sheet .lv-row--talent .lv-row-name { font-size: 18px; }
+.leverage-gta.crew-sheet .lv-specialties .lv-row-name { font-size: 15px; letter-spacing: 0.02em; }
+.leverage-gta.crew-sheet .lv-row--dist .lv-row-note { text-transform: none; text-align: left; font-family: var(--lv-font-ui); }
+.leverage-gta .lv-row--talent .lv-row-note { text-align: left; }
+.leverage-gta .lv-row--talent .lv-when { color: var(--lv-accent-2); }
 .leverage-gta .lv-row--dist .lv-row-note { display: block; }
 
 .leverage-gta .lv-dist-pp {
+  color: var(--lv-muted);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -124,8 +156,11 @@
 .leverage-gta .lv-row--talent .lv-row-main { gap: 2px; }
 
 /* Specialties: a row is name + tag + X inside half the panel */
-.leverage-gta .lv-specialties .lv-row { padding-block: 6px; }
-.leverage-gta .lv-specialties .lv-row-name { flex: 1 1 0; }
+.leverage-gta .lv-specialties .lv-row { gap: 4px; padding: 6px 2px; }
+.leverage-gta .lv-specialties .lv-row-name { flex: 1 1 0; min-width: 0; padding: 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.leverage-gta .lv-specialties .lv-xbtn { width: 12px; height: 12px; font-size: 13px; }
+.leverage-gta .lv-row--dist .lv-xbtn,
+.leverage-gta .lv-row--talent .lv-xbtn { width: 16px; height: 16px; font-size: 16px; }
 
 /* Role menu (Specialty tag) */
 .leverage-gta .lv-role-menu {
