@@ -9,12 +9,22 @@
   --lv-accent-2: #7fc2b4;
   --lv-ink: #e9f0ed;
   --lv-muted: #9fb2ad;
+  --lv-muted-2: #5d6866;
   --lv-paper: #d8d5c6;
   --lv-paper-ink: #1a2123;
+  --lv-paper-tab: #a9a592;
+  --lv-paper-tab-ink: #3b4242;
+  --lv-paper-dim: #8b8a7c;
+  --lv-paper-dim-2: #6f6e62;
+  --lv-paper-spent: #6f7774;
+  --lv-teal-ink: #a9e0d4;
+  --lv-scroll-thumb: #8a9b98;
+  --lv-vest-ink: #e3e9eb;
   --lv-select: #f2efe4;
   --lv-select-rgb: 242, 239, 228;
   --lv-stamp: #b3202a;
   --lv-life: #ff6f8e;
+  --lv-life-ink: #ff8fa6;
   --lv-vest: #c9d1d4;
   --lv-money: #4fa346;
   --lv-money-die: #2f7a34;
@@ -42,6 +52,8 @@
   /* Shape and spacing */
   --lv-border: 3px solid var(--lv-outline);
   --lv-shadow: 4px 4px 0 var(--lv-outline);
+  --lv-shadow-panel: 5px 5px 0 rgba(0, 0, 0, 0.45);
+  --lv-col-gap: 12px;
   --lv-gap: 16px;
   --lv-gutter: 8px;
   --lv-scrollbar: 8px;

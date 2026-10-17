@@ -69,6 +69,8 @@ try {
   const id = await page.evaluate(setup);
   const ids = await page.evaluate((i) => Object.fromEntries(game.actors.get(i).items.map((x) => [x.name, x.id])), id);
 
+  await page.evaluate(() => { ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary"); });
+  await wait(600);
   await clickRow("Agility");
   await clickRow("Thief");
   await clickRef(`item:${ids.Safecracking}`);

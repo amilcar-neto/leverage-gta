@@ -83,7 +83,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 - [x] **T-501 DicePool e bandeja.** Estado do cliente, regras de obrigatórios/opcionais, chips, + DIE, ROLL, contador,
   borda acesa nas linhas da ficha. *Dep:* T-303, T-304, T-305.
-- [ ] **T-502 Rolagem e card.** `pool-roll` integrado ao `Roll` do Foundry, card de chat igual ao mockup, flags,
+- [x] **T-502 Rolagem e card.** `pool-roll` integrado ao `Roll` do Foundry, card de chat igual ao mockup, flags,
   d4 de Distinction dá PP, Grana desce degrau. *Dep:* T-501, T-105.
 - [ ] **T-503 Ações do card.** "+1 PP · KEEP 3RD DIE", "GM · COMPLICATION" (com Rastreador do Job), permissões via
   socket. A Complication é gravada direto na configuração `activeJob` (a interface do Rastreador vem na T-703).

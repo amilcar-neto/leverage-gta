@@ -6,7 +6,7 @@
 .chat-message.lv-roll-message > .message-header { display: none; }
 .chat-message.lv-roll-message > .message-content { padding: 0; }
 
-.leverage-gta .lv-roll-card {
+.leverage-gta.lv-roll-card {
   overflow: hidden;
   background: var(--lv-bg);
   border: var(--lv-border);
@@ -19,7 +19,7 @@
   text-align: start;
 }
 
-.leverage-gta .lv-roll-card .hud {
+.leverage-gta.lv-roll-card .hud {
   text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 3px 0 #000, 3px 3px 0 #000;
 }
 
@@ -97,7 +97,7 @@
 
 /* Total */
 .leverage-gta .lv-roll-total { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 4px 10px 12px; }
-.leverage-gta .lv-roll-total-label { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--lv-muted); }
+.leverage-gta .lv-roll-total-label { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lv-muted); }
 .leverage-gta .lv-roll-total-num { font-family: var(--lv-font-display); font-size: 48px; line-height: 1; color: #fff; }
 .leverage-gta .lv-roll-explain { display: flex; flex-direction: column; min-width: 0; color: var(--lv-muted); }
 
