@@ -561,6 +561,22 @@
       "namePlaceholder": "Name",
       "nameLabel": "Name",
       "windowTitle": "{type} · {owner}"
+    },
+    "Roll": {
+      "defaultFlavor": "rolls the Pool",
+      "kept": "Kept",
+      "out": "1 · Out",
+      "total": "Total",
+      "explain": "{count} highest kept",
+      "noneKept": "No die kept",
+      "onesWarningOne": "One die came up 1. The Fixer may add a Complication and hand you a Plot Point.",
+      "onesWarningMany": "{count} dice came up 1. The Fixer may add a Complication and hand you a Plot Point.",
+      "distinctionPP": "Distinction d4: +{count} Plot Point",
+      "moneyDrop": "Money die used: Money drops one step",
+      "keepButton": "+1 PP · Keep 3rd die",
+      "keepTip": "Spend a Plot Point to add the next highest die to the total",
+      "complicationButton": "GM · Complication",
+      "complicationTip": "GM: create or step up a Complication and give 1 Plot Point"
     }
   }
 }

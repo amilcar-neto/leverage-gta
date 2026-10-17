@@ -1,0 +1,153 @@
+/* Roll card in the chat log (T-502). Measures follow reference/mockups/html/roll-chat-card.html.
+   The card root carries .leverage-gta because the color tokens only exist there. */
+
+/* The card draws its own header: hide Foundry's, and drop the message padding/background around it. */
+.chat-message.lv-roll-message { padding: 0; background: none; border: 0; }
+.chat-message.lv-roll-message > .message-header { display: none; }
+.chat-message.lv-roll-message > .message-content { padding: 0; }
+
+.leverage-gta .lv-roll-card {
+  overflow: hidden;
+  background: var(--lv-bg);
+  border: var(--lv-border);
+  border-radius: 6px;
+  box-shadow: var(--lv-shadow);
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-size: 13px;
+  line-height: 1.15;
+  text-align: start;
+}
+
+.leverage-gta .lv-roll-card .hud {
+  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 3px 0 #000, 3px 3px 0 #000;
+}
+
+/* Head */
+.leverage-gta .lv-roll-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #000;
+}
+
+.leverage-gta .lv-roll-mug {
+  width: 34px;
+  height: 40px;
+  flex: none;
+  object-fit: cover;
+  border: 2px solid var(--lv-header);
+  background: var(--lv-paper);
+}
+
+.leverage-gta .lv-roll-mug--empty {
+  background: #d9d6ca repeating-linear-gradient(180deg, transparent 0 7px, rgba(0, 0, 0, 0.2) 7px 8px);
+}
+
+.leverage-gta .lv-roll-who { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.05; }
+
+.leverage-gta .lv-roll-name,
+.leverage-gta .lv-roll-flavor { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.leverage-gta .lv-roll-name {
+  font-family: var(--lv-font-display);
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.leverage-gta .lv-roll-flavor { font-size: 13px; color: var(--lv-muted); }
+
+/* Trait chips */
+.leverage-gta .lv-roll-chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 10px 0; }
+
+.leverage-gta .lv-roll-chip {
+  max-width: 100%;
+  display: inline-flex;
+  gap: 4px;
+  padding: 1px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-roll-chip-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.leverage-gta .lv-roll-chip-die { flex: none; }
+.leverage-gta .lv-roll-chip-die--d4 { color: var(--lv-d4); }
+.leverage-gta .lv-roll-chip-die--d6 { color: var(--lv-d6); }
+.leverage-gta .lv-roll-chip-die--d8 { color: var(--lv-d8); }
+.leverage-gta .lv-roll-chip-die--d10 { color: var(--lv-d10); }
+.leverage-gta .lv-roll-chip-die--d12 { color: var(--lv-d12); }
+
+/* Dice */
+.leverage-gta .lv-roll-dice { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 14px 10px 6px; }
+.leverage-gta .lv-roll-die { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+
+.leverage-gta .lv-roll-cap { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.leverage-gta .lv-roll-cap--kept { color: var(--lv-select); }
+.leverage-gta .lv-roll-cap--one { color: #ee8a8a; }
+.leverage-gta .lv-roll-cap--dropped { color: #6f7f7b; text-transform: none; }
+
+/* Total */
+.leverage-gta .lv-roll-total { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 4px 10px 12px; }
+.leverage-gta .lv-roll-total-label { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--lv-muted); }
+.leverage-gta .lv-roll-total-num { font-family: var(--lv-font-display); font-size: 48px; line-height: 1; color: #fff; }
+.leverage-gta .lv-roll-explain { display: flex; flex-direction: column; min-width: 0; color: var(--lv-muted); }
+
+/* House-rule notes (+1 PP from a d4, Money step) */
+.leverage-gta .lv-roll-note {
+  margin: 0 10px 8px;
+  padding: 2px 8px;
+  border-left: 3px solid var(--lv-pp);
+  font-size: 13px;
+  color: var(--lv-ink);
+}
+
+/* Unresolved 1s */
+.leverage-gta .lv-roll-ones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 10px 10px;
+  padding: 7px 10px;
+  border: 2px dashed #ee5a5a;
+  border-radius: 4px;
+  background: rgba(238, 90, 90, 0.08);
+}
+
+.leverage-gta .lv-roll-ones-num { font-family: var(--lv-font-display); font-size: 18px; color: #ee5a5a; }
+.leverage-gta .lv-roll-ones-text { flex: 1; min-width: 0; font-size: 14px; color: #f2c7c7; }
+
+/* Buttons */
+.leverage-gta .lv-roll-actions { display: flex; gap: 6px; padding: 0 10px 10px; }
+
+.leverage-gta .lv-roll-btn {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  margin: 0;
+  padding: 0 6px;
+  overflow: hidden;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-family: var(--lv-font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-roll-btn--keep { background: var(--lv-header); color: var(--lv-die-ink); }
+.leverage-gta .lv-roll-btn--gm { background: transparent; color: #ee8a8a; border-color: #ee8a8a; }
+.leverage-gta .lv-roll-btn:hover { filter: brightness(1.12); }

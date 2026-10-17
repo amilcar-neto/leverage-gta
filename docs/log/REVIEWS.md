@@ -14,3 +14,9 @@ Um resumo por revisão: tarefa ou fase, veredito, defeitos encontrados, o que fo
 - Deveria (em correção): estado `dropped` do card; cores dos dados em 3 lugares (hue agora derivado + teste de sincronia CSS×config); `renderDie` como `<button>` para escadas; `.lv-chip` igual à bandeja do mockup; linha acesa mais forte.
 - Ficou para a T-301: conferir no Foundry real que a layer `system` vence as do núcleo (`getComputedStyle`).
 - Riscos: variáveis de cor só existem dentro de `.leverage-gta` (card de chat, HUD e diálogos precisam da classe na raiz); estados combinados `kept`+`money` sem visual definido.
+
+## R-F3 + T-307 — Fase 3 (ficha da Equipe) — revisão de conjunto e visual (Opus)
+- Veredito: precisa de correções. Visual já está próximo do mockup; faltam pílulas de etiqueta (amarelas), título de painel (Anton 21 branco), etiquetas JOB/SCENE, alturas de linha, apelido em Special Elite, X únicos, sombras/gaps, ícone da janela.
+- Bloqueios de código: CSS duplicado entre crew.css/header.css/assets.css/ladders.css/lists.css/tray.css (ordem de @import decidia qual valia); selo da trava com dois significados e código copiado entre ficha e item; confirmação de apagar fora do docs/03 (só Jobs e Signature Assets); edição do BACKGROUND podia se perder em re-render.
+- Deveria: listeners únicos centralizados em `_onFirstRender`/`_onClose`; menus flutuantes copiados; nomes de actions fora do docs/04 (decisão: manter nomes atuais e registrar; assert de colisão em parts/_module.mjs); escape/t/readSetting duplicados; aria-pressed e foco por teclado; `data-die` em vez de ler texto; teste da trava como jogador.
+- Correção em duas ondas: (A) CSS + visual (em andamento), (B) JS (depois).

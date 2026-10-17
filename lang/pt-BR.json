@@ -561,6 +561,22 @@
       "namePlaceholder": "Nome",
       "nameLabel": "Nome",
       "windowTitle": "{type} · {owner}"
+    },
+    "Roll": {
+      "defaultFlavor": "rola a Pool",
+      "kept": "Mantido",
+      "out": "1 · Fora",
+      "total": "Total",
+      "explain": "{count} maiores mantidos",
+      "noneKept": "Nenhum dado mantido",
+      "onesWarningOne": "Um dado tirou 1. O Fixer pode criar uma Complication e te dar um Plot Point.",
+      "onesWarningMany": "{count} dados tiraram 1. O Fixer pode criar uma Complication e te dar um Plot Point.",
+      "distinctionPP": "Distinction d4: +{count} Plot Point",
+      "moneyDrop": "Dado de Grana usado: a Grana desce um degrau",
+      "keepButton": "+1 PP · Manter o 3º dado",
+      "keepTip": "Gaste um Plot Point para somar o próximo maior dado ao total",
+      "complicationButton": "Mestre · Complication",
+      "complicationTip": "Mestre: criar ou subir uma Complication e dar 1 Plot Point"
     }
   }
 }

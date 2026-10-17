@@ -13,6 +13,8 @@ import * as itemModels from "./module/data/item/_module.mjs";
 import * as documents from "./module/documents/_module.mjs";
 import * as sheets from "./module/applications/actor/_module.mjs";
 import * as itemSheets from "./module/applications/item/_module.mjs";
+import { registerRollHandler } from "./module/dice/roll-handler.mjs";
+import { registerRollCard } from "./module/applications/chat/roll-card.mjs";
 
 /** Registers one default sheet per Item type (T-401). */
 function registerItemSheets() {
@@ -53,6 +55,8 @@ Hooks.once("init", () => {
   });
   registerItemSheets();
   itemSheets.registerItemIcons();
+  registerRollHandler();
+  registerRollCard();
 });
 
 Hooks.once("setup", () => {

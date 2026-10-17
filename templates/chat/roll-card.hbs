@@ -1,0 +1,44 @@
+<div class="leverage-gta lv-roll-card">
+  <header class="lv-roll-head">
+    {{#if img}}<img class="lv-roll-mug" src="{{img}}" alt="{{name}}">{{else}}<span class="lv-roll-mug lv-roll-mug--empty" aria-hidden="true"></span>{{/if}}
+    <span class="lv-roll-who">
+      <span class="lv-roll-name hud" title="{{name}}">{{name}}</span>
+      <span class="lv-roll-flavor" title="{{flavor}}">{{flavor}}</span>
+    </span>
+  </header>
+
+  <div class="lv-roll-chips">
+    {{#each chips}}<span class="lv-roll-chip" title="{{label}} {{die}}"><span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}">{{die}}</span></span>{{/each}}
+  </div>
+
+  <div class="lv-roll-dice">
+    {{#each dice}}
+    <span class="lv-roll-die">
+      {{{html}}}
+      <span class="lv-roll-cap lv-roll-cap--{{state}}">{{caption}}</span>
+    </span>
+    {{/each}}
+  </div>
+
+  <div class="lv-roll-total">
+    <span class="lv-roll-total-label">{{localize "LEVERAGE.Roll.total"}}</span>
+    <span class="lv-roll-total-num hud">{{total}}</span>
+    <span class="lv-roll-explain"><span>{{countText}}</span>{{#if sumText}}<span>{{sumText}}</span>{{/if}}</span>
+  </div>
+
+  {{#each ppNotes}}<div class="lv-roll-note">{{this}}</div>{{/each}}
+
+  {{#if onesCount}}
+  <div class="lv-roll-ones">
+    <span class="lv-roll-ones-num">{{onesCount}}</span>
+    <span class="lv-roll-ones-text">{{onesText}}</span>
+  </div>
+  {{/if}}
+
+  {{#if showActions}}
+  <div class="lv-roll-actions">
+    {{#if showKeep}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="keepDie" title="{{keepTip}}">{{keepLabel}}</button>{{/if}}
+    {{#if showComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="complication" title="{{complicationTip}}">{{complicationLabel}}</button>{{/if}}
+  </div>
+  {{/if}}
+</div>
