@@ -101,7 +101,7 @@ try {
     await pm.click();
     await page.keyboard.press("Control+A");
     await page.keyboard.type("Rich effect text.");
-    await page.click(`${t} .lv-item-name`);
+    await page.locator(`${t} prose-mirror button.toggle`).dispatchEvent("click");
     await wait(900);
     s = await owned(state, "talent");
     record("talent: rich effect saved", /Rich effect text/.test(s.system.effect), s.system.effect);
