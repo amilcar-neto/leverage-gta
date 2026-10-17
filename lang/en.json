@@ -392,10 +392,6 @@
         "title": "Delete",
         "body": "Delete {name}?"
       },
-      "deleteTrait": {
-        "title": "Delete",
-        "content": "Delete <strong>{name}</strong>? This cannot be undone."
-      },
       "TrainUp": {
         "title": "Train up",
         "unspent": "Unspent Jobs: {n}",
@@ -431,7 +427,8 @@
         "locked": "Traits locked",
         "lockedHint": "The GM locked traits. Attributes, Roles, Distinctions, Talents and Specialties cannot change right now.",
         "unlocked": "Editing on",
-        "unlockedHint": "The GM allowed edits. Traits can be added, removed and re-rated."
+        "unlockedHint": "The GM allowed edits. Traits can be added, removed and re-rated.",
+        "lockedGmHint": "Traits are locked for players. As GM you can still edit everything."
       },
       "Header": {
         "noPhoto": "No photo",

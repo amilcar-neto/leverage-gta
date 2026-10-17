@@ -392,10 +392,6 @@
         "title": "Excluir",
         "body": "Excluir {name}?"
       },
-      "deleteTrait": {
-        "title": "Excluir",
-        "content": "Excluir <strong>{name}</strong>? Não tem volta."
-      },
       "TrainUp": {
         "title": "Train up",
         "unspent": "Jobs sem gastar: {n}",
@@ -431,7 +427,8 @@
         "locked": "Traços travados",
         "lockedHint": "O mestre travou os Traços. Attributes, Roles, Distinctions, Talents e Specialties não podem mudar agora.",
         "unlocked": "Edição ligada",
-        "unlockedHint": "O mestre liberou a edição. Os Traços podem ser adicionados, removidos e reclassificados."
+        "unlockedHint": "O mestre liberou a edição. Os Traços podem ser adicionados, removidos e reclassificados.",
+        "lockedGmHint": "Traços travados para os jogadores. Como Mestre, você continua editando tudo."
       },
       "Header": {
         "noPhoto": "Sem foto",

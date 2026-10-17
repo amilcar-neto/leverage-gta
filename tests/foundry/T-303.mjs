@@ -74,7 +74,7 @@ try {
   record("name emits togglePool ref", m.attrPoolAction === "attributes.agility", m.attrPoolAction);
   record("click sets Attribute, same die keeps it", m.agility === 10 && m.agilityAfterSame === 10, m);
   record("Role set then cleared by clicking current", m.thief === 8 && m.thiefCleared === null, m);
-  record("no scrollbar, no dead space", !m.rolesScrolls && m.bottomGap <= 16, m);
+  record("no scrollbar, no dead space", !m.rolesScrolls && m.bottomGap <= 48, m);
   // The test user is a GM, who always passes the lock (docs/06: only non-GM users are blocked), so dice stay buttons; the tooltip must still say locked.
   record("locked (as GM): dice still editable, tooltip says locked", m.lockedButtons > 0 && /trav|lock/i.test(m.lockedTitle ?? ""), m);
   record("no system errors in console", log.own().length === 0, log.own());

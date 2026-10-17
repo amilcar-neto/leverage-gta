@@ -183,3 +183,6 @@
 
 .leverage-gta.crew-sheet .lv-specialties .lv-row-name { font-size: 15px; letter-spacing: 0.03em; }
 .leverage-gta.crew-sheet .lv-specialties .lv-xbtn { width: 18px; }
+
+/* Keyboard focus for the role="button" spans (Asset and Talent names) */
+.leverage-gta.crew-sheet [role="button"]:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 1px; }

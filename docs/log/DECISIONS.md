@@ -72,3 +72,16 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   `actorUuid` vazio. Sem botões de PP e sem aviso de 1s (os 1s do mestre só não contam).
 - **Núcleo de rolagem compartilhado:** `module/dice/roll-core.mjs` (fórmula, valores, `buildRollData`, `evaluateDice`); o
   `roll-handler.mjs` reexporta para manter os testes.
+
+## 2026-10-17 - Correcoes R-F3, parte B (JS da ficha da Equipe)
+- **Nomes das actions:** mantidos os nomes atuais (`setDie`, `togglePool`, `addTraitItem`, `deleteTraitItem`...), mesmo fora da lista do docs/04. Para nao haver colisao silenciosa, `partActions` (parts/_module.mjs) passa por `mergeActions`, que lanca erro se duas partes usarem o mesmo nome. Alternativa descartada: renomear tudo (muito ruido nos templates e testes sem ganho).
+- **Selo da trava:** uma regra so (`components/lock-seal.mjs`). O selo sempre reflete a configuracao `traitsLocked`. Para o mestre, a dica diz que ele edita tudo mesmo travado (`Seal.lockedGmHint`). Antes a ficha do item mostrava "destravado" para o mestre.
+- **Nomes de permissao:** `canEdit` = `sheet.isEditable` (cabecalho, Assets, Jobs, pasta). `canEditTraits` = editavel e a trava deixa (listas de Tracos e escadas de dados). Acabaram `canEditHeader` e `assetsEditable`.
+- **Apagar:** so Job e Signature Asset pedem confirmacao (docs/03). O dialogo e um so (`Dialog.Delete.*`), em `components/confirm-delete.mjs`. Distinction, Talent, Specialty e Asset comum saem na hora (a trava e a permissao sao checadas antes).
+- **BACKGROUND:** continua com EDIT/SAVE. O texto digitado fica num rascunho (copiado do editor antes de cada render), entao renderizar a ficha inteira nao perde nada. Alternativa descartada: `<prose-mirror toggled>` com `name` (o submit automatico do formulario salvaria e re-renderizaria a cada alteracao).
+- **Listeners:** todos os listeners e hooks duradouros nascem em `CrewSheet#_onFirstRender` (via `attachParts`, com um `AbortController`) e morrem em `_onClose`. Os hooks globais `renderCrewSheet`/`closeCrewSheet` e o `leverage.houseRulesChanged` global sairam; `afterRender` das partes roda no `_onRender` da ficha.
+- **Teclado:** nome de Asset e nome de Talent viram `role="button" tabindex="0"` (Enter/Espaco clicam, `activateOnKey`). Abrir o Asset continua so por duplo clique (sem atalho de teclado ainda).
+- **Segundo navegador nos testes:** `openBrowser(env, { secondary: true })` nao pega a trava de `.cache/foundry.lock` (o primeiro navegador da mesma execucao ja a tem; esperar causaria deadlock). `phase1.mjs` usa isso para o jogador.
+
+## 2026-10-17 — Altura das linhas de Attributes/Roles
+- O mockup deixa folga no pé da coluna esquerda (~77px) e as linhas têm ~40px. Mantive `max-height: 46px` nas linhas e o teste T-303 aceita até 48px de folga (antes 16). docs/06 "sem espaço morto" vale para as listas que rolam, não para as escadas.
