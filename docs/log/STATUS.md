@@ -1,1 +1,1 @@
-IN PROGRESS: T-705 (apps de config), pendências da bandeja/macros, T-601 (Vida e Colete) em paralelo
+IN PROGRESS: T-602 (dano), T-603 (Grana), T-801 (NPC), T-802 (Local) + pendências da bandeja em paralelo; depois T-604, T-701 (HUD), R-F5..R-F8
