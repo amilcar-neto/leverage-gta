@@ -117,7 +117,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 8 — NPC e Local
 
-- [ ] **T-801 Ficha de NPC** (tiers, Traços, gangue, arma, polícia, ROLL AS OPPOSITION). *Dep:* T-504.
+- [x] **T-801 Ficha de NPC** (tiers, Traços, gangue, arma, polícia, ROLL AS OPPOSITION). *Dep:* T-504.
   *Par:* T-802.
 - [x] **T-802 Ficha de Local.** *Dep:* T-301. *Par:* T-801.
 - [ ] **R-F8 Revisão de fase.**
