@@ -67,9 +67,9 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   + LOG. *Dep:* T-301. *Par:* T-302, T-303, T-304.
 - [x] **T-306 Arrastar e soltar.** Itens para a ficha, reordenar, Jobs entre fichas, criar macro arrastando Traço.
   *Dep:* T-304, T-305.
-- [ ] **T-307 Fidelidade visual da ficha.** `tester` tira prints nos três estados (BACKGROUND, JOBS, destravada) com
+- [x] **T-307 Fidelidade visual da ficha.** `tester` tira prints nos três estados (BACKGROUND, JOBS, destravada) com
   dados iguais aos do mockup; `reviewer` compara com os PNGs; correções até passar. *Dep:* T-302…T-306.
-- [ ] **R-F3 Revisão de fase.**
+- [x] **R-F3 Revisão de fase.**
 
 ## Fase 4 — Itens
 

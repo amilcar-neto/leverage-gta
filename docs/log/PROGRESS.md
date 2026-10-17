@@ -25,3 +25,4 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - T-306, T-401, T-501 concluídos. Em andamento: T-502, R-F3/T-307 (revisão visual).
 - T-502, T-503 concluídos. R-F3 onda A commitada. Em andamento: onda B, T-504, T-702.
 - T-504, T-702 concluídos (4be6b8e). Em andamento: onda B, T-703, T-705, T-505.
+- R-F3/T-307 fechados (3ab7eec). Em andamento: T-705, pendências bandeja/macros, T-601.
