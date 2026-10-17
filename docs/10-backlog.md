@@ -81,7 +81,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 5 — Pool, rolagem e chat
 
-- [ ] **T-501 DicePool e bandeja.** Estado do cliente, regras de obrigatórios/opcionais, chips, + DIE, ROLL, contador,
+- [x] **T-501 DicePool e bandeja.** Estado do cliente, regras de obrigatórios/opcionais, chips, + DIE, ROLL, contador,
   borda acesa nas linhas da ficha. *Dep:* T-303, T-304, T-305.
 - [ ] **T-502 Rolagem e card.** `pool-roll` integrado ao `Roll` do Foundry, card de chat igual ao mockup, flags,
   d4 de Distinction dá PP, Grana desce degrau. *Dep:* T-501, T-105.

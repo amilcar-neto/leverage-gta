@@ -99,7 +99,7 @@ try {
   await wait(300);
   const menu = await page.locator(`${sheet} .lv-pool-menu-item`).count();
   record("+ DIE menu lists d4..d12 (and Money)", menu >= 5, menu);
-  await page.locator(`${sheet} .lv-pool-menu-item`).filter({ hasText: /^d6$/ }).click();
+  await page.locator(`${sheet} .lv-pool-menu-item`).filter({ hasText: /d6$/ }).click();
   await wait(400);
   t = await tray();
   record("loose d6 added", /^4 /.test(t.count), t.count);
