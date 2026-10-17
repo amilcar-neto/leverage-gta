@@ -1,1 +1,1 @@
-IN PROGRESS: T-401 (fichas de item) e T-501 (Pool e bandeja) em paralelo; depois T-307, R-F3, R-F4, T-502
+IN PROGRESS: T-502 (rolagem e card) e revisão R-F3 da ficha em andamento
