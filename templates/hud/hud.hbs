@@ -1,0 +1,45 @@
+<div class="lv-hud-body{{#if minimized}} is-minimized{{/if}}">
+  <button type="button" class="lv-hud-min" data-action="toggleMinimized" aria-pressed="{{minimized}}"
+    aria-label="{{minimizeLabel}}" data-tooltip="{{minimizeLabel}}">
+    <i class="fa-solid {{#if minimized}}fa-up-right-and-down-left-from-center{{else}}fa-down-left-and-up-right-to-center{{/if}}" aria-hidden="true"></i>
+  </button>
+
+  {{#if stars.show}}
+  <div class="lv-hud-stars" role="group" aria-label="{{stars.label}}">
+    {{#each stars.items as |s|}}
+    <button type="button" class="lv-hud-star{{#if s.on}} is-on{{/if}}" data-action="setStars" data-level="{{s.n}}"
+      data-tooltip="{{s.tip}}" aria-label="{{s.tip}}" {{#unless s.interactive}}disabled{{/unless}}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8l3.1 6.4 7 .9-5.1 4.9 1.3 7L12 17.6 5.7 21l1.3-7L1.9 9.1l7-.9z"></path></svg>
+      <span class="lv-hud-star-die">d{{s.die}}</span>
+    </button>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  {{#if money.show}}
+  <button type="button" class="lv-hud-money{{#unless money.interactive}} is-locked{{/unless}}{{#unless money.hasActor}} is-dim{{/unless}}"
+    data-action="payMoney" data-tooltip="{{money.tip}}" aria-label="{{money.tip}}" {{#unless money.interactive}}disabled{{/unless}}>
+    <span class="lv-hud-text lv-hud-dollar">$</span>
+    {{#if money.empty}}
+      {{{lvDie 0 die=4 size=38 money=true empty=true}}}
+    {{else}}
+      {{#each money.dice as |d|}}{{{lvDie d die=d size=38 money=true}}}{{/each}}
+    {{/if}}
+  </button>
+  {{/if}}
+
+  {{#if plotPoints.show}}
+  <div class="lv-hud-pp{{#unless plotPoints.hasActor}} is-dim{{/unless}}" data-tooltip="{{plotPoints.tip}}">
+    <button type="button" class="lv-hud-round" data-action="spendPlotPoint" aria-label="{{plotPoints.spendLabel}}"
+      data-tooltip="{{plotPoints.spendLabel}}" {{#unless plotPoints.interactive}}disabled{{/unless}}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
+    </button>
+    <button type="button" class="lv-hud-round" data-action="gainPlotPoint" aria-label="{{plotPoints.gainLabel}}"
+      data-tooltip="{{plotPoints.gainLabel}}" {{#unless plotPoints.interactive}}disabled{{/unless}}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>
+    </button>
+    <svg class="lv-hud-chip" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
+    <span class="lv-hud-text lv-hud-pp-value{{#if plotPoints.pulse}} is-pulse{{/if}}" data-action="gainPlotPoint">{{plotPoints.value}}</span>
+  </div>
+  {{/if}}
+</div>

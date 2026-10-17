@@ -1,0 +1,225 @@
+/**
+ * The HUD (docs/07-ui-hud.md): wanted stars, Money and Plot Points at the top right of the screen, 16px from the
+ * sidebar. A frameless `ApplicationV2` (the pf2e effects panel pattern) appended to Foundry's `#interface`.
+ * It re-renders (debounced) when the wanted level, the focused character, the control of a token, the user's
+ * character, the house rules or the client settings change. All rules live in `hud-logic.mjs` and the public API.
+ */
+import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
+import { getCityScales } from "../../settings.mjs";
+import { setLevel } from "../gm/stars-actions.mjs";
+import { t } from "../components/i18n.mjs";
+import { hudPermissions, moneyView, nextStarLevel, pickFocusActor, starsView } from "./hud-logic.mjs";
+
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+/** Pause after the sidebar starts to move before measuring it (its slide takes about 200 ms). */
+const SIDEBAR_SETTLE_MS = 250;
+const RENDER_DEBOUNCE_MS = 50;
+
+const setting = (key, fallback) => game.settings.get(SYSTEM_ID, key) ?? fallback;
+
+/** The Crew character of the first controlled token, if any. */
+function controlledCrew() {
+  const token = canvas?.tokens?.controlled?.find((tk) => tk.actor?.type === "crew");
+  return token?.actor ?? null;
+}
+
+export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
+  /** @override */
+  static DEFAULT_OPTIONS = {
+    id: "leverage-hud",
+    tag: "aside",
+    classes: ["leverage-gta"],
+    window: { frame: false, positioned: false },
+    actions: {
+      setStars: LeverageHud.#onSetStars,
+      payMoney: LeverageHud.#onPay,
+      spendPlotPoint: LeverageHud.#onSpendPlotPoint,
+      gainPlotPoint: LeverageHud.#onGainPlotPoint,
+      toggleMinimized: LeverageHud.#onToggleMinimized
+    }
+  };
+
+  /** @override */
+  static PARTS = { main: { template: `systems/${SYSTEM_ID}/templates/hud/hud.hbs` } };
+
+  /** Plot Points shown at the last render, per character (a change pulses the number). */
+  #lastPp = { id: null, value: null };
+
+  /** @type {ResizeObserver|null} */
+  #observer = null;
+
+  #settleTimer = null;
+
+  /** Re-render with a short debounce (many hooks fire together). */
+  refresh = foundry.utils.debounce(() => this.render({ force: true }), RENDER_DEBOUNCE_MS);
+
+  /** Character the HUD shows now. @returns {?Actor} */
+  get focusActor() {
+    return pickFocusActor({ isGM: game.user.isGM, character: game.user.character, controlled: controlledCrew() });
+  }
+
+  /* ---------------------------------------------------------------- context */
+
+  /** @override */
+  async _prepareContext() {
+    const actor = this.focusActor;
+    const isGM = game.user.isGM;
+    const can = hudPermissions({ isGM, isOwner: Boolean(actor?.isOwner), hasActor: Boolean(actor) });
+    const minimized = Boolean(setting("hud.minimized", false));
+    return {
+      minimized,
+      stars: this.#starsContext(can.stars),
+      money: this.#moneyContext(actor, can, minimized, isGM),
+      plotPoints: this.#plotPointsContext(actor, can, minimized, isGM),
+      minimizeLabel: t(minimized ? "LEVERAGE.HUD.expand" : "LEVERAGE.HUD.minimize")
+    };
+  }
+
+  #starsContext(interactive) {
+    const { level = 0, city = LEVERAGE.stars.defaultCity } = setting("wanted", {});
+    const show = Boolean(setting("hud.showStars", true) && setting("houseRules.stars", true));
+    const items = starsView({ level, city, scales: getCityScales(), interactive }).map((s) => ({
+      ...s, tip: t("LEVERAGE.HUD.starTip", { n: s.n, pool: s.pool })
+    }));
+    return { show, items, level, label: t("LEVERAGE.HUD.stars") };
+  }
+
+  #moneyContext(actor, can, minimized, isGM) {
+    const show = Boolean(setting("hud.showMoney", true) && setting("houseRules.money", true) && !minimized && (actor || !isGM));
+    const steps = actor?.system.money?.steps ?? 0;
+    const tip = actor
+      ? t(can.money ? "LEVERAGE.HUD.moneyTip" : "LEVERAGE.HUD.moneyTipReadOnly", { steps })
+      : t("LEVERAGE.HUD.noCharacter");
+    return { show, ...moneyView(steps), interactive: can.money, hasActor: Boolean(actor), tip };
+  }
+
+  #plotPointsContext(actor, can, minimized, isGM) {
+    const show = Boolean(setting("hud.showPlotPoints", true) && !minimized && (actor || !isGM));
+    const value = actor?.system.plotPoints?.value ?? 0;
+    const changed = this.#lastPp.id === actor?.id && this.#lastPp.value !== null && this.#lastPp.value !== value;
+    this.#lastPp = { id: actor?.id ?? null, value: actor ? value : null };
+    return {
+      show, value, pulse: Boolean(actor) && changed, interactive: can.plotPoints, hasActor: Boolean(actor),
+      tip: actor ? t("LEVERAGE.HUD.plotPointsTip", { value }) : t("LEVERAGE.HUD.noCharacter"),
+      spendLabel: t("LEVERAGE.HUD.spendPlotPoint"), gainLabel: t("LEVERAGE.HUD.gainPlotPoint")
+    };
+  }
+
+  /* ---------------------------------------------------------------- rendering */
+
+  /** The frame goes inside `#interface` so the HUD sits in the UI layer, under windows. @override */
+  _insertElement(element) {
+    const existing = document.getElementById(element.id);
+    if (existing) existing.replaceWith(element);
+    else (document.getElementById("interface") ?? document.body).append(element);
+    return element;
+  }
+
+  /** @override */
+  async _onFirstRender() {
+    this.element.addEventListener("contextmenu", (event) => this.#onContextMenu(event));
+    this.#watchSidebar();
+  }
+
+  /** @override */
+  async _onRender() {
+    this.updatePosition();
+  }
+
+  /** @override */
+  _onClose() {
+    this.#observer?.disconnect();
+    clearTimeout(this.#settleTimer);
+  }
+
+  /* ---------------------------------------------------------------- position */
+
+  /** Writes the space the sidebar takes (its left edge to the window's right edge) to `--lv-sidebar-w`. */
+  updatePosition() {
+    const sidebar = ui.sidebar?.element ?? document.getElementById("sidebar");
+    const left = sidebar?.getBoundingClientRect().left;
+    const width = Number.isFinite(left) ? Math.max(0, window.innerWidth - left) : 0;
+    document.documentElement.style.setProperty("--lv-sidebar-w", `${Math.round(width)}px`);
+  }
+
+  /** Follows the sidebar: size changes, the collapse hook (after the slide ends) and window resizes. */
+  #watchSidebar() {
+    const sidebar = ui.sidebar?.element ?? document.getElementById("sidebar");
+    if (sidebar) {
+      this.#observer = new ResizeObserver(() => this.updatePosition());
+      this.#observer.observe(sidebar);
+      sidebar.addEventListener("transitionend", () => this.updatePosition());
+    }
+    window.addEventListener("resize", () => this.updatePosition());
+    Hooks.on("collapseSidebar", () => {
+      clearTimeout(this.#settleTimer);
+      this.#settleTimer = setTimeout(() => this.updatePosition(), SIDEBAR_SETTLE_MS);
+    });
+  }
+
+  /* ---------------------------------------------------------------- actions */
+
+  /** Fixer: sets the level; a click on the current level lowers it by one. */
+  static async #onSetStars(event, target) {
+    if (!game.user.isGM) return;
+    const { level = 0 } = setting("wanted", {});
+    await setLevel(nextStarLevel(Number(target.dataset.level), level));
+  }
+
+  /** Shift-click: minimize. Click: Pay dialog. */
+  static async #onPay(event) {
+    if (event.shiftKey) return LeverageHud.#onToggleMinimized();
+    const actor = this.focusActor;
+    if (actor) await game.leverage.money.payDialog(actor);
+  }
+
+  /** Right click: Lend dialog on Money, minus one on the Plot Points number. */
+  async #onContextMenu(event) {
+    const actor = this.focusActor;
+    if (!actor || !(game.user.isGM || actor.isOwner)) return;
+    if (event.target.closest(".lv-hud-money")) {
+      event.preventDefault();
+      await game.leverage.money.lendDialog(actor);
+    } else if (event.target.closest(".lv-hud-pp-value")) {
+      event.preventDefault();
+      await game.leverage.plotPoints.spend(actor, 1);
+    }
+  }
+
+  static async #onSpendPlotPoint() {
+    const actor = this.focusActor;
+    if (actor) await game.leverage.plotPoints.spend(actor, 1);
+  }
+
+  static async #onGainPlotPoint() {
+    const actor = this.focusActor;
+    if (actor) await game.leverage.plotPoints.add(actor, 1);
+  }
+
+  static async #onToggleMinimized() {
+    await game.settings.set(SYSTEM_ID, "hud.minimized", !setting("hud.minimized", false));
+  }
+}
+
+/** The one instance. */
+let hud = null;
+
+/**
+ * Creates the HUD, renders it and wires the hooks that keep it current. Call from the `ready` hook.
+ * @returns {LeverageHud}
+ */
+export function registerHud() {
+  if (hud) return hud;
+  hud = new LeverageHud();
+  const refresh = () => hud.refresh();
+  const ifFocus = (actor) => { if (actor?.id && actor.id === hud.focusActor?.id) refresh(); };
+  Hooks.on("updateActor", ifFocus);
+  Hooks.on("deleteActor", ifFocus);
+  Hooks.on("controlToken", refresh);
+  Hooks.on("canvasReady", refresh);
+  Hooks.on("updateUser", (user, changes) => { if (user.id === game.user.id && "character" in changes) refresh(); });
+  for (const name of ["starsChanged", "hudChanged", "houseRulesChanged"]) Hooks.on(`leverage.${name}`, refresh);
+  hud.render({ force: true });
+  return hud;
+}

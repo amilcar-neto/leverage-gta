@@ -966,6 +966,18 @@
         "noCrew": "No Crew characters",
         "rolled": "Apply these after the roll is passed."
       }
+    },
+    "HUD": {
+      "expand": "Show everything",
+      "minimize": "Show only the stars",
+      "stars": "Wanted level",
+      "starTip": "{n} stars · police roll {pool}",
+      "moneyTip": "Grana · {steps} steps · click to pay, right click to lend",
+      "moneyTipReadOnly": "Grana · {steps} steps",
+      "plotPointsTip": "Plot Points · {value}",
+      "noCharacter": "No character assigned",
+      "spendPlotPoint": "Spend a Plot Point",
+      "gainPlotPoint": "Gain a Plot Point"
     }
   }
 }

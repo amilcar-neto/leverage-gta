@@ -966,6 +966,18 @@
         "noCrew": "Nenhum personagem da Equipe",
         "rolled": "Aplique depois de passar na jogada."
       }
+    },
+    "HUD": {
+      "expand": "Mostrar tudo",
+      "minimize": "Mostrar só as estrelas",
+      "stars": "Nível de procurado",
+      "starTip": "{n} estrelas · rolagem da polícia {pool}",
+      "moneyTip": "Grana · {steps} degraus · clique para pagar, botão direito para emprestar",
+      "moneyTipReadOnly": "Grana · {steps} degraus",
+      "plotPointsTip": "Plot Points · {value}",
+      "noCharacter": "Nenhum personagem atribuído",
+      "spendPlotPoint": "Gastar um Plot Point",
+      "gainPlotPoint": "Ganhar um Plot Point"
     }
   }
 }

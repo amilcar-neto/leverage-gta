@@ -1,0 +1,156 @@
+/* HUD (docs/07-ui-hud.md; mockups hud-sidebar-open / collapsed / empty-state). Fixed to the top right, 16px from the
+   sidebar; --lv-sidebar-w is written by leverage-hud.mjs from the sidebar's real position. */
+#leverage-hud {
+  position: fixed;
+  top: 14px;
+  right: calc(var(--lv-sidebar-w, 0px) + 16px);
+  z-index: 40; /* above the canvas, below application windows (z-index 100+) */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+  transition: right 0.2s ease;
+}
+
+#leverage-hud .lv-hud-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+/* Only the controls take the mouse. */
+#leverage-hud button,
+#leverage-hud .lv-hud-pp-value { pointer-events: auto; }
+
+#leverage-hud button {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: inherit;
+  cursor: pointer;
+  line-height: 1;
+}
+
+#leverage-hud button:disabled { cursor: default; opacity: 1; }
+
+/* Outlined Anton text (GTA III) */
+#leverage-hud .lv-hud-text {
+  font-family: var(--lv-font-display);
+  line-height: 1;
+  text-shadow: var(--lv-hud-shadow);
+}
+
+/* Minimize: a discreet button that appears on hover, left of the stars. */
+#leverage-hud .lv-hud-min {
+  position: absolute;
+  top: 0;
+  right: calc(100% + 6px);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--lv-ink);
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+#leverage-hud .lv-hud-body:hover .lv-hud-min,
+#leverage-hud .lv-hud-min:focus-visible { opacity: 0.85; }
+
+/* Stars */
+#leverage-hud .lv-hud-stars { display: flex; gap: 1px; }
+
+#leverage-hud .lv-hud-star {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  opacity: 0.8;
+}
+#leverage-hud .lv-hud-star.is-on { opacity: 1; }
+#leverage-hud .lv-hud-star svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#leverage-hud .lv-hud-star path {
+  fill: var(--lv-star-off);
+  stroke: var(--lv-outline);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+#leverage-hud .lv-hud-star.is-on path { fill: var(--lv-star-on); }
+#leverage-hud .lv-hud-star-die {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 20px;
+  text-align: center;
+  font-family: var(--lv-font-display);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #857232;
+}
+#leverage-hud .lv-hud-star.is-on .lv-hud-star-die { color: #1d1500; }
+#leverage-hud button.lv-hud-star:not(:disabled):hover { transform: scale(1.06); }
+#leverage-hud button.lv-hud-star:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 2px; }
+
+/* Money */
+#leverage-hud .lv-hud-money { display: flex; align-items: center; gap: 4px; }
+#leverage-hud .lv-hud-dollar { font-size: 40px; color: var(--lv-money); margin-right: 4px; }
+#leverage-hud .lv-hud-money .lv-die { flex: none; }
+#leverage-hud .lv-hud-money:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 2px; }
+
+/* Plot Points */
+#leverage-hud .lv-hud-pp { display: flex; align-items: center; gap: 6px; }
+#leverage-hud .lv-hud-round {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  background: #000;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+#leverage-hud button.lv-hud-round:disabled { opacity: 0.4; }
+#leverage-hud .lv-hud-round svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+#leverage-hud .lv-hud-chip { width: 30px; height: 30px; margin-left: 4px; flex: none; }
+#leverage-hud .lv-hud-chip circle:first-child { fill: var(--lv-pp); stroke: var(--lv-outline); stroke-width: 2; }
+#leverage-hud .lv-hud-chip circle:last-child {
+  fill: none;
+  stroke: var(--lv-outline);
+  stroke-width: 1.6;
+  stroke-dasharray: 3 2.2;
+}
+#leverage-hud .lv-hud-pp-value {
+  min-width: 30px;
+  text-align: right;
+  font-size: 34px;
+  color: var(--lv-pp);
+  cursor: pointer;
+}
+
+/* No character: dim, still readable. */
+#leverage-hud .is-dim { opacity: 0.45; }
+
+@keyframes lv-hud-pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+#leverage-hud .lv-hud-pp-value.is-pulse { animation: lv-hud-pulse 0.5s ease-out; transform-origin: right center; }
+
+@media (prefers-reduced-motion: reduce) {
+  #leverage-hud { transition: none; }
+  #leverage-hud .lv-hud-pp-value.is-pulse { animation: none; }
+}

@@ -20,3 +20,10 @@ Um resumo por revisão: tarefa ou fase, veredito, defeitos encontrados, o que fo
 - Bloqueios de código: CSS duplicado entre crew.css/header.css/assets.css/ladders.css/lists.css/tray.css (ordem de @import decidia qual valia); selo da trava com dois significados e código copiado entre ficha e item; confirmação de apagar fora do docs/03 (só Jobs e Signature Assets); edição do BACKGROUND podia se perder em re-render.
 - Deveria: listeners únicos centralizados em `_onFirstRender`/`_onClose`; menus flutuantes copiados; nomes de actions fora do docs/04 (decisão: manter nomes atuais e registrar; assert de colisão em parts/_module.mjs); escape/t/readSetting duplicados; aria-pressed e foco por teclado; `data-die` em vez de ler texto; teste da trava como jogador.
 - Correção em duas ondas: (A) CSS + visual (em andamento), (B) JS (depois).
+
+## R-F4 + R-F5 — Fichas de Item, Pool, rolagem e chat (Opus)
+- Veredito: precisa de correções. 2 bloqueios, ~13 "deveria".
+- Bloqueios: (1) "+1 PP · KEEP 3RD DIE" via socket pode gastar 2 PP e manter 1 dado em duplo clique (sem trava no lado do mestre). (2) id do solicitante vem dentro do pacote do socket (não autenticado): Grana (`moneyTransfer`) e estrelas podem ser forjadas por console.
+- Deveria: card vaza rolagem cega; botão KEEP desatualizado e sem aviso; mestre vê "+1 PP"; `scene:<id>` não aceito em rollPool; fonte `police` composta não reconhecida em damage.mjs; dado de Grana no chat em 24px (inexistente); docs/05 desatualizado (flags); constantes duplicadas (`mystery-man`, SYSTEM_ID×systemId, 2d6); CSS do card repetindo sombra e vermelhos soltos; cabeçalho do Foundry escondido por inteiro; rolador de oposição sem trava de duplo clique; i18n (plural, "keep 2" fixo); jogador contorna regras no AssetSheet/JobSheet.
+- Visual do card: chip de Grana com a cor do d12 (deve ser verde-dinheiro), `D10` em maiúsculas no chip, explicação do total quebrando em 2 linhas, 5+ dados quebram mal. Visual do item: barra de título e selo diferentes do mockup; Asset com ~60px de espaço morto.
+- Correção em duas frentes (JS/regras e CSS/visual) em andamento.
