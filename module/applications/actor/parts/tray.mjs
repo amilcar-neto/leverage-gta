@@ -8,9 +8,10 @@
  */
 import { LEVERAGE } from "../../../config.mjs";
 import { DicePool, resolvePoolRef } from "../../../dice/pool.mjs";
+import { isValidDie } from "../../../dice/die.mjs";
 import { readSetting } from "../../../data/fields.mjs";
 import { renderDie, escapeHtml } from "../../components/die.mjs";
-import { openFloatMenu } from "../../components/float-menu.mjs";
+import { closeFloatMenu, openFloatMenu } from "../../components/float-menu.mjs";
 import { t } from "../../components/i18n.mjs";
 
 /** Elements where Enter keeps its own meaning (so it does not roll the Pool). */
@@ -19,11 +20,20 @@ const INTERACTIVE = "button, input, textarea, select, a, prose-mirror, [contente
 /** Hook announcing a Pool the player wants to roll. Payload: `{ actor, sheet, refs, entries }`. */
 export const ROLL_REQUESTED_HOOK = "leverage.rollRequested";
 
+/** Hook fired when the active Job changes (its Scene Traits feed the "+ DIE" menu). */
+const ACTIVE_JOB_HOOK = "leverage.activeJobChanged";
+
 /** Pool of each open sheet. */
 const pools = new WeakMap();
 
 /** Whether the Money house rule is on (safe before settings are ready). */
 const moneyEnabled = () => Boolean(readSetting("houseRules.money", true));
+
+/** Scene Traits of the active Job (`{id, name, die}`), empty when there is no Job. */
+const sceneTraits = () => {
+  const list = readSetting("activeJob", null)?.sceneTraits;
+  return Array.isArray(list) ? list.filter((x) => x?.id && isValidDie(x.die)) : [];
+};
 
 /**
  * The Pool of a sheet, created on first use. Other tasks (roll, macros) read it through this.
@@ -33,7 +43,7 @@ const moneyEnabled = () => Boolean(readSetting("houseRules.money", true));
 export function poolOf(sheet) {
   let pool = pools.get(sheet);
   if (!pool) {
-    pool = new DicePool((ref) => resolvePoolRef(sheet.actor, ref, { moneyEnabled: moneyEnabled() }));
+    pool = new DicePool((ref) => resolvePoolRef(sheet.actor, ref, { moneyEnabled: moneyEnabled(), sceneTraits: sceneTraits() }));
     pools.set(sheet, pool);
   }
   return pool;
@@ -49,8 +59,9 @@ export function poolOf(sheet) {
  */
 export function chipOf(entry, t) {
   const name = entry.nameKey ? t(entry.nameKey) : entry.name;
+  const cycles = entry.kind === "distinction" && !entry.hinders;
   const title = [name, entry.warn && t(`LEVERAGE.Sheet.Tray.warn.${entry.warn}`),
-    entry.blank && t("LEVERAGE.Sheet.Tray.problem.blank"), t("LEVERAGE.Sheet.Tray.remove")].filter(Boolean).join("\n");
+    entry.blank && t("LEVERAGE.Sheet.Tray.problem.blank"), t(`LEVERAGE.Sheet.Tray.${cycles ? "cycleDistinction" : "remove"}`)].filter(Boolean).join("\n");
   return {
     ref: entry.ref, name, title, die: entry.die, kind: entry.kind, optional: entry.optional,
     kindLabel: t(`LEVERAGE.Sheet.Tray.kind.${entry.kind}`), money: entry.kind === "money",
@@ -136,7 +147,14 @@ function onEnter(sheet, event) {
  */
 export function attach(sheet, signal) {
   sheet.element.addEventListener("keydown", (event) => onEnter(sheet, event), { signal });
-  signal.addEventListener("abort", () => pools.delete(sheet));
+  const hookId = Hooks.on(ACTIVE_JOB_HOOK, () => {
+    closeFloatMenu(sheet);
+    if (sheet.rendered) refresh(sheet);
+  });
+  signal.addEventListener("abort", () => {
+    Hooks.off(ACTIVE_JOB_HOOK, hookId);
+    pools.delete(sheet);
+  });
 }
 
 /** After every render: lights the rows and presses the buttons of the Pool. */
@@ -145,18 +163,35 @@ export function afterRender(sheet) {
   if (pool) syncRows(sheet.element, pool);
 }
 
+/**
+ * Puts a reference in the Pool of the actor's sheet, opening the sheet first when it is closed (`game.leverage.pool.add`).
+ * @param {Actor} actor A Crew actor the user owns.
+ * @param {string} ref Pool reference (docs/04).
+ * @returns {Promise<boolean>} false when the reference means nothing for this actor.
+ */
+export async function addToSheetPool(actor, ref) {
+  const sheet = actor.sheet;
+  if (!sheet.rendered) await sheet.render({ force: true });
+  const added = poolOf(sheet).add(ref);
+  if (added) await refresh(sheet);
+  return added;
+}
+
 /* -------------------------------------------------------------- + DIE menu */
 
 /**
- * Entries of the "+ DIE" menu: the loose dice, plus Money when the actor can add it.
+ * Entries of the "+ DIE" menu: the loose dice, Money when the actor can add it, then the Scene Traits of the active Job.
  * @param {object} actor
  * @param {boolean} withMoney The Money house rule is on.
- * @returns {{ref: string, die: number, label: string, money: boolean}[]} `label` is an i18n key or a plain `dN`.
+ * @param {{id: string, name: string, die: number}[]} [scene] Scene Traits of the active Job.
+ * @returns {{ref: string, die: number, label: string, money: boolean, scene?: boolean}[]} `label` is an i18n key
+ *   (Money), a plain `dN` or the Scene Trait name.
  */
-export function dieMenuEntries(actor, withMoney) {
+export function dieMenuEntries(actor, withMoney, scene = []) {
   const dice = LEVERAGE.dice.map((die) => ({ ref: `d${die}`, die, label: `d${die}`, money: false }));
   const money = withMoney ? resolvePoolRef(actor, "money") : null;
   if (money) dice.push({ ref: "money", die: money.die, label: money.nameKey, money: true });
+  for (const trait of scene) dice.push({ ref: `scene:${trait.id}`, die: trait.die, label: trait.name, money: false, scene: true });
   return dice;
 }
 
@@ -167,10 +202,10 @@ function openDieMenu(sheet, anchor) {
     className: "lv-pool-menu",
     itemClass: "lv-pool-menu-item",
     placement: "above",
-    items: dieMenuEntries(sheet.actor, moneyEnabled()).map((entry) => {
-      const label = entry.label.startsWith("LEVERAGE.") ? t(entry.label) : entry.label;
+    items: dieMenuEntries(sheet.actor, moneyEnabled(), sceneTraits()).map((entry) => {
+      const label = entry.money ? t(entry.label) : entry.label;
       return {
-        html: `${renderDie({ die: entry.die, size: 28, money: entry.money })}<span>${escapeHtml(label)}</span>`,
+        html: `${renderDie({ die: entry.die, size: 28, money: entry.money })}<span class="lv-pool-menu-name" title="${escapeHtml(label)}">${escapeHtml(label)}</span>`,
         onSelect: () => {
           poolOf(sheet).add(entry.ref);
           refresh(sheet);
@@ -192,11 +227,11 @@ export const actions = {
     refresh(this);
   },
 
-  /** A chip in the tray: takes it out. */
+  /** A chip in the tray: takes it out (a Distinction d8 goes to d4 first). */
   removeFromPool(_event, target) {
     const ref = target.closest("[data-pool-ref]")?.dataset.poolRef;
     if (!ref) return;
-    poolOf(this).remove(ref);
+    poolOf(this).cycle(ref);
     refresh(this);
   },
 

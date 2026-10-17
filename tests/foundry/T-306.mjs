@@ -126,7 +126,7 @@ try {
     const m = game.macros.find((x) => x.command.includes(payload.ref));
     return m ? { name: m.name, command: m.command, assigned: game.user.hotbar[slot] === m.id, id: m.id } : null;
   }, attr);
-  record("hotbarDrop creates a guarded roll macro", macro?.assigned && /game\.leverage\?\.rollPool/.test(macro.command), macro);
+  record("hotbarDrop creates a guarded pool.add macro", macro?.assigned && /game\.leverage\?\.pool/.test(macro.command), macro);
   const warned = await page.evaluate(async (cmd) => {
     let msg = null;
     const orig = ui.notifications.warn;

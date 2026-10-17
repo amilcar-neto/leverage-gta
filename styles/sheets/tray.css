@@ -179,3 +179,12 @@
 
 .leverage-gta .lv-pool-menu-item:hover,
 .leverage-gta .lv-pool-menu-item:focus-visible { background: rgba(255, 255, 255, 0.1); }
+
+.leverage-gta .lv-pool-menu { max-width: 240px; }
+
+.leverage-gta .lv-pool-menu-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -79,6 +79,31 @@ test("only one Distinction per roll: another one, or the other die, replaces it"
   assert.equal(pool.entries()[0].hinders, true);
 });
 
+test("a tray chip click: Distinction goes d8, d4, out; others go out", () => {
+  const pool = make();
+  pool.toggle("attributes.agility");
+  pool.toggle("item:di1:d8");
+  assert.equal(pool.cycle("item:di1:d8"), "stepped");
+  assert.deepEqual(pool.refs, ["attributes.agility", "item:di1:d4"]);
+  assert.equal(pool.entries()[1].hinders, true);
+  assert.equal(pool.cycle("item:di1:d4"), "removed");
+  assert.equal(pool.cycle("item:di1:d4"), "ignored");
+  assert.equal(pool.cycle("attributes.agility"), "removed");
+  assert.deepEqual(pool.refs, []);
+});
+
+test("Scene Traits of the active Job resolve by id and vanish when the Job changes", () => {
+  const traits = [{ id: "s1", name: "Dark alley", die: 8 }];
+  assert.deepEqual(parseRef("scene:s1"), { type: "scene", id: "s1" });
+  assert.deepEqual(resolvePoolRef(actor, "scene:s1", { sceneTraits: traits }), { kind: "scene", name: "Dark alley", die: 8 });
+  const pool = new DicePool((ref) => resolvePoolRef(actor, ref, { sceneTraits: traits }));
+  pool.add("scene:s1");
+  assert.equal(pool.entries()[0].optional, true);
+  traits.length = 0;
+  assert.deepEqual(pool.entries(), []);
+  assert.equal(resolvePoolRef(actor, "scene:s1"), null);
+});
+
 test("a blank Role blocks the roll and does not count as a die", () => {
   const pool = make();
   pool.toggle("attributes.agility");

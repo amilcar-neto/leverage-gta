@@ -27,9 +27,9 @@ test("drop mode: sort, move an owned Job, copy everything else", () => {
 });
 
 test("macro command is guarded while game.leverage does not exist", () => {
-  const cmd = macroCommand("Actor.x", ["attributes.agility"]);
-  assert.match(cmd, /^game\.leverage\?\.rollPool \?/);
+  const cmd = macroCommand("Actor.x", "attributes.agility");
+  assert.match(cmd, /^game\.leverage\?\.pool \?/);
   assert.match(cmd, /fromUuidSync\("Actor\.x"\)/);
-  assert.match(cmd, /refs: \["attributes\.agility"\]/);
+  assert.match(cmd, /pool\.add\(.*, "attributes\.agility"\)/);
   assert.match(cmd, /ui\.notifications\.warn/);
 });

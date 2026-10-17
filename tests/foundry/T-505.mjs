@@ -162,7 +162,12 @@ try {
 
   known = await messageIds();
   out = await gm("roll-ref");
-  record("[gm] roll-ref: incomplete Pool warns and rolls nothing", out.warns.length === 1 && (await newRolls(known)).length === 0, out);
+  const inPool = (p) => p.evaluate(async () => {
+    const { poolOf } = await import(foundry.utils.getRoute("systems/leverage-gta/module/applications/actor/parts/tray.mjs"));
+    return poolOf(game.actors.getName("[TEST] Macro").sheet).refs;
+  });
+  record("[gm] roll-ref: pool.add opens the sheet, fills the Pool and rolls nothing",
+    out.warns.length === 0 && !out.error && (await newRolls(known)).length === 0 && (await inPool(page)).includes("attributes.agility"), out);
 
   await reset();
   known = await messageIds();
@@ -258,13 +263,13 @@ try {
   const hotbar = await page.evaluate(async () => {
     const { macroCommand } = await import(foundry.utils.getRoute("systems/leverage-gta/module/applications/actor/parts/drag.mjs"));
     const actor = game.actors.getName("[TEST] Macro");
-    const macro = await foundry.documents.Macro.create({ name: "[TEST] hotbar", type: "script", command: macroCommand(actor.uuid, ["attributes.agility", "roles.thief"]) });
+    const macro = await foundry.documents.Macro.create({ name: "[TEST] hotbar", type: "script", command: macroCommand(actor.uuid, "roles.thief") });
     await macro.execute();
     return true;
   });
   await wait(1500);
-  [msg] = await newRolls(known);
-  record("[gm] hotbar macro made by dragging rolls through the API", hotbar && msg?.flags.entries.length === 2, msg);
+  record("[gm] hotbar macro made by dragging puts the Trait in the Pool", hotbar && (await inPool(page)).includes("roles.thief")
+    && (await newRolls(known)).length === 0, await inPool(page));
 
   /* ---- Player ---- */
   playerBrowser = await openBrowser(env, { secondary: true });
@@ -289,7 +294,8 @@ try {
 
   known = await messageIds();
   out = await player("roll-ref");
-  record("[player] roll-ref: warns, no card", out.warns.length === 1 && (await newRolls(known)).length === 0, out);
+  record("[player] roll-ref: Pool filled on his sheet, no card", out.warns.length === 0 && (await newRolls(known)).length === 0
+    && (await inPool(pp)).includes("attributes.agility"), out);
 
   await player("roll-items");
   record("[player] roll-items: the d4 Distinction gave his own character a Plot Point", await eventually(async () => (await peek()).pp === 2), await peek());

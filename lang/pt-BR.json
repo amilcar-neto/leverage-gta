@@ -544,6 +544,7 @@
         "addDie": "+ Dado",
         "clear": "Limpar",
         "remove": "Clique para tirar da Pool",
+        "cycleDistinction": "Clique para virar d4, de novo para tirar da Pool",
         "moneyName": "Grana",
         "kind": {
           "attribute": "Attribute",
@@ -553,6 +554,7 @@
           "asset": "Asset",
           "talent": "Talent",
           "money": "Grana",
+          "scene": "Traço de cena",
           "die": "Dado extra"
         },
         "problem": {
@@ -751,6 +753,7 @@
     },
     "Api": {
       "noCrew": "Isso não é um personagem da Equipe.",
+      "badRef": "Esse Traço não pode entrar na Pool: {ref}",
       "notOwner": "Você não é dono de {name}.",
       "invalidAmount": "A quantidade deve ser um número inteiro, zero ou mais.",
       "invalidPrice": "Um preço é um número inteiro de degraus ou uma lista de dados como [12, 6].",

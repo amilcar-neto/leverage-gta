@@ -5,9 +5,30 @@
  */
 import { LEVERAGE } from "../config.mjs";
 import { readSetting } from "../data/fields.mjs";
-import { maxLife } from "../rules/combat.mjs";
+import { maxLife, restScene } from "../rules/combat.mjs";
 import * as money from "../rules/money.mjs";
+import { resolvePrices } from "../rules/config-data.mjs";
 import { canEditTraits, checkItemBatch, warnBatchFailure, warnUser } from "./guards.mjs";
+
+/** Hook fired by the house-rule settings (the sheet header uses the same one). */
+const HOUSE_RULES_HOOK = "leverage.houseRulesChanged";
+
+/** True when the Life/Vest house rule is on (safe before settings are ready). */
+const lifeRuleOn = () => Boolean(readSetting("houseRules.life", true));
+
+/** Price (list of dice) of a price-list id, from the world `prices` setting. */
+const priceDice = (id) => resolvePrices(readSetting("prices", null)).find((p) => p.id === id)?.dice ?? [];
+
+/**
+ * Token bars follow `houseRules.life`: with the rule off the Life and Vest bars are hidden (data is kept).
+ * Registered once at load; tokens are asked to redraw their bars when the rule changes.
+ */
+globalThis.Hooks?.on("refreshToken", (token) => {
+  if (token.actor?.system?.life && token.bars) token.bars.visible &&= lifeRuleOn();
+});
+globalThis.Hooks?.on(HOUSE_RULES_HOOK, () => {
+  for (const token of globalThis.canvas?.tokens?.placeables ?? []) token.renderFlags?.set({ refreshBars: true });
+});
 
 export class LeverageActor extends Actor {
   /** Whether the world setting currently locks Traits. */
@@ -75,6 +96,70 @@ export class LeverageActor extends Actor {
         return steps();
       }
     };
+  }
+
+  /**
+   * Heals Life by `n` (never above max, never below 0). Works for crew and npc.
+   * @param {number} n
+   * @returns {Promise<LeverageActor>}
+   */
+  async heal(n) {
+    const life = this.system.life;
+    if (!life) return this;
+    const next = Math.min(life.max, Math.max(0, life.value + Math.trunc(Number(n) || 0)));
+    return next === life.value ? this : this.update({ "system.life.value": next });
+  }
+
+  /**
+   * Rest scene (docs/02): recovers half of the max Life, rounded down.
+   * @returns {Promise<LeverageActor>}
+   */
+  async restScene() {
+    const life = this.system.life;
+    if (!life) return this;
+    return this.heal(restScene(life.value, life.max) - life.value);
+  }
+
+  /**
+   * A day between Jobs (docs/02): full Life, and the vest is refilled too (free, same kind).
+   * @returns {Promise<LeverageActor>}
+   */
+  async restDay() {
+    const { life, vest } = this.system;
+    if (!life) return this;
+    return this.update({ "system.life.value": life.max, "system.vest.value": vest.max });
+  }
+
+  /**
+   * Medical treatment (docs/02): pays the `hospital` price (d4 by default) and restores all Life. Crew only.
+   * @returns {Promise<{ok: boolean, shortBy: number}>} `ok` false when Money is short (nothing changes).
+   */
+  async medicalTreatment() {
+    if (this.type !== "crew") return { ok: false, shortBy: 0 };
+    const paid = await this.money.pay(priceDice("hospital"));
+    if (paid.ok) await this.update({ "system.life.value": this.system.life.max });
+    return { ok: paid.ok, shortBy: paid.shortBy ?? 0 };
+  }
+
+  /**
+   * Buys a vest of `kind` (price list: light d4, standard d6, heavy d8) and puts it on, full. Crew only.
+   * @param {string} kind Key of `LEVERAGE.vestKinds` other than `none`.
+   * @returns {Promise<{ok: boolean, shortBy: number}>} Nothing changes when Money is short.
+   */
+  async buyVest(kind) {
+    const def = LEVERAGE.vestKinds[kind];
+    if (this.type !== "crew" || !def?.priceId) return { ok: false, shortBy: 0 };
+    const paid = await this.money.pay(priceDice(def.priceId));
+    if (paid.ok) await this.update({ "system.vest.kind": kind, "system.vest.value": def.points });
+    return { ok: paid.ok, shortBy: paid.shortBy ?? 0 };
+  }
+
+  /**
+   * Replaces the current vest with a new one of the same kind (pays its price). No-op without a vest.
+   * @returns {Promise<{ok: boolean, shortBy: number}>}
+   */
+  restoreVest() {
+    return this.buyVest(this.system.vest?.kind);
   }
 
   /** @override */

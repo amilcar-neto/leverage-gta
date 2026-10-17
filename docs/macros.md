@@ -22,7 +22,7 @@ exemplo, rode `npm run deploy` e `node tests/foundry/T-505.mjs`.
 
 | Grupo | Funções |
 | --- | --- |
-| Rolagem | `rollPool({ actor, refs, flavor })` |
+| Rolagem | `rollPool({ actor, refs, flavor })`, `pool.add(actor, ref)` |
 | Oposição (Mestre) | `opposition({ dice, label })`, `openOppositionRoller()` |
 | Grana | `money.get/add/pay/set/transfer` |
 | Estrelas | `stars.get/city/cities/state/set/raise/lower/clear` (alterar é só do Mestre) |
@@ -60,16 +60,18 @@ await game.leverage.rollPool({
 ### Macro por referência de Traço
 
 Arrastar um Attribute, Role, Specialty, Asset, Talent ou Distinction da ficha para a barra de atalhos cria um macro
-assim (o UUID é o da personagem):
+que chama `pool.add(actor, ref)`: abre a ficha da personagem (se estiver fechada) e põe o Traço na Pool da ficha, com as
+mesmas regras da bandeja (um novo Attribute, Role ou Distinction troca o anterior). Só o dono ou o Mestre pode. Devolve
+`false` (com aviso) se a referência não significa nada para a personagem. O UUID é o da personagem:
 
 <!-- teste: ambos id=roll-ref -->
 ```js
 const actor = game.actors.getName("Nome da Personagem");
-game.leverage.rollPool({ actor, refs: ["attributes.agility"] });
+await game.leverage.pool.add(actor, "attributes.agility");
 ```
 
-Isso falha de propósito, com aviso, porque falta o Role. Para um macro que sempre rola uma combinação, junte as
-referências, inclusive Itens da personagem:
+Nada é rolado: o jogador completa a Pool na ficha e aperta ROLL. Para um macro que sempre rola uma combinação, use
+`rollPool` e junte as referências, inclusive Itens da personagem:
 
 <!-- teste: ambos id=roll-items -->
 ```js

@@ -544,6 +544,7 @@
         "addDie": "+ Die",
         "clear": "Clear",
         "remove": "Click to take it out of the Pool",
+        "cycleDistinction": "Click to switch to d4, again to take it out",
         "moneyName": "Money",
         "kind": {
           "attribute": "Attribute",
@@ -553,6 +554,7 @@
           "asset": "Asset",
           "talent": "Talent",
           "money": "Money",
+          "scene": "Scene Trait",
           "die": "Extra die"
         },
         "problem": {
@@ -751,6 +753,7 @@
     },
     "Api": {
       "noCrew": "That is not a Crew character.",
+      "badRef": "That Trait cannot go in the Pool: {ref}",
       "notOwner": "You do not own {name}.",
       "invalidAmount": "The amount must be a whole number, zero or more.",
       "invalidPrice": "A price is a whole number of steps or a list of dice such as [12, 6].",

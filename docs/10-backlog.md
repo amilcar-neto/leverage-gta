@@ -96,7 +96,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 6 — Regras da casa
 
-- [ ] **T-601 Vida e Colete.** Barra do token, popover, regras de recuperação, liga/desliga. *Dep:* T-302.
+- [x] **T-601 Vida e Colete.** Barra do token, popover, regras de recuperação, liga/desliga. *Dep:* T-302.
 - [ ] **T-602 Dano e Wasted/Busted.** "APPLY DAMAGE" no card de oposição, cobertura, colete, mensagens WASTED/BUSTED
   estilizadas, perda de Assets de arma de cena, pagamento. *Dep:* T-504, T-601.
 - [ ] **T-603 Grana.** Escada, pagar com a tabela de preços, emprestar (socket via mestre), Grana na Pool, Jobs com
@@ -112,7 +112,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 - [x] **T-702 Controles do mestre.** Grupo "Leverage" com todas as ferramentas de `docs/09`. *Dep:* T-106.
 - [x] **T-703 Rastreador do Job.** Job ativo, Complications, Traços de cena, visão da Equipe. *Dep:* T-702.
 - [ ] **T-704 Encerrar cena / Novo Job / Encerrar Job / Nova sessão / Dar PP.** *Dep:* T-703, T-305.
-- [ ] **T-705 Apps de configuração** (escalas de cidade, preços, custos de evolução). *Dep:* T-106.
+- [x] **T-705 Apps de configuração** (escalas de cidade, preços, custos de evolução). *Dep:* T-106.
 - [ ] **R-F7 Revisão de fase.**
 
 ## Fase 8 — NPC e Local

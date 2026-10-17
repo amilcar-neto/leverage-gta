@@ -22,6 +22,7 @@ import { rollPoolFor } from "./dice/roll-handler.mjs";
 import { openOppositionRoller, rollOpposition } from "./dice/opposition.mjs";
 import { getCityScales } from "./settings.mjs";
 import { executeAsGM, registerSocketAction } from "./socket.mjs";
+import { addToSheetPool } from "./applications/actor/parts/tray.mjs";
 import * as controls from "./applications/gm/controls.mjs";
 import * as jobActions from "./applications/gm/job-actions.mjs";
 
@@ -166,6 +167,23 @@ async function rollPool({ actor, refs, flavor } = {}) {
   if (!check.ok) return warn(check) ?? null;
   return rollPoolFor({ actor: doc, entries: check.entries, flavor });
 }
+
+const pool = {
+  /**
+   * Puts a Trait in the Pool of the character's sheet (opening the sheet when closed), with the tray rules: a new
+   * Attribute/Role/Distinction replaces the old one. Only the owner or the Fixer.
+   * @param {Actor|string} actor A Crew actor, its UUID or its id.
+   * @param {string} ref Reference: `attributes.agility`, `item:<id>`, `money`, `scene:<id>`, `d6`...
+   * @returns {Promise<boolean>} false when the reference means nothing for this character.
+   */
+  async add(actor, ref) {
+    const doc = ownedCrew(actor);
+    if (!doc) return false;
+    const added = await addToSheetPool(doc, ref);
+    if (!added) ui.notifications.warn(t("badRef", { ref: String(ref) }));
+    return added;
+  }
+};
 
 /**
  * Rolls the Fixer's opposition and posts the "FIXER" card. Fixer only.
@@ -397,11 +415,11 @@ const jobTracker = {
 
 /**
  * The object behind `game.leverage`.
- * @type {{rollPool: Function, opposition: Function, openOppositionRoller: Function, money: object, stars: object,
+ * @type {{rollPool: Function, pool: object, opposition: Function, openOppositionRoller: Function, money: object, stars: object,
  *   plotPoints: object, traits: object, job: object, jobTracker: object}}
  */
 export const api = Object.freeze({
-  rollPool, opposition, openOppositionRoller, money, stars, plotPoints, traits, job, jobTracker
+  rollPool, pool, opposition, openOppositionRoller, money, stars, plotPoints, traits, job, jobTracker
 });
 
 /** Publishes `game.leverage` and the socket action of `money.transfer` (call from the `setup` hook). */

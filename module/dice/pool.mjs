@@ -3,7 +3,7 @@
  * Pure logic: references (docs/04) are turned into dice by an injected `resolve` function, so this file has no
  * Foundry dependency and runs in node tests.
  *
- * Reference forms: `attributes.agility`, `roles.thief`, `item:<id>`, `item:<id>:d8|d4`, `money`, `d6`.
+ * Reference forms: `attributes.agility`, `roles.thief`, `item:<id>`, `item:<id>:d8|d4`, `money`, `scene:<id>` (Scene Trait of the active Job), `d6`.
  */
 import { LEVERAGE } from "../config.mjs";
 import { isValidDie } from "./die.mjs";
@@ -17,7 +17,7 @@ export const MAX_POOL_DISTINCTIONS = 1;
 
 /**
  * @typedef {object} ResolvedTrait What a reference means for one actor right now.
- * @property {"attribute"|"role"|"specialty"|"distinction"|"asset"|"talent"|"money"|"die"} kind
+ * @property {"attribute"|"role"|"specialty"|"distinction"|"asset"|"talent"|"money"|"scene"|"die"} kind
  * @property {string} [name] Literal name (items).
  * @property {string} [nameKey] i18n key of the name (Attributes, Roles, Money).
  * @property {number|null} die Die size; null for a Trait left blank (a blank Role).
@@ -32,7 +32,7 @@ export const MAX_POOL_DISTINCTIONS = 1;
 /**
  * Splits a reference into its parts, or null when it is not a valid shape.
  * @param {string} ref
- * @returns {{type: "attributes"|"roles"|"item"|"money"|"die", key?: string, id?: string, size?: number}|null}
+ * @returns {{type: "attributes"|"roles"|"item"|"scene"|"money"|"die", key?: string, id?: string, size?: number}|null}
  */
 export function parseRef(ref) {
   if (typeof ref !== "string") return null;
@@ -41,6 +41,8 @@ export function parseRef(ref) {
   if (die) return isValidDie(Number(die[1])) ? { type: "die", size: Number(die[1]) } : null;
   const trait = /^(attributes|roles)\.([a-z]+)$/.exec(ref);
   if (trait) return { type: trait[1], key: trait[2] };
+  const scene = /^scene:([^:]+)$/.exec(ref);
+  if (scene) return { type: "scene", id: scene[1] };
   const item = /^item:([^:]+)(?::d(\d+))?$/.exec(ref);
   if (item) return { type: "item", id: item[1], size: item[2] ? Number(item[2]) : undefined };
   return null;
@@ -71,10 +73,11 @@ function resolveItem(actor, { id, size }) {
  * Turns a reference into a die for `actor` (duck-typed: `system.attributes|roles|money` and `items.get`).
  * @param {object} actor
  * @param {string} ref
- * @param {{moneyEnabled?: boolean}} [options] `moneyEnabled` is the house rule switch (default on).
+ * @param {{moneyEnabled?: boolean, sceneTraits?: {id: string, name: string, die: number}[]}} [options]
+ *   `moneyEnabled` is the house rule switch (default on); `sceneTraits` are the Scene Traits of the active Job.
  * @returns {ResolvedTrait|null} null when the reference means nothing (deleted item, no money, bad shape).
  */
-export function resolvePoolRef(actor, ref, { moneyEnabled = true } = {}) {
+export function resolvePoolRef(actor, ref, { moneyEnabled = true, sceneTraits = [] } = {}) {
   const parsed = parseRef(ref);
   if (!parsed) return null;
   switch (parsed.type) {
@@ -87,6 +90,10 @@ export function resolvePoolRef(actor, ref, { moneyEnabled = true } = {}) {
     }
     case "item":
       return resolveItem(actor, parsed);
+    case "scene": {
+      const trait = sceneTraits.find((x) => x.id === parsed.id);
+      return trait && isValidDie(trait.die) ? { kind: "scene", name: trait.name, die: trait.die } : null;
+    }
     case "money": {
       const die = moneyEnabled ? moneyRollDie(actor.system?.money?.steps ?? 0) : null;
       return die ? { kind: "money", nameKey: "LEVERAGE.Sheet.Tray.moneyName", die } : null;
@@ -186,6 +193,23 @@ export class DicePool {
   toggle(ref) {
     if (parseRef(ref)?.type !== "die" && this.has(ref)) return this.remove(ref) ? "removed" : "ignored";
     return this.add(ref) ? "added" : "ignored";
+  }
+
+  /**
+   * Clicking a chip in the tray: takes it out; a Distinction used as d8 goes to d4 first (docs/08).
+   * @param {string} ref
+   * @returns {"stepped"|"removed"|"ignored"}
+   */
+  cycle(ref) {
+    const i = this.#refs.lastIndexOf(ref);
+    if (i < 0) return "ignored";
+    const resolved = this.#resolve(ref);
+    if (resolved?.kind === "distinction" && !resolved.hinders) {
+      this.#refs[i] = `item:${parseRef(ref).id}:d${LEVERAGE.distinctionDice.hinders}`;
+      return "stepped";
+    }
+    this.#refs.splice(i, 1);
+    return "removed";
   }
 
   /**

@@ -94,6 +94,20 @@ try {
   t = await tray();
   record("clicking the row die again takes it out", t.chips.length === 3, t.chips);
 
+  // Distinction chip in the tray: d8 -> d4 -> out
+  await clickRef(`item:${ids["Old Docks Loyalty"]}:d8`);
+  const distChip = () => page.locator(`${sheet} .lv-tray-chips .lv-chip[data-kind="distinction"]`);
+  t = await tray();
+  record("Distinction enters as d8", t.chips.find((c) => c.kind === "distinction")?.die === "8", t.chips);
+  await distChip().click();
+  await wait(400);
+  t = await tray();
+  record("Distinction chip click: d8 becomes d4", t.chips.find((c) => c.kind === "distinction")?.die === "4", t.chips);
+  await distChip().click();
+  await wait(400);
+  t = await tray();
+  record("Distinction chip click again: out of the Pool", !t.chips.some((c) => c.kind === "distinction"), t.chips);
+
   // + DIE menu
   await page.click(`${sheet} [data-action="addDie"]`);
   await wait(300);

@@ -3,7 +3,7 @@
  *  1. dropping an Item on the sheet copies it to the actor (or, for a Job from another Crew, moves it when the user
  *     owns both actors) - the Trait lock and the 3-Distinction cap are enforced by the documents, which warn;
  *  2. dropping an Item on a row of the same list reorders it (`sort`);
- *  3. dragging a Trait (Attribute, Role, Item die) to the hotbar makes a macro that rolls it (`hotbarDrop`).
+ *  3. dragging a Trait (Attribute, Role, Item die) to the hotbar makes a macro that puts it in the Pool (`hotbarDrop`).
  * The pure decisions are exported for unit tests; the rest is thin glue on the sheet.
  */
 import { LEVERAGE } from "../../../config.mjs";
@@ -47,15 +47,15 @@ export function dropMode({ sameActor, type, hasSource, ownsSource }) {
 }
 
 /**
- * Source of the hotbar macro for a list of Pool references.
- * Until the API exists (T-505) the macro warns instead of failing with a TypeError.
+ * Source of the hotbar macro for one Pool reference: it opens the sheet and puts the Trait in its Pool
+ * (`game.leverage.pool.add`), so a single Attribute or Role works too. Warns instead of failing without the API.
  * @param {string} actorUuid
- * @param {string[]} refs
+ * @param {string} ref
  * @returns {string}
  */
-export function macroCommand(actorUuid, refs) {
-  const call = `game.leverage.rollPool({ actor: fromUuidSync(${JSON.stringify(actorUuid)}), refs: ${JSON.stringify(refs)} })`;
-  return `game.leverage?.rollPool ? ${call} : ui.notifications.warn(game.i18n.localize("LEVERAGE.Warn.apiNotReady"));`;
+export function macroCommand(actorUuid, ref) {
+  const call = `game.leverage.pool.add(fromUuidSync(${JSON.stringify(actorUuid)}), ${JSON.stringify(ref)})`;
+  return `game.leverage?.pool ? ${call} : ui.notifications.warn(game.i18n.localize("LEVERAGE.Warn.apiNotReady"));`;
 }
 
 /* ---------------------------------------------------------------- drag start */
@@ -165,7 +165,7 @@ async function describeTrait(data) {
 async function createTraitMacro(data, slot) {
   const { actorUuid, ref, name, img } = await describeTrait(data);
   if (!actorUuid || !ref) return;
-  const command = macroCommand(actorUuid, [ref]);
+  const command = macroCommand(actorUuid, ref);
   const macro = game.macros.find((m) => m.command === command && m.isAuthor)
     ?? await CONFIG.Macro.documentClass.create({ name, img, type: "script", command, flags: { [LEVERAGE.systemId]: { [MACRO_FLAG]: true } } });
   await game.user.assignHotbarMacro(macro, slot);
