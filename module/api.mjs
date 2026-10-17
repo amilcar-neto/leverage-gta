@@ -16,15 +16,21 @@
 import { LEVERAGE, SYSTEM_ID } from "./config.mjs";
 import { DicePool, parseRef, resolvePoolRef } from "./dice/pool.mjs";
 import { isValidDie } from "./dice/die.mjs";
-import { lend, priceToSteps } from "./rules/money.mjs";
+import { priceToSteps } from "./rules/money.mjs";
 import { clampStars, policePool } from "./rules/stars.mjs";
 import { rollPoolFor } from "./dice/roll-handler.mjs";
 import { openOppositionRoller, rollOpposition } from "./dice/opposition.mjs";
 import { getCityScales } from "./settings.mjs";
 import { executeAsGM, registerSocketAction } from "./socket.mjs";
+import { onTransferRequest, transferNow } from "./money-actions.mjs";
+import { openLendDialog } from "./applications/dialogs/lend-dialog.mjs";
+import { openPayDialog } from "./applications/dialogs/pay-dialog.mjs";
 import { addToSheetPool } from "./applications/actor/parts/tray.mjs";
 import * as controls from "./applications/gm/controls.mjs";
+import * as damage from "./applications/chat/damage.mjs";
 import * as jobActions from "./applications/gm/job-actions.mjs";
+import * as starsActions from "./applications/gm/stars-actions.mjs";
+import { registerStarsActions } from "./applications/gm/stars-actions.mjs";
 
 /* ------------------------------------------------------------------ pure checks */
 
@@ -205,23 +211,6 @@ async function withMoney(actor, amount, run) {
   return run(doc, check.value);
 }
 
-/** Moves Money between two characters (runs as the Fixer when the caller does not own both). */
-async function transferNow(from, to, amount) {
-  const moved = lend(from.system.money.steps, to.system.money.steps, amount);
-  await from.update({ "system.money.steps": moved.from });
-  await to.update({ "system.money.steps": moved.to });
-  return moved.moved;
-}
-
-/** Fixer side of `money.transfer`: only for a requester who owns the source. */
-async function onTransferRequest({ from, to, amount }, userId) {
-  const source = fromUuidSync(from);
-  const target = fromUuidSync(to);
-  const user = game.users.get(userId);
-  const allowed = source?.type === "crew" && target?.type === "crew" && user && source.testUserPermission(user, "OWNER");
-  if (allowed && checkAmount(amount).ok) await transferNow(source, target, Number(amount));
-}
-
 const money = {
   /**
    * Current Money of a character.
@@ -275,6 +264,24 @@ const money = {
     if (game.user.isGM || target.isOwner) return transferNow(source, target, check.value);
     await executeAsGM("moneyTransfer", { from: source.uuid, to: target.uuid, amount: check.value });
     return null;
+  },
+  /**
+   * Opens the Pay dialog (price list or free price in dice) and pays with a chat line. Owner or Fixer.
+   * @param {Actor|string} actor
+   * @returns {Promise<{ok: boolean, cost: number}|null>} null when cancelled or not allowed
+   */
+  payDialog(actor) {
+    const doc = ownedCrew(actor);
+    return doc ? openPayDialog(doc) : Promise.resolve(null);
+  },
+  /**
+   * Opens the Lend dialog (to another Crew character; goes through the Fixer when needed). Owner or Fixer.
+   * @param {Actor|string} actor The lender.
+   * @returns {Promise<{to: string, amount: number}|null>} null when cancelled or not allowed
+   */
+  lendDialog(actor) {
+    const doc = ownedCrew(actor);
+    return doc ? openLendDialog(doc) : Promise.resolve(null);
   }
 };
 
@@ -309,7 +316,37 @@ const stars = {
   /** Lowers the level by `by` (default 1), floor 0. Fixer only. @param {number} [by=1] @returns {Promise<boolean>} */
   lower: (by = 1) => stars.set(clampStars(stars.get() - Math.max(0, Math.trunc(by) || 0))),
   /** Clears the stars (level 0). Fixer only. @returns {Promise<boolean>} */
-  clear: () => stars.set(0)
+  clear: () => stars.set(0),
+
+  /* Stars actions (docs/02): each one posts a chat line "STARS: from N to M, reason". */
+  /**
+   * Waiting out of sight (free): lowers stars by the city's scenes-per-star. Fixer only.
+   * @param {number} [scenes=1] Scenes spent out of sight.
+   * @param {{betweenSessions?: boolean}} [options] `betweenSessions` for cities where waiting only works between sessions.
+   * @returns {Promise<object>} The plan: `{ok, from, to, error}`.
+   */
+  wait: (scenes = 1, options = {}) => starsActions.lowerByWaiting(scenes, options),
+  /**
+   * A disguise that worked. Fixer only.
+   * @param {"simple"|"both"} [kind="simple"] `both` = car and clothes.
+   * @param {{sketched?: boolean}} [options] `sketched`: a composite sketch exists.
+   * @returns {Promise<object>}
+   */
+  disguise: (kind = "simple", options = {}) => starsActions.lowerByDisguise(kind, options),
+  /**
+   * Buys silence with the character's Money (the city sets the die and the stars; some cities refuse).
+   * Fixer, or a player for his own character (goes to the Fixer through the socket).
+   * @param {Actor|string} actor
+   * @param {{count?: number}} [options]
+   * @returns {Promise<object>}
+   */
+  buySilence: (actor, options = {}) => starsActions.buySilence(actor, options),
+  /**
+   * The last way out: the character gives in and the stars go to 0. Fixer, or a player for his own character.
+   * @param {Actor|string} actor
+   * @returns {Promise<object>}
+   */
+  giveIn: (actor) => starsActions.giveIn(actor)
 };
 
 /* ------------------------------------------------------------------ plot points */
@@ -411,19 +448,40 @@ const jobTracker = {
   open: () => controls.openTracker()
 };
 
+/* ------------------------------------------------------------------ combat */
+
+const combat = {
+  /**
+   * Applies one round of damage to a character: margin + weapon die, cover halves, then vest, then Life. At 0 Life it
+   * goes on to `down`. Fixer only; refused when the Life house rule is off.
+   * @param {object} options `{target, margin, weaponDie, weaponRoll, cover, byPolice, confirm}` (see `damage.applyDamage`).
+   * @returns {Promise<object|null>} The result record, or null when refused.
+   */
+  applyDamage: (options) => damage.applyDamage(options),
+  /**
+   * Wasted (or Busted with `byPolice`): full Life, +1 Plot Point, weapon Assets lost, hospital or bail paid, stars
+   * after a rescue; posts the WASTED / BUSTED card. Fixer only.
+   * @param {Actor|string} actor
+   * @param {{byPolice?: boolean, confirm?: boolean}} [options]
+   * @returns {Promise<object|null>}
+   */
+  down: (actor, options) => damage.down(actor, options)
+};
+
 /* ------------------------------------------------------------------ export */
 
 /**
  * The object behind `game.leverage`.
  * @type {{rollPool: Function, pool: object, opposition: Function, openOppositionRoller: Function, money: object, stars: object,
- *   plotPoints: object, traits: object, job: object, jobTracker: object}}
+ *   plotPoints: object, traits: object, job: object, jobTracker: object, combat: object}}
  */
 export const api = Object.freeze({
-  rollPool, pool, opposition, openOppositionRoller, money, stars, plotPoints, traits, job, jobTracker
+  rollPool, pool, opposition, openOppositionRoller, money, stars, plotPoints, traits, job, jobTracker, combat
 });
 
 /** Publishes `game.leverage` and the socket action of `money.transfer` (call from the `setup` hook). */
 export function registerApi() {
   game.leverage = api;
+  registerStarsActions();
   registerSocketAction("moneyTransfer", onTransferRequest);
 }

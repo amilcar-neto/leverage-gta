@@ -131,7 +131,9 @@ try {
     let msg = null;
     const orig = ui.notifications.warn;
     ui.notifications.warn = (m) => { msg = m; };
-    try { await new Function(cmd)(); } finally { ui.notifications.warn = orig; }
+    const api = game.leverage;
+    game.leverage = undefined;
+    try { await new Function(cmd)(); } finally { ui.notifications.warn = orig; game.leverage = api; }
     return msg;
   }, macro?.command ?? "");
   record("macro warns while game.leverage is missing", Boolean(warned) && !/^LEVERAGE\./.test(warned), warned);

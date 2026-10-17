@@ -8,6 +8,7 @@ import { logger } from "../../logger.mjs";
 import { executeAsGM, registerSocketAction } from "../../socket.mjs";
 import { applyComplication, keepNextDie, resolveNextOne } from "../../dice/card-actions.mjs";
 import { promptComplication } from "./complication-dialog.mjs";
+import { damageFromCard } from "./damage.mjs";
 
 /** Messages with an action in flight (a double click must not spend two Plot Points). */
 const busy = new Set();
@@ -80,11 +81,17 @@ function complication(message) {
   });
 }
 
+/** Button "APPLY DAMAGE" (opposition card, Fixer only). */
+function applyDamage(message) {
+  if (!game.user.isGM) return undefined;
+  return exclusive(message, () => damageFromCard(message));
+}
+
 /**
  * Click handlers by `data-action`.
  * @type {Record<string, (message: ChatMessage, event: Event) => Promise<void>|void>}
  */
-export const cardHandlers = { keepDie, complication };
+export const cardHandlers = { keepDie, complication, applyDamage };
 
 /** Registers the Fixer-side socket action (call once). */
 export function registerCardSocket() {

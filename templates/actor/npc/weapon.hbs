@@ -1,0 +1,6 @@
+<section class="lv-panel lv-npc-weapon">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.NpcSheet.weapon"}}</span></h2>
+  <div class="lv-panel-body lv-npc-weapon-body">
+    <span class="lv-ladder" data-die-path="system.weapon.die">{{#each weaponLadder}}{{lvDie die die=die size=28 muted=muted action=action pressed=pressed label=label title=label}}{{/each}}</span>
+  </div>
+</section>

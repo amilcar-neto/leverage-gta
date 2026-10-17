@@ -1,0 +1,266 @@
+/* Location sheet (docs/06 "Fichas de NPC e Local"): header (image, name, city), Trait list, notes.
+   Window 640x640. Reuses .lv-panel, .lv-row, .lv-add-btn, .lv-xbtn and the {{lvDie}} dice. */
+
+/* ---- Window frame and title bar (same look as the crew sheet) ---- */
+.leverage-gta.location-sheet {
+  min-width: 520px;
+  min-height: 480px;
+  background: var(--lv-bg);
+  border: 4px solid var(--lv-outline);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--lv-ink);
+  overflow: hidden;
+}
+
+.leverage-gta.location-sheet .window-header {
+  flex: none;
+  height: 32px;
+  gap: 10px;
+  padding: 0 12px;
+  background: var(--lv-outline);
+  border: 0;
+  color: var(--lv-ink);
+}
+
+.leverage-gta.location-sheet .window-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--lv-font-ui);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leverage-gta.location-sheet .window-header .header-control {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--lv-muted);
+  border-radius: 3px;
+  box-shadow: none;
+  color: var(--lv-ink);
+}
+
+.leverage-gta.location-sheet .window-header .header-control:hover,
+.leverage-gta.location-sheet .window-header .header-control:focus-visible {
+  border-color: var(--lv-select);
+  color: #fff;
+}
+
+.leverage-gta.location-sheet .window-icon { color: var(--lv-header); }
+
+.leverage-gta.location-sheet button { min-height: 0; }
+.leverage-gta.location-sheet button:hover { outline: 0; }
+
+/* ---- Body: header / traits (sized to its rows) / notes (takes the rest) ---- */
+.leverage-gta.location-sheet .window-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 16px 20px 20px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.leverage-gta.location-sheet [data-application-part="header"] { flex: none; }
+.leverage-gta.location-sheet [data-application-part="traits"] { flex: 0 1 auto; min-height: 120px; display: flex; flex-direction: column; }
+.leverage-gta.location-sheet [data-application-part="notes"] { flex: 1 1 140px; min-height: 120px; display: flex; flex-direction: column; }
+.leverage-gta.location-sheet [data-application-part] > .lv-panel { flex: 1 1 auto; }
+
+/* ---- Header ---- */
+.leverage-gta.location-sheet .lv-loc-header {
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  height: 140px;
+}
+
+.leverage-gta.location-sheet .lv-loc-img {
+  position: relative;
+  flex: none;
+  box-sizing: border-box;
+  width: 200px;
+  height: 140px;
+  margin: 0;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.35);
+  border: 4px solid var(--lv-outline);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+  color: inherit;
+  overflow: hidden;
+}
+
+.leverage-gta.location-sheet button.lv-loc-img { cursor: pointer; }
+
+.leverage-gta.location-sheet button.lv-loc-img:hover,
+.leverage-gta.location-sheet button.lv-loc-img:focus-visible {
+  outline: 3px solid var(--lv-header);
+  outline-offset: 2px;
+}
+
+.leverage-gta.location-sheet .lv-loc-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+.leverage-gta.location-sheet .lv-loc-img-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--lv-font-paper);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--lv-muted);
+}
+
+.leverage-gta.location-sheet .lv-loc-identity {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.leverage-gta.location-sheet .lv-loc-name {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 56px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px dotted transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #fff;
+  font-family: var(--lv-font-display);
+  font-size: 44px;
+  font-weight: 400;
+  line-height: 56px;
+  text-transform: uppercase;
+  text-shadow: var(--lv-hud-shadow);
+}
+
+.leverage-gta.location-sheet input.lv-loc-name:hover { border-bottom-color: rgba(233, 240, 237, 0.35); }
+.leverage-gta.location-sheet input.lv-loc-name:focus { border-bottom-color: var(--lv-header); outline: none; }
+.leverage-gta.location-sheet input.lv-loc-name::placeholder { color: var(--lv-muted); opacity: 0.6; text-shadow: none; }
+.leverage-gta.location-sheet div.lv-loc-name { white-space: nowrap; }
+
+/* City: a tag-like label plus the select */
+.leverage-gta.location-sheet .lv-loc-city {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.leverage-gta.location-sheet .lv-loc-city-label {
+  flex: none;
+  padding: 2px 8px;
+  background: var(--lv-header);
+  border: 2px solid var(--lv-outline);
+  color: var(--lv-die-ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.leverage-gta.location-sheet .lv-loc-city-select {
+  flex: 0 1 240px;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--lv-muted-2);
+  border-radius: 3px;
+  color: var(--lv-ink);
+  font-size: 15px;
+}
+
+.leverage-gta.location-sheet .lv-loc-city-select:focus { border-color: var(--lv-header); outline: none; }
+.leverage-gta.location-sheet .lv-loc-city-value { font-size: 16px; font-weight: 700; }
+
+/* ---- Trait list ---- */
+.leverage-gta.location-sheet .lv-loc-list {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.leverage-gta.location-sheet .lv-loc-trait { flex: none; min-height: 40px; }
+.leverage-gta.location-sheet .lv-loc-trait[draggable="true"] { cursor: grab; }
+.leverage-gta.location-sheet .lv-loc-trait.is-drop { border-color: var(--lv-header); }
+
+.leverage-gta.location-sheet .lv-loc-trait-name {
+  flex: 1;
+  box-sizing: border-box;
+  min-width: 0;
+  height: 28px;
+  margin: 0;
+  padding: 0 2px;
+  border: 0;
+  border-bottom: 2px dotted transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  line-height: 28px;
+  text-transform: uppercase;
+}
+
+.leverage-gta.location-sheet input.lv-loc-trait-name:hover { border-bottom-color: rgba(233, 240, 237, 0.35); }
+.leverage-gta.location-sheet input.lv-loc-trait-name:focus { border-bottom-color: var(--lv-header); outline: none; }
+.leverage-gta.location-sheet input.lv-loc-trait-name::placeholder { color: var(--lv-muted); opacity: 0.6; }
+
+.leverage-gta.location-sheet .lv-loc-ladder { display: flex; flex: none; gap: 3px; }
+.leverage-gta.location-sheet .lv-loc-ladder button.lv-die { cursor: pointer; }
+
+.leverage-gta.location-sheet .lv-loc-empty {
+  margin: 0;
+  padding: 10px 8px;
+  color: var(--lv-muted);
+  font-size: 14px;
+}
+
+/* ---- Notes ---- */
+.leverage-gta.location-sheet .lv-loc-notes-body { display: flex; flex-direction: column; min-height: 0; }
+
+.leverage-gta.location-sheet .lv-loc-notes-body prose-mirror {
+  flex: 1;
+  min-height: 0;
+  color: var(--lv-ink);
+}
+
+.leverage-gta.location-sheet .lv-loc-notes-view {
+  flex: 1;
+  min-height: 0;
+  padding: 8px 12px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  font-size: 15px;
+  line-height: 1.4;
+}

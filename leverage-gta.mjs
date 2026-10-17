@@ -12,6 +12,8 @@ import * as actorModels from "./module/data/actor/_module.mjs";
 import * as itemModels from "./module/data/item/_module.mjs";
 import * as documents from "./module/documents/_module.mjs";
 import * as sheets from "./module/applications/actor/_module.mjs";
+import { NpcSheet } from "./module/applications/actor/npc-sheet.mjs";
+import { LocationSheet } from "./module/applications/actor/location-sheet.mjs";
 import * as itemSheets from "./module/applications/item/_module.mjs";
 import { registerRollHandler } from "./module/dice/roll-handler.mjs";
 import { registerSocket } from "./module/socket.mjs";
@@ -56,6 +58,12 @@ Hooks.once("init", () => {
   foundry.applications.handlebars.loadTemplates([`systems/${SYSTEM_ID}/templates/actor/crew/partials/x-button.hbs`]);
   foundry.applications.apps.DocumentSheetConfig.registerSheet(Actor, SYSTEM_ID, sheets.CrewSheet, {
     types: ["crew"], makeDefault: true, label: "LEVERAGE.Sheet.Crew"
+  });
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(Actor, SYSTEM_ID, LocationSheet, {
+    types: ["location"], makeDefault: true, label: "LEVERAGE.LocationSheet.label"
+  });
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(Actor, SYSTEM_ID, NpcSheet, {
+    types: ["npc"], makeDefault: true, label: "LEVERAGE.Sheet.Npc"
   });
   registerItemSheets();
   itemSheets.registerItemIcons();

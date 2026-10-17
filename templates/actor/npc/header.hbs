@@ -1,0 +1,50 @@
+<header class="lv-npc-head">
+  {{#if canEdit}}
+  <button type="button" class="lv-mugshot lv-mugshot--edit{{#if hasPhoto}} has-photo{{/if}}" data-action="pickPhoto" data-tooltip="LEVERAGE.Sheet.Header.pickPhoto" aria-label="{{localize 'LEVERAGE.Sheet.Header.pickPhoto'}}">
+    {{#if hasPhoto}}<img class="lv-mugshot-img" src="{{actor.img}}" alt="{{actor.name}}">{{else}}<span class="lv-mugshot-empty">{{localize "LEVERAGE.Sheet.Header.noPhoto"}}</span>{{/if}}
+  </button>
+  {{else}}
+  <div class="lv-mugshot{{#if hasPhoto}} has-photo{{/if}}">
+    {{#if hasPhoto}}<img class="lv-mugshot-img" src="{{actor.img}}" alt="{{actor.name}}">{{else}}<span class="lv-mugshot-empty">{{localize "LEVERAGE.Sheet.Header.noPhoto"}}</span>{{/if}}
+  </div>
+  {{/if}}
+  <div class="lv-npc-identity">
+    {{#if canEdit}}
+    <input type="text" class="lv-name lv-hud lv-ellipsis lv-inline" name="name" value="{{actor.name}}" title="{{actor.name}}" placeholder="{{localize 'LEVERAGE.Sheet.Header.namePlaceholder'}}" aria-label="{{localize 'LEVERAGE.Sheet.Header.name'}}">
+    {{else}}
+    <div class="lv-name lv-hud lv-ellipsis" title="{{actor.name}}">{{actor.name}}</div>
+    {{/if}}
+    <div class="lv-npc-tags">
+      {{#if canEdit}}
+      <select class="lv-tag lv-tag-select" name="system.tier" title="{{localize 'LEVERAGE.NpcSheet.tier'}}" aria-label="{{localize 'LEVERAGE.NpcSheet.tier'}}">
+        {{selectOptions tiers selected=system.tier localize=true}}
+      </select>
+      <button type="button" class="lv-tag lv-tag-toggle{{#if system.police}} is-on{{/if}}" data-action="togglePolice" aria-pressed="{{#if system.police}}true{{else}}false{{/if}}" title="{{localize 'LEVERAGE.NpcSheet.policeHint'}}">{{localize "LEVERAGE.NpcSheet.police"}}</button>
+      {{else}}
+      <span class="lv-tag lv-tag--role">{{localize tierLabel}}</span>
+      {{#if system.police}}<span class="lv-tag lv-tag--police">{{localize "LEVERAGE.NpcSheet.police"}}</span>{{/if}}
+      {{/if}}
+    </div>
+    {{#if showVitals}}
+    <div class="lv-npc-vitals">
+      <div class="lv-npc-vital lv-npc-vital--life" title="{{localize 'LEVERAGE.Sheet.Header.life'}}">
+        <svg class="lv-npc-vital-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.2 3.4 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 5.8 3.7 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg>
+        {{#if canEdit}}<input type="number" class="lv-npc-num lv-hud" name="system.life.value" value="{{system.life.value}}" min="0" max="{{system.life.max}}" step="1" aria-label="{{localize 'LEVERAGE.Sheet.Header.life'}}">
+        {{else}}<span class="lv-npc-num lv-hud">{{system.life.value}}</span>{{/if}}
+        <span class="lv-npc-max">/{{#if lifeMaxEditable}}<input type="number" class="lv-npc-num lv-npc-num--max" name="system.life.max" value="{{system.life.max}}" min="0" step="1" title="{{localize 'LEVERAGE.NpcSheet.lifeMax'}}" aria-label="{{localize 'LEVERAGE.NpcSheet.lifeMax'}}">{{else}}{{system.life.max}}{{/if}}</span>
+      </div>
+      <div class="lv-npc-vital lv-npc-vital--vest" title="{{localize 'LEVERAGE.Sheet.Header.vest'}}">
+        <svg class="lv-npc-vital-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z"/></svg>
+        {{#if canEdit}}<input type="number" class="lv-npc-num lv-hud" name="system.vest.value" value="{{system.vest.value}}" min="0" max="{{system.vest.max}}" step="1" aria-label="{{localize 'LEVERAGE.Sheet.Header.vest'}}">
+        {{else}}<span class="lv-npc-num lv-hud">{{system.vest.value}}</span>{{/if}}
+        <span class="lv-npc-max">/{{system.vest.max}}</span>
+        {{#if canEdit}}
+        <select class="lv-npc-kind" data-vest-kind aria-label="{{localize 'LEVERAGE.NpcSheet.vestKind'}}" title="{{localize 'LEVERAGE.NpcSheet.vestKind'}}">
+          {{selectOptions vestKinds selected=system.vest.kind localize=true}}
+        </select>
+        {{else}}<span class="lv-npc-kind-text">{{localize vestLabel}}</span>{{/if}}
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</header>

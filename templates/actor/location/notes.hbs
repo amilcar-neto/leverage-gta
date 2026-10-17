@@ -1,0 +1,10 @@
+<section class="lv-panel lv-loc-notes">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.LocationSheet.notes"}}</span></h2>
+  <div class="lv-panel-body lv-loc-notes-body">
+    {{#if canManage}}
+    {{formInput notesField value=system.notes enriched=notesHtml toggled=true}}
+    {{else}}
+    <div class="lv-loc-notes-view lv-scroll">{{{notesHtml}}}</div>
+    {{/if}}
+  </div>
+</section>

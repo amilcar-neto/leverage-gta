@@ -84,16 +84,25 @@ export function gangDice(size, die, label) {
 }
 
 /**
- * Selectable dice of an NPC: Traits, Attributes and Roles that have a die (docs/05). A blank Trait name falls back to `names.trait`.
- * @param {{traits?: {name: string, die: number}[], attributes?: object, roles?: object}} system NPC `system` data.
- * @param {{attribute: (key: string) => string, role: (key: string) => string, trait: string}} names Display names.
+ * Source key of the Trait at `index` in the NPC list (the NPC sheet uses it to put one Trait in the roller).
+ * @param {number} index
+ * @returns {string}
+ */
+export const npcTraitKey = (index) => `npc.trait.${index}`;
+
+/**
+ * Selectable dice of an NPC: Traits, Attributes, Roles and the weapon that have a die (docs/05). A blank Trait name
+ * falls back to `names.trait`. The weapon is listed only when `names.weapon` is given.
+ * @param {{traits?: {name: string, die: number}[], attributes?: object, roles?: object, weapon?: {die: number|null}}} system NPC `system` data.
+ * @param {{attribute: (key: string) => string, role: (key: string) => string, trait: string, weapon?: string}} names Display names.
  * @returns {{key: string, label: string, die: number}[]}
  */
 export function npcSources(system, names) {
-  const traits = (system?.traits ?? []).map((t, i) => ({ key: `npc.trait.${i}`, label: t.name?.trim() || names.trait, die: t.die }));
+  const traits = (system?.traits ?? []).map((t, i) => ({ key: npcTraitKey(i), label: t.name?.trim() || names.trait, die: t.die }));
   const attributes = Object.entries(system?.attributes ?? {}).map(([k, v]) => ({ key: `npc.attr.${k}`, label: names.attribute(k), die: v?.die }));
   const roles = Object.entries(system?.roles ?? {}).map(([k, v]) => ({ key: `npc.role.${k}`, label: names.role(k), die: v?.die }));
-  return [...traits, ...attributes, ...roles].filter((s) => isValidDie(s.die));
+  const weapon = names.weapon ? [{ key: "npc.weapon", label: names.weapon, die: system?.weapon?.die }] : [];
+  return [...traits, ...attributes, ...roles, ...weapon].filter((s) => isValidDie(s.die));
 }
 
 /**
@@ -182,13 +191,17 @@ export async function rollOpposition({ dice, label, source = "manual" } = {}) {
 
 /**
  * Opens (or brings to the front) the opposition roller. Only the Fixer.
+ * @param {object} [options]
+ * @param {Actor} [options.npc] NPC to load into the roller (takes the place of the selected token's NPC).
+ * @param {boolean} [options.all] With `npc`: also pick all its dice and switch its gang on.
+ * @param {string} [options.toggle] With `npc`: source key of one die to pick or unpick (see `npcSources`).
  * @returns {Promise<void>}
  */
-export async function openOppositionRoller() {
+export async function openOppositionRoller(options = {}) {
   if (!game.user.isGM) {
     ui.notifications.warn(t("LEVERAGE.Opposition.gmOnly"));
     return;
   }
   const { OppositionRoller } = await import("../applications/gm/opposition-roller.mjs");
-  await OppositionRoller.open();
+  await OppositionRoller.open(options);
 }

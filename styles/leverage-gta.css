@@ -14,7 +14,10 @@
 @import url("sheets/item.css") layer(system);
 @import url("sheets/drag.css") layer(system);
 @import url("sheets/tray.css") layer(system);
+@import url("sheets/npc.css") layer(system);
+@import url("sheets/location.css") layer(system);
 @import url("chat.css") layer(system);
 @import url("gm.css") layer(system);
 @import url("job-tracker.css") layer(system);
 @import url("config-apps.css") layer(system);
+@import url("dialogs.css") layer(system);

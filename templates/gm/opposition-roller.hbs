@@ -30,10 +30,10 @@
     <h3 class="lv-opp-title">{{localize "LEVERAGE.Opposition.shortcuts"}}</h3>
     <div class="lv-opp-shortcuts">
       <button type="button" class="lv-opp-chip" data-action="noOpposition">{{localize "LEVERAGE.Opposition.none"}}</button>
-      <button type="button" class="lv-opp-chip{{#if police.on}} is-on{{/if}}" data-action="togglePolice" aria-pressed="{{police.on}}"{{#if police.disabled}} disabled title="{{localize "LEVERAGE.Opposition.policeNone"}}"{{else}} title="{{police.dice}}"{{/if}}>
+      {{#unless police.hidden}}<button type="button" class="lv-opp-chip{{#if police.on}} is-on{{/if}}" data-action="togglePolice" aria-pressed="{{police.on}}"{{#if police.disabled}} disabled title="{{localize "LEVERAGE.Opposition.policeNone"}}"{{else}} title="{{police.dice}}"{{/if}}>
         <span class="lv-opp-chip-name">{{localize "LEVERAGE.Opposition.policeStars" stars=police.stars}}</span>
         {{#unless police.disabled}}<span class="lv-opp-chip-dice">{{police.dice}}</span>{{/unless}}
-      </button>
+      </button>{{/unless}}
     </div>
     <div class="lv-opp-gang">
       <button type="button" class="lv-opp-chip{{#if gang.on}} is-on{{/if}}" data-action="toggleGang" aria-pressed="{{gang.on}}">{{localize "LEVERAGE.Opposition.gang"}}</button>

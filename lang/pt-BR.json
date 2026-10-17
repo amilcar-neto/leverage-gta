@@ -420,6 +420,7 @@
     "SystemTitle": "Leverage: Liberty City",
     "Sheet": {
       "Crew": "Ficha da Equipe",
+      "Npc": "Ficha de NPC",
       "addToPool": "Adicionar à Pool",
       "delete": "Excluir",
       "Add": "+ Adicionar",
@@ -769,6 +770,201 @@
       "Stars": {
         "invalidLevel": "As estrelas devem ser um número inteiro de {min} a {max}.",
         "unknownCity": "Cidade desconhecida: {city}."
+      }
+    },
+    "NpcSheet": {
+      "tier": "Nível",
+      "police": "Polícia",
+      "policeHint": "Marcar este NPC como polícia",
+      "lifeMax": "Vida máxima",
+      "vestKind": "Colete",
+      "traits": "Traços",
+      "addTrait": "Adicionar um Traço",
+      "traitName": "Nome do Traço",
+      "traitPlaceholder": "Traço",
+      "smaller": "Dado menor",
+      "bigger": "Dado maior",
+      "toRoller": "Pôr este dado no rolador de oposição",
+      "emptyTraits": "Nenhum Traço ainda.",
+      "gang": "Gangue",
+      "weapon": "Arma",
+      "dieLabel": "{what}: d{die}",
+      "notes": "Notas",
+      "emptyNotes": "Sem notas.",
+      "roll": "Rolar como oposição",
+      "rollHint": "Abre o rolador de oposição com os dados deste NPC"
+    },
+    "LocationSheet": {
+      "label": "Ficha de Local",
+      "name": "Nome",
+      "namePlaceholder": "Nome do lugar",
+      "pickImage": "Escolher imagem",
+      "noImage": "Sem imagem",
+      "city": "Cidade",
+      "cityHint": "Cidade cujas estrelas e polícia valem aqui",
+      "noCity": "Sem cidade",
+      "traits": "Traços",
+      "traitsHint": "Dados para a rolagem de oposição. Arraste para reordenar.",
+      "addTrait": "Adicionar um Traço a este local",
+      "traitName": "Nome do Traço",
+      "traitPlaceholder": "Traço (ex.: BECOS ESCUROS)",
+      "emptyTraits": "Nenhum Traço ainda. Adicione com + ADD.",
+      "notes": "Notas"
+    },
+    "Money": {
+      "cost": "Custo",
+      "have": "Você tem",
+      "left": "Sobra",
+      "amount": "Valor",
+      "Chat": {
+        "paid": "{name} pagou por {item}.",
+        "lent": "{from} emprestou Grana para {to}."
+      },
+      "Pay": {
+        "title": "Pagar: {name}",
+        "item": "Item",
+        "customItem": "Preço livre...",
+        "customName": "uma compra",
+        "customHint": "Quantos dados de cada tamanho custa?",
+        "short": "Grana insuficiente: faltam {n} degraus.",
+        "confirm": "Pagar"
+      },
+      "Lend": {
+        "title": "Emprestar Grana: {name}",
+        "to": "Emprestar para",
+        "amount": "Degraus a emprestar",
+        "hint": "Um degrau é um passo da escada de Grana (um d12 vale 5 degraus).",
+        "you": "Você",
+        "them": "Ele(a)",
+        "nobody": "Não há outro personagem da Equipe.",
+        "confirm": "Emprestar",
+        "Error": {
+          "sameActor": "Escolha outro personagem.",
+          "invalidAmount": "Empreste pelo menos 1 degrau.",
+          "noFunds": "Você não tem essa Grana toda.",
+          "full": "Ele(a) não comporta essa Grana toda."
+        }
+      }
+    },
+    "Damage": {
+      "speaker": "Fixer",
+      "flavor": "Dano em {name}",
+      "button": "APLICAR DANO",
+      "buttonTip": "Fixer: aplica o dano desta oposição a um personagem",
+      "ruleOff": "A regra da casa de Vida e Colete está desligada.",
+      "noTarget": "Escolha um personagem com Vida para levar o dano.",
+      "applied": "Dano aplicado em {name}: {damage} (Vida {life}/{max}).",
+      "Dialog": {
+        "title": "Aplicar dano",
+        "target": "Alvo",
+        "margin": "Margem (pontos perdidos por)",
+        "attacker": "Atacante (opcional)",
+        "attackerNone": "Sem atacante",
+        "weapon": "Dado da arma",
+        "weaponNone": "Sem arma",
+        "cover": "Alvo em cobertura (corta o dano pela metade)",
+        "police": "Polícia (Busted em vez de Wasted)",
+        "confirm": "Aplicar",
+        "hintLinked": "Margem preenchida pela rolagem de Pool acima. Dano = margem + dado da arma.",
+        "hintFree": "Dano = margem + dado da arma, cortado pela cobertura, depois o colete, depois a Vida.",
+        "assetsTitle": "Assets de arma",
+        "assetsBody": "{name} perde os Assets de arma da cena: {names}. Remover?"
+      },
+      "Weapon": {
+        "pistol": "Pistola",
+        "shotgun": "Escopeta",
+        "rifle": "Rifle"
+      },
+      "Line": {
+        "base": "{name}: margem {margin} + {weapon} = {raw} de dano.",
+        "weapon": "arma d{die} ({roll})",
+        "unarmed": "sem arma",
+        "cover": "Cobertura: cai para {damage}.",
+        "vest": "Colete absorve {absorbed} (restam {vest}).",
+        "life": "Vida -{lost}: {life}/{max}."
+      },
+      "Down": {
+        "wasted": "WASTED",
+        "busted": "BUSTED",
+        "npc": "{name} caiu.",
+        "hospital": "{name} acorda no hospital.",
+        "arrested": "{name} é preso e fica fora até ser solto.",
+        "payHospital": "Hospital: {price} ({steps} degrau(s) de Grana pago(s)).",
+        "payBail": "Fiança: {price} ({steps} degrau(s) de Grana pago(s)).",
+        "short": "Faltaram {steps} degrau(s) de Grana.",
+        "rescue": "Sem fiança nesta cidade: a Equipe precisa tirar {name} de lá numa cena.",
+        "stars": "Estrelas de procurado {from} para {to} (fuga de prisão).",
+        "fullLife": "Volta com a Vida cheia ({max}).",
+        "plotPoint": "+{count} Plot Point.",
+        "assetsLost": "Assets de arma da cena perdidos: {names}.",
+        "assetsKept": "O Fixer manteve os Assets de arma."
+      }
+    },
+    "Stars": {
+      "Chat": {
+        "label": "Estrelas",
+        "change": "de {from} para {to}"
+      },
+      "Reason": {
+        "raise": "A polícia apertou o cerco",
+        "custom": "{text}",
+        "setLevel": "Definido pelo Fixer",
+        "waitScenes": "Fora de vista por {scenes} cena(s)",
+        "waitSession": "Fora de vista entre sessões",
+        "disguise": "Mudou de cara",
+        "disguiseBoth": "Mudou de carro e de roupa",
+        "silence": "{name} comprou silêncio ({dice})",
+        "giveIn": "{name} se entregou à polícia"
+      },
+      "Error": {
+        "disabled": "A regra da casa Estrelas está desligada.",
+        "notAllowed": "Você não pode fazer isto.",
+        "noActor": "Escolha um personagem da Equipe.",
+        "unknownAction": "Ação de estrelas desconhecida.",
+        "invalidAmount": "A quantidade deve ser um número inteiro, 1 ou mais.",
+        "invalidLevel": "Estrelas deve ser um número inteiro de {min} a {max}.",
+        "invalidKind": "Disfarce desconhecido.",
+        "atMax": "Já está em {max} estrelas.",
+        "noStars": "Não há estrelas para baixar.",
+        "unchanged": "As estrelas já estão nesse nível.",
+        "waitBetweenSessions": "Nesta cidade as estrelas só baixam entre sessões.",
+        "notEnough": "Pouco tempo fora de vista (uma estrela a cada {scenes} cena(s)).",
+        "sketched": "Há retrato falado: mudar de cara não adianta aqui.",
+        "noSilence": "Comprar silêncio não funciona nesta cidade.",
+        "short": "Grana insuficiente (faltam {shortBy} degrau(s)).",
+        "noGM": "Nenhum Fixer conectado para processar isto."
+      },
+      "Dialog": {
+        "title": "Nível de procurado",
+        "level": "Nível",
+        "city": "Cidade",
+        "police": "Pool da polícia",
+        "none": "Sem pressão da polícia",
+        "actions": "Ações",
+        "off": "A regra da casa Estrelas está desligada: dá para definir o nível, as ações ficam escondidas.",
+        "raise": "Subir",
+        "raiseTip": "Mais uma estrela: visto cometendo crime, tiro em público, policial ferido, ataque grande ou fuga de prisão.",
+        "reason": "Motivo",
+        "reasonPlaceholder": "O que aconteceu?",
+        "wait": "Esperar fora de vista",
+        "scenes": "Cenas",
+        "betweenSessions": "Entre sessões",
+        "waitTipScene": "Grátis. Baixa 1 estrela a cada {scenes} cena(s) fora de vista.",
+        "waitTipSession": "Grátis. Baixa 1 estrela só entre sessões.",
+        "disguise": "Mudar de cara",
+        "disguiseBoth": "Carro e roupa",
+        "sketched": "Há retrato falado",
+        "disguiseTipClear": "Jogada rápida contra a Pool da polícia. Sucesso zera as estrelas.",
+        "disguiseTipLower": "Jogada rápida contra a Pool da polícia. Sucesso: -{one} estrela(s); -{both} trocando carro e roupa.",
+        "disguiseTipSketch": " Bloqueado enquanto houver retrato falado.",
+        "silence": "Comprar silêncio",
+        "silenceTip": "Jogada rápida contra a Pool da polícia. Paga um {die} de Grana por -{stars} estrelas.",
+        "silenceNone": "Não funciona nesta cidade.",
+        "giveIn": "Entregar-se",
+        "giveInTip": "Última saída: o personagem se entrega (em Liberty City, entrega um bode expiatório). As estrelas vão a 0.",
+        "character": "Personagem",
+        "noCrew": "Nenhum personagem da Equipe",
+        "rolled": "Aplique depois de passar na jogada."
       }
     }
   }

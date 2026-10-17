@@ -420,6 +420,7 @@
     "SystemTitle": "Leverage: Liberty City",
     "Sheet": {
       "Crew": "Crew sheet",
+      "Npc": "NPC sheet",
       "addToPool": "Add to the dice pool",
       "delete": "Delete",
       "Add": "+ Add",
@@ -769,6 +770,201 @@
       "Stars": {
         "invalidLevel": "Stars must be a whole number from {min} to {max}.",
         "unknownCity": "Unknown city: {city}."
+      }
+    },
+    "NpcSheet": {
+      "tier": "Tier",
+      "police": "Police",
+      "policeHint": "Mark this NPC as police",
+      "lifeMax": "Maximum Life",
+      "vestKind": "Vest",
+      "traits": "Traits",
+      "addTrait": "Add a Trait",
+      "traitName": "Trait name",
+      "traitPlaceholder": "Trait",
+      "smaller": "Smaller die",
+      "bigger": "Bigger die",
+      "toRoller": "Put this die in the opposition roller",
+      "emptyTraits": "No Traits yet.",
+      "gang": "Gang",
+      "weapon": "Weapon",
+      "dieLabel": "{what}: d{die}",
+      "notes": "Notes",
+      "emptyNotes": "No notes.",
+      "roll": "Roll as opposition",
+      "rollHint": "Open the opposition roller with this NPC's dice"
+    },
+    "LocationSheet": {
+      "label": "Location sheet",
+      "name": "Name",
+      "namePlaceholder": "Name of the place",
+      "pickImage": "Choose image",
+      "noImage": "No image",
+      "city": "City",
+      "cityHint": "City whose stars and police apply here",
+      "noCity": "No city",
+      "traits": "Traits",
+      "traitsHint": "Dice for the opposition roll. Drag to reorder.",
+      "addTrait": "Add a Trait to this location",
+      "traitName": "Trait name",
+      "traitPlaceholder": "Trait (e.g. DARK CORNERS)",
+      "emptyTraits": "No Traits yet. Add one with + ADD.",
+      "notes": "Notes"
+    },
+    "Money": {
+      "cost": "Cost",
+      "have": "You have",
+      "left": "Left",
+      "amount": "Amount",
+      "Chat": {
+        "paid": "{name} paid for {item}.",
+        "lent": "{from} lent Money to {to}."
+      },
+      "Pay": {
+        "title": "Pay: {name}",
+        "item": "Item",
+        "customItem": "Custom price...",
+        "customName": "a purchase",
+        "customHint": "How many dice of each size does it cost?",
+        "short": "Not enough Money: short by {n} steps.",
+        "confirm": "Pay"
+      },
+      "Lend": {
+        "title": "Lend Money: {name}",
+        "to": "Lend to",
+        "amount": "Steps to lend",
+        "hint": "One step is one rung of the Money ladder (a d12 is 5 steps).",
+        "you": "You",
+        "them": "Them",
+        "nobody": "There is no other Crew character.",
+        "confirm": "Lend",
+        "Error": {
+          "sameActor": "Pick another character.",
+          "invalidAmount": "Lend at least 1 step.",
+          "noFunds": "You do not have that much Money.",
+          "full": "They cannot hold that much Money."
+        }
+      }
+    },
+    "Damage": {
+      "speaker": "Fixer",
+      "flavor": "Damage to {name}",
+      "button": "APPLY DAMAGE",
+      "buttonTip": "Fixer: apply the damage of this opposition to a character",
+      "ruleOff": "The Life and Vest house rule is off.",
+      "noTarget": "Pick a character with Life to take the damage.",
+      "applied": "Damage applied to {name}: {damage} (Life {life}/{max}).",
+      "Dialog": {
+        "title": "Apply damage",
+        "target": "Target",
+        "margin": "Margin (points lost by)",
+        "attacker": "Attacker (optional)",
+        "attackerNone": "No attacker",
+        "weapon": "Weapon die",
+        "weaponNone": "No weapon",
+        "cover": "Target is in cover (halves the damage)",
+        "police": "Police (Busted instead of Wasted)",
+        "confirm": "Apply",
+        "hintLinked": "Margin filled from the Pool roll above. Damage = margin + weapon die.",
+        "hintFree": "Damage = margin + weapon die, halved by cover, then the vest, then Life.",
+        "assetsTitle": "Weapon Assets",
+        "assetsBody": "{name} loses the weapon Assets of the scene: {names}. Remove them?"
+      },
+      "Weapon": {
+        "pistol": "Pistol",
+        "shotgun": "Shotgun",
+        "rifle": "Rifle"
+      },
+      "Line": {
+        "base": "{name}: margin {margin} + {weapon} = {raw} damage.",
+        "weapon": "weapon d{die} ({roll})",
+        "unarmed": "no weapon",
+        "cover": "Cover: halved to {damage}.",
+        "vest": "Vest absorbs {absorbed} ({vest} left).",
+        "life": "Life -{lost}: {life}/{max}."
+      },
+      "Down": {
+        "wasted": "WASTED",
+        "busted": "BUSTED",
+        "npc": "{name} is down.",
+        "hospital": "{name} wakes up in the hospital.",
+        "arrested": "{name} is arrested and stays out until released.",
+        "payHospital": "Hospital: {price} ({steps} Money step(s) paid).",
+        "payBail": "Bail: {price} ({steps} Money step(s) paid).",
+        "short": "Short on Money by {steps} step(s).",
+        "rescue": "No bail in this city: the crew must break {name} out in a scene.",
+        "stars": "Wanted stars {from} to {to} (prison break).",
+        "fullLife": "Back with full Life ({max}).",
+        "plotPoint": "+{count} Plot Point.",
+        "assetsLost": "Weapon Assets of the scene lost: {names}.",
+        "assetsKept": "The Fixer kept the weapon Assets."
+      }
+    },
+    "Stars": {
+      "Chat": {
+        "label": "Stars",
+        "change": "from {from} to {to}"
+      },
+      "Reason": {
+        "raise": "The heat is up",
+        "custom": "{text}",
+        "setLevel": "Set by the Fixer",
+        "waitScenes": "Out of sight for {scenes} scene(s)",
+        "waitSession": "Out of sight between sessions",
+        "disguise": "Changed looks",
+        "disguiseBoth": "Changed car and clothes",
+        "silence": "{name} bought silence ({dice})",
+        "giveIn": "{name} gave in to the police"
+      },
+      "Error": {
+        "disabled": "The Stars house rule is off.",
+        "notAllowed": "You cannot do this.",
+        "noActor": "Pick a Crew character.",
+        "unknownAction": "Unknown stars action.",
+        "invalidAmount": "The amount must be a whole number, 1 or more.",
+        "invalidLevel": "Stars must be a whole number from {min} to {max}.",
+        "invalidKind": "Unknown disguise.",
+        "atMax": "Already at {max} stars.",
+        "noStars": "There are no stars to lower.",
+        "unchanged": "The stars are already there.",
+        "waitBetweenSessions": "In this city the stars only go down between sessions.",
+        "notEnough": "Not enough time out of sight (one star per {scenes} scene(s)).",
+        "sketched": "A composite sketch is out: disguising does nothing here.",
+        "noSilence": "Buying silence does not work in this city.",
+        "short": "Not enough Money (short by {shortBy} step(s)).",
+        "noGM": "No Fixer is connected to process this."
+      },
+      "Dialog": {
+        "title": "Wanted level",
+        "level": "Level",
+        "city": "City",
+        "police": "Police Pool",
+        "none": "No police pressure",
+        "actions": "Actions",
+        "off": "The Stars house rule is off: the level can be set, the actions are hidden.",
+        "raise": "Raise",
+        "raiseTip": "One more star: seen committing a crime, shot in public, cop hurt, big attack or jailbreak.",
+        "reason": "Reason",
+        "reasonPlaceholder": "What happened?",
+        "wait": "Wait out of sight",
+        "scenes": "Scenes",
+        "betweenSessions": "Between sessions",
+        "waitTipScene": "Free. Lowers 1 star per {scenes} scene(s) out of sight.",
+        "waitTipSession": "Free. Lowers 1 star only between sessions.",
+        "disguise": "Change looks",
+        "disguiseBoth": "Car and clothes",
+        "sketched": "Composite sketch is out",
+        "disguiseTipClear": "Quick roll against the police Pool. Success clears all stars.",
+        "disguiseTipLower": "Quick roll against the police Pool. Success: -{one} star(s); -{both} changing car and clothes.",
+        "disguiseTipSketch": " Blocked while a composite sketch exists.",
+        "silence": "Buy silence",
+        "silenceTip": "Quick roll against the police Pool. Pays one {die} of Money for -{stars} stars.",
+        "silenceNone": "Does not work in this city.",
+        "giveIn": "Give in",
+        "giveInTip": "Last way out: the character gives in (in Liberty City, hands over a scapegoat). Stars go to 0.",
+        "character": "Character",
+        "noCrew": "No Crew characters",
+        "rolled": "Apply these after the roll is passed."
       }
     }
   }

@@ -1,0 +1,26 @@
+<header class="lv-loc-header">
+  {{#if canManage}}
+  <button type="button" class="lv-loc-img{{#if hasImage}} has-image{{/if}}" data-action="pickImage" data-tooltip="LEVERAGE.LocationSheet.pickImage" aria-label="{{localize 'LEVERAGE.LocationSheet.pickImage'}}">
+    {{#if hasImage}}<img src="{{actor.img}}" alt="{{actor.name}}">{{else}}<span class="lv-loc-img-empty">{{localize "LEVERAGE.LocationSheet.noImage"}}</span>{{/if}}
+  </button>
+  {{else}}
+  <div class="lv-loc-img{{#if hasImage}} has-image{{/if}}">
+    {{#if hasImage}}<img src="{{actor.img}}" alt="{{actor.name}}">{{else}}<span class="lv-loc-img-empty">{{localize "LEVERAGE.LocationSheet.noImage"}}</span>{{/if}}
+  </div>
+  {{/if}}
+  <div class="lv-loc-identity">
+    {{#if canManage}}
+    <input type="text" class="lv-loc-name lv-hud lv-ellipsis" name="name" value="{{actor.name}}" title="{{actor.name}}" placeholder="{{localize 'LEVERAGE.LocationSheet.namePlaceholder'}}" aria-label="{{localize 'LEVERAGE.LocationSheet.name'}}">
+    <label class="lv-loc-city">
+      <span class="lv-loc-city-label">{{localize "LEVERAGE.LocationSheet.city"}}</span>
+      <select class="lv-loc-city-select" name="system.city" aria-label="{{localize 'LEVERAGE.LocationSheet.city'}}" title="{{localize 'LEVERAGE.LocationSheet.cityHint'}}">
+        <option value=""{{#if noCitySelected}} selected{{/if}}>{{localize "LEVERAGE.LocationSheet.noCity"}}</option>
+        {{#each cities}}<option value="{{id}}"{{#if selected}} selected{{/if}}>{{name}}</option>{{/each}}
+      </select>
+    </label>
+    {{else}}
+    <div class="lv-loc-name lv-hud lv-ellipsis" title="{{actor.name}}">{{actor.name}}</div>
+    {{#if cityName}}<div class="lv-loc-city"><span class="lv-loc-city-label">{{localize "LEVERAGE.LocationSheet.city"}}</span><span class="lv-loc-city-value lv-ellipsis" title="{{cityName}}">{{cityName}}</span></div>{{/if}}
+    {{/if}}
+  </div>
+</header>

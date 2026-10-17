@@ -45,7 +45,7 @@ try {
   await open();
   let list = await items();
   record("menu lists the Scene Trait with name and die", list.some((i) => /Dark alley/.test(i.text) && i.die === "8"), list);
-  const d8 = list.find((i) => i.text === "d8");
+  const d8 = list.find((i) => i.text.endsWith("d8") && !/Dark/.test(i.text));
   const scene = list.find((i) => /Dark alley/.test(i.text));
   record("Scene Trait die has the colour of its die size", d8 && scene && d8.color === scene.color, { d8, scene });
   await page.screenshot({ path: `${SHOTS}/T-pending-menu.png` });

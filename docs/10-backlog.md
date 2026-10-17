@@ -97,9 +97,9 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 ## Fase 6 — Regras da casa
 
 - [x] **T-601 Vida e Colete.** Barra do token, popover, regras de recuperação, liga/desliga. *Dep:* T-302.
-- [ ] **T-602 Dano e Wasted/Busted.** "APPLY DAMAGE" no card de oposição, cobertura, colete, mensagens WASTED/BUSTED
+- [x] **T-602 Dano e Wasted/Busted.** "APPLY DAMAGE" no card de oposição, cobertura, colete, mensagens WASTED/BUSTED
   estilizadas, perda de Assets de arma de cena, pagamento. *Dep:* T-504, T-601.
-- [ ] **T-603 Grana.** Escada, pagar com a tabela de preços, emprestar (socket via mestre), Grana na Pool, Jobs com
+- [x] **T-603 Grana.** Escada, pagar com a tabela de preços, emprestar (socket via mestre), Grana na Pool, Jobs com
   rendimento. *Dep:* T-105, T-502.
 - [ ] **T-604 Estrelas.** Configuração `wanted`, escalas por cidade (app de edição), Pool da polícia no rolador.
   *Dep:* T-504.
@@ -119,7 +119,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 - [ ] **T-801 Ficha de NPC** (tiers, Traços, gangue, arma, polícia, ROLL AS OPPOSITION). *Dep:* T-504.
   *Par:* T-802.
-- [ ] **T-802 Ficha de Local.** *Dep:* T-301. *Par:* T-801.
+- [x] **T-802 Ficha de Local.** *Dep:* T-301. *Par:* T-801.
 - [ ] **R-F8 Revisão de fase.**
 
 ## Fase 9 — Acabamento

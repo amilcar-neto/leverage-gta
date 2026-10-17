@@ -1,0 +1,16 @@
+<section class="lv-panel lv-npc-gang">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.NpcSheet.gang"}}</span></h2>
+  <div class="lv-panel-body lv-npc-gang-body">
+    <span class="lv-npc-count">
+      {{#if canEdit}}
+      <button type="button" class="lv-step" data-action="stepGang" data-delta="-1" aria-label="{{localize 'LEVERAGE.Opposition.fewer'}}" title="{{localize 'LEVERAGE.Opposition.fewer'}}"{{#unless gangCanDown}} disabled{{/unless}}>&minus;</button>
+      <input type="number" class="lv-npc-gang-size" name="system.gang.size" value="{{system.gang.size}}" min="0" max="{{gangMax}}" step="1" aria-label="{{localize 'LEVERAGE.Opposition.gangSize'}}" title="{{localize 'LEVERAGE.Opposition.gangSize'}}">
+      <button type="button" class="lv-step" data-action="stepGang" data-delta="1" aria-label="{{localize 'LEVERAGE.Opposition.more'}}" title="{{localize 'LEVERAGE.Opposition.more'}}"{{#unless gangCanUp}} disabled{{/unless}}>+</button>
+      {{else}}
+      <span class="lv-npc-gang-size is-text">{{system.gang.size}}</span>
+      {{/if}}
+    </span>
+    <span class="lv-npc-times" aria-hidden="true">&times;</span>
+    <span class="lv-ladder" data-die-path="system.gang.die">{{#each gangLadder}}{{lvDie die die=die size=28 muted=muted action=action pressed=pressed label=label title=label}}{{/each}}</span>
+  </div>
+</section>

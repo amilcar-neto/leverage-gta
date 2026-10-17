@@ -1,0 +1,10 @@
+<div class="leverage-gta lv-down-card lv-down-card--{{kind}}">
+  <div class="lv-down-title hud" role="heading" aria-level="3">{{title}}</div>
+  <div class="lv-down-who">
+    {{#if img}}<img class="lv-down-mug" src="{{img}}" alt="{{name}}">{{/if}}
+    <span class="lv-down-name" title="{{name}}">{{name}}</span>
+  </div>
+  <ul class="lv-down-lines">
+    {{#each lines}}<li>{{this}}</li>{{/each}}
+  </ul>
+</div>

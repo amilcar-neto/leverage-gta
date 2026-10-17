@@ -220,3 +220,33 @@
 }
 
 .leverage-gta .lv-opp-roll:hover { filter: brightness(1.1); }
+
+/* Wanted level window (T-604): reuses the opposition window look (lv-opposition, lv-opp-*). */
+.leverage-gta .lv-wanted-levels { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+
+.leverage-gta .lv-wanted-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 4px 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  color: var(--lv-ink);
+  cursor: pointer;
+}
+
+.leverage-gta .lv-wanted-level:hover { background: rgba(255, 255, 255, 0.16); }
+.leverage-gta .lv-wanted-level.is-on { background: var(--lv-star-on); border-color: var(--lv-outline); color: var(--lv-die-ink); }
+.leverage-gta .lv-wanted-n { font-family: var(--lv-font-display); font-size: 20px; line-height: 1; }
+.leverage-gta .lv-wanted-die { height: 14px; font-size: 12px; font-weight: 700; line-height: 14px; }
+.leverage-gta .lv-wanted-field { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.leverage-gta .lv-wanted-field select { flex: 1; }
+.leverage-gta .lv-wanted-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.leverage-gta .lv-wanted-grow { flex: 1; min-width: 0; }
+.leverage-gta .lv-wanted-num { flex: none; width: 56px; }
+.leverage-gta .lv-wanted-check { display: flex; flex: 1; align-items: center; gap: 4px; min-width: 0; font-size: 13px; }
+.leverage-gta .lv-wanted-check-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leverage-gta .lv-wanted-off { margin: 0; color: var(--lv-muted); }

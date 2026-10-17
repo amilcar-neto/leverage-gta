@@ -1,0 +1,8 @@
+<section class="lv-panel lv-npc-notes">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.NpcSheet.notes"}}</span></h2>
+  {{#if canEdit}}
+  <prose-mirror class="lv-npc-rich" name="system.notes" value="{{system.notes}}" document-uuid="{{actor.uuid}}" toggled="true">{{{notes}}}</prose-mirror>
+  {{else}}
+  <div class="lv-npc-rich lv-npc-prose lv-scroll">{{#if notes}}{{{notes}}}{{else}}<p class="lv-empty">{{localize "LEVERAGE.NpcSheet.emptyNotes"}}</p>{{/if}}</div>
+  {{/if}}
+</section>

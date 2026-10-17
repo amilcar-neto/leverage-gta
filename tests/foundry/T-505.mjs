@@ -146,7 +146,7 @@ try {
   await page.evaluate(prepare);
   await wait(500);
   const keys = await page.evaluate(() => Object.keys(game.leverage ?? {}).sort());
-  record("game.leverage exists with every group", keys.join() === "job,jobTracker,money,openOppositionRoller,opposition,plotPoints,rollPool,stars,traits", keys);
+  record("game.leverage exists with every group", keys.join() === "job,jobTracker,money,openOppositionRoller,opposition,plotPoints,pool,rollPool,stars,traits", keys);
 
   /* ---- GM ---- */
   const gm = async (id) => {

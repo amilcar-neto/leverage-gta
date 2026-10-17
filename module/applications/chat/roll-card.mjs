@@ -6,6 +6,7 @@ import { SYSTEM_ID } from "../../config.mjs";
 import { renderDie } from "../components/die.mjs";
 import { unresolvedOnes } from "../../dice/card-actions.mjs";
 import { cardHandlers, registerCardSocket } from "./card-handlers.mjs";
+import { damageView, registerDamageMessages } from "./damage.mjs";
 
 /** Template of the card. */
 export const ROLL_CARD_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/roll-card.hbs`;
@@ -45,9 +46,10 @@ export function dieContext(entry, t) {
  * @param {boolean} [view.isOwner] The viewer owns the actor.
  * @param {boolean} [view.isGM] The viewer is the Fixer.
  * @param {number} [view.plotPoints] Plot Points the actor has now.
+ * @param {{show: boolean, applied: string}} [view.damage] Opposition card: APPLY DAMAGE button and the applied summary.
  * @returns {object}
  */
-export function rollCardContext(data, { t, isOwner = false, isGM = false, plotPoints = 0 }) {
+export function rollCardContext(data, { t, isOwner = false, isGM = false, plotPoints = 0, damage = { show: false, applied: "" } }) {
   const entries = data.entries ?? [];
   const keptValues = entries.filter((e) => e.kept).map((e) => e.result).sort((a, b) => b - a);
   const unresolved = data.opposition ? 0 : unresolvedOnes(data).length;
@@ -70,7 +72,9 @@ export function rollCardContext(data, { t, isOwner = false, isGM = false, plotPo
       data.ppSpent ? t("LEVERAGE.Roll.ppSpent", { count: data.ppSpent }) : "",
       data.money ? t("LEVERAGE.Roll.moneyDrop") : ""
     ].filter(Boolean),
-    showKeep, showComplication, showActions: showKeep || showComplication,
+    showKeep, showComplication, showDamage: damage.show, damageApplied: damage.applied,
+    showActions: showKeep || showComplication || damage.show,
+    damageLabel: t("LEVERAGE.Damage.button"), damageTip: t("LEVERAGE.Damage.buttonTip"),
     keepLabel: t("LEVERAGE.Roll.keepButton"), keepTip: t("LEVERAGE.Roll.keepTip"),
     complicationLabel: t("LEVERAGE.Roll.complicationButton"), complicationTip: t("LEVERAGE.Roll.complicationTip")
   };
@@ -91,7 +95,8 @@ function paint(message, html, data, template) {
   const actor = data.actorUuid ? fromUuidSync(data.actorUuid) : null;
   const context = rollCardContext(data, {
     t: (key, args) => game.i18n.format(key, args),
-    isOwner: Boolean(actor?.isOwner), isGM: game.user.isGM, plotPoints: actor?.system?.plotPoints?.value ?? 0
+    isOwner: Boolean(actor?.isOwner), isGM: game.user.isGM, plotPoints: actor?.system?.plotPoints?.value ?? 0,
+    damage: damageView(message, data)
   });
   const host = html.querySelector(".message-content");
   if (!host) return;
@@ -114,5 +119,6 @@ function onRenderMessage(message, html) {
 export function registerRollCard() {
   Hooks.on("renderChatMessageHTML", onRenderMessage);
   registerCardSocket();
+  registerDamageMessages();
   Hooks.once("ready", ensureTemplate);
 }

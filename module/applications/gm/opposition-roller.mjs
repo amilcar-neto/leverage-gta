@@ -19,7 +19,7 @@ const COUNTER_DIE = 36;
 const PREVIEW_DIE = 28;
 
 /** Settings that change what the roller shows. */
-const WATCHED_SETTINGS = new Set(["wanted", "cityScales", "activeJob"].map((key) => `${SYSTEM_ID}.${key}`));
+const WATCHED_SETTINGS = new Set(["wanted", "cityScales", "activeJob", "houseRules.stars"].map((key) => `${SYSTEM_ID}.${key}`));
 
 /** @param {string} key @param {object} [data] */
 const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
@@ -64,11 +64,19 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   /** The one open instance. */
   static #instance = null;
 
-  /** Opens the roller, or brings the open one to the front. */
-  static async open() {
+  /**
+   * Opens the roller, or brings the open one to the front.
+   * @param {object} [options]
+   * @param {Actor} [options.npc] NPC to load (wins over the NPC of a selected token until another NPC token is selected).
+   * @param {boolean} [options.all] With `npc`: pick all of its dice and switch its gang on.
+   * @param {string} [options.toggle] With `npc`: source key of one die to pick or unpick.
+   */
+  static async open({ npc = null, all = false, toggle = null } = {}) {
     OppositionRoller.#instance ??= new OppositionRoller();
-    await OppositionRoller.#instance.render({ force: true });
-    OppositionRoller.#instance.bringToFront();
+    const app = OppositionRoller.#instance;
+    if (npc?.type === "npc") app.#useNpc(npc, { all, toggle });
+    await app.render({ force: true });
+    app.bringToFront();
   }
 
   #counts = emptyCounts();
@@ -78,6 +86,8 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   #label = "";
   #hooks = [];
   #npcId = null;
+  /** NPC sent by an NPC sheet; a selected NPC token takes over. */
+  #loadedNpc = null;
 
   /* ---------------------------------------------------------- state -> data */
 
@@ -87,13 +97,28 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     return { city: wanted.city, stars: wanted.level ?? 0, scales: getCityScales() };
   }
 
-  /** Selectable dice of the selected NPC, its gang and the location / Job groups. */
-  #sources() {
-    const npc = selectedActor("npc");
-    const names = {
+  /** Whether the Stars house rule is on (the police shortcut is hidden otherwise). */
+  #starsOn() {
+    return Boolean(readSetting("houseRules.stars", true));
+  }
+
+  /** The NPC the roller works with: the selected token's, else the one an NPC sheet loaded. */
+  #npcActor() {
+    return selectedActor("npc") ?? this.#loadedNpc;
+  }
+
+  /** Display names of the NPC sources. */
+  #names() {
+    return {
       attribute: (key) => t(LEVERAGE.attributes[key]?.label ?? key), role: (key) => t(LEVERAGE.roles[key]?.label ?? key),
-      trait: t("LEVERAGE.Opposition.traitFallback")
+      trait: t("LEVERAGE.Opposition.traitFallback"), weapon: t("LEVERAGE.NpcSheet.weapon")
     };
+  }
+
+  /** Selectable dice of the NPC, its gang and the location / Job groups. */
+  #sources() {
+    const npc = this.#npcActor();
+    const names = this.#names();
     const locations = sceneLocations().map((actor) => ({ name: actor.name, sources: locationSources(actor.system.traits, names.trait) }));
     return {
       npc, npcSources: npc ? npcSources(npc.system, names) : [], locations,
@@ -108,7 +133,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     const groups = [sources.npcSources, ...sources.locations.map((l) => l.sources), sources.complications];
     const parts = [
       ["manual", looseDice(this.#counts, label("dieLabel"))],
-      ["police", this.#police ? policeDice(city, stars, label("police"), scales) : []],
+      ["police", this.#police && this.#starsOn() ? policeDice(city, stars, label("police"), scales) : []],
       ["gang", this.#gang.on ? gangDice(this.#gang.size, this.#gang.die, label("gang")) : []],
       ["picked", pickedDice(groups, this.#picked)]
     ].filter(([, dice]) => dice.length);
@@ -128,7 +153,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
         die, count: this.#counts[die],
         html: renderDie({ die, value: die, size: COUNTER_DIE, muted: this.#counts[die] === 0 })
       })),
-      police: { on: this.#police, disabled: !police.length, stars, dice: police.map((d) => `d${d.die}`).join(" + "), city },
+      police: { hidden: !this.#starsOn(), on: this.#police, disabled: !police.length, stars, dice: police.map((d) => `d${d.die}`).join(" + "), city },
       gang: { ...this.#gang, options: dieOptions },
       npc: sources.npc && {
         name: sources.npc.name, sources: withState(sources.npcSources, this.#picked),
@@ -155,7 +180,8 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     this.#hooks = [
       ["controlToken", Hooks.on("controlToken", () => this.#onSelectionChanged())],
       ["canvasReady", Hooks.on("canvasReady", refresh)],
-      ["updateSetting", Hooks.on("updateSetting", (setting) => WATCHED_SETTINGS.has(setting.key) && refresh())]
+      ["updateSetting", Hooks.on("updateSetting", (setting) => WATCHED_SETTINGS.has(setting.key) && refresh())],
+      ["updateActor", Hooks.on("updateActor", (actor) => actor.id === this.#npcId && refresh())]
     ];
   }
 
@@ -178,12 +204,30 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
 
   /** Re-renders when another NPC is selected; dice picked from the previous one are dropped. */
   #onSelectionChanged() {
-    const npcId = selectedActor("npc")?.id ?? null;
-    if (npcId !== this.#npcId) {
-      this.#npcId = npcId;
-      for (const key of [...this.#picked]) if (key.startsWith("npc.")) this.#picked.delete(key);
-    }
+    if (selectedActor("npc")) this.#loadedNpc = null;
+    this.#switchNpc(this.#npcActor()?.id ?? null);
     if (this.rendered) this.render();
+  }
+
+  /** Remembers the NPC in use and drops the dice picked from the previous one. */
+  #switchNpc(npcId) {
+    if (npcId === this.#npcId) return;
+    this.#npcId = npcId;
+    for (const key of [...this.#picked]) if (key.startsWith("npc.")) this.#picked.delete(key);
+  }
+
+  /** Loads an NPC sent by its sheet: all its dice and gang (`all`), or one die (`toggle`). */
+  #useNpc(npc, { all, toggle }) {
+    this.#loadedNpc = npc;
+    this.#switchNpc(npc.id);
+    const keys = npcSources(npc.system, this.#names()).map((source) => source.key);
+    if (all) {
+      keys.forEach((key) => this.#picked.add(key));
+      const { size, die } = npc.system.gang;
+      if (size > 0 && die) this.#gang = { on: true, size: Math.min(12, size), die };
+    } else if (toggle && keys.includes(toggle) && !this.#picked.delete(toggle)) {
+      this.#picked.add(toggle);
+    }
   }
 
   /** Updates the gang inputs without losing the focus. */
@@ -221,7 +265,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
 
   /** Copies the size and die of the selected NPC's gang into the gang row and switches it on. */
   static #onUseNpcGang() {
-    const gang = selectedActor("npc")?.system.gang;
+    const gang = this.#npcActor()?.system.gang;
     if (gang?.size > 0 && gang.die) this.#gang = { on: true, size: Math.min(12, gang.size), die: gang.die };
     this.render();
   }

@@ -120,3 +120,95 @@ export function thugsDown(margin, remaining) {
   if (remaining === 1) return extraordinary ? 1 : 0;
   return Math.min(remaining, extraordinary ? 2 : 1);
 }
+
+/**
+ * Whether the opposition took the round: it wins when it makes at least as much as the player (ties are the Fixer's).
+ * @param {number} playerTotal
+ * @param {number} oppositionTotal
+ * @returns {boolean}
+ */
+export function oppositionWins(playerTotal, oppositionTotal) {
+  return oppositionTotal >= playerTotal;
+}
+
+/**
+ * Margin by which the opposition won, never below 0 (a tie is 0).
+ * @param {number} playerTotal
+ * @param {number} oppositionTotal
+ * @returns {number}
+ */
+export function lostBy(playerTotal, oppositionTotal) {
+  return Math.max(0, oppositionTotal - playerTotal);
+}
+
+/**
+ * One damage round: margin + weapon die, then cover (half, rounded down), then vest, then Life (docs/02).
+ * @param {object} p
+ * @param {number} p.margin points the target lost by
+ * @param {number} [p.weaponRoll=0] value rolled on the weapon die
+ * @param {number} p.life current Life
+ * @param {number} p.vest current vest points
+ * @param {boolean} [p.cover=false]
+ * @returns {ReturnType<typeof applyDamage> & {raw: number}} `raw` is the damage before cover
+ */
+export function damageRound({ margin, weaponRoll = 0, life, vest, cover = false }) {
+  const raw = baseDamage(margin, weaponRoll);
+  return { ...applyDamage({ life, vest, damage: raw, cover }), raw };
+}
+
+/**
+ * Everything that follows Life reaching 0, with the house rules and the character's means applied
+ * (docs/02 "Quando a Vida zera"). Pure: the caller performs the writes.
+ * - Wasted: the hospital is paid now (what the character has, when short).
+ * - Busted with bail (the city allows it): bail is paid now (the book says "end of the scene"; this is a
+ *   simplification). Without bail (Liberty City): the character waits for a rescue, which counts as a prison
+ *   break, so the stars rise 1 now.
+ * - NPCs only fall: no Plot Point, money, stars or full Life.
+ * @param {object} p
+ * @param {boolean} p.byPolice
+ * @param {boolean} p.isCrew whether the target is a Crew character (NPCs have no Plot Points or Money)
+ * @param {number} p.max max Life
+ * @param {number} p.hospitalSteps
+ * @param {number} p.bailSteps
+ * @param {boolean} p.bailAllowed
+ * @param {number} p.moneySteps Money the character has now
+ * @param {{money: boolean, stars: boolean}} p.rules the `houseRules.money` / `houseRules.stars` switches
+ * @returns {{kind: "wasted"|"busted", restoreLife: number|null, plotPoints: number, loseWeaponAssets: boolean,
+ *   priceKind: "hospital"|"bail"|null, dueSteps: number, paidSteps: number, shortBy: number, rescue: boolean,
+ *   starsRaise: number}}
+ */
+export function planDown({ byPolice, isCrew, max, hospitalSteps, bailSteps, bailAllowed, moneySteps, rules }) {
+  const down = resolveDown({ byPolice, max, hospitalSteps, bailSteps, bailAllowed });
+  const busted = down.kind === "busted";
+  const rescue = busted && down.bailCostSteps === null;
+  const priceKind = !isCrew || !rules.money ? null : (busted ? (rescue ? null : "bail") : "hospital");
+  const dueSteps = priceKind === "bail" ? down.bailCostSteps : (priceKind === "hospital" ? down.costSteps : 0);
+  const paidSteps = Math.min(dueSteps, Math.max(0, moneySteps));
+  return {
+    kind: down.kind,
+    restoreLife: isCrew ? down.life : null,
+    plotPoints: isCrew ? down.plotPoints : 0,
+    loseWeaponAssets: isCrew && down.loseWeaponAssets,
+    priceKind, dueSteps, paidSteps, shortBy: dueSteps - paidSteps,
+    rescue,
+    starsRaise: rescue && rules.stars ? down.rescueRaisesStars : 0
+  };
+}
+
+/**
+ * The closest Pool roll of a character before the opposition card at `index`: the roll that opposition belongs to.
+ * It stops at another opposition card (that one owns the rolls before it).
+ * @param {(object|null)[]} rolls `flags.leverage-gta.roll` of each chat message, oldest first (null if none)
+ * @param {number} index position of the opposition card
+ * @param {number} [window=6] how many messages back to look
+ * @returns {number} index of the linked roll, or -1
+ */
+export function linkedRollIndex(rolls, index, window = 6) {
+  for (let i = index - 1; i >= Math.max(0, index - window); i--) {
+    const roll = rolls[i];
+    if (!roll) continue;
+    if (roll.opposition) return -1;
+    if (roll.actorUuid) return i;
+  }
+  return -1;
+}

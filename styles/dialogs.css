@@ -1,0 +1,38 @@
+/* Money dialogs and chat lines (T-603): Pay, Lend, "paid"/"lent" lines. Tokens come from tokens.css. */
+
+/* ---- Chat lines ---- */
+.leverage-gta.lv-money-line {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--lv-bg);
+  border: var(--lv-border);
+  border-radius: 6px;
+  box-shadow: var(--lv-shadow);
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.leverage-gta.lv-money-line--lend { border-inline-start: 6px solid var(--lv-money); }
+.leverage-gta.lv-money-line--pay { border-inline-start: 6px solid var(--lv-stamp); }
+.leverage-gta .lv-money-text { margin: 0; overflow-wrap: anywhere; }
+
+/* ---- Blocks of Money dice (chat lines and dialogs) ---- */
+.leverage-gta .lv-money-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px 18px; }
+.leverage-gta .lv-money-block { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.leverage-gta .lv-money-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; }
+.leverage-gta .lv-money-dice { display: flex; flex-wrap: wrap; gap: 3px; min-height: 24px; align-items: center; }
+.leverage-gta .lv-money-none { font-weight: 700; opacity: 0.6; }
+
+/* ---- Dialog parts ---- */
+.leverage-gta.lv-dialog .lv-money-dlg select,
+.leverage-gta.lv-dialog .lv-money-dlg input[type="number"] { width: 100%; box-sizing: border-box; }
+.leverage-gta.lv-dialog .lv-money-dlg select { text-overflow: ellipsis; }
+.leverage-gta.lv-dialog .lv-money-counts { display: flex; gap: 8px; }
+.leverage-gta.lv-dialog .lv-money-count { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; font-weight: 700; }
+.leverage-gta.lv-dialog .lv-money-summary { padding: 6px 8px; border-radius: 4px; background: rgba(128, 128, 128, 0.14); }
+.leverage-gta.lv-dialog .lv-money-warn { margin: 0; color: var(--lv-stamp); font-weight: 700; font-size: 13px; }
+.leverage-gta.lv-dialog .lv-money-dlg [hidden] { display: none; }

@@ -1,0 +1,24 @@
+<section class="lv-panel lv-npc-traits">
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.NpcSheet.traits"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{traits.length}}</span>{{#if canEdit}}<button type="button" class="lv-add-btn" data-action="addTrait" title="{{localize 'LEVERAGE.NpcSheet.addTrait'}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}</span></h2>
+  <div class="lv-panel-body lv-scroll lv-npc-list">
+    {{#each traits}}
+    <div class="lv-row lv-npc-trait" data-index="{{index}}">
+      {{#if @root.canEdit}}
+      <input type="text" class="lv-npc-trait-name lv-ellipsis lv-inline" data-trait-name value="{{name}}" title="{{name}}" placeholder="{{localize 'LEVERAGE.NpcSheet.traitPlaceholder'}}" aria-label="{{localize 'LEVERAGE.NpcSheet.traitName'}}">
+      {{else}}
+      <span class="lv-npc-trait-name lv-ellipsis" title="{{name}}">{{#if name}}{{name}}{{else}}{{localize "LEVERAGE.NpcSheet.traitPlaceholder"}}{{/if}}</span>
+      {{/if}}
+      <span class="lv-npc-trait-die">
+        {{#if @root.canEdit}}<button type="button" class="lv-step" data-action="stepTraitDie" data-delta="-1" aria-label="{{localize 'LEVERAGE.NpcSheet.smaller'}}" title="{{localize 'LEVERAGE.NpcSheet.smaller'}}"{{#unless canDown}} disabled{{/unless}}>&lsaquo;</button>{{/if}}
+        {{#if @root.isGM}}
+        <button type="button" class="lv-pool-btn" data-action="pickTraitDie" data-source-key="{{sourceKey}}" title="{{localize 'LEVERAGE.NpcSheet.toRoller'}}" aria-label="{{localize 'LEVERAGE.NpcSheet.toRoller'}}">{{lvDie die die=die size=32}}</button>
+        {{else}}{{lvDie die die=die size=32}}{{/if}}
+        {{#if @root.canEdit}}<button type="button" class="lv-step" data-action="stepTraitDie" data-delta="1" aria-label="{{localize 'LEVERAGE.NpcSheet.bigger'}}" title="{{localize 'LEVERAGE.NpcSheet.bigger'}}"{{#unless canUp}} disabled{{/unless}}>&rsaquo;</button>{{/if}}
+      </span>
+      {{#if @root.canEdit}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteTrait" label=(localize "LEVERAGE.Sheet.delete")}}{{/if}}
+    </div>
+    {{else}}
+    <p class="lv-empty">{{localize "LEVERAGE.NpcSheet.emptyTraits"}}</p>
+    {{/each}}
+  </div>
+</section>

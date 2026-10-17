@@ -6,8 +6,6 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { clampStars } from "../../rules/stars.mjs";
-import { getCityScales } from "../../settings.mjs";
-import { escapeHtml } from "../components/die.mjs";
 import * as actions from "./job-actions.mjs";
 
 /** @param {string} key @param {object} [data] */
@@ -44,32 +42,11 @@ export async function setWanted(level, city) {
   return true;
 }
 
-/** Body of the wanted dialog: star buttons 0..max plus the city select. */
-function wantedContent(wanted, scales) {
-  const stars = Array.from({ length: LEVERAGE.stars.max + 1 }, (_, n) => `<label class="lv-gm-star">
-    <input type="radio" name="level" value="${n}"${n === clampStars(wanted.level) ? " checked" : ""}><span>${n}</span></label>`).join("");
-  const cities = scales.map((c) => `<option value="${escapeHtml(c.id)}"${c.id === wanted.city ? " selected" : ""}>${escapeHtml(c.name)}</option>`).join("");
-  return `<div class="lv-dlg"><div class="lv-gm-stars" role="radiogroup" aria-label="${escapeHtml(t("LEVERAGE.GM.Dialog.Wanted.level"))}">${stars}</div>
-    <label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.Wanted.city")}</span><select name="city">${cities}</select></label></div>`;
-}
-
-/** Popover-like dialog (docked next to the controls) with 0-5 stars and the city. */
+/** Opens the wanted level window (`wanted-dialog.mjs`): level, city and the star actions. */
 export async function openWantedDialog() {
   if (!actions.requireGM()) return;
-  const wanted = game.settings.get(SYSTEM_ID, "wanted") ?? {};
-  const scales = getCityScales();
-  const choice = await foundry.applications.api.DialogV2.prompt({
-    classes: ["leverage-gta", "lv-dialog", "lv-gm-wanted"],
-    window: { title: t("LEVERAGE.GM.Dialog.Wanted.title") },
-    position: { width: 340, left: 90, top: 120 },
-    rejectClose: false,
-    content: wantedContent(wanted, scales),
-    ok: {
-      label: t("LEVERAGE.GM.Dialog.Wanted.confirm"),
-      callback: (_event, button) => ({ level: Number(button.form.elements.level.value), city: button.form.elements.city.value })
-    }
-  });
-  if (choice) await setWanted(choice.level, choice.city);
+  const mod = await import("./wanted-dialog.mjs");
+  return mod.openWantedDialog();
 }
 
 /** Opens the opposition roller (T-504), or warns when it is not installed yet. */

@@ -1,0 +1,17 @@
+<div class="lv-npc-ladders{{#unless showLadders}} is-empty{{/unless}}">
+  {{#if showLadders}}
+  {{#each ladderGroups}}
+  <section class="lv-panel lv-npc-{{group}}">
+    <h2 class="lv-panel-head"><span>{{localize title}}</span></h2>
+    <div class="lv-panel-body lv-list">
+      {{#each rows}}
+      <div class="lv-row lv-ladder-row{{#if blank}} is-blank{{/if}}" data-key="{{key}}">
+        <span class="lv-row-name lv-ellipsis" title="{{nameTitle}}">{{label}}</span>
+        <span class="lv-ladder" data-die-path="system.{{group}}.{{key}}.die">{{#each ladder}}{{lvDie die die=die size=28 muted=muted action=action pressed=pressed label=label title=title}}{{/each}}</span>
+      </div>
+      {{/each}}
+    </div>
+  </section>
+  {{/each}}
+  {{/if}}
+</div>

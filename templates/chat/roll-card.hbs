@@ -35,10 +35,13 @@
   </div>
   {{/if}}
 
+  {{#if damageApplied}}<div class="lv-roll-note lv-roll-note--damage">{{damageApplied}}</div>{{/if}}
+
   {{#if showActions}}
   <div class="lv-roll-actions">
     {{#if showKeep}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="keepDie" title="{{keepTip}}">{{keepLabel}}</button>{{/if}}
     {{#if showComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="complication" title="{{complicationTip}}">{{complicationLabel}}</button>{{/if}}
+    {{#if showDamage}}<button type="button" class="lv-roll-btn lv-roll-btn--damage" data-action="applyDamage" title="{{damageTip}}">{{damageLabel}}</button>{{/if}}
   </div>
   {{/if}}
 </div>
