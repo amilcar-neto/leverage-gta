@@ -2,7 +2,7 @@
   <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.talents"}}</span><span class="lv-panel-tools"><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.clickToOpen"}}</span>{{#if canEdit}}<button type="button" class="lv-addbtn" data-action="addTraitItem" data-type="talent" title="{{localize "LEVERAGE.Sheet.New.talent"}}">{{localize "LEVERAGE.Sheet.add"}}</button>{{/if}}</span></h2>
   <div class="lv-panel-body lv-list lv-scroll">
     {{#each talents}}
-    <div class="lv-row lv-row--talent" data-item-id="{{id}}" data-action="openTraitItem">
+    <div class="lv-row lv-row--talent draggable" data-item-id="{{id}}" data-action="openTraitItem">
       <span class="lv-row-main">
         <span class="lv-row-line">
           <span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span>

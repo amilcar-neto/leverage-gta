@@ -1,0 +1,418 @@
+/* Item sheets (T-401): small window, yellow name band, labelled fields, footer with delete.
+   Reference: reference/mockups/png/talent-item-window.png. Scoped to .leverage-gta.lv-item-sheet. */
+
+/* ---- Window frame and title bar ---- */
+.leverage-gta.lv-item-sheet {
+  min-width: 420px;
+  min-height: 300px;
+  background: var(--lv-bg);
+  border: 4px solid #000;
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--lv-ink);
+  overflow: hidden;
+}
+
+.leverage-gta.lv-item-sheet .window-header {
+  flex: none;
+  height: 32px;
+  gap: 10px;
+  padding: 0 12px;
+  background: #000;
+  border: 0;
+  color: var(--lv-ink);
+}
+
+.leverage-gta.lv-item-sheet .window-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--lv-font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 32px;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leverage-gta.lv-item-sheet .window-header .header-control {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--lv-muted);
+  border-radius: 3px;
+  box-shadow: none;
+  color: var(--lv-ink);
+}
+
+.leverage-gta.lv-item-sheet .window-header .header-control:hover,
+.leverage-gta.lv-item-sheet .window-header .header-control:focus-visible {
+  border-color: var(--lv-select);
+  color: #fff;
+}
+
+.leverage-gta.lv-item-sheet button { min-height: 0; }
+
+.leverage-gta.lv-item-sheet .window-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* ---- Name band ---- */
+.leverage-gta.lv-item-sheet .lv-item-band {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 56px;
+  padding: 0 16px;
+  background: var(--lv-header);
+  border-bottom: var(--lv-border);
+}
+
+.leverage-gta.lv-item-sheet .lv-item-name {
+  flex: 1 1 0;
+  min-width: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: #fff;
+  font-family: var(--lv-font-display);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 40px;
+  text-transform: uppercase;
+  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 3px 0 #000, 3px 3px 0 #000;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-name::placeholder { color: rgba(255, 255, 255, 0.55); text-shadow: none; }
+.leverage-gta.lv-item-sheet .lv-item-name:focus { outline: none; box-shadow: none; }
+
+/* ---- Body ---- */
+.leverage-gta.lv-item-sheet [data-application-part="body"] {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-body {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 14px 16px 0;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-row {
+  display: flex;
+  gap: 12px;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-row > .lv-item-field { flex: 1 1 0; }
+
+.leverage-gta.lv-item-sheet .lv-item-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-grow {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-lbl {
+  margin-bottom: 4px;
+  color: var(--lv-accent-2);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-note {
+  margin: -6px 0 0;
+  color: var(--lv-muted);
+  font-size: 14px;
+}
+
+/* ---- Text fields ---- */
+.leverage-gta.lv-item-sheet .lv-item-input,
+.leverage-gta.lv-item-sheet .lv-item-select select {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  box-shadow: none;
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.leverage-gta.lv-item-sheet input.lv-item-input { height: 38px; }
+.leverage-gta.lv-item-sheet textarea.lv-item-input { height: auto; resize: none; }
+
+.leverage-gta.lv-item-sheet .lv-item-input:focus,
+.leverage-gta.lv-item-sheet .lv-item-select select:focus {
+  outline: none;
+  border-color: var(--lv-select);
+  box-shadow: none;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-input::placeholder { color: var(--lv-muted); opacity: 0.6; }
+.leverage-gta.lv-item-sheet .lv-item-input:disabled,
+.leverage-gta.lv-item-sheet .lv-item-select select:disabled { opacity: 0.8; cursor: default; }
+
+/* Select with our own caret */
+.leverage-gta.lv-item-sheet .lv-item-select { position: relative; display: block; }
+
+.leverage-gta.lv-item-sheet .lv-item-select select {
+  height: 34px;
+  padding: 0 28px 0 10px;
+  appearance: none;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-select select option { background: #10171a; color: var(--lv-ink); }
+
+.leverage-gta.lv-item-sheet .lv-item-select::after {
+  content: "\25BE";
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  color: var(--lv-muted);
+  font-size: 16px;
+  line-height: 1;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ---- Segmented control (cost, duration) ---- */
+.leverage-gta.lv-item-sheet .lv-item-seg {
+  display: flex;
+  height: 34px;
+  border: 2px solid #000;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-seg-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--lv-muted);
+  font-family: var(--lv-font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-seg-btn + .lv-item-seg-btn { border-left: 2px solid #000; }
+
+.leverage-gta.lv-item-sheet .lv-item-seg-btn[aria-pressed="true"] {
+  background: var(--lv-header);
+  color: var(--lv-die-ink);
+}
+
+.leverage-gta.lv-item-sheet .lv-item-seg-btn:disabled { cursor: default; }
+.leverage-gta.lv-item-sheet .lv-item-seg-btn:not(:disabled):not([aria-pressed="true"]):hover { color: var(--lv-ink); }
+
+/* ---- Dice row ---- */
+.leverage-gta.lv-item-sheet .lv-item-dice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-die { display: flex; flex: none; }
+
+.leverage-gta.lv-item-sheet .lv-item-die .lv-die {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-die button.lv-die:disabled { cursor: default; }
+
+.leverage-gta.lv-item-sheet .lv-item-none {
+  height: 28px;
+  margin: 0 4px 0 0;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  box-shadow: none;
+  color: var(--lv-muted);
+  font-family: var(--lv-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-none.is-selected {
+  background: var(--lv-header);
+  color: var(--lv-die-ink);
+}
+
+.leverage-gta.lv-item-sheet .lv-item-none:disabled { cursor: default; }
+
+/* ---- Checkboxes ---- */
+.leverage-gta.lv-item-sheet .lv-item-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--lv-ink);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-check input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--lv-header);
+}
+
+/* ---- Rich text (ProseMirror) and its read-only twin ---- */
+.leverage-gta.lv-item-sheet .lv-item-rich {
+  flex: 1 1 0;
+  min-height: 0;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.leverage-gta.lv-item-sheet prose-mirror.lv-item-rich {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.leverage-gta.lv-item-sheet prose-mirror .editor-content {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 6px 36px 6px 10px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #8a9b98 rgba(255, 255, 255, 0.07);
+  color: var(--lv-ink);
+}
+
+.leverage-gta.lv-item-sheet prose-mirror .editor-container,
+.leverage-gta.lv-item-sheet prose-mirror .editor-menu {
+  background: transparent;
+  color: var(--lv-ink);
+}
+
+.leverage-gta.lv-item-sheet prose-mirror .editor-menu { padding-inline-end: 34px; }
+
+.leverage-gta.lv-item-sheet prose-mirror .editor-content p { margin: 0 0 6px; }
+.leverage-gta.lv-item-sheet prose-mirror .editor-content:focus-within { background: rgba(255, 255, 255, 0.03); }
+.leverage-gta.lv-item-sheet prose-mirror.lv-item-rich:focus-within { border-color: var(--lv-select); }
+
+.leverage-gta.lv-item-sheet .lv-item-prose {
+  padding: 6px 10px;
+  overflow-y: auto;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-prose p { margin: 0 0 6px; }
+
+/* ---- Footer ---- */
+.leverage-gta.lv-item-sheet [data-application-part="footer"] { flex: none; }
+
+.leverage-gta.lv-item-sheet .lv-item-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px 14px;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-hint {
+  flex: 1 1 0;
+  min-width: 0;
+  color: var(--lv-muted);
+  font-size: 13px;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-delete {
+  flex: 0 1 auto;
+  min-width: 0;
+  height: 30px;
+  margin: 0;
+  padding: 0 12px;
+  background: transparent;
+  border: 2px solid #ff8a8a;
+  border-radius: 4px;
+  box-shadow: none;
+  color: #ff8a8a;
+  font-family: var(--lv-font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-delete:hover,
+.leverage-gta.lv-item-sheet .lv-item-delete:focus-visible {
+  background: rgba(255, 138, 138, 0.14);
+}

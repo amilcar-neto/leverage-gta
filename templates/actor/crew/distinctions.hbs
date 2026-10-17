@@ -2,7 +2,7 @@
   <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.distinctions"}}</span><span class="lv-panel-tools"><span class="lv-panel-hint">{{distinctions.length}} / {{maxDistinctions}}</span>{{#if canEdit}}<button type="button" class="lv-addbtn" data-action="addTraitItem" data-type="distinction" title="{{localize "LEVERAGE.Sheet.New.distinction"}}">{{localize "LEVERAGE.Sheet.add"}}</button>{{/if}}</span></h2>
   <div class="lv-panel-body lv-list">
     {{#each distinctions}}
-    <div class="lv-row lv-row--dist" data-item-id="{{id}}">
+    <div class="lv-row lv-row--dist draggable" data-item-id="{{id}}">
       <span class="lv-row-line">
         <button type="button" class="lv-row-name lv-link lv-ellipsis" data-action="openTraitItem" title="{{name}}">{{name}}</button>
         <span class="lv-ladder">

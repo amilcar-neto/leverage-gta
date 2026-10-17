@@ -1,0 +1,11 @@
+<div class="lv-item-body">
+  <label class="lv-item-field">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.note"}}</span>
+    <input type="text" class="lv-item-input" name="system.note" value="{{system.note}}" placeholder="{{localize 'LEVERAGE.ItemSheet.notePlaceholder'}}" title="{{system.note}}" {{disabled readonly}}>
+  </label>
+  <div class="lv-item-field lv-item-grow">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.description"}}</span>
+    {{#if canEdit}}<prose-mirror class="lv-item-rich" name="system.description" value="{{source.description}}" document-uuid="{{item.uuid}}" toggled="true">{{{enriched.description}}}</prose-mirror>
+    {{else}}<div class="lv-item-rich lv-item-prose lv-scroll">{{{enriched.description}}}</div>{{/if}}
+  </div>
+</div>

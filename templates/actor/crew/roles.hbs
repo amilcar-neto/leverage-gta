@@ -2,7 +2,7 @@
   <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.roles"}}</span></h2>
   <div class="lv-panel-body lv-list">
     {{#each roles}}
-    <div class="lv-row lv-ladder-row{{#if blank}} is-blank{{/if}}" data-key="{{key}}" data-group="{{group}}">
+    <div class="lv-row lv-ladder-row{{#if blank}} is-blank{{else}} draggable{{/if}}" data-key="{{key}}" data-group="{{group}}"{{#unless blank}} data-trait-ref="{{poolRef}}"{{/unless}}>
       {{#if blank}}
       <span class="lv-row-name lv-ellipsis" title="{{nameTitle}}">{{label}}</span>
       {{else}}

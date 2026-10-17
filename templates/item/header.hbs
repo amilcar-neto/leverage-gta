@@ -1,0 +1,7 @@
+<div class="lv-item-band">
+  {{#if canEdit}}
+  <input type="text" class="lv-item-name lv-ellipsis" name="name" value="{{item.name}}" title="{{item.name}}" placeholder="{{localize 'LEVERAGE.ItemSheet.namePlaceholder'}}" aria-label="{{localize 'LEVERAGE.ItemSheet.nameLabel'}}">
+  {{else}}
+  <h1 class="lv-item-name lv-ellipsis" title="{{item.name}}">{{item.name}}</h1>
+  {{/if}}
+</div>

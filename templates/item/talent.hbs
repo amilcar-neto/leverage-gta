@@ -1,0 +1,32 @@
+<div class="lv-item-body">
+  <div class="lv-item-row">
+    <label class="lv-item-field">
+      <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.role"}}</span>
+      <span class="lv-item-select" title="{{localize 'LEVERAGE.ItemSheet.roleHint'}}">
+        <select name="system.role" {{disabled readonly}}>{{selectOptions roleChoices selected=system.role}}</select>
+      </span>
+    </label>
+    <div class="lv-item-field" title="{{localize 'LEVERAGE.ItemSheet.costHint'}}">
+      <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.cost"}}</span>
+      <div class="lv-item-seg" role="group" aria-label="{{localize 'LEVERAGE.ItemSheet.cost'}}">
+        {{#each costs}}<button type="button" class="lv-item-seg-btn" data-action="setCost" data-value="{{value}}" aria-pressed="{{#if pressed}}true{{else}}false{{/if}}" {{disabled @root.readonly}}>{{label}}</button>{{/each}}
+      </div>
+    </div>
+  </div>
+  <label class="lv-item-field">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.activation"}}</span>
+    <textarea class="lv-item-input lv-item-activation" name="system.activation" rows="2" placeholder="{{localize 'LEVERAGE.ItemSheet.activationPlaceholder'}}" {{disabled readonly}}>{{system.activation}}</textarea>
+  </label>
+  <div class="lv-item-field lv-item-grow">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.effect"}}</span>
+    {{#if canEdit}}<prose-mirror class="lv-item-rich" name="system.effect" value="{{source.effect}}" document-uuid="{{item.uuid}}" toggled="true">{{{enriched.effect}}}</prose-mirror>
+    {{else}}<div class="lv-item-rich lv-item-prose lv-scroll">{{{enriched.effect}}}</div>{{/if}}
+  </div>
+  <div class="lv-item-field">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.die"}}</span>
+    <div class="lv-item-dice" role="group" aria-label="{{localize 'LEVERAGE.ItemSheet.dieHint'}}">
+      <button type="button" class="lv-item-none{{#if noDie.selected}} is-selected{{/if}}" data-action="setDie" data-die="" aria-pressed="{{#if noDie.selected}}true{{else}}false{{/if}}" {{disabled readonly}}>{{noDie.label}}</button>
+      {{#each dieChoices}}<span class="lv-item-die" data-die="{{faces}}">{{lvDie faces die=faces size=32 action="setDie" pressed=selected muted=muted label=label title=label}}</span>{{/each}}
+    </div>
+  </div>
+</div>

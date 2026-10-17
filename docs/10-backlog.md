@@ -65,7 +65,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 - [x] **T-305 Assets e pasta.** Lista de Assets com etiquetas e diálogo de criação (Signature / Job 2 PP / Scene 1 PP),
   pasta BACKGROUND/JOBS com memória da orelha, linhas de Job (SPENT, `$`, callback, X), TRAIN UP (diálogo com custos),
   + LOG. *Dep:* T-301. *Par:* T-302, T-303, T-304.
-- [ ] **T-306 Arrastar e soltar.** Itens para a ficha, reordenar, Jobs entre fichas, criar macro arrastando Traço.
+- [x] **T-306 Arrastar e soltar.** Itens para a ficha, reordenar, Jobs entre fichas, criar macro arrastando Traço.
   *Dep:* T-304, T-305.
 - [ ] **T-307 Fidelidade visual da ficha.** `tester` tira prints nos três estados (BACKGROUND, JOBS, destravada) com
   dados iguais aos do mockup; `reviewer` compara com os PNGs; correções até passar. *Dep:* T-302…T-306.

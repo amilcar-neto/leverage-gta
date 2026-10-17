@@ -489,7 +489,8 @@
         "count": "{count} dice · keep {keep}",
         "empty": "Pick a Trait to start a Pool.",
         "roll": "Roll"
-      }
+      },
+      "Item": "Item sheet"
     },
     "Vest": {
       "heavy": "Heavy",
@@ -501,7 +502,41 @@
       "traitsLocked": "Traits are locked by the GM.",
       "maxDistinctions": "A character can have at most {max} Distinctions.",
       "notEnoughPlotPoints": "Not enough Plot Points: it costs {cost} and you have {have}.",
-      "noUnspentJobs": "No unspent Jobs to spend."
+      "noUnspentJobs": "No unspent Jobs to spend.",
+      "apiNotReady": "The system API is not ready yet: rolling from a macro arrives in a later version."
+    },
+    "ItemSheet": {
+      "role": "Role",
+      "roleHint": "The Role this belongs to",
+      "cost": "Cost",
+      "free": "Free",
+      "onePP": "1 Plot Point",
+      "costHint": "What it costs to use",
+      "activation": "Activation · when it triggers",
+      "activationPlaceholder": "When...",
+      "effect": "Effect · what it does",
+      "description": "Description",
+      "note": "Note",
+      "notePlaceholder": "One line: when it helps, when it gets in the way",
+      "die": "Die",
+      "noDie": "No die",
+      "dieHint": "Die size",
+      "duration": "Duration",
+      "weapon": "Weapon",
+      "weaponHint": "Weapons are lost on Wasted or Busted when the duration is Scene",
+      "purchased": "Bought with Money",
+      "payoutTotal": "Job payout (steps)",
+      "payoutShare": "Your share (steps)",
+      "callbackUsed": "Callback used this session",
+      "spent": "Spent on training",
+      "jobNotes": "Notes · client, target, summary",
+      "specialtyDie": "Adds a d6 to the Pool with its Role",
+      "saves": "Changes save as you type.",
+      "readOnly": "You can only read this.",
+      "delete": "Delete {type}",
+      "namePlaceholder": "Name",
+      "nameLabel": "Name",
+      "windowTitle": "{type} · {owner}"
     }
   }
 }

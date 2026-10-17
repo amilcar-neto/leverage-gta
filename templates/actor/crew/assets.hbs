@@ -8,7 +8,7 @@
   </h2>
   <div class="lv-panel-body lv-list lv-scroll">
     {{#each assetRows}}
-    <div class="lv-row lv-asset" data-item-id="{{id}}" title="{{localize 'LEVERAGE.Sheet.Assets.dblclick'}}">
+    <div class="lv-row lv-asset draggable" data-item-id="{{id}}" title="{{localize 'LEVERAGE.Sheet.Assets.dblclick'}}">
       <span class="lv-row-main" data-action="togglePool" data-pool-ref="item:{{id}}">
         <span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span>
         <span class="lv-asset-meta">

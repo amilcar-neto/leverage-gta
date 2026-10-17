@@ -489,7 +489,8 @@
         "count": "{count} dados · mantém {keep}",
         "empty": "Escolha um Traço para montar a Pool.",
         "roll": "Rolar"
-      }
+      },
+      "Item": "Ficha de item"
     },
     "Vest": {
       "heavy": "Pesado",
@@ -501,7 +502,41 @@
       "traitsLocked": "Os Traços estão travados pelo mestre.",
       "maxDistinctions": "Um personagem pode ter no máximo {max} Distinctions.",
       "notEnoughPlotPoints": "Plot Points insuficientes: custa {cost} e você tem {have}.",
-      "noUnspentJobs": "Nenhum Job sem gastar para gastar."
+      "noUnspentJobs": "Nenhum Job sem gastar para gastar.",
+      "apiNotReady": "A API do sistema ainda não está pronta: rolar por macro chega numa versão futura."
+    },
+    "ItemSheet": {
+      "role": "Papel",
+      "roleHint": "O Papel a que isto pertence",
+      "cost": "Custo",
+      "free": "Grátis",
+      "onePP": "1 Plot Point",
+      "costHint": "O que custa para usar",
+      "activation": "Ativação · quando dispara",
+      "activationPlaceholder": "Quando...",
+      "effect": "Efeito · o que faz",
+      "description": "Descrição",
+      "note": "Nota",
+      "notePlaceholder": "Uma linha: quando ajuda, quando atrapalha",
+      "die": "Dado",
+      "noDie": "Sem dado",
+      "dieHint": "Tamanho do dado",
+      "duration": "Duração",
+      "weapon": "Arma",
+      "weaponHint": "Armas se perdem em Wasted ou Busted quando a duração é Cena",
+      "purchased": "Comprado com Grana",
+      "payoutTotal": "Rendimento do Job (degraus)",
+      "payoutShare": "Sua parte (degraus)",
+      "callbackUsed": "Callback usado nesta sessão",
+      "spent": "Gasto em treino",
+      "jobNotes": "Notas · cliente, alvo, resumo",
+      "specialtyDie": "Soma um d6 à Pool com o seu Papel",
+      "saves": "As mudanças são salvas enquanto você digita.",
+      "readOnly": "Você só pode ler isto.",
+      "delete": "Apagar {type}",
+      "namePlaceholder": "Nome",
+      "nameLabel": "Nome",
+      "windowTitle": "{type} · {owner}"
     }
   }
 }

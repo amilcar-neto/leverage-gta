@@ -1,0 +1,14 @@
+<div class="lv-item-body">
+  <label class="lv-item-field">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.role"}}</span>
+    <span class="lv-item-select" title="{{localize 'LEVERAGE.ItemSheet.roleHint'}}">
+      <select name="system.role" {{disabled readonly}}>{{selectOptions roleChoices selected=system.role}}</select>
+    </span>
+  </label>
+  <p class="lv-item-note">{{localize "LEVERAGE.ItemSheet.specialtyDie"}}</p>
+  <div class="lv-item-field lv-item-grow">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.description"}}</span>
+    {{#if canEdit}}<prose-mirror class="lv-item-rich" name="system.description" value="{{source.description}}" document-uuid="{{item.uuid}}" toggled="true">{{{enriched.description}}}</prose-mirror>
+    {{else}}<div class="lv-item-rich lv-item-prose lv-scroll">{{{enriched.description}}}</div>{{/if}}
+  </div>
+</div>

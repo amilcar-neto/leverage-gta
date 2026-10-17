@@ -43,3 +43,11 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - **Duplo clique** num Asset abre o item (listener delegado no hook renderCrewSheet; data-action so trata clique simples).
 - **Asset sem PP suficiente:** o aviso aparece e nada e criado nem cobrado. Signature nao custa PP.
 - **Trava:** Assets e Jobs nao sao Traits; a trava nao os afeta.
+
+## T-306 - arrastar e soltar
+- **Job entre fichas de Equipe:** mover (cria no destino e apaga na origem) so quando o usuario e dono dos dois atores e do item; senao copia. Itens de outros tipos sempre copiam (nao sao tirados da origem). A copia so apaga o original se foi realmente criada (a trava e o limite de 3 Distinctions podem recusar). Alternativa descartada: sempre copiar (deixaria Jobs duplicados na tabela de pagamento).
+- **Foundry v14:** o ActorSheetV2 liga o arrastar pelo seletor fixo `.draggable` (sem `options.dragDrop`), entao as linhas ganham a classe `draggable` nos templates.
+- **Reordenar:** so entre itens do mesmo tipo e da mesma lista (irmaos do mesmo elemento pai), com `performIntegerSort`; o item entra antes da linha sob o ponteiro (linha amarela no topo). Com a trava ativa o aviso de trava aparece (o guard do item recusa o update).
+- **Destaque do drop:** `dragover` nao le o conteudo do arraste, entao o tipo do item vai num tipo MIME proprio (`application/x-leverage-item-<tipo>`). Arraste interno destaca a linha; arraste de fora destaca a ficha toda (moldura tracejada).
+- **Macro de Traco:** `game.leverage?.rollPool ? game.leverage.rollPool({ actor: fromUuidSync(uuid), refs: [ref] }) : ui.notifications.warn(...)`. Distinction arrasta como d8 (ajuda); se o arraste comecou no botao d4, vira d4 (nome da macro ganha " d4"). Itens sem dado (Talent sem dado, Job) nao viram macro. Macro igual (mesmo comando, mesmo autor) e reaproveitada.
+- **Titulo da janela:** so o nome em maiusculas, icone `fa-hexagon`.

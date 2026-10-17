@@ -1,0 +1,21 @@
+<div class="lv-item-body">
+  <div class="lv-item-row">
+    <label class="lv-item-field">
+      <span class="lv-item-lbl lv-ellipsis">{{localize "LEVERAGE.ItemSheet.payoutTotal"}}</span>
+      <input type="number" class="lv-item-input" name="system.payout.total" value="{{system.payout.total}}" min="0" step="1" {{disabled readonly}}>
+    </label>
+    <label class="lv-item-field">
+      <span class="lv-item-lbl lv-ellipsis">{{localize "LEVERAGE.ItemSheet.payoutShare"}}</span>
+      <input type="number" class="lv-item-input" name="system.payout.share" value="{{system.payout.share}}" min="0" step="1" {{disabled readonly}}>
+    </label>
+  </div>
+  <div class="lv-item-checks">
+    <label class="lv-item-check"><input type="checkbox" name="system.callbackUsed" {{checked system.callbackUsed}} {{disabled readonly}}><span>{{localize "LEVERAGE.ItemSheet.callbackUsed"}}</span></label>
+    <label class="lv-item-check"><input type="checkbox" name="system.spent" {{checked system.spent}} {{disabled readonly}}><span>{{localize "LEVERAGE.ItemSheet.spent"}}</span></label>
+  </div>
+  <div class="lv-item-field lv-item-grow">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.jobNotes"}}</span>
+    {{#if canEdit}}<prose-mirror class="lv-item-rich" name="system.notes" value="{{source.notes}}" document-uuid="{{item.uuid}}" toggled="true">{{{enriched.notes}}}</prose-mirror>
+    {{else}}<div class="lv-item-rich lv-item-prose lv-scroll">{{{enriched.notes}}}</div>{{/if}}
+  </div>
+</div>

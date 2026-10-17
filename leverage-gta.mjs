@@ -12,6 +12,19 @@ import * as actorModels from "./module/data/actor/_module.mjs";
 import * as itemModels from "./module/data/item/_module.mjs";
 import * as documents from "./module/documents/_module.mjs";
 import * as sheets from "./module/applications/actor/_module.mjs";
+import * as itemSheets from "./module/applications/item/_module.mjs";
+
+/** Registers one default sheet per Item type (T-401). */
+function registerItemSheets() {
+  const { DocumentSheetConfig } = foundry.applications.apps;
+  const byType = {
+    distinction: itemSheets.DistinctionSheet, talent: itemSheets.TalentSheet, specialty: itemSheets.SpecialtySheet,
+    asset: itemSheets.AssetSheet, job: itemSheets.JobSheet
+  };
+  for (const [type, sheet] of Object.entries(byType)) {
+    DocumentSheetConfig.registerSheet(Item, SYSTEM_ID, sheet, { types: [type], makeDefault: true, label: "LEVERAGE.Sheet.Item" });
+  }
+}
 
 Hooks.once("init", () => {
   logger.info(`Initializing ${SYSTEM_ID}`);
@@ -25,6 +38,7 @@ Hooks.once("init", () => {
     job: itemModels.JobData
   };
   registerSettings();
+  Hooks.on("hotbarDrop", sheets.onHotbarDrop);
   registerDieHelper();
   CONFIG.Actor.documentClass = documents.LeverageActor;
   CONFIG.Item.documentClass = documents.LeverageItem;
@@ -37,6 +51,8 @@ Hooks.once("init", () => {
   foundry.applications.apps.DocumentSheetConfig.registerSheet(Actor, SYSTEM_ID, sheets.CrewSheet, {
     types: ["crew"], makeDefault: true, label: "LEVERAGE.Sheet.Crew"
   });
+  registerItemSheets();
+  itemSheets.registerItemIcons();
 });
 
 Hooks.once("setup", () => {

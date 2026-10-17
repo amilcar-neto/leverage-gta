@@ -1,0 +1,18 @@
+/* Crew sheet - drag and drop feedback (T-306). Scoped to .leverage-gta. */
+
+/* Anything dropped from outside: a dashed frame around the whole sheet body (no layout change). */
+.leverage-gta.crew-sheet.lv-drop-active .window-content {
+  outline: 3px dashed var(--lv-header);
+  outline-offset: -6px;
+}
+
+/* Reorder inside a list: an insertion line above the row the item would go before. */
+.leverage-gta .lv-row.lv-drop-target,
+.leverage-gta .lv-job.lv-drop-target {
+  box-shadow: 0 -3px 0 0 var(--lv-header);
+}
+
+.leverage-gta .draggable[data-item-id],
+.leverage-gta .draggable[data-trait-ref] {
+  cursor: grab;
+}

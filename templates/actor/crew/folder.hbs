@@ -22,7 +22,7 @@
     </div>
     <div class="lv-folder-text lv-scroll lv-jobs-list">
       {{#each jobRows}}
-      <div class="lv-job{{#if spent}} is-spent{{/if}}" data-item-id="{{id}}">
+      <div class="draggable lv-job{{#if spent}} is-spent{{/if}}" data-item-id="{{id}}">
         <button type="button" class="lv-job-name lv-ellipsis" data-action="openJob" title="{{name}} - {{localize 'LEVERAGE.Sheet.Jobs.openHint'}}">{{name}}</button>
         {{#if spent}}<span class="lv-stamp-spent">{{localize "LEVERAGE.Sheet.Jobs.spent"}}</span>{{/if}}
         <span class="lv-job-share">{{#if share}}+{{share}}{{/if}}</span>

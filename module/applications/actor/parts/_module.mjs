@@ -13,3 +13,5 @@ export const partActions = Object.assign({}, ...MODULES.map((m) => m.actions));
 export async function preparePartContexts(context, sheet) {
   for (const m of MODULES) await m.prepare(context, sheet);
 }
+
+export * as drag from "./drag.mjs";

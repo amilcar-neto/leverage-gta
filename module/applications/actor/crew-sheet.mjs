@@ -4,7 +4,7 @@
  */
 import { LEVERAGE } from "../../config.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
-import { partActions, preparePartContexts } from "./parts/_module.mjs";
+import { drag, partActions, preparePartContexts } from "./parts/_module.mjs";
 
 const TEMPLATES = `systems/${LEVERAGE.systemId}/templates/actor/crew`;
 
@@ -29,7 +29,8 @@ export class CrewSheet extends LeverageActorSheet {
   static DEFAULT_OPTIONS = {
     classes: ["crew-sheet"],
     actions: partActions,
-    position: { width: 1180, height: 950 }
+    position: { width: 1180, height: 950 },
+    window: { icon: "fa-solid fa-hexagon" }
   };
 
   /** @override */
@@ -44,6 +45,50 @@ export class CrewSheet extends LeverageActorSheet {
     folder: part("folder", { scrollable: [".lv-scroll"] }),
     tray: part("tray")
   };
+
+  /** Window title: only the character name, in capitals (docs/06 "Janela"). */
+  get title() {
+    return this.actor.name.toLocaleUpperCase(game.i18n.lang);
+  }
+
+  /** `data-pool-ref` of the element the pointer last went down on (tells which die of a row is being dragged). */
+  #dragOrigin = null;
+
+  /** @override */
+  _onFirstRender(context, options) {
+    super._onFirstRender(context, options);
+    this.element.addEventListener("pointerdown", (event) => {
+      this.#dragOrigin = event.target.closest?.("[data-pool-ref]")?.dataset.poolRef ?? null;
+    });
+    const clear = () => drag.clearDropMarks(this.element);
+    this.element.addEventListener("dragleave", (event) => {
+      if (!this.element.contains(event.relatedTarget)) clear();
+    });
+    this.element.addEventListener("dragend", clear);
+  }
+
+  /** Anyone who can see the sheet may drag a Trait to the hotbar; dropping needs edit permission (core default). */
+  _canDragStart() {
+    return true;
+  }
+
+  /** @override */
+  _onDragStart(event) {
+    drag.startDrag(event, this.actor, event.currentTarget, this.#dragOrigin);
+  }
+
+  /** @override */
+  _onDragOver(event) {
+    if (this.isEditable) drag.markDrop(this.element, event, this.actor);
+  }
+
+  /** @override */
+  async _onDrop(event) {
+    drag.clearDropMarks(this.element);
+    const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+    if (data?.type !== "Item") return super._onDrop(event);
+    return drag.dropItem(this.actor, event, data);
+  }
 
   /** @override */
   async _onRender(context, options) {
