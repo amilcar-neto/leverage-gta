@@ -32,3 +32,9 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 
 ## 2026-10-17 - Campos protegidos dos Items so na ficha (R-F4/R-F5)
 - Gravidade baixa. `die`/`duration` do Asset e `payout.share`/`spent` do Job so sao protegidos nas fichas (acoes e formulario). Um jogador que chame `item.update` pelo console ainda consegue mudar esses campos. Correcao possivel: guarda em `preUpdateItem` usando `LEVERAGE.protectedItemFields`. Nao resolvido (arquivo `documents/item.mjs` fora do escopo desta parte).
+
+## T-506 - Dice So Nice nao testado com o modulo ativo
+- Gravidade: baixa. O modulo `dice-so-nice` esta instalado no servidor, mas nao ativo no mundo de teste.
+- Testado: sem o modulo nada quebra, cada termo Die leva `options.appearance` e isso sobrevive a serializacao (T-506).
+- Nao testado: registro real dos colorsets e cores na animacao. O dono pode ativar o modulo no mundo e rodar `node tests/foundry/T-506.mjs` (ele confere os 6 colorsets).
+- Nao feito: esconder o card ate a animacao acabar via `linkedTo`. Nao e preciso: o card ja leva `rolls`, e o Dice So Nice o esconde sozinho.

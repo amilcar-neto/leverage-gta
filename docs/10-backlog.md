@@ -91,7 +91,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 - [x] **T-504 Rolador de oposição** e card do mestre (2d6, polícia pelas estrelas, gangue, NPC, local,
   complicações). *Dep:* T-502.
 - [x] **T-505 API e macros.** `game.leverage.*`, `docs/macros.md` com exemplos testados. *Dep:* T-502.
-- [ ] **T-506 Dice So Nice** (opcional, só se simples). *Dep:* T-502.
+- [x] **T-506 Dice So Nice** (opcional, só se simples). *Dep:* T-502.
 - [ ] **R-F5 Revisão de fase.**
 
 ## Fase 6 — Regras da casa

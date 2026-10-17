@@ -108,3 +108,8 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 
 ## 2026-10-17 — T-704 coberta pela T-702/T-703
 - As ações Encerrar cena, Novo Job, Encerrar Job, Nova sessão e Dar PP foram implementadas em `module/applications/gm/job-actions.mjs` e ligadas ao controle de cena na T-702; testadas em `tests/foundry/T-702.mjs` e `T-703.mjs`. T-704 marcada [x] sem tarefa separada.
+
+## T-506 - Dice So Nice
+- `registerDiceSoNice()` roda no `init` (nao no `ready`): o hook `diceSoNiceReady` pode disparar antes do `ready` do sistema. O hook so existe com o modulo ativo, entao sem ele nada roda.
+- Um colorset por tamanho de dado (`leverage-d4`..`d12`, cor de `dieStyles`) e `leverage-cash` (cor de `money.color`). Texto branco e contorno preto fixos em `module/dice/dsn.mjs`.
+- `evaluateDice(sizes, kinds)` poe `options.appearance` em cada termo; so a rolagem da Pool passa `kinds` (Grana fica verde). Dano e oposicao usam a cor do tamanho.

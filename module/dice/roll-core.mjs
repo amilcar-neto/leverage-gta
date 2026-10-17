@@ -5,6 +5,7 @@
  * when called.
  */
 import { evaluatePool, rollPool } from "./pool-roll.mjs";
+import { appearanceFor } from "./dsn.mjs";
 
 /**
  * Roll formula with one Die term per die: `1d10 + 1d10 + 1d6`.
@@ -57,10 +58,13 @@ export function buildRollData({ entries, values, actorUuid = "", actorName = "",
 
 /**
  * Evaluates the dice with Foundry's `Roll` (one Die term per die, so Dice So Nice and the history see every die).
+ * Each term gets its Dice So Nice colorset (`options.appearance`; harmless without the module).
  * @param {number[]} sizes
+ * @param {string[]} [kinds] Pool entry kind of each die ("money" gets the Money color).
  * @returns {Promise<{roll: Roll, values: number[]}>} the evaluated roll and the face of each die
  */
-export async function evaluateDice(sizes) {
+export async function evaluateDice(sizes, kinds = []) {
   const roll = await new Roll(poolFormula(sizes)).evaluate();
+  roll.dice.forEach((term, i) => { term.options.appearance = appearanceFor(sizes[i], kinds[i]); });
   return { roll, values: roll.dice.map((term) => term.results[0].result) };
 }

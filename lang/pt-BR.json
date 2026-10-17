@@ -623,6 +623,7 @@
     },
     "Roll": {
       "defaultFlavor": "rola a Pool",
+      "dsnMoney": "Dado de Grana",
       "kept": "Mantido",
       "out": "1 · Fora",
       "total": "Total",

@@ -15,6 +15,7 @@ import * as sheets from "./module/applications/actor/_module.mjs";
 import { NpcSheet } from "./module/applications/actor/npc-sheet.mjs";
 import { LocationSheet } from "./module/applications/actor/location-sheet.mjs";
 import * as itemSheets from "./module/applications/item/_module.mjs";
+import { registerDiceSoNice } from "./module/dice/dsn.mjs";
 import { registerRollHandler } from "./module/dice/roll-handler.mjs";
 import { registerSocket } from "./module/socket.mjs";
 import { registerRollCard } from "./module/applications/chat/roll-card.mjs";
@@ -69,6 +70,7 @@ Hooks.once("init", () => {
   registerItemSheets();
   itemSheets.registerItemIcons();
   registerRollHandler();
+  registerDiceSoNice();
   registerRollCard();
   registerSceneControls();
 });

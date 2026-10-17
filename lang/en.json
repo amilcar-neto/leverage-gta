@@ -623,6 +623,7 @@
     },
     "Roll": {
       "defaultFlavor": "rolls the Pool",
+      "dsnMoney": "Money die",
       "kept": "Kept",
       "out": "1 · Out",
       "total": "Total",

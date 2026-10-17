@@ -74,7 +74,7 @@ export async function rollPoolFor({ actor, sheet, entries, flavor }) {
   if (!rollable.length || rolling.has(actor.uuid)) return null;
   rolling.add(actor.uuid);
   try {
-    const { roll, values } = await evaluateDice(rollable.map((e) => e.die));
+    const { roll, values } = await evaluateDice(rollable.map((e) => e.die), rollable.map((e) => e.kind));
     const data = buildRollData({
       entries: rollable, values, actorUuid: actor.uuid, actorName: actor.name, actorImg: actor.img,
       flavor: flavor ?? game.i18n.localize("LEVERAGE.Roll.defaultFlavor")
