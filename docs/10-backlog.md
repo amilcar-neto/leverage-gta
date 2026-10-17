@@ -56,13 +56,13 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 - [x] **T-301 Estrutura da ficha.** `applications/actor/base-actor-sheet.mjs` e `crew-sheet.mjs` com PARTS, tamanhos,
   barra de título com selo da trava, registro da ficha. Templates vazios por parte. *Dep:* T-104, T-202.
-- [ ] **T-302 Cabeçalho.** Mugshot (parede + régua + imagem ancorada embaixo, FilePicker), nome, apelido, Vida e
+- [x] **T-302 Cabeçalho.** Mugshot (parede + régua + imagem ancorada embaixo, FilePicker), nome, apelido, Vida e
   Colete (popover), Booking Card com digital (SVG em `assets/`). *Dep:* T-301. *Par:* T-303, T-304, T-305.
-- [ ] **T-303 Attributes e Roles.** Escadas de dados, mudança de valor respeitando a trava, tooltips, Role em branco.
+- [x] **T-303 Attributes e Roles.** Escadas de dados, mudança de valor respeitando a trava, tooltips, Role em branco.
   *Dep:* T-301. *Par:* T-302, T-304, T-305.
-- [ ] **T-304 Distinctions, Talents, Specialties.** Linhas planas, d8/d4, cards de Talent que abrem o item, grade de
+- [x] **T-304 Distinctions, Talents, Specialties.** Linhas planas, d8/d4, cards de Talent que abrem o item, grade de
   Specialties, "+ ADD" no cabeçalho, X, estados vazios, trava. *Dep:* T-301. *Par:* T-302, T-303, T-305.
-- [ ] **T-305 Assets e pasta.** Lista de Assets com etiquetas e diálogo de criação (Signature / Job 2 PP / Scene 1 PP),
+- [x] **T-305 Assets e pasta.** Lista de Assets com etiquetas e diálogo de criação (Signature / Job 2 PP / Scene 1 PP),
   pasta BACKGROUND/JOBS com memória da orelha, linhas de Job (SPENT, `$`, callback, X), TRAIN UP (diálogo com custos),
   + LOG. *Dep:* T-301. *Par:* T-302, T-303, T-304.
 - [ ] **T-306 Arrastar e soltar.** Itens para a ficha, reordenar, Jobs entre fichas, criar macro arrastando Traço.

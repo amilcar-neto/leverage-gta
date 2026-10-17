@@ -1,1 +1,1 @@
-IN PROGRESS: Fase 3 — corrigindo diferenças visuais da ficha (T-307) com base nos prints F3-*; depois T-306, R-F3
+IN PROGRESS: T-306 (arrastar e soltar) e T-401 (fichas de item) em paralelo; depois T-307 final, R-F3, R-F4
