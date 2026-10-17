@@ -105,3 +105,6 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - **Posição:** o HUD é um `ApplicationV2` sem moldura filho de `#interface`, `position: fixed; right: calc(var(--lv-sidebar-w) + 16px)`. `--lv-sidebar-w` = largura da janela − `left` do `#sidebar` (a faixa de abas tem 48 px recolhida e 348 px aberta). Verificado na v14 real: `#sidebar` é recriado a cada render, então o `ResizeObserver` é religado nos hooks `collapseSidebar` e `renderSidebar` (o hook dispara também ao expandir).
 - **Estrelas:** o clique do mestre usa `stars-actions.setLevel` (muda `wanted` e posta a linha curta no chat).
 - **Avisos do núcleo** (ex.: aceleração de hardware) aparecem em `top: 108px` com z-index 99999 e cobrem a parte baixa do HUD enquanto durarem. É comportamento do núcleo; não mexemos.
+
+## 2026-10-17 — T-704 coberta pela T-702/T-703
+- As ações Encerrar cena, Novo Job, Encerrar Job, Nova sessão e Dar PP foram implementadas em `module/applications/gm/job-actions.mjs` e ligadas ao controle de cena na T-702; testadas em `tests/foundry/T-702.mjs` e `T-703.mjs`. T-704 marcada [x] sem tarefa separada.

@@ -111,7 +111,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   Plot Points, minimizar, esconder partes, estado vazio. Prints comparados a `hud-*.png`. *Dep:* T-603, T-604.
 - [x] **T-702 Controles do mestre.** Grupo "Leverage" com todas as ferramentas de `docs/09`. *Dep:* T-106.
 - [x] **T-703 Rastreador do Job.** Job ativo, Complications, Traços de cena, visão da Equipe. *Dep:* T-702.
-- [ ] **T-704 Encerrar cena / Novo Job / Encerrar Job / Nova sessão / Dar PP.** *Dep:* T-703, T-305.
+- [x] **T-704 Encerrar cena / Novo Job / Encerrar Job / Nova sessão / Dar PP.** *Dep:* T-703, T-305.
 - [x] **T-705 Apps de configuração** (escalas de cidade, preços, custos de evolução). *Dep:* T-106.
 - [ ] **R-F7 Revisão de fase.**
 
