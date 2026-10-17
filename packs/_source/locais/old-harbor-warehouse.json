@@ -1,0 +1,27 @@
+{
+  "_id": "XUurud6NuxupMDKE",
+  "name": "Old Harbor Warehouse",
+  "type": "location",
+  "img": "icons/svg/house.svg",
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "city": "liberty",
+    "traits": [
+      {
+        "name": "Dark Corners",
+        "die": 8
+      },
+      {
+        "name": "Rusted Catwalks",
+        "die": 6
+      },
+      {
+        "name": "Only One Exit",
+        "die": 8
+      }
+    ],
+    "notes": "<p>Shuttered cannery turned storage. Pigeons, crates, and one working floodlight.</p>"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "_id": "htk0n0BqfgwdacgK",
+  "name": "Hot Wire",
+  "type": "talent",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "role": "hacker",
+    "cost": 0,
+    "activation": "You start a car or open a lock the electronic way.",
+    "effect": "<p>Your Hacker die steps up for one roll against a vehicle or a keypad.</p>",
+    "die": null
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}

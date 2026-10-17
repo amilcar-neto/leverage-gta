@@ -1,0 +1,59 @@
+{
+  "_id": "B8i8Vfocrh9TkCmB",
+  "name": "Lieutenant Ines Calder",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "tier": "foil",
+    "police": true,
+    "traits": [
+      {
+        "name": "By the Book",
+        "die": 8
+      },
+      {
+        "name": "Long Memory",
+        "die": 6
+      }
+    ],
+    "attributes": {
+      "agility": {
+        "die": 6
+      },
+      "alertness": {
+        "die": 10
+      },
+      "intelligence": {
+        "die": 8
+      },
+      "strength": {
+        "die": 6
+      },
+      "vitality": {
+        "die": 8
+      },
+      "willpower": {
+        "die": 10
+      }
+    },
+    "roles": {
+      "hitter": {
+        "die": 8
+      },
+      "mastermind": {
+        "die": 6
+      }
+    },
+    "weapon": {
+      "die": 6
+    },
+    "vest": {
+      "kind": "light",
+      "value": 4
+    },
+    "notes": "<p>A patient detective who has been circling the crew for two Jobs.</p>"
+  }
+}

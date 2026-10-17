@@ -1,0 +1,35 @@
+{
+  "_id": "YgeHGpOyHRXv1TCE",
+  "name": "Riot Police Squad",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "tier": "extra",
+    "police": true,
+    "traits": [
+      {
+        "name": "Riot Gear",
+        "die": 8
+      },
+      {
+        "name": "Disciplined",
+        "die": 6
+      }
+    ],
+    "gang": {
+      "size": 4,
+      "die": 8
+    },
+    "weapon": {
+      "die": 8
+    },
+    "vest": {
+      "kind": "standard",
+      "value": 6
+    },
+    "notes": "<p>Shields up, batons out. Taking anyone down means Busted, not Wasted.</p>"
+  }
+}

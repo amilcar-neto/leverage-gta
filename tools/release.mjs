@@ -12,6 +12,10 @@ const SHIP = ["system.json", "leverage-gta.mjs", "module", "templates", "styles"
   "LICENSE", "README-SYSTEM.md", "CHANGELOG.md"];
 const OUT = "dist/leverage-gta";
 
+// Compile the compendium sources first so packs/<name>/ is current (packs/_source never ships).
+const packs = spawnSync(process.execPath, ["tools/build-packs.mjs"], { stdio: "inherit" });
+if (packs.status !== 0) { console.error("Pack build failed"); process.exit(1); }
+
 rmSync("dist/leverage-gta", { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 for (const entry of SHIP) {

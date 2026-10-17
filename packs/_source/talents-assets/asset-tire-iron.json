@@ -1,0 +1,16 @@
+{
+  "_id": "zRxvuYNmHwA4GO8B",
+  "name": "Tire Iron",
+  "type": "asset",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "die": 6,
+    "duration": "scene",
+    "note": "Heavy and close at hand.",
+    "weapon": true,
+    "purchased": false
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}

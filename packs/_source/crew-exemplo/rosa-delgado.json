@@ -1,0 +1,414 @@
+{
+  "_id": "TAJeAYyea94KqaFg",
+  "name": "Rosa Delgado",
+  "type": "crew",
+  "img": "icons/svg/mystery-man.svg",
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "alias": "La Zorra",
+    "attributes": {
+      "agility": {
+        "die": 10
+      },
+      "alertness": {
+        "die": 8
+      },
+      "intelligence": {
+        "die": 6
+      },
+      "strength": {
+        "die": 6
+      },
+      "vitality": {
+        "die": 8
+      },
+      "willpower": {
+        "die": 10
+      }
+    },
+    "roles": {
+      "grifter": {
+        "die": 8
+      },
+      "hacker": {
+        "die": null
+      },
+      "hitter": {
+        "die": 6
+      },
+      "mastermind": {
+        "die": 4
+      },
+      "thief": {
+        "die": 10
+      }
+    },
+    "life": {
+      "value": 14
+    },
+    "vest": {
+      "kind": "standard",
+      "value": 4
+    },
+    "booking": {
+      "number": "0471-RD",
+      "height": "5'6\"",
+      "weight": "128 lb",
+      "age": "31",
+      "eyes": "Brown",
+      "hair": "Black",
+      "build": "Wiry",
+      "marks": "Fox tattoo, left wrist. Chipped front tooth."
+    },
+    "background": "<p><strong>RAISED:</strong> Dock Row, port district. Father, longshoreman. Mother ran the corner bakery.</p><p><strong>SCHOOLING:</strong> School of Hard Knocks. Two semesters of <span class=\"redacted\" style=\"display:inline-block;width:60px;height:13px;background:#000;vertical-align:-1px\"></span> night classes.</p><p><strong>PRIORS:</strong> 14 counts petty theft. 2 counts grand theft <span class=\"redacted\" style=\"display:inline-block;width:52px;height:13px;background:#000;vertical-align:-1px\"></span>. Wanted in three states.</p><p><strong>SEALED:</strong> one warrant, <span class=\"redacted\" style=\"display:inline-block;width:70px;height:13px;background:#000;vertical-align:-1px\"></span> County. She has not been told.</p>"
+  },
+  "items": [
+    {
+      "_id": "xkVNichCOSTfLTjM",
+      "name": "Old Docks Loyalty",
+      "type": "distinction",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "note": "Helps when calling in favors from the old neighborhood. Hurts when the neighborhood wants something back.",
+        "description": ""
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "G7NMMqPDUux9ZIJc",
+      "name": "Adrenaline Junkie",
+      "type": "distinction",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "note": "Helps on any dangerous stunt. Hurts when the plan calls for patience.",
+        "description": ""
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "kOVvmvm8nfHsiwy6",
+      "name": "Wanted in Three States",
+      "type": "distinction",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "note": "Helps with street cred. Hurts every time a cop looks twice.",
+        "description": ""
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "8s2AHQ3P8obVsEud",
+      "name": "Ghost in the Hallway",
+      "type": "talent",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "role": "thief",
+        "cost": 0,
+        "activation": "You sneak past a Supporting Character who has not noticed you.",
+        "effect": "<p>Add a d8 to the Pool, or step up your Thief die, while sneaking past someone who is not yet paying attention.</p>",
+        "die": null
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "7pa3ySWv8RmbF1j0",
+      "name": "Wheelman's Nerve",
+      "type": "talent",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "role": "open",
+        "cost": 1,
+        "activation": "You are behind the wheel during a chase. Spend a Plot Point.",
+        "effect": "<p>Spend a Plot Point to turn the chase in your favor: keep an extra die when you roll for it.</p>",
+        "die": null
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "LB199AJnAvjVzlHy",
+      "name": "Soft Hands",
+      "type": "talent",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "role": "thief",
+        "cost": 0,
+        "activation": "You lift something small from someone within arm's reach.",
+        "effect": "<p>Your Specialty die counts twice when you pick a pocket or palm a small item.</p>",
+        "die": null
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "VjCxLbWm14bza90d",
+      "name": "Safecracking",
+      "type": "specialty",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "role": "thief",
+        "description": ""
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "fjxFMcQVU4THgwXh",
+      "name": "Getaway Driving",
+      "type": "specialty",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "role": "hitter",
+        "description": ""
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "Z22XjhDgdHNjN2zo",
+      "name": "Pickpocketing",
+      "type": "specialty",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "role": "thief",
+        "description": ""
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "zhShmMyOIhearn1q",
+      "name": "Borrowed Hatchback",
+      "type": "asset",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "die": 8,
+        "duration": "signature",
+        "note": "Rusty, loud, and it never stalls when it counts.",
+        "weapon": false,
+        "purchased": false
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "69zxPZZq0J3B7aUg",
+      "name": "Lockpick Roll",
+      "type": "asset",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "die": 6,
+        "duration": "signature",
+        "note": "Her father's old set, leather case worn smooth.",
+        "weapon": false,
+        "purchased": false
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "843hEXdQ4z5M0sie",
+      "name": "Fake Inspector Badge",
+      "type": "asset",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "die": 6,
+        "duration": "job",
+        "note": "Good for one walk through the front door.",
+        "weapon": false,
+        "purchased": false
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "sdUwAWtV0LRe4LnS",
+      "name": "Crowbar",
+      "type": "asset",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "die": 6,
+        "duration": "scene",
+        "note": "Picked up behind the loading dock.",
+        "weapon": true,
+        "purchased": false
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "oHn4mjAWPT6egALX",
+      "name": "Unlocked Service Door",
+      "type": "asset",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "die": 6,
+        "duration": "scene",
+        "note": "The night guard propped it open for a smoke.",
+        "weapon": false,
+        "purchased": false
+      },
+      "sort": 0,
+      "flags": {}
+    },
+    {
+      "_id": "gobPbhl6ySvuwPna",
+      "name": "The Dockside Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 4,
+          "share": 2
+        },
+        "callbackUsed": true,
+        "spent": false,
+        "notes": ""
+      },
+      "sort": 100000,
+      "flags": {}
+    },
+    {
+      "_id": "CNLYOEemU9Z0fhZq",
+      "name": "The Charity Gala Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 6,
+          "share": 3
+        },
+        "callbackUsed": false,
+        "spent": false,
+        "notes": ""
+      },
+      "sort": 200000,
+      "flags": {}
+    },
+    {
+      "_id": "zqUayRhuqnE0W4US",
+      "name": "The Tow-Truck Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 2,
+          "share": 1
+        },
+        "callbackUsed": false,
+        "spent": true,
+        "notes": ""
+      },
+      "sort": 300000,
+      "flags": {}
+    },
+    {
+      "_id": "4M1LXsnelwIac4PJ",
+      "name": "The Museum Night Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 4,
+          "share": 2
+        },
+        "callbackUsed": false,
+        "spent": true,
+        "notes": ""
+      },
+      "sort": 400000,
+      "flags": {}
+    },
+    {
+      "_id": "qjdRu9jygxQRGtut",
+      "name": "The Pawnshop Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 2,
+          "share": 1
+        },
+        "callbackUsed": false,
+        "spent": false,
+        "notes": ""
+      },
+      "sort": 500000,
+      "flags": {}
+    },
+    {
+      "_id": "EFst1aN1By9X54kE",
+      "name": "The Ferry Terminal Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 4,
+          "share": 2
+        },
+        "callbackUsed": false,
+        "spent": false,
+        "notes": ""
+      },
+      "sort": 600000,
+      "flags": {}
+    },
+    {
+      "_id": "Q2pjK0mEgdCjV2tl",
+      "name": "The Casino Cage Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 8,
+          "share": 4
+        },
+        "callbackUsed": false,
+        "spent": true,
+        "notes": ""
+      },
+      "sort": 700000,
+      "flags": {}
+    },
+    {
+      "_id": "e2HR1RQsYWIidBXX",
+      "name": "The Radio Tower Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 2,
+          "share": 1
+        },
+        "callbackUsed": false,
+        "spent": false,
+        "notes": ""
+      },
+      "sort": 800000,
+      "flags": {}
+    },
+    {
+      "_id": "2DYnFP3KhevJ41MB",
+      "name": "The Train Yard Job",
+      "type": "job",
+      "img": "icons/svg/item-bag.svg",
+      "system": {
+        "payout": {
+          "total": 4,
+          "share": 2
+        },
+        "callbackUsed": false,
+        "spent": false,
+        "notes": ""
+      },
+      "sort": 900000,
+      "flags": {}
+    }
+  ]
+}

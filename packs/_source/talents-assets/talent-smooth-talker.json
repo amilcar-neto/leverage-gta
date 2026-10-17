@@ -1,0 +1,16 @@
+{
+  "_id": "cKJQHPhfa1qRcyDx",
+  "name": "Smooth Talker",
+  "type": "talent",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "role": "grifter",
+    "cost": 1,
+    "activation": "You bluff your way past a guard or clerk.",
+    "effect": "<p>Spend a Plot Point to keep an extra die on a social roll.</p>",
+    "die": null
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}

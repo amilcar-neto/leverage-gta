@@ -1,0 +1,16 @@
+{
+  "_id": "gn7axldOZN7a1Mf7",
+  "name": "Burner Phone",
+  "type": "asset",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "die": 6,
+    "duration": "job",
+    "note": "Untraceable, good for one conversation.",
+    "weapon": false,
+    "purchased": false
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}

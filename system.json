@@ -28,6 +28,40 @@
       "job": { "htmlFields": ["notes"] }
     }
   },
+  "packs": [
+    {
+      "name": "crew-exemplo",
+      "label": "LEVERAGE.Packs.crewExample",
+      "path": "packs/crew-exemplo",
+      "type": "Actor",
+      "system": "leverage-gta",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "npcs",
+      "label": "LEVERAGE.Packs.npcs",
+      "path": "packs/npcs",
+      "type": "Actor",
+      "system": "leverage-gta",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "locais",
+      "label": "LEVERAGE.Packs.locations",
+      "path": "packs/locais",
+      "type": "Actor",
+      "system": "leverage-gta",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "talents-assets",
+      "label": "LEVERAGE.Packs.talentsAssets",
+      "path": "packs/talents-assets",
+      "type": "Item",
+      "system": "leverage-gta",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    }
+  ],
   "primaryTokenAttribute": "life",
   "secondaryTokenAttribute": "vest",
   "grid": { "distance": 5, "units": "ft" },

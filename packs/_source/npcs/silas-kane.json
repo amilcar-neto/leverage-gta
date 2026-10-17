@@ -1,0 +1,61 @@
+{
+  "_id": "j1bq4jtAevYtC1Xn",
+  "name": "Silas Kane",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "tier": "agent",
+    "traits": [
+      {
+        "name": "Cold Professional",
+        "die": 10
+      },
+      {
+        "name": "Always Has an Exit",
+        "die": 8
+      }
+    ],
+    "attributes": {
+      "agility": {
+        "die": 8
+      },
+      "alertness": {
+        "die": 10
+      },
+      "intelligence": {
+        "die": 8
+      },
+      "strength": {
+        "die": 8
+      },
+      "vitality": {
+        "die": 10
+      },
+      "willpower": {
+        "die": 8
+      }
+    },
+    "roles": {
+      "hitter": {
+        "die": 10
+      },
+      "mastermind": {
+        "die": 8
+      },
+      "thief": {
+        "die": 6
+      }
+    },
+    "weapon": {
+      "die": 8
+    },
+    "vest": {
+      "kind": "heavy",
+      "value": 10
+    },
+    "notes": "<p>A hired gun on the rival crew's payroll. Prefers to end things quietly.</p>"
+  }
+}

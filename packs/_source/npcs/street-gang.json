@@ -1,0 +1,30 @@
+{
+  "_id": "rlrQkmSmgLKwGRhW",
+  "name": "Street Gang",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "tier": "extra",
+    "traits": [
+      {
+        "name": "Street Tough",
+        "die": 6
+      },
+      {
+        "name": "Know the Alleys",
+        "die": 8
+      }
+    ],
+    "gang": {
+      "size": 4,
+      "die": 6
+    },
+    "weapon": {
+      "die": 6
+    },
+    "notes": "<p>A corner crew with more attitude than training. They scatter if the leader goes down.</p>"
+  }
+}

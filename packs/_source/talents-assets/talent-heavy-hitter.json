@@ -1,0 +1,16 @@
+{
+  "_id": "pUlFJbjdr7rsVa5O",
+  "name": "Heavy Hitter",
+  "type": "talent",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "role": "hitter",
+    "cost": 1,
+    "activation": "You swing first and hardest.",
+    "effect": "<p>Spend a Plot Point to add a d8 to a roll that ends a fight.</p>",
+    "die": null
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}

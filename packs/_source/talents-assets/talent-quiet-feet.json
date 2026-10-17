@@ -1,0 +1,16 @@
+{
+  "_id": "vv6fxgf6rpiAehAP",
+  "name": "Quiet Feet",
+  "type": "talent",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "role": "thief",
+    "cost": 0,
+    "activation": "You move through a place that should be noisy.",
+    "effect": "<p>Add a d6 to the Pool when you sneak or tail someone.</p>",
+    "die": null
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}

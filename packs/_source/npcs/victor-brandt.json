@@ -1,0 +1,34 @@
+{
+  "_id": "2t6ExxdhkbkI0gAt",
+  "name": "Victor Brandt",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "folder": null,
+  "sort": 0,
+  "flags": {},
+  "system": {
+    "tier": "mark",
+    "traits": [
+      {
+        "name": "Well Connected",
+        "die": 8
+      },
+      {
+        "name": "Overconfident",
+        "die": 6
+      },
+      {
+        "name": "Paranoid Bodyguards",
+        "die": 8
+      }
+    ],
+    "gang": {
+      "size": 2,
+      "die": 8
+    },
+    "weapon": {
+      "die": 6
+    },
+    "notes": "<p>Dockyard boss. Sells protection to everyone, including the people he is afraid of.</p>"
+  }
+}

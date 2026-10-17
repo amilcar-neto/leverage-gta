@@ -9,6 +9,7 @@
     "test": "node --test \"tests/unit/**/*.test.mjs\"",
     "test:foundry": "node tests/foundry/smoke.mjs",
     "test:phase1": "node tests/foundry/phase1.mjs",
+    "build:packs": "node tools/build-packs.mjs",
     "build:dev": "node tools/release.mjs --dev",
     "deploy": "node tools/release.mjs --dev && node tools/deploy.mjs",
     "release": "node tools/release.mjs --zip"

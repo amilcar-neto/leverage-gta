@@ -37,7 +37,7 @@
     </div>
     <div class="lv-opp-gang">
       <button type="button" class="lv-opp-chip{{#if gang.on}} is-on{{/if}}" data-action="toggleGang" aria-pressed="{{gang.on}}">{{localize "LEVERAGE.Opposition.gang"}}</button>
-      <input type="number" class="lv-opp-input" name="gangSize" value="{{gang.size}}" min="0" max="12" aria-label="{{localize "LEVERAGE.Opposition.gangSize"}}">
+      <input type="number" class="lv-opp-input" name="gangSize" value="{{gang.size}}" min="0" max="{{gang.max}}" aria-label="{{localize "LEVERAGE.Opposition.gangSize"}}">
       <span aria-hidden="true">&times;</span>
       <select class="lv-opp-input" name="gangDie" aria-label="{{localize "LEVERAGE.Opposition.gangDie"}}">
         {{#each gang.options}}<option value="{{value}}"{{#if selected}} selected{{/if}}>d{{value}}</option>{{/each}}

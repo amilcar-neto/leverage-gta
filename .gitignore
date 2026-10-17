@@ -1,5 +1,8 @@
 node_modules/
 dist/
+# compiled compendiums (LevelDB); only packs/_source is versioned
+packs/*/
+!packs/_source/
 .cache/
 .env
 docs/log/runner.log

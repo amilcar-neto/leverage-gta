@@ -1,0 +1,16 @@
+{
+  "_id": "wbY0JCbAXR4axcd3",
+  "name": "Plan B",
+  "type": "talent",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "role": "mastermind",
+    "cost": 1,
+    "activation": "The plan falls apart.",
+    "effect": "<p>Spend a Plot Point to turn a Complication into a flashback that gives you an Asset.</p>",
+    "die": null
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}

@@ -1,0 +1,16 @@
+{
+  "_id": "CxJcbbzVOUSQ0fW1",
+  "name": "Stolen Sedan",
+  "type": "asset",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "die": 8,
+    "duration": "signature",
+    "note": "Fast, plain, and registered to nobody.",
+    "weapon": false,
+    "purchased": true
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}

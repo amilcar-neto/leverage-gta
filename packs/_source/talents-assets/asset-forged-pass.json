@@ -1,0 +1,16 @@
+{
+  "_id": "FlfKFiRZh6SHTvS1",
+  "name": "Forged Pass",
+  "type": "asset",
+  "img": "icons/svg/item-bag.svg",
+  "system": {
+    "die": 6,
+    "duration": "job",
+    "note": "A laminated card and a confident walk.",
+    "weapon": false,
+    "purchased": false
+  },
+  "sort": 0,
+  "flags": {},
+  "folder": null
+}
