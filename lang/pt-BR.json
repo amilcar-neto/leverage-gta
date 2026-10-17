@@ -409,7 +409,7 @@
       "Complication": {
         "title": "Complication",
         "target": "Complication",
-        "createNew": "Nova Complication (d6)",
+        "createNew": "Nova Complication (d{die})",
         "raise": "Subir {name}: d{from} para d{to}",
         "name": "Nome",
         "namePlaceholder": "O que dá errado?",
@@ -615,7 +615,11 @@
       "delete": "Apagar {type}",
       "namePlaceholder": "Nome",
       "nameLabel": "Nome",
-      "windowTitle": "{type} · {owner}"
+      "windowTitle": "{type} · {owner}",
+      "descriptionPlaceholder": "Nada escrito ainda.",
+      "effectPlaceholder": "Nada escrito ainda.",
+      "notesPlaceholder": "Sem anotações ainda.",
+      "protectedHint": "Só o Narrador altera isto."
     },
     "Roll": {
       "defaultFlavor": "rola a Pool",
@@ -628,11 +632,20 @@
       "onesWarningMany": "{count} dados tiraram 1. O Fixer pode criar uma Complication e te dar um Plot Point.",
       "distinctionPP": "Distinction d4: +{count} Plot Point",
       "moneyDrop": "Dado de Grana usado: a Grana desce um degrau",
-      "keepButton": "+1 PP · Manter o 3º dado",
+      "keepButton": "+1 PP · Manter o {n} dado",
       "keepTip": "Gaste um Plot Point para somar o próximo maior dado ao total",
       "complicationButton": "Mestre · Complication",
       "complicationTip": "Mestre: criar ou subir uma Complication e dar 1 Plot Point",
-      "ppSpent": "+{count} PP gasto: dado extra mantido"
+      "ppSpentOne": "+1 PP gasto: dado extra mantido",
+      "ppSpentMany": "+{count} PP gastos: dados extras mantidos",
+      "noPlotPoints": "Sem Plot Points para manter outro dado.",
+      "keepTipNoPlotPoints": "Sem Plot Points para gastar",
+      "Ordinal": {
+        "one": "{n}º",
+        "two": "{n}º",
+        "few": "{n}º",
+        "other": "{n}º"
+      }
     },
     "Socket": {
       "noGM": "Nenhum Fixer conectado para processar esta ação."
@@ -710,7 +723,7 @@
       "more": "Mais",
       "fewer": "Menos",
       "shortcuts": "Atalhos",
-      "none": "2d6 (nenhuma oposição)",
+      "none": "Nenhuma oposição",
       "police": "Polícia",
       "policeStars": "Polícia ({stars} ★)",
       "policeNone": "Sem estrelas: a polícia não está atrás de você",
@@ -723,9 +736,9 @@
       "location": "Local",
       "complications": "Complicações",
       "traitFallback": "Traço",
-      "poolCount": "{count} dados · mantém 2",
+      "poolCount": "{count} dados · mantém {keep}",
       "poolEmpty": "Sem dados",
-      "poolDefault": "Nada escolhido: rola 2d6",
+      "poolDefault": "Nada escolhido: rola os dados padrão de nenhuma oposição",
       "clear": "Limpar",
       "label": "Descrição",
       "labelPlaceholder": "O que a oposição está fazendo?",
@@ -761,7 +774,12 @@
       "Pool": {
         "empty": "Informe pelo menos uma referência da Pool.",
         "unknownRef": "Referência de Pool desconhecida ou indisponível: {ref}.",
-        "tooMany": "Uma Pool tem só um {kind}.",
+        "tooMany": "Uma Pool aceita só 1 {kind}.",
+        "kind": {
+          "attribute": "Attribute",
+          "role": "Role",
+          "distinction": "Distinction"
+        },
         "noAttribute": "A Pool precisa de um Atributo.",
         "noRole": "A Pool precisa de um Papel.",
         "blankAttribute": "O Atributo escolhido não tem dado.",

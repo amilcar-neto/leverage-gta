@@ -52,3 +52,12 @@ test("weapon options list the presets next to their die", () => {
   assert.equal(options.find((o) => o.value === 8).label, "d8 · LEVERAGE.Damage.Weapon.shotgun · LEVERAGE.Damage.Weapon.rifle");
   assert.equal(options.find((o) => o.value === 4).label, "d4");
 });
+
+test("police source is recognised inside a composed source and not as a substring", async () => {
+  const { isPoliceSource } = await import("../../module/applications/chat/damage-lines.mjs");
+  assert.equal(isPoliceSource("police"), true);
+  assert.equal(isPoliceSource("manual+police+gang"), true);
+  assert.equal(isPoliceSource("manual+gang"), false);
+  assert.equal(isPoliceSource("policeman"), false);
+  assert.equal(isPoliceSource(undefined), false);
+});

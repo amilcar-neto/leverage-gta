@@ -100,6 +100,7 @@ leverage-gta/                       ← raiz do repositório = pasta do sistema 
 | `item:<id>` | um Item do ator (Specialty, Asset, Talent que dá dado) |
 | `item:<id>:d8` / `item:<id>:d4` | uma Distinction e o modo escolhido |
 | `money` | o maior dado de Grana (regra da casa) |
+| `scene:<id>` | um Traço de cena do Job ativo (`activeJob.sceneTraits`); `rollPool` e a bandeja aceitam |
 | `d6` | um dado avulso |
 
 API pública (`game.leverage`), documentada com JSDoc e exemplos em `docs/macros.md` (crie):
@@ -139,6 +140,12 @@ await game.leverage.plotPoints.add(actor, 1);
 - Grana: o dono altera a própria; **transferência** entre personagens passa pelo mestre via socket
   (`system.leverage-gta`), que valida e aplica as duas atualizações.
 - Plot Points: o dono altera os próprios; o mestre altera de todos.
+- **Quem pediu:** o servidor entrega o evento de socket de um sistema como `(dados, idDoEmissor)`, e o id vem da sessão
+  autenticada (conferido em `dist/server/sockets.mjs`, `handleCustomSocket`). O pacote **não** leva `userId`: o mestre
+  usa só esse segundo argumento e confere posse (`testUserPermission(user, "OWNER")`) antes de agir. Um jogador não
+  consegue se passar por outro. O mestre executa por conta própria o que ele mesmo pede, com o próprio id.
+- "+1 PP" do card (manter outro dado): só o jogador dono da personagem (o mestre usa `plotPoints.add`) e só na
+  rolagem mais recente da personagem no chat. O pedido por socket trava a mensagem também no lado do mestre.
 - Trava: configuração de mundo; os métodos de criação/remoção/alteração de Traço checam a trava (não só a interface).
 
 ## Qualidade

@@ -97,18 +97,54 @@ Ao entrar na Pool soma **d6** (`CONFIG.LEVERAGE.specialtyDie`).
 - `activeJob`: `{ name, complications: [{ id, name, die }], sceneTraits: [] }`
 - `traitsLocked`: Boolean
 
-## Mensagem de chat de rolagem — `flags.leverage-gta.roll`
+## Flags de mensagens de chat (`flags.leverage-gta.*`)
+
+### `roll`: card de rolagem (Pool do jogador ou oposição do Mestre)
 
 ```js
 {
-  actorUuid, flavor,
-  entries: [{ ref, label, faces, result, kept, one }],   // na ordem em que aparecem
+  actorUuid, actorName, actorImg,   // vazios no card de oposição (cabeçalho "FIXER")
+  flavor,                           // descrição da ação (subtítulo)
+  entries: [{ ref, label, kind, faces, result, kept, one }],   // na ordem em que aparecem
+  // kind: "attribute" | "role" | "specialty" | "asset" | "talent" | "distinction" | "money" | "scene" | "die"
+  //       | "opposition" (dados do card do Mestre)
   keptCount: 2, total, ppSpent: 0,
   distinctionPP: 0,          // PP ganhos por d4 de Distinction nesta rolagem
   complicationsResolved: [], // índices de 1s já transformados em Complication pelo mestre
-  money: false               // se um dado de Grana entrou (desconta 1 degrau ao rolar)
+  money: false,              // se um dado de Grana entrou (desconta 1 degrau ao rolar)
+
+  // só no card de oposição:
+  opposition: true,
+  source: "manual+police+gang+picked",  // atalhos usados, separados por "+"; "none" = sem oposição; "macro" = API
+  damage: { /* DamageRecord */ }        // gravado depois de APLICAR DANO (dano.mjs)
 }
 ```
+
+Regras do card: só a rolagem **mais recente** da personagem no chat pode manter outro dado ("+1 PP"), e só o jogador
+dono (o Mestre não conta como dono). Os Plot Points e a Grana da rolagem só são aplicados depois que a mensagem existe.
+Não existe campo `versus`: o dano liga o card de oposição à rolagem anterior mais próxima de uma personagem.
+
+`DamageRecord` (uma rodada de dano): `targetUuid, targetName, margin, weaponDie, weaponRoll, raw, cover, damage,
+absorbed, lifeLost, life, vest, lifeMax, down, kind` (`"wasted"`, `"busted"` ou `null`).
+
+### `damage`: linha de dano
+
+Na mensagem de texto da rodada de dano: o mesmo `DamageRecord`.
+
+### `down`: card WASTED / BUSTED
+
+`{ kind: "wasted" | "busted", name }`: só marca o card (o conteúdo é HTML pronto).
+
+## Flag de Macro `flags.leverage-gta.traitMacro`
+
+`true` nas macros de script criadas ao arrastar um Traço da ficha para a barra de atalhos (`pool.add(actor, ref)`). Serve
+para reconhecer e reaproveitar a macro em vez de criar outra igual.
+
+## Campos de Item só do Mestre
+
+Depois que o Item existe, o jogador **não** muda: no Asset, `die` e `duration`; no Job, `payout.share` e `spent`.
+A lista está em `LEVERAGE.protectedItemFields`; as fichas de Item mostram esses campos desabilitados quando
+`canEditProtected` é falso e descartam o campo se um formulário adulterado o enviar.
 
 ## Migração
 

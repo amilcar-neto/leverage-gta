@@ -77,8 +77,35 @@ test("socket: lowest active GM id processes; routing needs the processor and a k
   assert.equal(lowestActiveGM([{ id: "c", active: true, isGM: false }]), null);
   const seen = [];
   const handlers = new Map([["ping", (data, userId) => seen.push([data, userId])]]);
-  assert.equal(await routePacket({ action: "ping", data: { x: 1 }, userId: "u" }, { isProcessor: false, handlers }), false);
-  assert.equal(await routePacket({ action: "nope" }, { isProcessor: true, handlers }), false);
-  assert.equal(await routePacket({ action: "ping", data: { x: 1 }, userId: "u" }, { isProcessor: true, handlers }), true);
+  assert.equal(await routePacket({ action: "ping", data: { x: 1 } }, { isProcessor: false, userId: "u", handlers }), false);
+  assert.equal(await routePacket({ action: "nope" }, { isProcessor: true, userId: "u", handlers }), false);
+  assert.equal(await routePacket({ action: "ping", data: { x: 1 } }, { isProcessor: true, userId: "u", handlers }), true);
   assert.deepEqual(seen, [[{ x: 1 }, "u"]]);
+});
+
+test("socket: the requester is the server's id; a userId inside the packet is ignored", async () => {
+  const seen = [];
+  const handlers = new Map([["ping", (data, userId) => seen.push(userId)]]);
+  await routePacket({ action: "ping", data: {}, userId: "forged-gm" }, { isProcessor: true, userId: "real-player", handlers });
+  assert.deepEqual(seen, ["real-player"]);
+});
+
+test("card context: PP button only for the newest roll of the player; disabled without Plot Points", () => {
+  const data = roll([entry(9, true), entry(8, true), entry(5)]);
+  const base = { t, isOwner: true, plotPoints: 2 };
+  assert.equal(rollCardContext(data, { ...base }).showKeep, true);
+  assert.equal(rollCardContext(data, { ...base, isLatest: false }).showKeep, false);
+  assert.equal(rollCardContext(data, { ...base, isOwner: false, isGM: true }).showKeep, false);
+  const broke = rollCardContext(data, { ...base, plotPoints: 0 });
+  assert.equal(broke.showKeep, true);
+  assert.equal(broke.keepDisabled, true);
+  assert.equal(broke.keepTip, "LEVERAGE.Roll.keepTipNoPlotPoints");
+});
+
+test("card context: PP spent uses the singular and plural keys; keep button names the next die", () => {
+  const one = rollCardContext({ ...roll([entry(9, true), entry(5)]), ppSpent: 1 }, { t });
+  assert.ok(one.ppNotes.some((n) => n.startsWith("LEVERAGE.Roll.ppSpentOne")));
+  const many = rollCardContext({ ...roll([entry(9, true), entry(5)]), ppSpent: 2 }, { t });
+  assert.ok(many.ppNotes.some((n) => n.startsWith("LEVERAGE.Roll.ppSpentMany")));
+  assert.equal(rollCardContext(roll([entry(9, true), entry(8, true), entry(5)]), { t, isOwner: true, plotPoints: 1 }).keepLabel.startsWith("LEVERAGE.Roll.keepButton"), true);
 });

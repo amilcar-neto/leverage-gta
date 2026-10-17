@@ -4,6 +4,7 @@
  */
 import { LEVERAGE } from "../../config.mjs";
 import { ITEM_TEMPLATES, LeverageItemSheet } from "./item-sheet.mjs";
+import { withoutProtectedFields } from "./protected-fields.mjs";
 
 /** PARTS of a type: shared header and footer, own body. */
 const partsFor = (type) => ({
@@ -11,6 +12,24 @@ const partsFor = (type) => ({
   body: { template: `${ITEM_TEMPLATES}/${type}.hbs` },
   footer: { template: `${ITEM_TEMPLATES}/footer.hbs` }
 });
+
+/**
+ * Mixin for the sheets of Items with Fixer-only fields: tells the template (`canEditProtected`) and drops the fields
+ * from a player's form submission, so a console-edited form cannot sneak them in.
+ * @param {typeof LeverageItemSheet} Base
+ */
+const withProtectedFields = (Base) => class extends Base {
+  /** @override */
+  _prepareTypeContext(context) {
+    context.canEditProtected = context.canEdit && game.user.isGM;
+    return super._prepareTypeContext(context);
+  }
+
+  /** @override */
+  _processFormData(event, form, formData) {
+    return withoutProtectedFields(this.document.type, super._processFormData(event, form, formData), game.user.isGM);
+  }
+};
 
 const roleLabel = (key) => game.i18n.localize(`LEVERAGE.Role.${key}`);
 const t = (key) => game.i18n.localize(key);
@@ -68,15 +87,28 @@ export class SpecialtySheet extends LeverageItemSheet {
 }
 
 /** Asset: die, duration, note, weapon and purchased flags. */
-export class AssetSheet extends LeverageItemSheet {
+export class AssetSheet extends withProtectedFields(LeverageItemSheet) {
   /** @override */
   static PARTS = partsFor("asset");
 
   /** @override */
-  static DEFAULT_OPTIONS = { classes: ["asset-sheet"], position: { width: 520, height: 380 } };
+  static DEFAULT_OPTIONS = {
+    classes: ["asset-sheet"], position: { width: 520, height: "auto" },
+    // The die and the duration are buttons, not form fields: the base actions are wrapped to refuse a player.
+    actions: { setDuration: AssetSheet.#guarded("setDuration"), setDie: AssetSheet.#guarded("setDie") }
+  };
+
+  /** Wraps a base action so only the Fixer may run it. */
+  static #guarded(name) {
+    return function guardedAction(event, target) {
+      if (!game.user.isGM) return undefined;
+      return LeverageItemSheet.DEFAULT_OPTIONS.actions[name].call(this, event, target);
+    };
+  }
 
   /** @override */
   _prepareTypeContext(context) {
+    super._prepareTypeContext(context);
     const { system } = context;
     context.dieChoices = LeverageItemSheet.dieChoices(system.die);
     context.durations = LeverageItemSheet.segments(
@@ -86,7 +118,7 @@ export class AssetSheet extends LeverageItemSheet {
 }
 
 /** Job: payout, callback and spent flags, rich notes. */
-export class JobSheet extends LeverageItemSheet {
+export class JobSheet extends withProtectedFields(LeverageItemSheet) {
   /** @override */
   static PARTS = partsFor("job");
 

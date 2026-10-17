@@ -13,7 +13,7 @@ import { buildRollData, evaluateDice } from "./roll-core.mjs";
 export const OPPOSITION_KIND = "opposition";
 
 /** Dice rolled when nothing is chosen: "no opposition" (docs/02). */
-export const NO_OPPOSITION_POOL = Object.freeze([6, 6]);
+export const NO_OPPOSITION_POOL = LEVERAGE.defaultOppositionDice;
 
 /**
  * @typedef {object} OppositionDie
@@ -41,10 +41,10 @@ export function emptyCounts() {
  * @param {Record<number, number>} counts
  * @param {number} die
  * @param {number} delta
- * @param {number} [max=12]
+ * @param {number} [max] Defaults to `LEVERAGE.looseDiceMax`.
  * @returns {Record<number, number>} a new object
  */
-export function stepCount(counts, die, delta, max = 12) {
+export function stepCount(counts, die, delta, max = LEVERAGE.looseDiceMax) {
   if (!isValidDie(die)) return { ...counts };
   return { ...counts, [die]: Math.min(max, Math.max(0, (counts[die] ?? 0) + delta)) };
 }

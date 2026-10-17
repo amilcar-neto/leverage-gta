@@ -8,6 +8,19 @@
 
 export const SYSTEM_ID = "leverage-gta";
 
+/** Part of the path of Foundry's default portrait ("no photo"). */
+const DEFAULT_PORTRAIT = "mystery-man";
+
+/**
+ * Whether an actor image is a real portrait (not empty and not Foundry's default silhouette). One test for every
+ * sheet and the roll card.
+ * @param {string|null|undefined} img
+ * @returns {boolean}
+ */
+export function hasRealPortrait(img) {
+  return Boolean(img) && !String(img).includes(DEFAULT_PORTRAIT);
+}
+
 /** Hook fired (by the `traitsLocked` world setting, see module/settings.mjs) whenever the Trait lock changes. */
 export const LOCK_HOOK = "leverage.traitsLockedChanged";
 
@@ -51,6 +64,8 @@ const geo = (die, top, font) => Object.freeze({ top, font, hue: hueOf(DIE_STYLES
 const DIE_GEOMETRY = Object.freeze({
   sizes: Object.freeze([28, 32, 36, 38, 50]),
   defaultSize: 32,
+  /** Size used by each surface that shows dice outside the sheets (always one of `sizes`). */
+  uses: Object.freeze({ rollCard: 50, moneyLine: 28 }),
   perDie: Object.freeze({
     4: geo(4, 0.44, 0.4),
     6: geo(6, 0.25, 0.47),
@@ -172,8 +187,17 @@ export const LEVERAGE = Object.freeze({
   specialtyDie: 6,
   distinctionDice: Object.freeze({ helps: 8, hinders: 4 }),
   maxDistinctions: 3,
-  /** Opposition fallback when the GM has no dice (docs/02: 2d6). */
+  /** Opposition fallback when the GM has no dice (docs/02: 2d6). The only place that says "2d6". */
   defaultOppositionDice: Object.freeze([6, 6]),
+  /** Item fields that only the Fixer changes once the Item exists (docs/05): an Asset's die and duration, a Job's payout share and spent flag. */
+  protectedItemFields: Object.freeze({
+    asset: Object.freeze(["system.die", "system.duration"]),
+    job: Object.freeze(["system.payout.share", "system.spent"])
+  }),
+  /** Largest gang an NPC (or the opposition roller) can bring. */
+  gangMax: 12,
+  /** Most loose dice of one size in the opposition roller. */
+  looseDiceMax: 12,
   /** Money ladder (docs/02): a full d12 is 5 steps; the leftmost die holds the remainder. */
   money: Object.freeze({
     stepsPerDie: MONEY_STEPS_PER_DIE,

@@ -23,6 +23,7 @@
   color: var(--lv-ink);
 }
 
+/* "TALENT  · Rosa Delgado": the type in muted capitals, the owner lighter and in normal case (mockup) */
 .leverage-gta.lv-item-sheet .window-title {
   flex: 1;
   min-width: 0;
@@ -32,12 +33,15 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 32px;
-  text-transform: uppercase;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.leverage-gta.lv-item-sheet .lv-title-type { color: var(--lv-muted); text-transform: uppercase; }
+.leverage-gta.lv-item-sheet .lv-title-owner { color: var(--lv-ink); font-weight: 500; letter-spacing: 0.02em; }
+
+/* Foundry's own controls (menu, sheet) stay quiet; only Close wears the mockup's boxed look */
 .leverage-gta.lv-item-sheet .window-header .header-control {
   flex: none;
   width: 22px;
@@ -45,11 +49,20 @@
   margin: 0;
   padding: 0;
   background: transparent;
-  border: 1px solid var(--lv-muted);
+  border: 0;
   border-radius: 3px;
   box-shadow: none;
+  color: var(--lv-muted-2);
+}
+
+.leverage-gta.lv-item-sheet .window-header .header-control[data-action="close"] {
+  border: 1px solid var(--lv-muted);
   color: var(--lv-ink);
 }
+
+/* Lock seal: icon only here (the tooltip says the rest) */
+.leverage-gta.lv-item-sheet .lv-lock-seal { width: 22px; padding: 0; justify-content: center; }
+.leverage-gta.lv-item-sheet .lv-lock-seal-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
 .leverage-gta.lv-item-sheet .window-header .header-control:hover,
 .leverage-gta.lv-item-sheet .window-header .header-control:focus-visible {
@@ -96,7 +109,7 @@
   letter-spacing: 0.04em;
   line-height: 40px;
   text-transform: uppercase;
-  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 3px 0 #000, 3px 3px 0 #000;
+  text-shadow: var(--lv-hud-shadow);
 }
 
 .leverage-gta.lv-item-sheet .lv-item-name::placeholder { color: rgba(255, 255, 255, 0.55); text-shadow: none; }
@@ -263,7 +276,21 @@
   min-height: 34px;
 }
 
+.leverage-gta.lv-item-sheet fieldset.lv-item-dice { min-width: 0; margin: 0; padding: 0; border: 0; }
 .leverage-gta.lv-item-sheet .lv-item-die { display: flex; flex: none; }
+
+/* Read-only or protected: dice and buttons show state only, they do not look clickable */
+.leverage-gta.lv-item-sheet .lv-item-die button.lv-die:disabled,
+.leverage-gta.lv-item-sheet .lv-item-none:disabled,
+.leverage-gta.lv-item-sheet .lv-item-seg-btn:disabled { cursor: default; pointer-events: none; }
+.leverage-gta.lv-item-sheet .lv-item-die button.lv-die:disabled:not([aria-pressed="true"]) { filter: saturate(0.8); }
+
+/* Empty rich fields show their placeholder */
+.leverage-gta.lv-item-sheet .lv-item-empty { margin: 0; color: var(--lv-muted); opacity: 0.6; }
+
+/* Asset: height follows the content (no dead space) */
+.leverage-gta.lv-item-sheet.asset-sheet { min-height: 0; }
+.leverage-gta.lv-item-sheet.asset-sheet .lv-item-body { flex: 0 0 auto; padding-bottom: 4px; }
 
 .leverage-gta.lv-item-sheet .lv-item-die .lv-die {
   margin: 0;
@@ -273,7 +300,6 @@
   cursor: pointer;
 }
 
-.leverage-gta.lv-item-sheet .lv-item-die button.lv-die:disabled { cursor: default; }
 
 .leverage-gta.lv-item-sheet .lv-item-none {
   height: 28px;
@@ -401,10 +427,10 @@
   margin: 0;
   padding: 0 12px;
   background: transparent;
-  border: 2px solid #ff8a8a;
+  border: 2px solid var(--lv-danger);
   border-radius: 4px;
   box-shadow: none;
-  color: #ff8a8a;
+  color: var(--lv-danger);
   font-family: var(--lv-font-ui);
   font-size: 14px;
   font-weight: 700;
@@ -416,5 +442,5 @@
 
 .leverage-gta.lv-item-sheet .lv-item-delete:hover,
 .leverage-gta.lv-item-sheet .lv-item-delete:focus-visible {
-  background: rgba(255, 138, 138, 0.14);
+  background: color-mix(in srgb, var(--lv-danger) 14%, transparent);
 }

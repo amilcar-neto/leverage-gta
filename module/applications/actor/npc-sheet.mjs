@@ -4,7 +4,7 @@
  * the crew sheet, simpler. The Trait lock does not apply: whoever can edit the NPC (the GM) edits freely, everyone else
  * only reads. Dice written here are plain actor updates; the pure list/die logic is in `npc-logic.mjs`.
  */
-import { LEVERAGE } from "../../config.mjs";
+import { LEVERAGE, hasRealPortrait } from "../../config.mjs";
 import { npcTraitKey, openOppositionRoller } from "../../dice/opposition.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
 import { buildRows } from "./parts/ladders.mjs";
@@ -126,7 +126,7 @@ export class NpcSheet extends LeverageActorSheet {
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     const { actor, system, canEdit } = context;
-    const hasPhoto = Boolean(actor.img) && !actor.img.includes("mystery-man");
+    const hasPhoto = hasRealPortrait(actor.img);
     const showLadders = showsLadders(system.tier);
     Object.assign(context, {
       hasPhoto,
@@ -146,7 +146,7 @@ export class NpcSheet extends LeverageActorSheet {
       gangCanUp: system.gang.size < GANG_MAX,
       gangLadder: dieLadder(system.gang.die, canEdit, (die) => t("LEVERAGE.NpcSheet.dieLabel", { what: t("LEVERAGE.NpcSheet.gang"), die })),
       weaponLadder: dieLadder(system.weapon.die, canEdit, (die) => t("LEVERAGE.NpcSheet.dieLabel", { what: t("LEVERAGE.NpcSheet.weapon"), die })),
-      poolText: t("LEVERAGE.Opposition.poolCount", { count: opposeDiceCount(system, sourceNames()) }),
+      poolText: t("LEVERAGE.Opposition.poolCount", { count: opposeDiceCount(system, sourceNames()), keep: LEVERAGE.keepDefault }),
       notes: await foundry.applications.ux.TextEditor.implementation.enrichHTML(system.notes, {
         relativeTo: actor, secrets: actor.isOwner
       })

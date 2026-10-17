@@ -28,3 +28,4 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - R-F3/T-307 fechados (3ab7eec). Em andamento: T-705, pendências bandeja/macros, T-601.
 - T-601, T-705 concluídos (de3c291). Em andamento: T-602, T-603, T-801, T-802, pendências da bandeja.
 - T-602, T-603, T-802 e pendências da bandeja concluídos. Em andamento: T-801, T-604.
+- T-604, T-701, R-F5 parte A concluídos. Em andamento: R-F4 parte B (visual).

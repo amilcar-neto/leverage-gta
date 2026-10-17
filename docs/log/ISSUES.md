@@ -29,3 +29,6 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - **Gravidade:** media - **Situacao:** aberto (ligado a I-002)
 - **Detalhe:** o dialogo TRAIN UP le `trainingCosts` (padrao em `LEVERAGE.defaultTrainingCosts`: Signature Asset 1, Specialty 1, Talent 1, Attribute 2, Role 2). So o Signature Asset esta confirmado no livro. O dialogo so gasta os Jobs (marca `spent`, os mais antigos primeiro) e avisa no chat; o item novo (Specialty, Talent...) e criado depois na ficha, destravada. Attribute/Role: ajustar o dado a mao.
 - **Dono:** conferir a tabela no PDF e ajustar o menu de custos.
+
+## 2026-10-17 - Campos protegidos dos Items so na ficha (R-F4/R-F5)
+- Gravidade baixa. `die`/`duration` do Asset e `payout.share`/`spent` do Job so sao protegidos nas fichas (acoes e formulario). Um jogador que chame `item.update` pelo console ainda consegue mudar esses campos. Correcao possivel: guarda em `preUpdateItem` usando `LEVERAGE.protectedItemFields`. Nao resolvido (arquivo `documents/item.mjs` fora do escopo desta parte).

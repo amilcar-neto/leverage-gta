@@ -72,6 +72,26 @@ export class LeverageItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     return owner ? game.i18n.format("LEVERAGE.ItemSheet.windowTitle", { type, owner }) : type;
   }
 
+  /** @override */
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+    this.#styleTitle();
+  }
+
+  /** Splits the title into the type (muted capitals) and the owner (lighter, normal case), as in the mockup. */
+  #styleTitle() {
+    const el = this.element?.querySelector(".window-title");
+    const owner = this.document.parent?.name;
+    if (!el) return;
+    const type = game.i18n.localize(`TYPES.Item.${this.document.type}`);
+    const full = this.title;
+    const typeEl = Object.assign(document.createElement("span"), { className: "lv-title-type", textContent: type });
+    const nodes = [typeEl];
+    if (owner) nodes.push(" · ", Object.assign(document.createElement("span"), { className: "lv-title-owner", textContent: owner }));
+    el.replaceChildren(...nodes);
+    el.title = full;
+  }
+
   /** Whether the current user can edit the fields (permission plus the Trait lock). */
   get canEdit() {
     return this.isEditable && passesTraitLock(this.document);

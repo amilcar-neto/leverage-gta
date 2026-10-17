@@ -2,7 +2,7 @@
  * Location sheet: name, image, city (for the stars), a list of Trait dice that feeds the opposition roller
  * (`locationSources`) and notes. Only the GM edits; everyone else with access reads (docs/06 "Fichas de NPC e Local").
  */
-import { LEVERAGE } from "../../config.mjs";
+import { LEVERAGE, hasRealPortrait } from "../../config.mjs";
 import { getCityScales } from "../../settings.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
 import { moveEntry, traitRows } from "./location-rows.mjs";
@@ -60,7 +60,7 @@ export class LocationSheet extends LeverageActorSheet {
     const TextEditor = foundry.applications.ux.TextEditor.implementation;
     return Object.assign(context, {
       canManage: this.canManage,
-      hasImage: Boolean(actor.img) && !actor.img.includes("mystery-man"),
+      hasImage: hasRealPortrait(actor.img),
       cities,
       cityName: current?.name ?? "",
       noCitySelected: !current,

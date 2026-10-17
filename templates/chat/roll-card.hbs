@@ -2,16 +2,16 @@
   <header class="lv-roll-head">
     {{#if opposition}}{{else if img}}<img class="lv-roll-mug" src="{{img}}" alt="{{name}}">{{else}}<span class="lv-roll-mug lv-roll-mug--empty" aria-hidden="true"></span>{{/if}}
     <span class="lv-roll-who">
-      <span class="lv-roll-name hud" title="{{name}}">{{name}}</span>
+      <span class="lv-roll-name lv-hud" title="{{name}}">{{name}}</span>
       <span class="lv-roll-flavor" title="{{flavor}}">{{flavor}}</span>
     </span>
   </header>
 
   <div class="lv-roll-chips">
-    {{#each chips}}<span class="lv-roll-chip" title="{{label}} {{die}}"><span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}">{{die}}</span></span>{{/each}}
+    {{#each chips}}<span class="lv-roll-chip" title="{{label}} {{die}}"><span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}{{#if money}} lv-roll-chip-die--money{{/if}}">{{die}}</span></span>{{/each}}
   </div>
 
-  <div class="lv-roll-dice">
+  <div class="lv-roll-dice" data-count="{{dice.length}}">
     {{#each dice}}
     <span class="lv-roll-die">
       {{{html}}}
@@ -22,8 +22,8 @@
 
   <div class="lv-roll-total">
     <span class="lv-roll-total-label">{{localize "LEVERAGE.Roll.total"}}</span>
-    <span class="lv-roll-total-num hud">{{total}}</span>
-    <span class="lv-roll-explain"><span>{{countText}}</span>{{#if sumText}}<span>{{sumText}}</span>{{/if}}</span>
+    <span class="lv-roll-total-num lv-hud">{{total}}</span>
+    <span class="lv-roll-explain"><span>{{countText}}</span>{{#if sumText}}<span class="lv-roll-explain-sum">{{sumText}}</span>{{/if}}</span>
   </div>
 
   {{#each ppNotes}}<div class="lv-roll-note">{{this}}</div>{{/each}}

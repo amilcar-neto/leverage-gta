@@ -2,7 +2,7 @@
  * Crew (player character) sheet: one page, nine PARTS laid out in three columns (docs/06).
  * T-301 builds the structure only; the interactions come from T-302..T-306.
  */
-import { LEVERAGE } from "../../config.mjs";
+import { LEVERAGE, hasRealPortrait } from "../../config.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
 import { closeFloatMenu } from "../components/float-menu.mjs";
 import { afterRenderParts, attachParts, drag, partActions, preparePartContexts } from "./parts/_module.mjs";
@@ -141,7 +141,7 @@ export class CrewSheet extends LeverageActorSheet {
     const context = await super._prepareContext(options);
     const { actor, system } = context;
     const jobs = itemsOf(actor, "job");
-    const hasPhoto = Boolean(actor.img) && !actor.img.includes("mystery-man");
+    const hasPhoto = hasRealPortrait(actor.img);
     Object.assign(context, {
       hasPhoto,
       distinctions: itemsOf(actor, "distinction"),

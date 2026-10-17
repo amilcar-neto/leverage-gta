@@ -1,7 +1,7 @@
 /**
  * Crew sheet - Pool tray part (docs/06, docs/08). Owns the `DicePool` of each open sheet (client state, one per
- * sheet in a WeakMap), the tray context, and the click actions. The real roll is T-502: ROLL only announces the
- * Pool with the `leverage.rollRequested` hook.
+ * sheet in a WeakMap), the tray context, and the click actions. ROLL only announces the Pool with the
+ * `leverage.rollRequested` hook; `dice/roll-handler.mjs` listens to it and rolls.
  *
  * Feedback without a full re-render: a click re-renders only the `tray` part and `afterRender` (called by the
  * sheet after every render) toggles `.is-pooled` on the rows (matched by `data-pool-ref`) of every part.
@@ -247,7 +247,7 @@ export const actions = {
     refresh(this);
   },
 
-  /** ROLL: announces the Pool when it is legal (the roll itself is T-502). */
+  /** ROLL: announces the Pool when it is legal (`dice/roll-handler.mjs` does the roll). */
   roll() {
     const pool = poolOf(this);
     if (!this.actor.isOwner || !pool.canRoll) return;

@@ -2,6 +2,10 @@
  * Socket channel `system.leverage-gta` (docs/04 "Sockets e permissões"). Actions that a player cannot do alone are
  * sent to the Fixer; only the active GM with the lowest id processes them. `game.socket.emit` does not reach the
  * sender, so `executeAsGM` runs the action locally when the sender is that GM.
+ *
+ * Authenticity: the Foundry server relays a package of a system channel as `(data, senderUserId)` and fills the
+ * second argument itself from the session (checked in `dist/server/sockets.mjs`, `handleCustomSocket`). The requester
+ * is therefore ONLY that argument; the package carries no user id, so a console cannot forge another player.
  */
 import { SYSTEM_ID } from "./config.mjs";
 import { logger } from "./logger.mjs";
@@ -33,14 +37,15 @@ export function lowestActiveGM(users) {
 
 /**
  * Routes one incoming packet. Pure: the caller says whether this client is the processing GM.
- * @param {{action?: string, data?: object, userId?: string}} packet
- * @param {{isProcessor: boolean, handlers?: Map<string, Function>}} context
+ * @param {{action?: string, data?: object}} packet
+ * @param {{isProcessor: boolean, userId: string, handlers?: Map<string, Function>}} context `userId` is the sender as
+ *   authenticated by the server (never read from the packet).
  * @returns {Promise<boolean>} true when a handler ran
  */
-export async function routePacket(packet, { isProcessor, handlers = HANDLERS }) {
+export async function routePacket(packet, { isProcessor, userId = "", handlers = HANDLERS }) {
   const handler = isProcessor && packet?.action ? handlers.get(packet.action) : null;
   if (!handler) return false;
-  await handler(packet.data ?? {}, packet.userId ?? "");
+  await handler(packet.data ?? {}, userId);
   return true;
 }
 
@@ -48,8 +53,8 @@ const isProcessingGM = () => game.user.isGM && lowestActiveGM(game.users) === ga
 
 /** Registers the channel listener (call once, from `ready`). */
 export function registerSocket() {
-  game.socket.on(SOCKET_CHANNEL, (packet) => {
-    routePacket(packet, { isProcessor: isProcessingGM() }).catch((err) => logger.error("Socket action failed", err));
+  game.socket.on(SOCKET_CHANNEL, (packet, userId) => {
+    routePacket(packet, { isProcessor: isProcessingGM(), userId }).catch((err) => logger.error("Socket action failed", err));
   });
 }
 
@@ -60,8 +65,8 @@ export function registerSocket() {
  * @returns {Promise<boolean>} false when no GM is connected to process it
  */
 export async function executeAsGM(action, data) {
-  const packet = { action, data, userId: game.user.id };
-  if (isProcessingGM()) return routePacket(packet, { isProcessor: true });
+  const packet = { action, data };
+  if (isProcessingGM()) return routePacket(packet, { isProcessor: true, userId: game.user.id });
   if (!lowestActiveGM(game.users)) {
     ui.notifications.warn(game.i18n.localize("LEVERAGE.Socket.noGM"));
     return false;

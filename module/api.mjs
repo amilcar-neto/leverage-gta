@@ -123,7 +123,8 @@ const t = (key, data) => (data ? game.i18n.format(`LEVERAGE.Api.${key}`, data) :
 
 /** Shows the warning of a failed check. */
 function warn(check) {
-  ui.notifications.warn(t(check.error, check.data));
+  const data = check.data?.kind ? { ...check.data, kind: t(`Pool.kind.${check.data.kind}`) } : check.data;
+  ui.notifications.warn(t(check.error, data));
 }
 
 /** Resolves an Actor, a UUID or an id to a Crew actor. Warns and returns null otherwise. */
@@ -161,7 +162,7 @@ const wanted = () => ({ city: LEVERAGE.stars.defaultCity, level: 0, ...(game.set
  * @param {object} request
  * @param {Actor|string} request.actor A Crew actor, its UUID or its id. Players may roll only their own.
  * @param {(string|number)[]} request.refs References: `attributes.agility`, `roles.thief`, `item:<id>`,
- *   `item:<id>:d8|d4` (Distinction), `money`, `d6` or just `6` (loose die).
+ *   `item:<id>:d8|d4` (Distinction), `money`, `scene:<id>` (Scene Trait of the active Job), `d6` or just `6` (loose die).
  * @param {string} [request.flavor] Action description on the card.
  * @returns {Promise<ChatMessage|null>} the card, or null when the Pool is not valid (a warning says why)
  */
@@ -169,7 +170,8 @@ async function rollPool({ actor, refs, flavor } = {}) {
   const doc = ownedCrew(actor);
   if (!doc) return null;
   const moneyEnabled = Boolean(game.settings.get(SYSTEM_ID, "houseRules.money"));
-  const check = checkPoolRefs(refs, (ref) => resolvePoolRef(doc, ref, { moneyEnabled }));
+  const sceneTraits = game.settings.get(SYSTEM_ID, "activeJob")?.sceneTraits ?? [];
+  const check = checkPoolRefs(refs, (ref) => resolvePoolRef(doc, ref, { moneyEnabled, sceneTraits }));
   if (!check.ok) return warn(check) ?? null;
   return rollPoolFor({ actor: doc, entries: check.entries, flavor });
 }
@@ -194,7 +196,7 @@ const pool = {
 /**
  * Rolls the Fixer's opposition and posts the "FIXER" card. Fixer only.
  * @param {object} [request]
- * @param {(number|{die: number, label?: string})[]} [request.dice] Die sizes; empty means 2d6 ("no opposition").
+ * @param {(number|{die: number, label?: string})[]} [request.dice] Die sizes; empty means the default "no opposition" dice.
  * @param {string} [request.label] Card subtitle.
  * @returns {Promise<ChatMessage|null>}
  */

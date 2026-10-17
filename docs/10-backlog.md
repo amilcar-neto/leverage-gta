@@ -101,13 +101,13 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   estilizadas, perda de Assets de arma de cena, pagamento. *Dep:* T-504, T-601.
 - [x] **T-603 Grana.** Escada, pagar com a tabela de preços, emprestar (socket via mestre), Grana na Pool, Jobs com
   rendimento. *Dep:* T-105, T-502.
-- [ ] **T-604 Estrelas.** Configuração `wanted`, escalas por cidade (app de edição), Pool da polícia no rolador.
+- [x] **T-604 Estrelas.** Configuração `wanted`, escalas por cidade (app de edição), Pool da polícia no rolador.
   *Dep:* T-504.
 - [ ] **R-F6 Revisão de fase.**
 
 ## Fase 7 — HUD e ferramentas do mestre
 
-- [ ] **T-701 HUD.** Posição presa à barra lateral, estrelas (só mestre clica), Grana (clique esquerdo/direito),
+- [x] **T-701 HUD.** Posição presa à barra lateral, estrelas (só mestre clica), Grana (clique esquerdo/direito),
   Plot Points, minimizar, esconder partes, estado vazio. Prints comparados a `hud-*.png`. *Dep:* T-603, T-604.
 - [x] **T-702 Controles do mestre.** Grupo "Leverage" com todas as ferramentas de `docs/09`. *Dep:* T-106.
 - [x] **T-703 Rastreador do Job.** Job ativo, Complications, Traços de cena, visão da Equipe. *Dep:* T-702.

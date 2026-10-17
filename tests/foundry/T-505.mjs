@@ -146,7 +146,7 @@ try {
   await page.evaluate(prepare);
   await wait(500);
   const keys = await page.evaluate(() => Object.keys(game.leverage ?? {}).sort());
-  record("game.leverage exists with every group", keys.join() === "job,jobTracker,money,openOppositionRoller,opposition,plotPoints,pool,rollPool,stars,traits", keys);
+  record("game.leverage exists with every group", keys.join() === "combat,job,jobTracker,money,openOppositionRoller,opposition,plotPoints,pool,rollPool,stars,traits", keys);
 
   /* ---- GM ---- */
   const gm = async (id) => {
@@ -214,6 +214,35 @@ try {
     return { r, warns, level: game.leverage.stars.get() };
   });
   record("[gm] stars: out-of-range level and unknown city are refused with a warning", bad.r.every((v) => v === false) && bad.warns.length === 3 && bad.level === 0, bad);
+
+  // Stars actions and combat: the examples run without errors and leave their chat lines.
+  known = await messageIds();
+  out = await gm("stars-actions");
+  const starLines = (await newRolls(known)).length;
+  record("[gm] stars-actions: chat lines were posted (at least the first wait/disguise/giveIn that applies)", starLines >= 1, { out, starLines });
+  await reset(6, 1);
+  known = await messageIds();
+  await gm("combat");
+  const downCards = await page.evaluate((ids) => game.messages.contents.filter((m) => !ids.includes(m.id) && m.getFlag("leverage-gta", "down")).map((m) => m.getFlag("leverage-gta", "down")), known);
+  record("[gm] combat: damage line and a BUSTED card (flag down {kind,name})", downCards.length === 1 && downCards[0].kind === "busted" && downCards[0].name === "[TEST] Macro", downCards);
+
+  // Scene Traits of the active Job are valid refs, and the "too many" warning names the kind in the user's language.
+  const scene = await page.evaluate(async () => {
+    const warns = [];
+    const real = ui.notifications.warn;
+    ui.notifications.warn = (m) => warns.push(m);
+    const actor = game.actors.getName("[TEST] Macro");
+    const job = game.settings.get("leverage-gta", "activeJob");
+    await game.settings.set("leverage-gta", "activeJob", { ...job, sceneTraits: [{ id: "testscene", name: "[TEST] Fog", die: 10 }] });
+    const card = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "roles.thief", "scene:testscene"] });
+    const unknown = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "roles.thief", "scene:nope"] });
+    const twice = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "attributes.alertness", "roles.thief"] });
+    await game.settings.set("leverage-gta", "activeJob", job);
+    ui.notifications.warn = real;
+    return { faces: card?.getFlag("leverage-gta", "roll").entries.map((e) => e.faces), kinds: card?.getFlag("leverage-gta", "roll").entries.map((e) => e.kind), unknown, twice, warns };
+  });
+  record("[gm] rollPool accepts scene:<id> from the active Job", scene.faces?.join() === "8,8,10" && scene.kinds[2] === "scene" && scene.unknown === null, scene);
+  record("[gm] rollPool refuses two Attributes with a localized kind", scene.twice === null && scene.warns.length === 2 && !scene.warns.some((w) => w.includes("{kind}") || w.includes("attribute")), scene.warns);
 
   await reset(4, 1);
   out = await gm("plot-points");

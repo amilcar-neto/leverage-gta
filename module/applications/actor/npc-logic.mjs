@@ -9,7 +9,7 @@ import { npcSources } from "../../dice/opposition.mjs";
 export const LADDER_TIERS = Object.freeze(["foil", "agent"]);
 
 /** Largest gang the sheet writes (the opposition roller caps its gang row at the same number). */
-export const GANG_MAX = 12;
+export const GANG_MAX = LEVERAGE.gangMax;
 
 /** @param {string} tier @returns {boolean} whether the tier shows the Attributes / Roles panels. */
 export const showsLadders = (tier) => LADDER_TIERS.includes(tier);

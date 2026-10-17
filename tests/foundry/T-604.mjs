@@ -17,7 +17,6 @@ const S = "leverage-gta";
 const MODULE = "systems/leverage-gta/module/applications/gm/stars-actions.mjs";
 let ids = null;
 let playerBrowser = null;
-let saved = null;
 
 /** Runs a stars action on a page: `name` is an export of stars-actions.mjs. */
 const act = (p, name, ...args) => p.evaluate(async ([m, fn, a]) => {
@@ -30,6 +29,8 @@ const wanted = () => page.evaluate((s) => game.settings.get(s, "wanted"), S);
 const level = async () => (await wanted()).level;
 const steps = () => page.evaluate((id) => game.actors.get(id).system.money.steps, ids.a);
 const setWanted = (city, lvl) => page.evaluate(([s, c, l]) => game.settings.set(s, "wanted", { city: c, level: l }), [S, city, lvl]);
+/** Polls until the check passes (socket round trips), at most 10 s. */
+const until = async (check) => { for (let i = 0; i < 40; i++) { if (await check()) return true; await wait(250); } return false; };
 const lines = () => page.evaluate(() => game.messages.filter((m) => m.content.includes("lv-stars-line")).length);
 
 try {
@@ -44,16 +45,16 @@ try {
     await a.update({ ownership: { [user.id]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER } });
     return { a: a.id, user: user.id, created, saved };
   }, S);
-  saved = ids.saved;
   await wait(800);
   const A = { __actor: ids.a };
+  const base = await lines();
 
   // ---- GM: Carcer City ----
   await setWanted("carcer", 0);
   let r = await act(page, "raise", 2, "test crime");
   await wait(500);
   record("raise 0 -> 2", r.ok && (await level()) === 2, r);
-  record("raise posts the chat line", (await lines()) === 1, await lines());
+  record("raise posts the chat line", (await lines()) === base + 1, [base, await lines()]);
   r = await act(page, "raise", 9);
   record("raise caps at 5", r.to === 5 && (await level()) === 5, r);
   r = await act(page, "raise", 1);
@@ -141,7 +142,7 @@ try {
   await login(pp, { ...env, FOUNDRY_USER: "[TEST] Player", FOUNDRY_PASSWORD: "" });
   r = await act(pp, "buySilence", A);
   await wait(4000);
-  record("player: silence goes through the Fixer (3 -> 1, 8 -> 6)", r.pending && (await level()) === 1 && (await steps()) === 6, [r, await level(), await steps()]);
+  record("player: silence goes through the Fixer (3 -> 1, 8 -> 6)", r.pending && (await until(async () => (await level()) === 1 && (await steps()) === 6)), [r, await level(), await steps()]);
   const own = await pp.evaluate(() => game.messages.contents.at(-1).content.includes("lv-stars-line"));
   record("player: the line is posted", own);
   r = await act(pp, "raise", 1);

@@ -54,3 +54,14 @@ test("config is frozen, including nested defaults", () => {
   assert.throws(() => { LEVERAGE.lifeBase = 1; }, TypeError);
   assert.throws(() => { LEVERAGE.defaultCityScales[0].levels[0].push(4); }, TypeError);
 });
+
+test("shared constants: portrait test, default opposition, gang max, die sizes used outside the sheets", async () => {
+  const { LEVERAGE, hasRealPortrait } = await import("../../module/config.mjs");
+  assert.equal(hasRealPortrait(""), false);
+  assert.equal(hasRealPortrait(undefined), false);
+  assert.equal(hasRealPortrait("icons/svg/mystery-man.svg"), false);
+  assert.equal(hasRealPortrait("worlds/x/face.webp"), true);
+  assert.deepEqual([...LEVERAGE.defaultOppositionDice], [6, 6]);
+  assert.equal(LEVERAGE.gangMax, 12);
+  for (const size of Object.values(LEVERAGE.dieGeometry.uses)) assert.ok(LEVERAGE.dieGeometry.sizes.includes(size), `${size} is not a die size`);
+});

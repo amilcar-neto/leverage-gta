@@ -1,6 +1,6 @@
 /**
  * Opposition roller (docs/08 "Oposição", docs/09): the Fixer picks the opposition dice and rolls them. Sources: loose
- * dice (d4..d12 counters), "no opposition" (2d6), the police Pool for the current stars, a gang, the selected NPC,
+ * dice (d4..d12 counters), "no opposition" (the default pool), the police Pool for the current stars, a gang, the selected NPC,
  * the Traits of a location and the Complications of the active Job. The roll itself is `rollOpposition`
  * (dice/opposition.mjs), which posts the "FIXER" card. State lives here (client only) and is never saved.
  */
@@ -84,6 +84,8 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   #gang = { on: false, size: 3, die: 6 };
   #picked = new Set();
   #label = "";
+  /** A roll is in flight (a double click or Enter + click must not post two cards). */
+  #rolling = false;
   #hooks = [];
   #npcId = null;
   /** NPC sent by an NPC sheet; a selected NPC token takes over. */
@@ -154,7 +156,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
         html: renderDie({ die, value: die, size: COUNTER_DIE, muted: this.#counts[die] === 0 })
       })),
       police: { hidden: !this.#starsOn(), on: this.#police, disabled: !police.length, stars, dice: police.map((d) => `d${d.die}`).join(" + "), city },
-      gang: { ...this.#gang, options: dieOptions },
+      gang: { ...this.#gang, options: dieOptions, max: LEVERAGE.gangMax },
       npc: sources.npc && {
         name: sources.npc.name, sources: withState(sources.npcSources, this.#picked),
         gang: npcGang?.size > 0 && npcGang.die ? { size: npcGang.size, die: npcGang.die } : null
@@ -165,7 +167,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
       pool: {
         count: dice.length, empty: !dice.length,
         dice: dice.map((d) => renderDie({ die: d.die, value: d.die, size: PREVIEW_DIE, title: `${d.label} · d${d.die}` })),
-        text: t(dice.length ? "LEVERAGE.Opposition.poolCount" : "LEVERAGE.Opposition.poolEmpty", { count: dice.length })
+        text: t(dice.length ? "LEVERAGE.Opposition.poolCount" : "LEVERAGE.Opposition.poolEmpty", { count: dice.length, keep: LEVERAGE.keepDefault })
       },
       label: this.#label
     };
@@ -224,7 +226,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     if (all) {
       keys.forEach((key) => this.#picked.add(key));
       const { size, die } = npc.system.gang;
-      if (size > 0 && die) this.#gang = { on: true, size: Math.min(12, size), die };
+      if (size > 0 && die) this.#gang = { on: true, size: Math.min(LEVERAGE.gangMax, size), die };
     } else if (toggle && keys.includes(toggle) && !this.#picked.delete(toggle)) {
       this.#picked.add(toggle);
     }
@@ -232,7 +234,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
 
   /** Updates the gang inputs without losing the focus. */
   #setGang(patch) {
-    const size = Math.min(12, Math.max(0, Math.trunc(patch.size ?? this.#gang.size) || 0));
+    const size = Math.min(LEVERAGE.gangMax, Math.max(0, Math.trunc(patch.size ?? this.#gang.size) || 0));
     this.#gang = { ...this.#gang, ...patch, size };
     this.render();
   }
@@ -244,9 +246,9 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     this.render();
   }
 
-  /** "2d6 (no opposition)": the Pool is exactly 2d6. */
+  /** "No opposition": the Pool is exactly `LEVERAGE.defaultOppositionDice` (docs/02). */
   static #onNoOpposition() {
-    this.#counts = { ...emptyCounts(), 6: 2 };
+    this.#counts = LEVERAGE.defaultOppositionDice.reduce((counts, die) => stepCount(counts, die, 1), emptyCounts());
     this.#police = false;
     this.#gang = { ...this.#gang, on: false };
     this.#picked.clear();
@@ -266,7 +268,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   /** Copies the size and die of the selected NPC's gang into the gang row and switches it on. */
   static #onUseNpcGang() {
     const gang = this.#npcActor()?.system.gang;
-    if (gang?.size > 0 && gang.die) this.#gang = { on: true, size: Math.min(12, gang.size), die: gang.die };
+    if (gang?.size > 0 && gang.die) this.#gang = { on: true, size: Math.min(LEVERAGE.gangMax, gang.size), die: gang.die };
     this.render();
   }
 
@@ -285,7 +287,13 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   }
 
   static async #onRoll() {
-    const { dice, source } = this.#chosen(this.#sources());
-    await rollOpposition({ dice: dice.map(({ die, label, ref }) => ({ die, label, ref })), label: this.#label, source: source || "none" });
+    if (this.#rolling) return;
+    this.#rolling = true;
+    try {
+      const { dice, source } = this.#chosen(this.#sources());
+      await rollOpposition({ dice: dice.map(({ die, label, ref }) => ({ die, label, ref })), label: this.#label, source: source || "none" });
+    } finally {
+      this.#rolling = false;
+    }
   }
 }

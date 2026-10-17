@@ -2,14 +2,14 @@
   <div class="lv-item-row">
     <div class="lv-item-field">
       <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.die"}}</span>
-      <div class="lv-item-dice" role="group" aria-label="{{localize 'LEVERAGE.ItemSheet.dieHint'}}">
+      <fieldset class="lv-item-dice" aria-label="{{localize 'LEVERAGE.ItemSheet.dieHint'}}" {{#if readonly}}disabled{{else}}{{#unless canEditProtected}}disabled{{/unless}}{{/if}}>
         {{#each dieChoices}}<span class="lv-item-die" data-die="{{faces}}">{{lvDie faces die=faces size=32 action="setDie" pressed=selected muted=muted label=label title=label}}</span>{{/each}}
-      </div>
+      </fieldset>
     </div>
     <div class="lv-item-field">
       <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.duration"}}</span>
-      <div class="lv-item-seg" role="group" aria-label="{{localize 'LEVERAGE.ItemSheet.duration'}}">
-        {{#each durations}}<button type="button" class="lv-item-seg-btn" data-action="setDuration" data-value="{{value}}" aria-pressed="{{#if pressed}}true{{else}}false{{/if}}" {{disabled @root.readonly}}>{{label}}</button>{{/each}}
+      <div class="lv-item-seg" {{#unless canEditProtected}}title="{{localize 'LEVERAGE.ItemSheet.protectedHint'}}" {{/unless}}role="group" aria-label="{{localize 'LEVERAGE.ItemSheet.duration'}}">
+        {{#each durations}}<button type="button" class="lv-item-seg-btn" data-action="setDuration" data-value="{{value}}" aria-pressed="{{#if pressed}}true{{else}}false{{/if}}" {{#if @root.readonly}}disabled{{else}}{{#unless @root.canEditProtected}}disabled{{/unless}}{{/if}}>{{label}}</button>{{/each}}
       </div>
     </div>
   </div>

@@ -13,7 +13,7 @@ import { bailAllowed, clampStars } from "../../rules/stars.mjs";
 import { evaluateDice } from "../../dice/roll-core.mjs";
 import { escapeHtml } from "../components/die.mjs";
 import { requireGM } from "../gm/job-actions.mjs";
-import { damageLines, damageSummary, downCardContext, weaponOptions } from "./damage-lines.mjs";
+import { damageLines, damageSummary, isPoliceSource, downCardContext, weaponOptions } from "./damage-lines.mjs";
 
 /** Template of the WASTED / BUSTED card. */
 export const DOWN_CARD_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/down-card.hbs`;
@@ -46,15 +46,11 @@ function targetOf(target) {
 /* ------------------------------------------------------------ the card button */
 
 /**
- * The player roll that this opposition card belongs to: `versus` (a message id) if the roll data has one, else the
- * closest earlier Pool roll of a character.
+ * The player roll that this opposition card belongs to: the closest earlier Pool roll of a character.
  * @param {ChatMessage} message The opposition card.
  * @returns {{message: ChatMessage, data: object}|null}
  */
 export function linkedRoll(message) {
-  const versus = rollOf(message)?.versus;
-  const explicit = versus ? game.messages.get(versus) : null;
-  if (explicit && rollOf(explicit)) return { message: explicit, data: rollOf(explicit) };
   const all = game.messages.contents;
   const rolls = all.map(rollOf);
   const index = linkedRollIndex(rolls, all.indexOf(message));
@@ -148,7 +144,7 @@ export async function damageFromCard(message) {
     targets, attackers: game.actors.filter((a) => a.type === "npc"),
     selected: linked?.data.actorUuid ?? targets[0]?.uuid,
     margin: linked ? lostBy(linked.data.total, data.total) : 0,
-    police: data.source === "police",
+    police: isPoliceSource(data.source),
     hint: t(linked ? "LEVERAGE.Damage.Dialog.hintLinked" : "LEVERAGE.Damage.Dialog.hintFree")
   });
   if (!answer) return;

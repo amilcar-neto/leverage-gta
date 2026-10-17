@@ -2,11 +2,12 @@
  * Chat lines for Money (docs/02): "X paid Y" and "X lent Z to W". Small styled messages, not roll cards.
  * The HTML builders are pure (unit tested); posting needs the Foundry globals.
  */
+import { LEVERAGE } from "../../config.mjs";
 import { escapeHtml, renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
 import { stepsToDice } from "../../rules/money.mjs";
 
-const DIE_SIZE = 24;
+const DIE_SIZE = LEVERAGE.dieGeometry.uses.moneyLine;
 
 /** A row of Money dice (green), or a dash when there are none. */
 function diceHtml(dice) {

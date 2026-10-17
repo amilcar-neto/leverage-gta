@@ -1,8 +1,9 @@
 /**
- * "Complication" mini dialog of the roll card: name a new Complication (d6) or raise one that the active Job already
+ * "Complication" mini dialog of the roll card: name a new Complication or raise one that the active Job already
  * has. Only collects the choice; the caller writes it (card-handlers.mjs).
  */
 import { escapeHtml } from "../components/die.mjs";
+import { LEVERAGE } from "../../config.mjs";
 import { stepUp } from "../../dice/die.mjs";
 
 /** @param {string} key @param {object} [data] */
@@ -10,11 +11,12 @@ const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localiz
 
 /** `<option>` list: a new Complication first, then each existing one with the die it would become. */
 function targetOptions(complications) {
-  const existing = complications.map((c) => {
+  // A Complication already at the top die cannot go higher: it is not offered.
+  const existing = complications.filter((c) => stepUp(c.die) !== c.die).map((c) => {
     const label = t("LEVERAGE.Dialog.Complication.raise", { name: c.name, from: c.die, to: stepUp(c.die) });
     return `<option value="${escapeHtml(c.id)}">${escapeHtml(label)}</option>`;
   });
-  return [`<option value="">${escapeHtml(t("LEVERAGE.Dialog.Complication.createNew"))}</option>`, ...existing].join("");
+  return [`<option value="">${escapeHtml(t("LEVERAGE.Dialog.Complication.createNew", { die: LEVERAGE.complicationDie }))}</option>`, ...existing].join("");
 }
 
 /** Dialog body. */

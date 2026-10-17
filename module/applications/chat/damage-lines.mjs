@@ -24,6 +24,13 @@
  */
 
 /**
+ * Whether the opposition card was built with the police shortcut (`source` joins the shortcuts with "+").
+ * @param {string|undefined} source e.g. `"manual+police+gang"`
+ * @returns {boolean}
+ */
+export const isPoliceSource = (source) => String(source ?? "").split("+").includes("police");
+
+/**
  * Lines that describe one damage round.
  * @param {DamageRecord} r
  * @param {(key: string, data?: object) => string} t

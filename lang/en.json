@@ -409,7 +409,7 @@
       "Complication": {
         "title": "Complication",
         "target": "Complication",
-        "createNew": "New Complication (d6)",
+        "createNew": "New Complication (d{die})",
         "raise": "Raise {name}: d{from} to d{to}",
         "name": "Name",
         "namePlaceholder": "What goes wrong?",
@@ -615,7 +615,11 @@
       "delete": "Delete {type}",
       "namePlaceholder": "Name",
       "nameLabel": "Name",
-      "windowTitle": "{type} · {owner}"
+      "windowTitle": "{type} · {owner}",
+      "descriptionPlaceholder": "Nothing written yet.",
+      "effectPlaceholder": "Nothing written yet.",
+      "notesPlaceholder": "No notes yet.",
+      "protectedHint": "Only the Fixer changes this."
     },
     "Roll": {
       "defaultFlavor": "rolls the Pool",
@@ -628,11 +632,20 @@
       "onesWarningMany": "{count} dice came up 1. The Fixer may add a Complication and hand you a Plot Point.",
       "distinctionPP": "Distinction d4: +{count} Plot Point",
       "moneyDrop": "Money die used: Money drops one step",
-      "keepButton": "+1 PP · Keep 3rd die",
+      "keepButton": "+1 PP · Keep {n} die",
       "keepTip": "Spend a Plot Point to add the next highest die to the total",
       "complicationButton": "GM · Complication",
       "complicationTip": "GM: create or step up a Complication and give 1 Plot Point",
-      "ppSpent": "+{count} PP spent: extra die kept"
+      "ppSpentOne": "+1 PP spent: extra die kept",
+      "ppSpentMany": "+{count} PP spent: extra dice kept",
+      "noPlotPoints": "No Plot Points left to keep another die.",
+      "keepTipNoPlotPoints": "No Plot Points to spend",
+      "Ordinal": {
+        "one": "{n}st",
+        "two": "{n}nd",
+        "few": "{n}rd",
+        "other": "{n}th"
+      }
     },
     "Socket": {
       "noGM": "No Fixer is connected to process this action."
@@ -710,7 +723,7 @@
       "more": "More",
       "fewer": "Fewer",
       "shortcuts": "Shortcuts",
-      "none": "2d6 (no opposition)",
+      "none": "No opposition",
       "police": "Police",
       "policeStars": "Police ({stars} ★)",
       "policeNone": "No stars: the police are not after you",
@@ -723,9 +736,9 @@
       "location": "Location",
       "complications": "Complications",
       "traitFallback": "Trait",
-      "poolCount": "{count} dice · keep 2",
+      "poolCount": "{count} dice · keep {keep}",
       "poolEmpty": "No dice",
-      "poolDefault": "Nothing chosen: rolls 2d6",
+      "poolDefault": "Nothing chosen: rolls the default no-opposition dice",
       "clear": "Clear",
       "label": "Description",
       "labelPlaceholder": "What is the opposition doing?",
@@ -762,6 +775,11 @@
         "empty": "Give at least one Pool reference.",
         "unknownRef": "Unknown or unavailable Pool reference: {ref}.",
         "tooMany": "A Pool has only one {kind}.",
+        "kind": {
+          "attribute": "Attribute",
+          "role": "Role",
+          "distinction": "Distinction"
+        },
         "noAttribute": "The Pool needs one Attribute.",
         "noRole": "The Pool needs one Role.",
         "blankAttribute": "The chosen Attribute has no die.",

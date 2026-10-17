@@ -37,7 +37,7 @@ export { buildRollData, poolFormula, rollValues };
 
 /* ------------------------------------------------------------ Foundry half */
 
-/** Actors with a roll in flight (a double click must not roll twice). */
+/** UUIDs of actors with a roll in flight (a double click must not roll twice). */
 const rolling = new Set();
 
 /** Display name of a Pool entry. */
@@ -71,22 +71,23 @@ async function clearPoolAfterRoll(sheet) {
  */
 export async function rollPoolFor({ actor, sheet, entries, flavor }) {
   const rollable = rollableEntries(entries).map((e) => ({ ...e, label: labelOf(e) }));
-  if (!rollable.length || rolling.has(actor.id)) return null;
-  rolling.add(actor.id);
+  if (!rollable.length || rolling.has(actor.uuid)) return null;
+  rolling.add(actor.uuid);
   try {
     const { roll, values } = await evaluateDice(rollable.map((e) => e.die));
     const data = buildRollData({
       entries: rollable, values, actorUuid: actor.uuid, actorName: actor.name, actorImg: actor.img,
       flavor: flavor ?? game.i18n.localize("LEVERAGE.Roll.defaultFlavor")
     });
-    await applyEffects(actor, data);
+    // The card first: if posting fails nothing was spent or earned. The effects follow once the card exists.
     const message = await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor }), flavor: data.flavor, flags: { [SYSTEM_ID]: { roll: data } }
     });
+    await applyEffects(actor, data);
     await clearPoolAfterRoll(sheet);
     return message;
   } finally {
-    rolling.delete(actor.id);
+    rolling.delete(actor.uuid);
   }
 }
 

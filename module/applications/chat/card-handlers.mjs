@@ -13,8 +13,12 @@ import { damageFromCard } from "./damage.mjs";
 /** Messages with an action in flight (a double click must not spend two Plot Points). */
 const busy = new Set();
 
+/** How long a player's "+1 PP" button stays disabled while it waits for the Fixer to update the card (ms). */
+const WAIT_FOR_FIXER = 4000;
+
 const rollOf = (message) => message?.getFlag(SYSTEM_ID, "roll") ?? null;
 const actorOf = (data) => (data?.actorUuid ? fromUuidSync(data.actorUuid) : null);
+const plotPointsOf = (actor) => actor?.system?.plotPoints?.value ?? 0;
 
 /** Runs `task` unless an action on this message is already running. */
 async function exclusive(message, task) {
@@ -24,38 +28,97 @@ async function exclusive(message, task) {
 }
 
 /**
- * Spends 1 Plot Point of the actor and keeps the next die. Validates against fresh data, so a stale card does nothing.
+ * Whether a user is the player of the character: an explicit Owner. The Fixer owns every document, so he does not
+ * count as the character's owner here (docs/08: "+1 PP" is for the owner; the Fixer uses `plotPoints.add`).
+ * @param {Actor|null} actor
+ * @param {User} user
+ * @returns {boolean}
+ */
+export function isCharacterOwner(actor, user) {
+  return Boolean(actor && user && !user.isGM && actor.testUserPermission(user, "OWNER"));
+}
+
+/**
+ * The newest Pool roll card of an actor in the chat log (opposition cards do not count). Only that card may keep dice.
+ * @param {string} actorUuid
+ * @returns {ChatMessage|null}
+ */
+export function latestRollOf(actorUuid) {
+  const list = game.messages.contents;
+  for (let i = list.length - 1; i >= 0; i -= 1) {
+    const data = rollOf(list[i]);
+    if (data && !data.opposition && data.actorUuid === actorUuid) return list[i];
+  }
+  return null;
+}
+
+/**
+ * Spends 1 Plot Point of the actor and keeps the next die. Validates against fresh data after every await, so a stale
+ * card, a card that is no longer the actor's latest roll, or a user that does not own the character does nothing.
+ * Warns the user (when it is this client) if the actor has no Plot Point.
  * @param {ChatMessage} message
- * @param {User} user Who asked (must own the actor).
+ * @param {User} user Who asked (must own the actor; the Fixer is not an owner here).
  * @returns {Promise<boolean>} whether a die was kept
  */
 export async function keepDieNow(message, user) {
-  const data = rollOf(message);
-  const actor = actorOf(data);
-  const next = data && keepNextDie(data);
-  if (!actor || !next || !actor.testUserPermission(user, "OWNER") || (actor.system.plotPoints?.value ?? 0) < 1) return false;
-  await actor.addPlotPoints(-1);
+  const ready = () => {
+    const data = rollOf(message);
+    const actor = actorOf(data);
+    const next = data && !data.opposition && keepNextDie(data);
+    const allowed = next && isCharacterOwner(actor, user) && latestRollOf(data.actorUuid)?.id === message.id;
+    return allowed ? { actor, next } : null;
+  };
+  const first = ready();
+  if (!first) return false;
+  if (plotPointsOf(first.actor) < 1) {
+    if (user.id === game.user.id) ui.notifications.warn(game.i18n.localize("LEVERAGE.Roll.noPlotPoints"));
+    return false;
+  }
+  await first.actor.addPlotPoints(-1);
+  // Everything may have changed while the Plot Point was written: check again before touching the card.
+  const again = ready();
+  if (!again) {
+    await first.actor.addPlotPoints(1);
+    return false;
+  }
   try {
-    await message.setFlag(SYSTEM_ID, "roll", next);
+    await message.setFlag(SYSTEM_ID, "roll", again.next);
   } catch (err) {
-    await actor.addPlotPoints(1);
+    await first.actor.addPlotPoints(1);
     throw err;
   }
   return true;
 }
 
-/** Socket handler (Fixer side). */
+/** Socket handler (Fixer side). `userId` comes from the server (docs/04), the busy lock is per message. */
 async function onKeepDieRequest({ messageId }, userId) {
   const message = game.messages.get(messageId);
   const user = game.users.get(userId);
-  if (message && user) await keepDieNow(message, user);
+  if (message && user) await exclusive(message, () => keepDieNow(message, user));
+}
+
+/** Disables a button; it comes back after `ms` unless the card was redrawn (then the button is a new element). */
+function lockButton(button, ms) {
+  if (!button) return;
+  button.disabled = true;
+  setTimeout(() => { button.disabled = false; }, ms);
 }
 
 /** Button "+1 PP · KEEP 3RD DIE". */
-function keepDie(message) {
+function keepDie(message, event) {
+  const button = event?.currentTarget ?? null;
+  if (busy.has(message.id) || button?.disabled) return undefined;
+  if (button) button.disabled = true;
   return exclusive(message, async () => {
-    if (message.canUserModify(game.user, "update")) await keepDieNow(message, game.user);
-    else await executeAsGM("keepDie", { messageId: message.id });
+    if (message.canUserModify(game.user, "update")) {
+      await keepDieNow(message, game.user);
+      if (button) button.disabled = false;
+    } else {
+      // The Fixer applies it; keep the button off until the card is redrawn with the new flags.
+      const sent = await executeAsGM("keepDie", { messageId: message.id });
+      if (!sent && button) button.disabled = false;
+      else lockButton(button, WAIT_FOR_FIXER);
+    }
   });
 }
 

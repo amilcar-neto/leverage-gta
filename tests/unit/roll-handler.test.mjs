@@ -68,7 +68,9 @@ test("card context: dice states, captions, explanation and 1s warning", () => {
 
 test("card buttons follow permission and state", () => {
   const data = buildRollData({ entries: pool, values: [9, 6, 1, 5] });
-  assert.equal(rollCardContext(data, { t, isOwner: true, plotPoints: 0 }).showKeep, false);
+  const broke = rollCardContext(data, { t, isOwner: true, plotPoints: 0 });
+  assert.equal(broke.showKeep, true, "the button stays, so the player sees why it does nothing");
+  assert.equal(broke.keepDisabled, true);
   assert.equal(rollCardContext(data, { t, isOwner: false, plotPoints: 3 }).showKeep, false);
   assert.equal(rollCardContext(data, { t, isGM: true }).showComplication, true);
   const resolved = { ...data, complicationsResolved: [2] };

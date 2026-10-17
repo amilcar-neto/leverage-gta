@@ -5,7 +5,7 @@
   </label>
   <div class="lv-item-field lv-item-grow">
     <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.description"}}</span>
-    {{#if canEdit}}<prose-mirror class="lv-item-rich" name="system.description" value="{{source.description}}" document-uuid="{{item.uuid}}" toggled="true">{{{enriched.description}}}</prose-mirror>
-    {{else}}<div class="lv-item-rich lv-item-prose lv-scroll">{{{enriched.description}}}</div>{{/if}}
+    {{#if canEdit}}<prose-mirror class="lv-item-rich" name="system.description" value="{{source.description}}" document-uuid="{{item.uuid}}" toggled="true">{{#if enriched.description}}{{{enriched.description}}}{{else}}<p class="lv-item-empty">{{localize "LEVERAGE.ItemSheet.descriptionPlaceholder"}}</p>{{/if}}</prose-mirror>
+    {{else}}<div class="lv-item-rich lv-item-prose lv-scroll">{{#if enriched.description}}{{{enriched.description}}}{{else}}<p class="lv-item-empty">{{localize "LEVERAGE.ItemSheet.descriptionPlaceholder"}}</p>{{/if}}</div>{{/if}}
   </div>
 </div>

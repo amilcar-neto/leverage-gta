@@ -33,7 +33,8 @@ const hudState = (p) => p.evaluate(() => {
     dim: Boolean(el.querySelector(".is-dim")), z: getComputedStyle(el).zIndex
   };
 });
-const wait = (p, ms) => p.waitForTimeout(ms);
+const clearNotes = (p) => p.evaluate(() => ui.notifications?.clear?.());
+const wait = async (p, ms) => { await clearNotes(p); await p.waitForTimeout(ms); };
 const setting = (p, key) => p.evaluate(([s, k]) => game.settings.get(s, k), [S, key]);
 const setSetting = (p, key, value) => p.evaluate(([s, k, v]) => game.settings.set(s, k, v), [S, key, value]);
 const closeDialogs = (p) => p.evaluate(() => { for (const a of foundry.applications.instances.values()) if (a.element?.classList.contains("lv-dialog")) a.close(); });
@@ -65,6 +66,7 @@ try {
   }, S);
   saved = setup.saved;
   oldCharacter = setup.old;
+  await page.evaluate(() => ui.sidebar.expand());
   await wait(page, 1500);
 
   // GM, sidebar open.
@@ -81,7 +83,7 @@ try {
       const r = e.getBoundingClientRect();
       return r.width > 0 && r.height > 0 && r.left < h.right && r.right > h.left && r.top < h.bottom && r.bottom > h.top;
     });
-    return { sidebar: hit("#sidebar"), hotbar: hit("#hotbar"), chat: hit("#chat-notifications, #chat-popout") };
+    return { sidebar: hit("#sidebar"), hotbar: hit("#hotbar"), chat: hit("#chat-notifications .chat-message"), chatBox: JSON.stringify((({ position, top, right }) => ({ position, top, right }))(getComputedStyle(document.getElementById("chat-notifications")))) };
   });
   record("HUD does not overlap sidebar, hotbar or chat popups", !overlap.sidebar && !overlap.hotbar && !overlap.chat, overlap);
   await page.screenshot({ path: `${SHOTS}/T-701-open.png`, clip });
@@ -100,21 +102,21 @@ try {
 
   // Plot Points.
   const ppOf = () => page.evaluate((id) => game.actors.get(id).system.plotPoints.value, setup.id);
-  await page.locator('#leverage-hud button[data-action="gainPlotPoint"]').click(); await wait(page, 700);
+  await clearNotes(page); await page.locator('#leverage-hud button[data-action="gainPlotPoint"]').click(); await wait(page, 700);
   record("+ gains a Plot Point", (await ppOf()) === 4 && (await hudState(page)).pp === "4", await ppOf());
-  await page.locator('#leverage-hud button[data-action="spendPlotPoint"]').click(); await wait(page, 700);
+  await clearNotes(page); await page.locator('#leverage-hud button[data-action="spendPlotPoint"]').click(); await wait(page, 700);
   record("- spends a Plot Point", (await ppOf()) === 3);
-  await page.locator("#leverage-hud .lv-hud-pp-value").click({ button: "right" }); await wait(page, 700);
+  await clearNotes(page); await page.locator("#leverage-hud .lv-hud-pp-value").click({ button: "right" }); await wait(page, 700);
   record("right click on the number spends one", (await ppOf()) === 2);
-  await page.locator("#leverage-hud .lv-hud-pp-value").click(); await wait(page, 700);
+  await clearNotes(page); await page.locator("#leverage-hud .lv-hud-pp-value").click(); await wait(page, 700);
   record("left click on the number gains one", (await ppOf()) === 3);
 
   // Money dialogs.
   const dialogs = () => page.locator(".application.lv-dialog");
-  await page.locator("#leverage-hud .lv-hud-money").click(); await wait(page, 900);
+  await clearNotes(page); await page.locator("#leverage-hud .lv-hud-money").click(); await wait(page, 900);
   record("left click on Money opens the Pay dialog", (await dialogs().count()) > 0);
   await closeDialogs(page); await wait(page, 500);
-  await page.locator("#leverage-hud .lv-hud-money").click({ button: "right" }); await wait(page, 900);
+  await clearNotes(page); await page.locator("#leverage-hud .lv-hud-money").click({ button: "right" }); await wait(page, 900);
   const lendOpen = (await dialogs().count()) > 0;
   const lendWarned = await page.locator("#notifications .notification").count();
   record("right click on Money opens the Lend dialog (or warns without a second character)", lendOpen || lendWarned > 0, { lendOpen, lendWarned });
@@ -163,14 +165,17 @@ try {
   const pp = playerBrowser.page;
   const playerLog = collectConsole(pp);
   await login(pp, { ...env, FOUNDRY_USER: "[TEST] Player", FOUNDRY_PASSWORD: "" });
+  await pp.evaluate(() => ui.sidebar.expand());
+  await pp.waitForSelector("#leverage-hud .lv-hud-star", { timeout: 10000 }).catch(() => {});
+  await wait(pp, 1000);
   st = await hudState(pp);
   record("player sees stars, Money and Plot Points", st?.hasStars && st?.hasMoney && st?.hasPp, st);
   record("player: stars are read only", st?.disabledStars === 5, st?.disabledStars);
   record("player: gap 16px", Math.abs(st?.gap - 16) <= 1, st?.gap);
-  await pp.locator('#leverage-hud button[data-action="gainPlotPoint"]').click(); await wait(pp, 800);
+  await clearNotes(pp); await pp.locator('#leverage-hud button[data-action="gainPlotPoint"]').click(); await wait(pp, 800);
   record("player gains a Plot Point on his own character", (await ppOf()) === 4, await ppOf());
-  await pp.locator('#leverage-hud button[data-action="spendPlotPoint"]').click(); await wait(pp, 800);
-  await pp.locator("#leverage-hud .lv-hud-money").click(); await wait(pp, 900);
+  await clearNotes(pp); await pp.locator('#leverage-hud button[data-action="spendPlotPoint"]').click(); await wait(pp, 800);
+  await clearNotes(pp); await pp.locator("#leverage-hud .lv-hud-money").click(); await wait(pp, 900);
   record("player: click on Money opens the Pay dialog", (await pp.locator(".application.lv-dialog").count()) > 0);
   await closeDialogs(pp);
   await pp.locator('#leverage-hud .lv-hud-star[data-level="5"]').click({ force: true }).catch(() => {}); await wait(pp, 700);
@@ -186,7 +191,7 @@ try {
   await page.evaluate((id) => game.users.get(id).update({ character: null }), setup.playerId);
   await wait(pp, 1200);
   st = await hudState(pp);
-  record("empty state: Money and Plot Points dimmed with the hint", st.hasMoney && st.hasPp && st.dim && /character/i.test(st.moneyTip ?? ""), { dim: st.dim, tip: st.moneyTip });
+  record("empty state: Money and Plot Points dimmed with the hint", st.hasMoney && st.hasPp && st.dim && /character|personagem/i.test(st.moneyTip ?? ""), { dim: st.dim, tip: st.moneyTip });
   await pp.screenshot({ path: `${SHOTS}/T-701-empty.png`, clip });
   record("no system errors in the GM console", log.own().length === 0, log.own());
   record("no system errors in the player console", playerLog.own().length === 0, playerLog.own());

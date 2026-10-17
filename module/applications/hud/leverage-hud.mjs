@@ -51,6 +51,9 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
 
   #settleTimer = null;
 
+  /** Sidebar element the observer watches. */
+  #observed = null;
+
   /** Re-render with a short debounce (many hooks fire together). */
   refresh = foundry.utils.debounce(() => this.render({ force: true }), RENDER_DEBOUNCE_MS);
 
@@ -137,25 +140,38 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** Writes the space the sidebar takes (its left edge to the window's right edge) to `--lv-sidebar-w`. */
   updatePosition() {
-    const sidebar = ui.sidebar?.element ?? document.getElementById("sidebar");
-    const left = sidebar?.getBoundingClientRect().left;
+    const left = this.#sidebarElement()?.getBoundingClientRect().left;
     const width = Number.isFinite(left) ? Math.max(0, window.innerWidth - left) : 0;
     document.documentElement.style.setProperty("--lv-sidebar-w", `${Math.round(width)}px`);
   }
 
-  /** Follows the sidebar: size changes, the collapse hook (after the slide ends) and window resizes. */
+  /** The current sidebar element (Foundry replaces it when it re-renders). */
+  #sidebarElement() {
+    return ui.sidebar?.element ?? document.getElementById("sidebar");
+  }
+
+  /** Observes the sidebar element that exists now (again after every render of the sidebar). */
+  #bindSidebar() {
+    const sidebar = this.#sidebarElement();
+    if (!sidebar || sidebar === this.#observed) return;
+    this.#observer?.disconnect();
+    this.#observed = sidebar;
+    this.#observer = new ResizeObserver(() => this.updatePosition());
+    this.#observer.observe(sidebar);
+  }
+
+  /** Follows the sidebar: size changes, the collapse/render hooks (after the slide ends) and window resizes. */
   #watchSidebar() {
-    const sidebar = ui.sidebar?.element ?? document.getElementById("sidebar");
-    if (sidebar) {
-      this.#observer = new ResizeObserver(() => this.updatePosition());
-      this.#observer.observe(sidebar);
-      sidebar.addEventListener("transitionend", () => this.updatePosition());
-    }
-    window.addEventListener("resize", () => this.updatePosition());
-    Hooks.on("collapseSidebar", () => {
+    const settle = () => {
+      this.#bindSidebar();
+      this.updatePosition();
       clearTimeout(this.#settleTimer);
       this.#settleTimer = setTimeout(() => this.updatePosition(), SIDEBAR_SETTLE_MS);
-    });
+    };
+    this.#bindSidebar();
+    window.addEventListener("resize", () => this.updatePosition());
+    Hooks.on("collapseSidebar", settle);
+    Hooks.on("renderSidebar", settle);
   }
 
   /* ---------------------------------------------------------------- actions */

@@ -4,8 +4,9 @@ Tudo que a ficha e as ferramentas do Mestre fazem também pode ser feito por mac
 (criada no hook `setup`, antes de qualquer macro rodar). O código está em `module/api.mjs`, com JSDoc.
 
 Todos os exemplos abaixo são do tipo **Script** (macro de script do Foundry). Eles são executados de verdade por
-`tests/foundry/T-505.mjs` num Foundry local, como Mestre e como jogador, e os efeitos são conferidos. Se você mudar um
-exemplo, rode `npm run deploy` e `node tests/foundry/T-505.mjs`.
+`tests/foundry/T-505.mjs` num Foundry real, como Mestre e como jogador, e os efeitos são conferidos. Esse Foundry fica
+no servidor de testes (o VPS, veja `docs/13-ambiente-de-teste.md`): se você mudar um exemplo, rode `npm run deploy` e
+`node tests/foundry/T-505.mjs`.
 
 > Convenção: `"Nome da Personagem"` é o nome de uma personagem da Equipe do seu mundo. Troque pelo nome real.
 > Também dá usar `game.user.character` ou `canvas.tokens.controlled[0]?.actor`.
@@ -18,17 +19,20 @@ exemplo, rode `npm run deploy` e `node tests/foundry/T-505.mjs`.
   possui**. Estrelas, trava de Traços, Jobs, oposição e personagens de outros jogadores são só do Mestre (aviso e
   `false`). `money.transfer` entre personagens de donos diferentes passa pelo Mestre via socket.
 - Onde a função pede uma personagem (`actor`) vale o documento, o UUID ou o id.
+- `plotPoints.add` e `money.set` são livres para o dono da personagem: o dono já pode editar os próprios valores na
+  ficha, então a API não cria uma barreira que a ficha não tem (decisão registrada em `docs/log/DECISIONS.md`).
 - O hook `leverage.ready` dispara quando a API está pronta, recebendo o próprio objeto.
 
 | Grupo | Funções |
 | --- | --- |
 | Rolagem | `rollPool({ actor, refs, flavor })`, `pool.add(actor, ref)` |
 | Oposição (Mestre) | `opposition({ dice, label })`, `openOppositionRoller()` |
-| Grana | `money.get/add/pay/set/transfer` |
-| Estrelas | `stars.get/city/cities/state/set/raise/lower/clear` (alterar é só do Mestre) |
+| Grana | `money.get/add/pay/set/transfer`, `money.payDialog(actor)`, `money.lendDialog(actor)` |
+| Estrelas | leitura: `stars.get/city/cities/state`. Alterar é só do Mestre: `stars.set/raise/lower/clear`, `stars.wait/disguise`. Dono ou Mestre: `stars.buySilence(actor)`, `stars.giveIn(actor)` |
 | Plot Points | `plotPoints.get/add/spend/give` |
 | Trava de Traços (Mestre) | `traits.lock/unlock/isLocked` |
 | Job (Mestre) | `job.get/new/end/newSession/endScene`, `jobTracker.open()` |
+| Combate (Mestre) | `combat.applyDamage({ target, margin, weaponDie, cover, byPolice })`, `combat.down(actor, { byPolice })` |
 
 ## Rolagem
 
@@ -45,6 +49,7 @@ Referências aceitas:
 | `item:<id>` | Specialty, Asset ou Talent com dado |
 | `item:<id>:d8` / `item:<id>:d4` | Distinction usada a favor (d8) ou contra (d4) |
 | `money` | o maior dado da Grana (regra da casa) |
+| `scene:<id>` | Traço de cena do Job ativo (`game.leverage.job.get().sceneTraits`) |
 | `d6` ou `6` | dado avulso (pode repetir) |
 
 <!-- teste: ambos id=roll -->
@@ -95,7 +100,7 @@ await game.leverage.rollPool({ actor, refs: ["attributes.alertness", "roles.grif
 
 ## Oposição (Mestre)
 
-`opposition` rola a Pool do Mestre e cria o card "FIXER". Sem dados (`dice` vazio), rola 2d6 ("sem oposição").
+`opposition` rola a Pool do Mestre e cria o card "FIXER". Sem dados (`dice` vazio), rola os dados de "sem oposição" (2d6, `LEVERAGE.defaultOppositionDice`).
 `openOppositionRoller()` abre o montador visual.
 
 <!-- teste: gm id=opposition -->
@@ -156,6 +161,40 @@ const ok = await game.leverage.stars.set(3);   // false
 console.log(ok, game.leverage.stars.get());
 ```
 
+Os atalhos de ação das estrelas (todos postam uma linha no chat "ESTRELAS: de N para M, motivo"):
+
+<!-- teste: gm id=stars-actions -->
+```js
+const { stars } = game.leverage;
+const actor = game.actors.getName("Nome da Personagem");
+await stars.set(3, "liberty");
+await stars.wait(1);                   // esperar fora de vista (grátis)
+await stars.disguise("simple");        // disfarce que deu certo; "both" = carro e roupa
+await stars.buySilence(actor);         // paga dados de Grana da personagem (dono ou Mestre)
+await stars.giveIn(actor);             // última saída: estrelas vão a 0 (dono ou Mestre)
+```
+
+Um jogador que chama `buySilence` ou `giveIn` para a própria personagem passa pelo Mestre via socket; o Mestre
+confere, pelo id do usuário que o servidor garante, que ele é dono da personagem.
+
+## Combate (Mestre)
+
+`combat.applyDamage` aplica uma rodada de dano (margem + dado da arma, cobertura divide, depois colete, depois Vida) e
+posta a linha no chat. Se a Vida chega a 0, segue para `combat.down`, que cobra hospital ou fiança e posta o card
+WASTED ou BUSTED. Ambos são só do Mestre e param quando a regra da casa de Vida está desligada.
+
+<!-- teste: gm id=combat -->
+```js
+const actor = game.actors.getName("Nome da Personagem");
+await game.leverage.combat.applyDamage({ target: actor, margin: 2, weaponDie: 8, cover: false, confirm: false });
+await game.leverage.combat.down(actor, { byPolice: true, confirm: false });
+```
+
+## Diálogos de Grana
+
+`money.payDialog(actor)` abre o diálogo de pagamento (tabela de preços ou preço livre em dados) e `money.lendDialog(actor)`
+o de empréstimo. Servem para botões de macro; quem decide a quantia é a pessoa na janela.
+
 ## Plot Points
 
 `add` e `spend` valem para o Mestre (qualquer personagem) e para o jogador (as suas). `give` é a ferramenta do Mestre
@@ -193,7 +232,7 @@ console.log(traits.isLocked());   // false
 `job.new(nome)` abre o Job (cada personagem recebe os Plot Points iniciais). `job.end({ name, total, shares })` paga a
 Equipe: `shares` é um objeto id da personagem para degraus, e sem ele o total é dividido por igual. `job.endScene()`
 remove os Assets de cena (passe `{ confirm: true }` para perguntar antes). `job.newSession()` devolve o Callback dos
-Jobs. `jobTracker.open()` abre o Rastreador, quando existir.
+Jobs. `jobTracker.open()` abre o Rastreador.
 
 <!-- teste: gm id=job-new -->
 ```js
