@@ -51,3 +51,10 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - **Destaque do drop:** `dragover` nao le o conteudo do arraste, entao o tipo do item vai num tipo MIME proprio (`application/x-leverage-item-<tipo>`). Arraste interno destaca a linha; arraste de fora destaca a ficha toda (moldura tracejada).
 - **Macro de Traco:** `game.leverage?.rollPool ? game.leverage.rollPool({ actor: fromUuidSync(uuid), refs: [ref] }) : ui.notifications.warn(...)`. Distinction arrasta como d8 (ajuda); se o arraste comecou no botao d4, vira d4 (nome da macro ganha " d4"). Itens sem dado (Talent sem dado, Job) nao viram macro. Macro igual (mesmo comando, mesmo autor) e reaproveitada.
 - **Titulo da janela:** so o nome em maiusculas, icone `fa-hexagon`.
+
+## 2026-10-17 — Ações do card (T-503)
+- Complication nova nasce d6 (`LEVERAGE.complicationDie`); subir segue d6→d8→d10→d12 e d12 fica d12.
+- `complicationsResolved` guarda os índices (entry) dos 1s resolvidos, como em docs/05.
+- Caminho "+1 PP · KEEP 3RD DIE": quem pode editar a mensagem aplica local; os demais pedem ao mestre pelo socket, que confere se o solicitante é dono do ator. PP é devolvido se a escrita falhar.
+- Complication roda só no cliente do mestre: grava `activeJob`, dá 1 PP ao ator, marca o 1 como resolvido.
+- Risco aceito: o id do solicitante vai dentro do pacote do socket; o mestre revalida a posse do ator.

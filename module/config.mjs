@@ -8,6 +8,9 @@
 
 export const SYSTEM_ID = "leverage-gta";
 
+/** Hook fired (by the `traitsLocked` world setting, see module/settings.mjs) whenever the Trait lock changes. */
+export const LOCK_HOOK = "leverage.traitsLockedChanged";
+
 /** Allowed die sizes, smallest first. There is no d20. */
 const DICE = Object.freeze([4, 6, 8, 10, 12]);
 

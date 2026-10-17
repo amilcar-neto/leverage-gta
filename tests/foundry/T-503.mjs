@@ -51,7 +51,7 @@ try {
     const viaGM = await make(game.user.id);
     const saved = game.settings.get("leverage-gta", "activeJob");
     await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", complications: [] });
-    ui.sidebar.changeTab?.("chat", "primary");
+    ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary");
     return { actorId: actor.id, own: own.id, viaGM: viaGM.id, saved };
   }, ROLL);
   savedJob = ids.saved;
@@ -64,7 +64,7 @@ try {
   const pp = await playerBrowser.newPage({ viewport: { width: 1920, height: 1080 }, httpCredentials });
   const playerLog = collectConsole(pp);
   await login(pp, { ...env, FOUNDRY_USER: "[TEST] Player", FOUNDRY_PASSWORD: "" });
-  await pp.evaluate(() => ui.sidebar.changeTab?.("chat", "primary"));
+  await pp.evaluate(() => { ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary"); });
   await pp.waitForTimeout(1000);
   const cardOf = (p, id) => p.locator(`.chat-message[data-message-id="${id}"]`);
   const playerButtons = (id) => pp.evaluate((i) => [...document.querySelectorAll(`.chat-message[data-message-id="${i}"] .lv-roll-btn`)].map((b) => b.dataset.action), id);
@@ -91,7 +91,7 @@ try {
 
   // GM-authored message: the player cannot update it, so the socket carries the request.
   await clickCard(pp, ids.viaGM, "keepDie");
-  await wait(2000);
+  await wait(4000);
   s = await page.evaluate(snapshot, arg(ids.viaGM));
   record("socket path: GM applied it (die kept, PP 0)", s.roll.ppSpent === 1 && s.roll.total === 22 && s.pp === 0, s);
   record("player with 0 PP has no KEEP button", (await playerButtons(ids.viaGM)).length === 0, await playerButtons(ids.viaGM));
@@ -114,7 +114,7 @@ try {
   record("new Complication: d6 in activeJob", s.job.complications.length === 1 && s.job.complications[0].name === "[TEST] Alarm" && s.job.complications[0].die === 6, s.job);
   record("player got 1 PP, the 1 is resolved, warning and button gone",
     s.pp === ppBefore + 1 && s.roll.complicationsResolved.join() === "4" && !s.ones && !s.buttons.includes("complication"), s);
-  await page.evaluate(() => { document.querySelector("#chat .chat-scroll, #chat-log")?.scrollTo(0, 1e6); });
+  await page.evaluate((i) => document.querySelector(`.chat-message[data-message-id="${i}"]`)?.scrollIntoView(), ids.own);
   await wait(600);
   const box = await cardOf(page, ids.own).boundingBox();
   await page.screenshot({ path: `${SHOTS}/T-503-card.png`, clip: { x: box.x, y: box.y, width: box.width, height: box.height } });
