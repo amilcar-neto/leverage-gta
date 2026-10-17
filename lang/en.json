@@ -488,7 +488,31 @@
         "pool": "Pool",
         "count": "{count} dice · keep {keep}",
         "empty": "Pick a Trait to start a Pool.",
-        "roll": "Roll"
+        "roll": "Roll",
+        "addDie": "+ Die",
+        "clear": "Clear",
+        "remove": "Click to take it out of the Pool",
+        "moneyName": "Money",
+        "kind": {
+          "attribute": "Attribute",
+          "role": "Role",
+          "specialty": "Specialty",
+          "distinction": "Distinction",
+          "asset": "Asset",
+          "talent": "Talent",
+          "money": "Money",
+          "die": "Extra die"
+        },
+        "problem": {
+          "noAttribute": "Pick an Attribute.",
+          "noRole": "Pick a Role.",
+          "blankAttribute": "The Attribute has no die.",
+          "blankRole": "That Role is blank: rate it or pick another.",
+          "blank": "This Trait is blank and adds no die."
+        },
+        "warn": {
+          "specialtyRole": "This Specialty belongs to another Role than the one in the Pool. The GM may still allow it."
+        }
       },
       "Item": "Item sheet"
     },

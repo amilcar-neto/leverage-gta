@@ -1,0 +1,152 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { DicePool, parseRef, resolvePoolRef } from "../../module/dice/pool.mjs";
+
+const item = (id, type, name, system = {}) => [id, { id, type, name, system }];
+const actor = {
+  system: {
+    attributes: { agility: { die: 10 }, strength: { die: 6 } },
+    roles: { thief: { die: 10 }, hitter: { die: 6 }, hacker: { die: null } },
+    money: { steps: 8 }
+  },
+  items: new Map([
+    item("sp1", "specialty", "Safecracking", { role: "thief", die: 6 }),
+    item("sp2", "specialty", "Getaway Driving", { role: "hitter", die: 6 }),
+    item("di1", "distinction", "Old Docks Loyalty"),
+    item("di2", "distinction", "Adrenaline Junkie"),
+    item("as1", "asset", "Hatchback", { die: 8 }),
+    item("ta1", "talent", "Nerve", { die: 6 }),
+    item("ta2", "talent", "Ghost", { die: null }),
+    item("jb1", "job", "Dockside")
+  ])
+};
+
+const make = (opts) => new DicePool((ref) => resolvePoolRef(actor, ref, opts));
+const kinds = (pool) => pool.entries().map((e) => e.kind);
+
+test("parseRef reads every reference shape and rejects the rest", () => {
+  assert.deepEqual(parseRef("attributes.agility"), { type: "attributes", key: "agility" });
+  assert.deepEqual(parseRef("item:abc:d4"), { type: "item", id: "abc", size: 4 });
+  assert.deepEqual(parseRef("item:abc"), { type: "item", id: "abc", size: undefined });
+  assert.deepEqual(parseRef("d6"), { type: "die", size: 6 });
+  assert.deepEqual(parseRef("money"), { type: "money" });
+  for (const bad of ["d20", "d5", "", "item:", "foo", null, 5]) assert.equal(parseRef(bad), null, String(bad));
+});
+
+test("the mockup Pool: Agility + Thief + Safecracking + Old Docks d8 is 4 dice, keep 2", () => {
+  const pool = make();
+  for (const ref of ["roles.thief", "attributes.agility", "item:sp1", "item:di1:d8"]) pool.toggle(ref);
+  assert.equal(pool.count, 4);
+  assert.equal(pool.keep, 2);
+  assert.deepEqual(kinds(pool), ["attribute", "role", "specialty", "distinction"]);
+  assert.deepEqual(pool.entries().map((e) => e.die), [10, 10, 6, 8]);
+  assert.equal(pool.canRoll, true);
+});
+
+test("an empty Pool lacks an Attribute and a Role", () => {
+  const pool = make();
+  assert.deepEqual(pool.problems, ["noAttribute", "noRole"]);
+  assert.equal(pool.canRoll, false);
+  pool.toggle("attributes.agility");
+  assert.deepEqual(pool.problems, ["noRole"]);
+});
+
+test("a new Attribute or Role replaces the old one", () => {
+  const pool = make();
+  pool.toggle("attributes.agility");
+  pool.toggle("attributes.strength");
+  pool.toggle("roles.thief");
+  pool.toggle("roles.hitter");
+  assert.deepEqual(pool.refs, ["attributes.strength", "roles.hitter"]);
+});
+
+test("clicking again takes a Trait out", () => {
+  const pool = make();
+  assert.equal(pool.toggle("item:as1"), "added");
+  assert.equal(pool.toggle("item:as1"), "removed");
+  assert.equal(pool.count, 0);
+  assert.equal(pool.toggle("item:di1:d4"), "added");
+  assert.equal(pool.toggle("item:di1:d4"), "removed");
+});
+
+test("only one Distinction per roll: another one, or the other die, replaces it", () => {
+  const pool = make();
+  pool.toggle("item:di1:d8");
+  pool.toggle("item:di2:d8");
+  assert.deepEqual(pool.refs, ["item:di2:d8"]);
+  pool.toggle("item:di2:d4");
+  assert.deepEqual(pool.refs, ["item:di2:d4"]);
+  assert.equal(pool.entries()[0].hinders, true);
+});
+
+test("a blank Role blocks the roll and does not count as a die", () => {
+  const pool = make();
+  pool.toggle("attributes.agility");
+  pool.toggle("roles.hacker");
+  assert.deepEqual(pool.problems, ["blankRole"]);
+  assert.equal(pool.count, 1);
+  assert.equal(pool.entries()[1].blank, true);
+  pool.toggle("roles.thief");
+  assert.equal(pool.canRoll, true);
+});
+
+test("a Specialty of another Role is flagged, not blocked", () => {
+  const pool = make();
+  pool.toggle("roles.thief");
+  pool.toggle("item:sp2");
+  const spec = pool.entries().find((e) => e.kind === "specialty");
+  assert.equal(spec.warn, "specialtyRole");
+  assert.equal(pool.count, 2);
+  pool.toggle("item:sp2");
+  pool.toggle("item:sp1");
+  assert.equal(pool.entries().find((e) => e.kind === "specialty").warn, null);
+});
+
+test("loose dice may repeat, and remove takes one copy at a time", () => {
+  const pool = make();
+  pool.addDie(6);
+  pool.addDie(6);
+  pool.addDie(12);
+  assert.equal(pool.count, 3);
+  assert.equal(pool.remove("d6"), true);
+  assert.equal(pool.count, 2);
+  assert.equal(pool.addDie(20), false);
+  assert.equal(pool.addDie(7), false);
+});
+
+test("Money adds the largest die, only with the rule on and some money", () => {
+  const pool = make();
+  assert.equal(pool.add("money"), true);
+  assert.equal(pool.entries()[0].die, 12, "8 steps = d8 + d12");
+});
+
+test("Money with the rule off or no money is refused", () => {
+  assert.equal(make({ moneyEnabled: false }).add("money"), false);
+  const broke = new DicePool((ref) => resolvePoolRef({ ...actor, system: { ...actor.system, money: { steps: 0 } } }, ref));
+  assert.equal(broke.add("money"), false);
+});
+
+test("Talents only give dice when they have one; Jobs never do", () => {
+  const pool = make();
+  assert.equal(pool.add("item:ta1"), true);
+  assert.equal(pool.add("item:ta2"), false);
+  assert.equal(pool.add("item:jb1"), false);
+  assert.equal(pool.add("item:missing"), false);
+  assert.equal(pool.count, 1);
+});
+
+test("entries drop references that stopped resolving (a deleted Item)", () => {
+  const items = new Map(actor.items);
+  const pool = new DicePool((ref) => resolvePoolRef({ ...actor, items }, ref));
+  pool.toggle("item:as1");
+  items.delete("as1");
+  assert.equal(pool.count, 0);
+  assert.deepEqual(pool.refs, []);
+});
+
+test("clear empties the Pool", () => {
+  const pool = make();
+  pool.toggle("roles.thief");
+  pool.clear();
+  assert.deepEqual(pool.refs, []);
+});

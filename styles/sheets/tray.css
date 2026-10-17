@@ -1,0 +1,120 @@
+/* Pool tray (T-501): chips, separators, "+ DIE", floating die menu, lit rows live in base.css. */
+
+.leverage-gta.crew-sheet .lv-tray-chips {
+  /* The row never wraps (the tray is fixed height): extra chips scroll sideways, the bar has its own lane. */
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+.leverage-gta.crew-sheet .lv-tray-chips > * { flex: none; }
+
+.leverage-gta .lv-tray-chips .lv-chip {
+  max-width: 260px;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-tray-chips .lv-chip-text { overflow: hidden; }
+.leverage-gta .lv-tray-chips .lv-chip-name { max-width: 170px; text-transform: uppercase; }
+.leverage-gta .lv-tray-chips .lv-chip-kind { text-transform: uppercase; font-size: 11px; }
+
+.leverage-gta .lv-tray-chips .lv-chip:hover,
+.leverage-gta .lv-tray-chips .lv-chip:focus-visible { background: rgba(255, 255, 255, 0.16); }
+
+/* A required slot with nothing in it yet */
+.leverage-gta .lv-chip.is-ghost {
+  border-style: dashed;
+  border-color: var(--lv-muted);
+  background: none;
+  color: var(--lv-muted);
+  padding-right: 18px;
+  cursor: default;
+}
+
+/* Blank Role: cannot roll */
+.leverage-gta .lv-chip.is-problem { border-color: var(--lv-d4); }
+.leverage-gta .lv-chip.is-problem .lv-chip-kind { color: var(--lv-d4); }
+
+/* Specialty of another Role: a hint, not a block */
+.leverage-gta .lv-chip.has-warning { border-color: var(--lv-pp); }
+
+.leverage-gta .lv-tray-plus {
+  color: var(--lv-ink);
+  font-family: var(--lv-font-display);
+  font-size: 22px;
+}
+
+.leverage-gta .lv-tray-sep {
+  align-self: center;
+  width: 2px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* "+ DIE" */
+.leverage-gta .lv-chip--add {
+  justify-content: center;
+  padding: 0 18px;
+  border-color: var(--lv-muted);
+  color: var(--lv-muted);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.leverage-gta .lv-tray-clear {
+  margin: 0;
+  padding: 4px 8px;
+  background: none;
+  border: 0;
+  color: var(--lv-muted);
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-tray-clear:hover,
+.leverage-gta .lv-tray-clear:focus-visible { color: var(--lv-stamp); }
+
+.leverage-gta .lv-roll-btn:not(:disabled) { cursor: pointer; }
+.leverage-gta .lv-roll-btn:not(:disabled):hover { filter: brightness(1.1); }
+
+/* Floating "+ DIE" menu (opens upward from the button) */
+.leverage-gta .lv-pool-menu {
+  position: absolute;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  padding: 4px;
+  background: var(--lv-panel);
+  border: var(--lv-border);
+  box-shadow: var(--lv-shadow);
+}
+
+.leverage-gta .lv-pool-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 2px 10px;
+  background: none;
+  border: 0;
+  border-radius: 3px;
+  color: var(--lv-ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: start;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-pool-menu-item:hover,
+.leverage-gta .lv-pool-menu-item:focus-visible { background: rgba(255, 255, 255, 0.1); }

@@ -73,7 +73,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 4 — Itens
 
-- [ ] **T-401 Ficha de item base** (`item-sheet.mjs`, mesma linguagem do `talent-item-window.png`) e PARTS por tipo:
+- [x] **T-401 Ficha de item base** (`item-sheet.mjs`, mesma linguagem do `talent-item-window.png`) e PARTS por tipo:
   Distinction, Talent (Role, custo FREE/1 PP, Activation, Effect, dado opcional), Specialty, Asset (dado, duração,
   nota, arma), Job (rendimento total e parte, callback, gasto, notas). Botão de apagar no rodapé. Ícones padrão por
   tipo em `assets/`. *Dep:* T-103, T-202. *Par:* um builder por 2–3 tipos.

@@ -488,7 +488,31 @@
         "pool": "Pool",
         "count": "{count} dados · mantém {keep}",
         "empty": "Escolha um Traço para montar a Pool.",
-        "roll": "Rolar"
+        "roll": "Rolar",
+        "addDie": "+ Dado",
+        "clear": "Limpar",
+        "remove": "Clique para tirar da Pool",
+        "moneyName": "Grana",
+        "kind": {
+          "attribute": "Attribute",
+          "role": "Role",
+          "specialty": "Specialty",
+          "distinction": "Distinction",
+          "asset": "Asset",
+          "talent": "Talent",
+          "money": "Grana",
+          "die": "Dado extra"
+        },
+        "problem": {
+          "noAttribute": "Escolha um Attribute.",
+          "noRole": "Escolha um Role.",
+          "blankAttribute": "O Attribute não tem dado.",
+          "blankRole": "Esse Role está em branco: dê um dado a ele ou escolha outro.",
+          "blank": "Este Traço está em branco e não dá dado."
+        },
+        "warn": {
+          "specialtyRole": "Esta Especialidade é de outro Role que não o da Pool. O mestre ainda pode permitir."
+        }
       },
       "Item": "Ficha de item"
     },

@@ -13,3 +13,4 @@
 @import url("sheets/assets.css") layer(system);
 @import url("sheets/item.css") layer(system);
 @import url("sheets/drag.css") layer(system);
+@import url("sheets/tray.css") layer(system);

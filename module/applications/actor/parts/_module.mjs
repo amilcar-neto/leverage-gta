@@ -2,9 +2,10 @@ import * as header from "./header.mjs";
 import * as ladders from "./ladders.mjs";
 import * as lists from "./lists.mjs";
 import * as assets from "./assets.mjs";
+import * as tray from "./tray.mjs";
 
 /** Part modules in render order. Each exports `actions` and `prepare(context, sheet)`. */
-const MODULES = [header, ladders, lists, assets];
+const MODULES = [header, ladders, lists, assets, tray];
 
 /** All `data-action` handlers of the crew sheet, merged. */
 export const partActions = Object.assign({}, ...MODULES.map((m) => m.actions));

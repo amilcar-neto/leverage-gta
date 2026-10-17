@@ -58,6 +58,7 @@ try {
   const state = await page.evaluate(setup);
 
   for (const type of ["distinction", "talent", "specialty", "asset", "job"]) {
+    await show(state, type);
     const facts = await page.evaluate(openSheet, { actorId: state.actorId, id: state.ids[type] });
     record(`${type}: opens with type and owner in the title`, /Rosa/.test(facts.title ?? ""), facts);
     record(`${type}: no clipped text`, facts.overflow.length === 0, facts.overflow);
@@ -101,8 +102,8 @@ try {
     await pm.click();
     await page.keyboard.press("Control+A");
     await page.keyboard.type("Rich effect text.");
-    await page.locator(`${t} prose-mirror button.toggle`).dispatchEvent("click");
-    await wait(900);
+    await page.locator(`${t} prose-mirror [data-action="save"]`).first().dispatchEvent("click");
+    await wait(1200);
     s = await owned(state, "talent");
     record("talent: rich effect saved", /Rich effect text/.test(s.system.effect), s.system.effect);
   } else {
@@ -130,9 +131,12 @@ try {
   await show(state, "asset");
   const a = win("asset");
   await page.click(`${a} .lv-item-die[data-die="12"] button`);
+  await wait(700);
   await page.click(`${a} [data-action=setDuration][data-value="scene"]`);
+  await wait(700);
   await page.fill(`${a} input[name="system.note"]`, "Burns fast.");
   await page.locator(`${a} input[name="system.note"]`).blur();
+  await wait(700);
   await page.check(`${a} input[name="system.weapon"]`);
   await wait(800);
   s = await owned(state, "asset");
@@ -144,9 +148,12 @@ try {
   const j = win("job");
   await page.fill(`${j} input[name="system.payout.total"]`, "12");
   await page.locator(`${j} input[name="system.payout.total"]`).blur();
+  await wait(700);
   await page.fill(`${j} input[name="system.payout.share"]`, "3");
   await page.locator(`${j} input[name="system.payout.share"]`).blur();
+  await wait(700);
   await page.check(`${j} input[name="system.callbackUsed"]`);
+  await wait(700);
   await page.check(`${j} input[name="system.spent"]`);
   await wait(800);
   s = await owned(state, "job");

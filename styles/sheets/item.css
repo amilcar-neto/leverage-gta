@@ -323,6 +323,8 @@
   height: 18px;
   margin: 0;
   accent-color: var(--lv-header);
+  outline: 1px solid var(--lv-muted);
+  outline-offset: -1px;
 }
 
 /* ---- Rich text (ProseMirror) and its read-only twin ---- */
