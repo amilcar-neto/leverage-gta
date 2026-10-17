@@ -16,3 +16,5 @@
 @import url("sheets/tray.css") layer(system);
 @import url("chat.css") layer(system);
 @import url("gm.css") layer(system);
+@import url("job-tracker.css") layer(system);
+@import url("config-apps.css") layer(system);

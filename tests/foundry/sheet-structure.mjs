@@ -13,6 +13,7 @@ const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), 
 
 /** Runs in the page: opens the sheet and measures everything. */
 async function inspectSheet() {
+  await game.settings.set("leverage-gta", "traitsLocked", true); // the default; other checks may have left it off
   const actor = await Actor.create({ name: "[TEST] Crew", type: "crew" });
   await actor.sheet.render({ force: true });
   await new Promise((r) => setTimeout(r, 1500));

@@ -1,0 +1,21 @@
+<div class="lv-config-body lv-scroll">
+  <p class="lv-config-hint">{{localize "LEVERAGE.Config.Prices.hint"}}</p>
+  <ul class="lv-prices">
+    {{#each prices}}
+    <li class="lv-price{{#if full}} is-full{{/if}}" data-price="{{id}}">
+      <span class="lv-price-label lv-ellipsis" title="{{label}}">{{label}}</span>
+      <div class="lv-pool-dice" title="{{summary}}">
+        {{#each dice}}
+        <button type="button" class="lv-pool-die" data-action="removeDie" data-index="{{@index}}"
+                aria-label="{{localize "LEVERAGE.Config.removeDie" die=this}}" title="{{localize "LEVERAGE.Config.removeDie" die=this}}">
+          {{lvDie this die=this size=28}}
+        </button>
+        {{else}}<span class="lv-config-empty">{{localize "LEVERAGE.Config.CityScales.noDice"}}</span>{{/each}}
+      </div>
+      <div class="lv-pool-add">
+        {{#each @root.adders}}{{lvDie die die=die size=28 muted=true action="addDie" label=label title=label}}{{/each}}
+      </div>
+    </li>
+    {{/each}}
+  </ul>
+</div>

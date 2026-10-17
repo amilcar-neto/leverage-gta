@@ -27,6 +27,51 @@
       "vitality": "Vitality",
       "willpower": "Willpower"
     },
+    "Config": {
+      "gmOnly": "Só o mestre pode editar isto.",
+      "saved": "Configurações salvas.",
+      "save": "Salvar",
+      "cancel": "Cancelar",
+      "restore": "Restaurar padrão",
+      "addDie": "Adicionar {die}",
+      "removeDie": "Remover {die}",
+      "CityScales": {
+        "hint": "Cada cidade tem a sua Pool da polícia por estrela e as suas regras. Clique num dado para remover; clique num dado apagado para adicionar.",
+        "addCity": "Adicionar cidade",
+        "newCity": "Nova cidade",
+        "name": "Nome da cidade",
+        "defaultCity": "Cidade padrão",
+        "removeCity": "Remover cidade",
+        "pool": "Pool da polícia",
+        "noDice": "Sem dados",
+        "rules": "Regras",
+        "silence": "Comprar silêncio com dados de Grana",
+        "silenceDie": "Grana {die} compra silêncio",
+        "starsPerSilenceDie": "Estrelas removidas por dado",
+        "bail": "Fiança resolve o Busted",
+        "sketch": "Retrato falado impede o disfarce",
+        "wait": "Cenas fora de vista por estrela",
+        "waitNone": "Sessões",
+        "waitHint": "Vazio: as estrelas só baixam entre sessões.",
+        "disguise": "Disfarce remove",
+        "disguiseAll": "Todas",
+        "disguiseBoth": "Carro e roupa",
+        "sameAsDisguise": "Igual"
+      },
+      "Prices": {
+        "hint": "Preço de cada item em dados. Clique num dado para remover; clique num dado apagado para adicionar."
+      },
+      "Training": {
+        "hint": "Quantos Jobs sem uso cada opção de Train Up custa."
+      },
+      "Error": {
+        "noCities": "Adicione pelo menos uma cidade.",
+        "emptyName": "Toda cidade precisa de um nome.",
+        "emptyPool": "{city}: a estrela {n} está sem dados.",
+        "emptyPrice": "{item}: adicione pelo menos um dado.",
+        "invalidCost": "{item}: o custo deve ser um número inteiro de 0 a {max}."
+      }
+    },
     "Crew": {
       "FIELDS": {
         "alias": {
@@ -685,6 +730,46 @@
       "label": "Descrição",
       "labelPlaceholder": "O que a oposição está fazendo?",
       "roll": "Rolar"
+    },
+    "Tracker": {
+      "title": "Rastreador do Job",
+      "job": "Job",
+      "jobPlaceholder": "Nome do Job",
+      "complications": "Complications",
+      "sceneTraits": "Traços de cena",
+      "crew": "Equipe",
+      "noComplications": "Nenhuma Complication.",
+      "noSceneTraits": "Nenhum Traço de cena.",
+      "noCrew": "Nenhum personagem na Equipe.",
+      "newComplication": "Nova Complication",
+      "newSceneTrait": "Novo Traço de cena",
+      "add": "Adicionar",
+      "remove": "Remover",
+      "raise": "Subir",
+      "lower": "Descer",
+      "life": "Vida",
+      "vest": "Colete",
+      "money": "Grana",
+      "plotPoints": "Plot Points"
+    },
+    "Api": {
+      "noCrew": "Isso não é um personagem da Equipe.",
+      "notOwner": "Você não é dono de {name}.",
+      "invalidAmount": "A quantidade deve ser um número inteiro, zero ou mais.",
+      "invalidPrice": "Um preço é um número inteiro de degraus ou uma lista de dados como [12, 6].",
+      "Pool": {
+        "empty": "Informe pelo menos uma referência da Pool.",
+        "unknownRef": "Referência de Pool desconhecida ou indisponível: {ref}.",
+        "tooMany": "Uma Pool tem só um {kind}.",
+        "noAttribute": "A Pool precisa de um Atributo.",
+        "noRole": "A Pool precisa de um Papel.",
+        "blankAttribute": "O Atributo escolhido não tem dado.",
+        "blankRole": "O Papel escolhido não tem dado."
+      },
+      "Stars": {
+        "invalidLevel": "As estrelas devem ser um número inteiro de {min} a {max}.",
+        "unknownCity": "Cidade desconhecida: {city}."
+      }
     }
   }
 }

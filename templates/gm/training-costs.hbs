@@ -1,0 +1,14 @@
+<div class="lv-config-body lv-scroll">
+  <p class="lv-config-hint">{{localize "LEVERAGE.Config.Training.hint"}}</p>
+  <ul class="lv-costs">
+    {{#each costs}}
+    <li class="lv-cost">
+      <label class="lv-cost-row" for="lv-cost-{{key}}">
+        <span class="lv-cost-label lv-ellipsis" title="{{label}}">{{label}}</span>
+      </label>
+      <input id="lv-cost-{{key}}" type="number" class="lv-config-input lv-cost-input" name="{{key}}" value="{{value}}" min="0" max="{{max}}" step="1">
+      <span class="lv-cost-unit">{{localize "LEVERAGE.Dialog.TrainUp.jobs"}}</span>
+    </li>
+    {{/each}}
+  </ul>
+</div>

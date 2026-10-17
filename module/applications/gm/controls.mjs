@@ -6,6 +6,7 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { clampStars } from "../../rules/stars.mjs";
+import { getCityScales } from "../../settings.mjs";
 import { escapeHtml } from "../components/die.mjs";
 import * as actions from "./job-actions.mjs";
 
@@ -56,7 +57,7 @@ function wantedContent(wanted, scales) {
 export async function openWantedDialog() {
   if (!actions.requireGM()) return;
   const wanted = game.settings.get(SYSTEM_ID, "wanted") ?? {};
-  const scales = game.settings.get(SYSTEM_ID, "cityScales") ?? LEVERAGE.defaultCityScales;
+  const scales = getCityScales();
   const choice = await foundry.applications.api.DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog", "lv-gm-wanted"],
     window: { title: t("LEVERAGE.GM.Dialog.Wanted.title") },

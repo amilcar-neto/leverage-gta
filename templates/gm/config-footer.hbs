@@ -1,0 +1,13 @@
+<footer class="lv-config-foot">
+  <ul class="lv-config-errors" role="alert" aria-live="polite">
+    {{#each errors}}<li class="lv-config-error">{{this}}</li>{{/each}}
+  </ul>
+  <div class="lv-config-actions">
+    <button type="button" class="lv-config-btn lv-config-btn--link" data-action="restore">
+      <i class="fa-solid fa-rotate-left" aria-hidden="true"></i><span>{{localize "LEVERAGE.Config.restore"}}</span>
+    </button>
+    <span class="lv-config-spacer"></span>
+    <button type="button" class="lv-config-btn" data-action="cancel">{{localize "LEVERAGE.Config.cancel"}}</button>
+    <button type="submit" class="lv-config-btn lv-config-btn--primary">{{localize "LEVERAGE.Config.save"}}</button>
+  </div>
+</footer>

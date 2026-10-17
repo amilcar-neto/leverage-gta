@@ -1,0 +1,84 @@
+<div class="lv-config-body lv-scroll">
+  <div class="lv-config-bar">
+    <p class="lv-config-hint">{{localize "LEVERAGE.Config.CityScales.hint"}}</p>
+    <button type="button" class="lv-config-btn" data-action="addCity">
+      <i class="fa-solid fa-plus" aria-hidden="true"></i><span>{{localize "LEVERAGE.Config.CityScales.addCity"}}</span>
+    </button>
+  </div>
+
+  {{#each cities}}
+  <section class="lv-city" data-city="{{id}}">
+    <div class="lv-city-head">
+      <input type="text" class="lv-config-input lv-city-name" name="name" value="{{name}}" maxlength="40"
+             aria-label="{{localize "LEVERAGE.Config.CityScales.name"}}" title="{{name}}">
+      <label class="lv-config-check lv-city-default">
+        <input type="radio" name="defaultCity" value="{{id}}"{{#if isDefault}} checked{{/if}}>
+        <span>{{localize "LEVERAGE.Config.CityScales.defaultCity"}}</span>
+      </label>
+      <button type="button" class="lv-config-icon" data-action="removeCity"{{#unless canRemove}} disabled{{/unless}}
+              aria-label="{{localize "LEVERAGE.Config.CityScales.removeCity"}}" title="{{localize "LEVERAGE.Config.CityScales.removeCity"}}">
+        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <h4 class="lv-config-title">{{localize "LEVERAGE.Config.CityScales.pool"}}</h4>
+    <div class="lv-pools">
+      {{#each levels}}
+      <div class="lv-pool{{#if full}} is-full{{/if}}" data-level="{{n}}">
+        <span class="lv-pool-star"><i class="fa-solid fa-star" aria-hidden="true"></i>{{n}}</span>
+        <div class="lv-pool-dice" title="{{summary}}">
+          {{#each dice}}
+          <button type="button" class="lv-pool-die" data-action="removeDie" data-index="{{@index}}"
+                  aria-label="{{localize "LEVERAGE.Config.removeDie" die=this}}" title="{{localize "LEVERAGE.Config.removeDie" die=this}}">
+            {{lvDie this die=this size=28}}
+          </button>
+          {{else}}<span class="lv-config-empty">{{localize "LEVERAGE.Config.CityScales.noDice"}}</span>{{/each}}
+        </div>
+        <div class="lv-pool-add">
+          {{#each @root.adders}}{{lvDie die die=die size=28 muted=true action="addDie" label=label title=label}}{{/each}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    <h4 class="lv-config-title">{{localize "LEVERAGE.Config.CityScales.rules"}}</h4>
+    <div class="lv-rules">
+      <div class="lv-rule lv-rule--wide">
+        <span class="lv-rule-label">{{localize "LEVERAGE.Config.CityScales.silence"}}</span>
+        <div class="lv-rule-dice">
+          {{#each silence}}{{lvDie die die=die size=28 muted=off action="toggleSilence" pressed=on label=label title=label}}{{/each}}
+        </div>
+      </div>
+      <label class="lv-rule lv-rule-field">
+        <span class="lv-ellipsis" title="{{localize "LEVERAGE.Config.CityScales.starsPerSilenceDie"}}">{{localize "LEVERAGE.Config.CityScales.starsPerSilenceDie"}}</span>
+        <input type="number" class="lv-config-input" name="starsPerSilenceDie" value="{{starsPerSilenceDie}}" min="1" max="5" step="1">
+      </label>
+      <label class="lv-rule lv-config-check">
+        <input type="checkbox" name="bail"{{#if bail}} checked{{/if}}>
+        <span class="lv-ellipsis" title="{{localize "LEVERAGE.Config.CityScales.bail"}}">{{localize "LEVERAGE.Config.CityScales.bail"}}</span>
+      </label>
+      <label class="lv-rule lv-config-check">
+        <input type="checkbox" name="sketchBlocksDisguise"{{#if sketch}} checked{{/if}}>
+        <span class="lv-ellipsis" title="{{localize "LEVERAGE.Config.CityScales.sketch"}}">{{localize "LEVERAGE.Config.CityScales.sketch"}}</span>
+      </label>
+      <label class="lv-rule lv-rule-field">
+        <span class="lv-ellipsis" title="{{localize "LEVERAGE.Config.CityScales.wait"}}">{{localize "LEVERAGE.Config.CityScales.wait"}}</span>
+        <input type="number" class="lv-config-input" name="wait" value="{{wait}}" min="1" max="20" step="1"
+               placeholder="{{localize "LEVERAGE.Config.CityScales.waitNone"}}" title="{{localize "LEVERAGE.Config.CityScales.waitHint"}}">
+      </label>
+      <label class="lv-rule lv-rule-field">
+        <span class="lv-ellipsis" title="{{localize "LEVERAGE.Config.CityScales.disguise"}}">{{localize "LEVERAGE.Config.CityScales.disguise"}}</span>
+        <select class="lv-config-input" name="disguise">
+          {{#each disguise}}<option value="{{value}}"{{#if selected}} selected{{/if}}>{{label}}</option>{{/each}}
+        </select>
+      </label>
+      <label class="lv-rule lv-rule-field">
+        <span class="lv-ellipsis" title="{{localize "LEVERAGE.Config.CityScales.disguiseBoth"}}">{{localize "LEVERAGE.Config.CityScales.disguiseBoth"}}</span>
+        <select class="lv-config-input" name="disguiseBoth">
+          {{#each disguiseBoth}}<option value="{{value}}"{{#if selected}} selected{{/if}}>{{label}}</option>{{/each}}
+        </select>
+      </label>
+    </div>
+  </section>
+  {{/each}}
+</div>

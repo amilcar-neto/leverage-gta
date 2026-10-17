@@ -1,0 +1,80 @@
+{{#*inline "entries"}}
+<section class="lv-trk-sec">
+  <h3 class="lv-trk-title">{{localize title}}</h3>
+  <ul class="lv-trk-list">
+    {{#each rows}}
+    <li class="lv-trk-row">
+      {{{html}}}
+      <span class="lv-trk-name" title="{{name}}">{{name}}</span>
+      <span class="lv-trk-ctrl">
+        <button type="button" class="lv-trk-btn" data-action="step" data-list="{{list}}" data-id="{{id}}" data-delta="-1" aria-label="{{localize "LEVERAGE.Tracker.lower"}}"{{#unless canDown}} disabled{{/unless}}>&minus;</button>
+        <button type="button" class="lv-trk-btn" data-action="step" data-list="{{list}}" data-id="{{id}}" data-delta="1" aria-label="{{localize "LEVERAGE.Tracker.raise"}}"{{#unless canUp}} disabled{{/unless}}>+</button>
+        <button type="button" class="lv-trk-btn lv-trk-btn--remove" data-action="remove" data-list="{{list}}" data-id="{{id}}" aria-label="{{localize "LEVERAGE.Tracker.remove"}}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </span>
+    </li>
+    {{else}}
+    <li class="lv-trk-empty">{{localize empty}}</li>
+    {{/each}}
+  </ul>
+  <div class="lv-trk-add">
+    <input type="text" class="lv-trk-input" data-new-name="{{list}}" maxlength="80" placeholder="{{localize placeholder}}">
+    <button type="button" class="lv-trk-btn lv-trk-btn--add" data-action="add" data-list="{{list}}" aria-label="{{localize "LEVERAGE.Tracker.add"}}"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+  </div>
+</section>
+{{/inline}}
+<div class="lv-trk">
+  <section class="lv-trk-sec">
+    <label class="lv-trk-title" for="lv-trk-job-name">{{localize "LEVERAGE.Tracker.job"}}</label>
+    <input type="text" id="lv-trk-job-name" class="lv-trk-input" name="jobName" maxlength="80" value="{{name}}" placeholder="{{localize "LEVERAGE.Tracker.jobPlaceholder"}}">
+  </section>
+
+  {{> entries rows=complications list="complications" title="LEVERAGE.Tracker.complications" empty="LEVERAGE.Tracker.noComplications" placeholder="LEVERAGE.Tracker.newComplication"}}
+  {{> entries rows=sceneTraits list="sceneTraits" title="LEVERAGE.Tracker.sceneTraits" empty="LEVERAGE.Tracker.noSceneTraits" placeholder="LEVERAGE.Tracker.newSceneTrait"}}
+
+  <section class="lv-trk-sec">
+    <h3 class="lv-trk-title">{{localize "LEVERAGE.Tracker.crew"}}</h3>
+    <div class="lv-trk-crew">
+      {{#each crew}}
+      <div class="lv-trk-member" data-actor-id="{{id}}">
+        <span class="lv-trk-name" title="{{name}}">{{name}}</span>
+        <div class="lv-trk-stats">
+          <div class="lv-trk-cell" data-stat="life">
+            <span class="lv-trk-label">{{localize "LEVERAGE.Tracker.life"}}</span>
+            <span class="lv-trk-stepper">
+              <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="life" data-delta="-1" aria-label="{{localize "LEVERAGE.Tracker.lower"}}">&minus;</button>
+              <span class="lv-trk-value lv-trk-value--life">{{life.value}}/{{life.max}}</span>
+              <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="life" data-delta="1" aria-label="{{localize "LEVERAGE.Tracker.raise"}}">+</button>
+            </span>
+          </div>
+          <div class="lv-trk-cell" data-stat="vest">
+            <span class="lv-trk-label">{{localize "LEVERAGE.Tracker.vest"}}</span>
+            <span class="lv-trk-stepper">
+              <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="vest" data-delta="-1" aria-label="{{localize "LEVERAGE.Tracker.lower"}}">&minus;</button>
+              <span class="lv-trk-value lv-trk-value--vest">{{vest.value}}/{{vest.max}}</span>
+              <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="vest" data-delta="1" aria-label="{{localize "LEVERAGE.Tracker.raise"}}">+</button>
+            </span>
+          </div>
+          <div class="lv-trk-cell" data-stat="money">
+            <span class="lv-trk-label">{{localize "LEVERAGE.Tracker.money"}}</span>
+            <span class="lv-trk-stepper">
+              <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="money" data-delta="-1" aria-label="{{localize "LEVERAGE.Tracker.lower"}}">&minus;</button>
+              <span class="lv-trk-value lv-trk-value--money" title="{{steps}}">{{#if moneyHtml}}{{{moneyHtml}}}{{else}}0{{/if}}</span>
+              <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="money" data-delta="1" aria-label="{{localize "LEVERAGE.Tracker.raise"}}">+</button>
+            </span>
+          </div>
+          <div class="lv-trk-cell" data-stat="pp">
+            <span class="lv-trk-label">{{localize "LEVERAGE.Tracker.plotPoints"}}</span>
+            <span class="lv-trk-stepper">
+              <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="pp" data-delta="-1" aria-label="{{localize "LEVERAGE.Tracker.lower"}}">&minus;</button>
+              <span class="lv-trk-value lv-trk-value--pp">{{pp}}</span>
+              <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="pp" data-delta="1" aria-label="{{localize "LEVERAGE.Tracker.raise"}}">+</button>
+            </span>
+          </div>
+        </div>
+      </div>
+      {{else}}
+      <p class="lv-trk-empty">{{localize "LEVERAGE.Tracker.noCrew"}}</p>
+      {{/each}}
+    </div>
+  </section>
+</div>

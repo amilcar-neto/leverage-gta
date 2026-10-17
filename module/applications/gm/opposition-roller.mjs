@@ -9,6 +9,7 @@ import {
   complicationSources, emptyCounts, gangDice, locationSources, looseDice, npcSources, pickedDice, policeDice, rollOpposition, stepCount
 } from "../../dice/opposition.mjs";
 import { readSetting } from "../../data/fields.mjs";
+import { getCityScales } from "../../settings.mjs";
 import { renderDie } from "../components/die.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -83,8 +84,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   /** City, stars and scales from the settings. */
   #wanted() {
     const wanted = readSetting("wanted", { city: LEVERAGE.stars.defaultCity, level: LEVERAGE.stars.min });
-    const scales = readSetting("cityScales", []);
-    return { city: wanted.city, stars: wanted.level ?? 0, scales: scales.length ? scales : undefined };
+    return { city: wanted.city, stars: wanted.level ?? 0, scales: getCityScales() };
   }
 
   /** Selectable dice of the selected NPC, its gang and the location / Job groups. */

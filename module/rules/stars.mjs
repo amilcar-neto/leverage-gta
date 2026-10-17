@@ -3,6 +3,17 @@
  */
 import { LEVERAGE } from "../config.mjs";
 
+/** Source of the city scales used when a caller passes none. settings.mjs plugs in `getCityScales`. */
+let scalesProvider = () => LEVERAGE.defaultCityScales;
+
+/**
+ * Sets where the rules read the city scales from (the world setting, with fallback to the defaults).
+ * @param {() => object[]} provider
+ */
+export function setScalesProvider(provider) {
+  scalesProvider = typeof provider === "function" ? provider : () => LEVERAGE.defaultCityScales;
+}
+
 /**
  * Clamps to an integer in the star range.
  * @param {number} n
@@ -35,13 +46,14 @@ export function lowerStars(stars, by = 1) {
 /**
  * Finds a city scale by id; unknown ids fall back to the default city.
  * @param {string} cityId
- * @param {object[]} [scales] defaults to `LEVERAGE.defaultCityScales` (settings may override).
+ * @param {object[]} [scales] defaults to the configured scales (see `setScalesProvider`).
  * @returns {{id: string, name: string, levels: number[][], silence?: number[]|null, bail?: boolean,
  *   wait?: number|null, disguise?: number|"clear", disguiseBoth?: number|null, starsPerSilenceDie?: number,
  *   sketchBlocksDisguise?: boolean}} the scale object itself (not a copy).
  */
-export function getCityScale(cityId, scales = LEVERAGE.defaultCityScales) {
+export function getCityScale(cityId, scales = scalesProvider()) {
   return scales.find((c) => c.id === cityId)
+    ?? scales.find((c) => c.default)
     ?? scales.find((c) => c.id === LEVERAGE.stars.defaultCity)
     ?? scales[0];
 }

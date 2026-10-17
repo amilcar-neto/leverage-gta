@@ -62,7 +62,7 @@ try {
   const id = m.id;
   const sheet = ".application.crew-sheet";
   record("two asset rows", m.rows === 2, m);
-  record("pool refs item:<id>", m.poolRefs.length === 4 && m.poolRefs.every((r) => r.startsWith("item:")), m.poolRefs);
+  record("pool refs item:<id>", m.poolRefs.length === 6 /* per row: row-main, name, die button */ && m.poolRefs.every((r) => r.startsWith("item:")), m.poolRefs);
   record("duration tags", /^Signature,(Scene|Cena)$/.test(m.tags.join()), m.tags);
   record("scroll gutter reserved", m.gutter.includes("stable"), m.gutter);
   record("die never under the X", !m.dieXOverlap, m);

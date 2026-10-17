@@ -1,0 +1,240 @@
+/* GM configuration apps (T-705): city scales, price list, training costs. Scoped to .leverage-gta.lv-config. */
+
+.leverage-gta.lv-config {
+  background: var(--lv-bg);
+  border: var(--lv-border);
+  border-radius: 8px;
+  box-shadow: var(--lv-shadow);
+  color: var(--lv-ink);
+  overflow: hidden;
+}
+
+.leverage-gta.lv-config .window-header {
+  flex: none;
+  height: 32px;
+  gap: 10px;
+  padding: 0 12px;
+  background: #000;
+  border: 0;
+  color: var(--lv-ink);
+}
+
+.leverage-gta.lv-config .window-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--lv-font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 32px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leverage-gta.lv-config .window-header .header-control {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--lv-muted);
+  border-radius: 3px;
+  box-shadow: none;
+  color: var(--lv-ink);
+}
+
+.leverage-gta.lv-config .window-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: none;
+  overflow: hidden;
+}
+
+.leverage-gta.lv-config button { min-height: 0; margin: 0; }
+
+/* Body: the only scroll area; its gutter is reserved (.lv-scroll) so the bar never covers a control */
+.leverage-gta .lv-config-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 68vh;
+  padding: 12px 6px 12px 14px;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.leverage-gta .lv-config-hint { margin: 0; color: var(--lv-muted); font-size: 13px; }
+.leverage-gta .lv-config-empty { color: var(--lv-muted); font-size: 13px; }
+.leverage-gta .lv-config-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.leverage-gta .lv-config-bar .lv-config-hint { flex: 1; min-width: 0; }
+
+.leverage-gta .lv-config-title {
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+  font-family: var(--lv-font-display);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--lv-header);
+}
+
+/* Inputs and buttons */
+.leverage-gta .lv-config-input {
+  height: 28px;
+  min-width: 0;
+  padding: 0 6px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-size: 14px;
+}
+
+.leverage-gta .lv-config-input:focus-visible { outline: 2px solid var(--lv-header); outline-offset: 1px; }
+
+.leverage-gta .lv-config-btn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-config-btn:hover { background: rgba(255, 255, 255, 0.16); }
+
+.leverage-gta .lv-config-btn--primary {
+  background: var(--lv-header);
+  border: 2px solid var(--lv-outline);
+  color: var(--lv-die-ink);
+}
+
+.leverage-gta .lv-config-btn--primary:hover { background: var(--lv-header); filter: brightness(1.1); }
+.leverage-gta .lv-config-btn--link { background: none; border-color: transparent; color: var(--lv-muted); }
+.leverage-gta .lv-config-btn--link:hover { background: none; color: var(--lv-ink); }
+
+.leverage-gta .lv-config-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--lv-muted);
+  cursor: pointer;
+}
+
+.leverage-gta .lv-config-icon:hover:not(:disabled) { color: var(--lv-stamp-hover); border-color: var(--lv-stamp-hover); }
+.leverage-gta .lv-config-icon:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.leverage-gta .lv-config-check { display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: 700; cursor: pointer; }
+.leverage-gta .lv-config-check input { flex: none; margin: 0; }
+
+/* City card */
+.leverage-gta .lv-city {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--lv-panel);
+  border: 1px solid var(--lv-line);
+  border-radius: 6px;
+}
+
+.leverage-gta .lv-city-head { display: flex; align-items: center; gap: 10px; }
+.leverage-gta .lv-city-name { flex: 1; font-size: 16px; font-weight: 700; }
+.leverage-gta .lv-city-default { flex: none; }
+
+/* Dice editor (Pool of a star, price): chips are removable, the muted dice add one */
+.leverage-gta .lv-pools { display: flex; flex-direction: column; gap: 4px; }
+
+.leverage-gta .lv-pool,
+.leverage-gta .lv-price {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+}
+
+.leverage-gta .lv-pool-star { display: flex; align-items: center; gap: 4px; color: var(--lv-star-on); font-family: var(--lv-font-display); font-size: 15px; }
+.leverage-gta .lv-pool-star i { font-size: 12px; }
+.leverage-gta .lv-pool-dice { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
+.leverage-gta .lv-pool-add { display: flex; gap: 3px; }
+
+.leverage-gta .lv-pool-die {
+  display: inline-flex;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-pool-die:hover,
+.leverage-gta .lv-pool-die:focus-visible { filter: brightness(1.25) saturate(0.6); outline: 1px dashed var(--lv-stamp-hover); outline-offset: 2px; }
+
+.leverage-gta .lv-pool-add .lv-die { cursor: pointer; }
+.leverage-gta .lv-pool-add .lv-die:hover { opacity: 1; }
+.leverage-gta .is-full .lv-pool-add { opacity: 0.3; pointer-events: none; }
+
+/* City rules */
+.leverage-gta .lv-rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; }
+.leverage-gta .lv-rule { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.leverage-gta .lv-rule--wide { grid-column: 1 / -1; flex-wrap: wrap; }
+.leverage-gta .lv-rule-label { flex: none; font-weight: 700; }
+.leverage-gta .lv-rule-dice { display: flex; gap: 3px; }
+.leverage-gta .lv-rule-dice .lv-die { cursor: pointer; }
+.leverage-gta .lv-rule-field { justify-content: space-between; font-weight: 700; }
+.leverage-gta .lv-rule-field > span { flex: 1; min-width: 0; }
+.leverage-gta .lv-rule--wide .lv-rule-field { margin-left: auto; flex: none; }
+.leverage-gta .lv-rule-field input[type="number"] { flex: none; width: 76px; }
+.leverage-gta .lv-rule-field select { flex: none; width: 92px; }
+
+/* Price list and training costs */
+.leverage-gta .lv-prices,
+.leverage-gta .lv-costs { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+
+.leverage-gta .lv-price { grid-template-columns: 190px minmax(0, 1fr) auto; padding: 4px 0; border-bottom: 1px solid var(--lv-line); }
+.leverage-gta .lv-price-label { font-weight: 700; }
+
+.leverage-gta .lv-cost { display: flex; align-items: center; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--lv-line); }
+.leverage-gta .lv-cost-row { flex: 1; min-width: 0; font-weight: 700; }
+.leverage-gta .lv-cost-label { display: block; }
+.leverage-gta .lv-cost-input { flex: none; width: 64px; text-align: center; }
+.leverage-gta .lv-cost-unit { flex: none; width: 40px; color: var(--lv-muted); font-size: 13px; }
+
+/* Footer: errors then buttons */
+.leverage-gta .lv-config-foot { display: flex; flex: none; flex-direction: column; gap: 8px; padding: 10px 14px 14px; background: #000; border-top: 4px solid var(--lv-header); }
+.leverage-gta .lv-config-errors { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.leverage-gta .lv-config-errors:empty { display: none; }
+.leverage-gta .lv-config-error { color: var(--lv-life-ink); font-size: 13px; font-weight: 700; }
+.leverage-gta .lv-config-actions { display: flex; align-items: center; gap: 8px; }
+.leverage-gta .lv-config-spacer { flex: 1; }

@@ -90,7 +90,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   *Dep:* T-502.
 - [x] **T-504 Rolador de oposição** e card do mestre (2d6, polícia pelas estrelas, gangue, NPC, local,
   complicações). *Dep:* T-502.
-- [ ] **T-505 API e macros.** `game.leverage.*`, `docs/macros.md` com exemplos testados. *Dep:* T-502.
+- [x] **T-505 API e macros.** `game.leverage.*`, `docs/macros.md` com exemplos testados. *Dep:* T-502.
 - [ ] **T-506 Dice So Nice** (opcional, só se simples). *Dep:* T-502.
 - [ ] **R-F5 Revisão de fase.**
 
@@ -110,7 +110,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 - [ ] **T-701 HUD.** Posição presa à barra lateral, estrelas (só mestre clica), Grana (clique esquerdo/direito),
   Plot Points, minimizar, esconder partes, estado vazio. Prints comparados a `hud-*.png`. *Dep:* T-603, T-604.
 - [x] **T-702 Controles do mestre.** Grupo "Leverage" com todas as ferramentas de `docs/09`. *Dep:* T-106.
-- [ ] **T-703 Rastreador do Job.** Job ativo, Complications, Traços de cena, visão da Equipe. *Dep:* T-702.
+- [x] **T-703 Rastreador do Job.** Job ativo, Complications, Traços de cena, visão da Equipe. *Dep:* T-702.
 - [ ] **T-704 Encerrar cena / Novo Job / Encerrar Job / Nova sessão / Dar PP.** *Dep:* T-703, T-305.
 - [ ] **T-705 Apps de configuração** (escalas de cidade, preços, custos de evolução). *Dep:* T-106.
 - [ ] **R-F7 Revisão de fase.**

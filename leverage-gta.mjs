@@ -16,6 +16,7 @@ import * as itemSheets from "./module/applications/item/_module.mjs";
 import { registerRollHandler } from "./module/dice/roll-handler.mjs";
 import { registerSocket } from "./module/socket.mjs";
 import { registerRollCard } from "./module/applications/chat/roll-card.mjs";
+import { api, registerApi } from "./module/api.mjs";
 import { registerSceneControls } from "./module/applications/gm/controls.mjs";
 
 /** Registers one default sheet per Item type (T-401). */
@@ -64,11 +65,12 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("setup", () => {
-  // TODO(T-505): game.leverage = api (before macros run).
+  registerApi();
 });
 
 Hooks.once("ready", async () => {
   logger.info("Ready");
   await migrateWorld();
   registerSocket();
+  Hooks.callAll("leverage.ready", api);
 });

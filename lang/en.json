@@ -27,6 +27,51 @@
       "vitality": "Vitality",
       "willpower": "Willpower"
     },
+    "Config": {
+      "gmOnly": "Only the GM can edit this.",
+      "saved": "Settings saved.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "restore": "Restore defaults",
+      "addDie": "Add {die}",
+      "removeDie": "Remove {die}",
+      "CityScales": {
+        "hint": "Each city has its own police Pool per star and its own rules. Click a die to remove it; click a faded die to add one.",
+        "addCity": "Add city",
+        "newCity": "New city",
+        "name": "City name",
+        "defaultCity": "Default city",
+        "removeCity": "Remove city",
+        "pool": "Police Pool",
+        "noDice": "No dice",
+        "rules": "Rules",
+        "silence": "Buy silence with Money dice",
+        "silenceDie": "Money {die} buys silence",
+        "starsPerSilenceDie": "Stars removed per die",
+        "bail": "Bail settles Busted",
+        "sketch": "Composite sketch blocks disguise",
+        "wait": "Scenes out of sight per star",
+        "waitNone": "Sessions",
+        "waitHint": "Empty: stars only go down between sessions.",
+        "disguise": "Disguise removes",
+        "disguiseAll": "All",
+        "disguiseBoth": "Car and clothes",
+        "sameAsDisguise": "Same"
+      },
+      "Prices": {
+        "hint": "Price of each item in dice. Click a die to remove it; click a faded die to add one."
+      },
+      "Training": {
+        "hint": "How many unspent Jobs each Train Up option costs."
+      },
+      "Error": {
+        "noCities": "Add at least one city.",
+        "emptyName": "Every city needs a name.",
+        "emptyPool": "{city}: star {n} has no dice.",
+        "emptyPrice": "{item}: add at least one die.",
+        "invalidCost": "{item}: the cost must be a whole number from 0 to {max}."
+      }
+    },
     "Crew": {
       "FIELDS": {
         "alias": {
@@ -685,6 +730,46 @@
       "label": "Description",
       "labelPlaceholder": "What is the opposition doing?",
       "roll": "Roll"
+    },
+    "Tracker": {
+      "title": "Job Tracker",
+      "job": "Job",
+      "jobPlaceholder": "Job name",
+      "complications": "Complications",
+      "sceneTraits": "Scene Traits",
+      "crew": "Crew",
+      "noComplications": "No Complications.",
+      "noSceneTraits": "No scene Traits.",
+      "noCrew": "No Crew characters.",
+      "newComplication": "New Complication",
+      "newSceneTrait": "New scene Trait",
+      "add": "Add",
+      "remove": "Remove",
+      "raise": "Raise",
+      "lower": "Lower",
+      "life": "Life",
+      "vest": "Vest",
+      "money": "Money",
+      "plotPoints": "Plot Points"
+    },
+    "Api": {
+      "noCrew": "That is not a Crew character.",
+      "notOwner": "You do not own {name}.",
+      "invalidAmount": "The amount must be a whole number, zero or more.",
+      "invalidPrice": "A price is a whole number of steps or a list of dice such as [12, 6].",
+      "Pool": {
+        "empty": "Give at least one Pool reference.",
+        "unknownRef": "Unknown or unavailable Pool reference: {ref}.",
+        "tooMany": "A Pool has only one {kind}.",
+        "noAttribute": "The Pool needs one Attribute.",
+        "noRole": "The Pool needs one Role.",
+        "blankAttribute": "The chosen Attribute has no die.",
+        "blankRole": "The chosen Role has no die."
+      },
+      "Stars": {
+        "invalidLevel": "Stars must be a whole number from {min} to {max}.",
+        "unknownCity": "Unknown city: {city}."
+      }
     }
   }
 }
