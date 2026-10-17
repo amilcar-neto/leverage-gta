@@ -1,1 +1,1 @@
-IN PROGRESS: R-F3 onda B (JS da ficha), T-504 (rolador de oposição), T-702 (controles do mestre) em paralelo
+IN PROGRESS: onda B (JS da ficha), T-703 (Rastreador), T-705 (apps de config), T-505 (API) em paralelo

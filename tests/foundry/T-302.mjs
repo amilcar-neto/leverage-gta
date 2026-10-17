@@ -32,7 +32,10 @@ try {
   const root = ".crew-sheet .lv-header";
   await page.fill(`${root} input[name="name"]`, "[TEST] Rosa");
   await page.press(`${root} input[name="name"]`, "Enter");
+  await page.waitForTimeout(800); // each save re-renders the sheet: let it settle before the next field
   await page.fill(`${root} input[name="system.alias"]`, "La Zorra");
+  await page.locator(`${root} input[name="system.alias"]`).blur();
+  await page.waitForTimeout(800);
   await page.fill(`${root} input[name="system.booking.height"]`, "5'6\"");
   await page.locator(`${root} input[name="system.booking.height"]`).blur();
   await page.waitForTimeout(600);
