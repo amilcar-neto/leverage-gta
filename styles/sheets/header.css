@@ -1,16 +1,41 @@
-/* Crew sheet header: mugshot, inline-editable name/alias/booking fields, Life/Vest popovers, fingerprint. */
-
+/* Header strip: mugshot, identity (name, alias, Life/Vest), Booking Card. Mockup: 164px, 22px gap, 24px margin. */
 .leverage-gta.crew-sheet .lv-header {
   position: relative;
   z-index: 5;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  height: 164px;
+  padding: 0 24px;
+  background: var(--lv-bg-a);
+  border-bottom: 4px solid var(--lv-outline);
   overflow: visible;
+}
+
+.leverage-gta.crew-sheet .lv-identity {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* ---- Mugshot: wall with height ruler, image anchored at the bottom ---- */
 .leverage-gta.crew-sheet .lv-mugshot {
+  position: relative;
+  flex: none;
+  width: 112px;
+  height: 140px;
   padding: 0;
   background: #d9d6ca url("../../assets/sheet/mugshot-wall.svg") center / 100% 100% no-repeat;
+  border: 4px solid var(--lv-outline);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
   color: inherit;
+  overflow: hidden;
 }
 
 .leverage-gta.crew-sheet button.lv-mugshot { cursor: pointer; }
@@ -19,6 +44,26 @@
 .leverage-gta.crew-sheet button.lv-mugshot:focus-visible {
   outline: 3px solid var(--lv-header);
   outline-offset: 2px;
+}
+
+.leverage-gta.crew-sheet .lv-mugshot-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.leverage-gta.crew-sheet .lv-mugshot-empty {
+  position: absolute;
+  inset: auto 0 6px;
+  text-align: center;
+  font-family: var(--lv-font-paper);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(0, 0, 0, 0.45);
 }
 
 /* ---- Inline inputs: look like text until hovered or focused ---- */
@@ -45,11 +90,9 @@
 .leverage-gta.crew-sheet .lv-inline:focus { border-bottom-color: var(--lv-header); outline: none; }
 .leverage-gta.crew-sheet .lv-inline::placeholder { color: var(--lv-muted); opacity: 0.6; text-shadow: none; }
 
-.leverage-gta.crew-sheet .lv-booking .lv-inline:hover { border-bottom-color: rgba(26, 33, 35, 0.4); }
-.leverage-gta.crew-sheet .lv-booking .lv-inline:focus { border-bottom-color: var(--lv-stamp); }
-
-/* Name: Anton title. Selectors carry an extra class so they beat the `font: inherit` reset above. */
-.leverage-gta.crew-sheet .lv-inline.lv-name {
+/* Name: Anton title with the HUD outline. Selectors carry an extra class so they beat the `font: inherit` reset above. */
+.leverage-gta.crew-sheet .lv-inline.lv-name,
+.leverage-gta.crew-sheet div.lv-name {
   height: 62px;
   font-family: var(--lv-font-display);
   font-size: 54px;
@@ -57,43 +100,51 @@
   line-height: 62px;
   text-transform: uppercase;
   color: #fff;
-  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 3px 0 #000, 3px 3px 0 #000;
 }
 
-.leverage-gta.crew-sheet div.lv-name { height: 62px; line-height: 62px; white-space: nowrap; }
+.leverage-gta.crew-sheet div.lv-name { white-space: nowrap; }
 
-/* Alias: "a.k.a. “La Zorra”" in the UI condensed font (no script font). */
+/* Inline inputs inherit the outline from .lv-hud, but the reset above says `inherit` at higher specificity: restate it */
+.leverage-gta.crew-sheet .lv-inline.lv-hud { text-shadow: var(--lv-hud-shadow); }
+
+/* Alias: Special Elite 19px with the HUD outline (docs/03) */
 .leverage-gta.crew-sheet .lv-alias {
   display: flex;
   align-items: baseline;
   gap: 0;
+  min-height: 25px;
   margin: 0;
-  font-family: var(--lv-font-ui);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-family: var(--lv-font-paper);
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0;
   color: #d7dfdb;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 2px 0 #000;
 }
 
 .leverage-gta.crew-sheet .lv-alias-prefix,
 .leverage-gta.crew-sheet .lv-alias-suffix { flex: none; white-space: pre; }
-.leverage-gta.crew-sheet .lv-alias-prefix { padding-right: 0; }
 .leverage-gta.crew-sheet .lv-inline.lv-alias-input {
   flex: 0 1 auto;
   width: auto;
   min-width: 3ch;
   max-width: 100%;
   field-sizing: content;
-  font-family: var(--lv-font-ui);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-family: var(--lv-font-paper);
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0;
   line-height: 1.2;
 }
 
 /* ---- Life / Vest ---- */
-.leverage-gta.crew-sheet .lv-vital { position: relative; }
+.leverage-gta.crew-sheet .lv-vitals {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 6px;
+}
+
+.leverage-gta.crew-sheet .lv-vital { position: relative; display: flex; align-items: center; }
 
 .leverage-gta.crew-sheet .lv-vital-btn {
   display: flex;
@@ -113,8 +164,13 @@
 
 .leverage-gta.crew-sheet .lv-vital-btn:not(:disabled) { cursor: pointer; }
 .leverage-gta.crew-sheet .lv-vital-icon { flex: none; }
-.leverage-gta.crew-sheet .lv-vital-btn .lv-vital-value { font-family: var(--lv-font-display); font-size: 30px; line-height: 1; }
-.leverage-gta.crew-sheet .lv-vital-btn .lv-vital-max { font-family: var(--lv-font-ui); font-size: 15px; font-weight: 700; color: var(--lv-muted); }
+.leverage-gta.crew-sheet .lv-vital--life .lv-vital-icon { color: var(--lv-life); }
+.leverage-gta.crew-sheet .lv-vital--vest .lv-vital-icon { color: var(--lv-vest); }
+.leverage-gta.crew-sheet .lv-vital-icon path { fill: currentColor; stroke: var(--lv-outline); stroke-width: 2; stroke-linejoin: round; }
+.leverage-gta.crew-sheet .lv-vital-value { font-family: var(--lv-font-display); font-size: 30px; line-height: 1; }
+.leverage-gta.crew-sheet .lv-vital--life .lv-vital-value { color: var(--lv-life-ink); }
+.leverage-gta.crew-sheet .lv-vital--vest .lv-vital-value { color: var(--lv-vest-ink); }
+.leverage-gta.crew-sheet .lv-vital-max { align-self: flex-end; margin-bottom: 3px; font-family: var(--lv-font-ui); font-size: 15px; font-weight: 700; color: var(--lv-muted); }
 .leverage-gta.crew-sheet .lv-vital-btn:not(:disabled):hover,
 .leverage-gta.crew-sheet .lv-vital.is-open .lv-vital-btn { background: rgba(255, 255, 255, 0.1); }
 .leverage-gta.crew-sheet .lv-vital-btn:disabled { cursor: default; opacity: 1; }
@@ -189,32 +245,64 @@
 .leverage-gta.crew-sheet .lv-pop-kind:hover { border-color: var(--lv-ink); }
 .leverage-gta.crew-sheet .lv-pop-kind.is-active { border-color: var(--lv-header); color: var(--lv-header); }
 
-/* ---- Booking Card: 440x134 paper, slightly rotated, never taller than the 164px header ---- */
+/* ---- Booking Card: 440x134 paper, rotated 1.2deg, never taller than the 164px header ---- */
 .leverage-gta.crew-sheet .lv-booking.lv-paper {
   position: relative;
+  z-index: 1;
   display: flex;
+  flex: none;
   flex-direction: column;
   box-sizing: border-box;
   width: 440px;
   height: 134px;
-  border: 3px solid #000;
+  padding: 0;
+  border: 3px solid var(--lv-outline);
   box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
   color: var(--lv-paper-ink);
   font-family: var(--lv-font-paper);
+  transform: rotate(1.2deg);
 }
 
 .leverage-gta.crew-sheet .lv-booking-head {
+  display: flex;
   flex: none;
+  align-items: center;
+  justify-content: space-between;
   height: 24px;
   padding: 0 10px;
+  background: var(--lv-outline);
+  color: #fff;
+  font-family: var(--lv-font-display);
   font-size: 14px;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.leverage-gta.crew-sheet .lv-booking-head > span:first-child { font-family: var(--lv-font-display); }
+/* "Nº 0471-RD": label and value sit together at the right edge */
+.leverage-gta.crew-sheet .lv-booking-number {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-family: var(--lv-font-paper);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--lv-header);
+}
 
-.leverage-gta.crew-sheet .lv-booking-number { gap: 4px; margin: 0; font-family: var(--lv-font-paper); font-size: 12px; letter-spacing: 0; color: var(--lv-header); }
-.leverage-gta.crew-sheet .lv-booking-number .lv-booking-input { width: 96px; text-align: right; color: var(--lv-header); font-size: 12px; line-height: 16px; height: 16px; }
+.leverage-gta.crew-sheet .lv-booking-number .lv-inline {
+  flex: none;
+  width: auto;
+  min-width: 4ch;
+  field-sizing: content;
+  height: 16px;
+  color: var(--lv-header);
+  font-size: 12px;
+  line-height: 16px;
+  text-align: left;
+}
+
 .leverage-gta.crew-sheet .lv-booking-head .lv-inline:hover { border-bottom-color: rgba(216, 194, 74, 0.5); }
 .leverage-gta.crew-sheet .lv-booking-head .lv-inline:focus { border-bottom-color: var(--lv-header); }
 
@@ -223,7 +311,7 @@
   flex: 1;
   min-height: 0;
   gap: 12px;
-  padding: 4px 8px 4px 12px;
+  padding: 6px 8px 6px 12px;
 }
 
 .leverage-gta.crew-sheet .lv-booking-grid {
@@ -231,7 +319,7 @@
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 3px 12px;
+  gap: 4px 12px;
   align-content: start;
   margin: 0;
   padding: 0;
@@ -249,7 +337,7 @@
   line-height: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #5d6866;
+  color: var(--lv-muted-2);
 }
 
 .leverage-gta.crew-sheet .lv-booking-field dd {
@@ -267,7 +355,7 @@
 
 .leverage-gta.crew-sheet .lv-booking-field dd > * { flex: 1; min-width: 0; max-height: 16px; }
 .leverage-gta.crew-sheet .lv-booking .lv-inline:hover { border-bottom-color: rgba(26, 33, 35, 0.4); }
-.leverage-gta.crew-sheet .lv-booking .lv-inline:focus { border-bottom-color: #7a1f17; }
+.leverage-gta.crew-sheet .lv-booking .lv-inline:focus { border-bottom-color: var(--lv-stamp); }
 .leverage-gta.crew-sheet .lv-booking-field .lv-inline {
   box-sizing: border-box;
   height: 16px;
@@ -303,5 +391,5 @@
   line-height: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #5d6866;
+  color: var(--lv-muted-2);
 }

@@ -1,6 +1,67 @@
-/* Pool tray (T-501): chips, separators, "+ DIE", floating die menu, lit rows live in base.css. */
+/* Pool tray (T-501). Single owner of every .lv-tray* rule; chips, separators, "+ DIE" and the floating menu live here.
+   Lit rows (.is-pooled) live in base.css. */
+
+.leverage-gta.crew-sheet .lv-tray {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 76px;
+  padding: 0 24px;
+  background: var(--lv-outline);
+  border-top: 4px solid var(--lv-header);
+}
+
+.leverage-gta.crew-sheet .lv-tray[hidden] { display: none; }
+
+.leverage-gta.crew-sheet .lv-tray-title {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.leverage-gta.crew-sheet .lv-tray-label {
+  font-family: var(--lv-font-display);
+  font-size: 24px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.leverage-gta.crew-sheet .lv-tray-count {
+  font-size: 13px;
+  color: var(--lv-muted);
+}
+
+.leverage-gta.crew-sheet .lv-roll-btn {
+  flex: none;
+  width: 92px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  background: var(--lv-roll);
+  border: 2px solid var(--lv-outline);
+  border-radius: 2px;
+  color: var(--lv-bg-b);
+  font-family: var(--lv-font-display);
+  font-size: 26px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.leverage-gta.crew-sheet .lv-roll-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
 
 .leverage-gta.crew-sheet .lv-tray-chips {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   /* The row never wraps (the tray is fixed height): extra chips scroll sideways, the bar has its own lane. */
   overflow-x: auto;
   scrollbar-width: thin;

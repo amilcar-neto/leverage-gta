@@ -1,50 +1,40 @@
-/* Attributes and Roles (docs/06): rows of five 32px dice. Rows share the column height, no dead space. */
-.leverage-gta.crew-sheet .lv-col--left .lv-attributes { flex: 6 1 0; }
-.leverage-gta.crew-sheet .lv-col--left .lv-roles { flex: 5 1 0; }
+/* Attributes and Roles (docs/06): rows of five 32px dice. Owner of .lv-ladder-row.
+   Mockup pitch is 42px; rows here run 40-46px and the panels are sized to their rows, so no dead space inside. */
+.leverage-gta.crew-sheet .lv-col--left .lv-attributes { flex: 0 1 auto; }
+.leverage-gta.crew-sheet .lv-col--left .lv-roles { flex: 0 1 auto; }
 
 .leverage-gta.crew-sheet .lv-attributes .lv-list,
 .leverage-gta.crew-sheet .lv-roles .lv-list {
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-gutter: stable;
 }
 
 .leverage-gta.crew-sheet .lv-ladder-row {
-  flex: 1 1 0;
-  min-height: 42px;
+  flex: 1 1 46px;
+  min-height: 40px;
+  max-height: 46px;
 }
 
-/* Row names (Attributes, Roles): Barlow Condensed bold caps, left aligned. The button is reset
-   piece by piece (never `font: inherit`, which would drop the size and the caps). */
+/* Row names: the button is reset piece by piece (never `font: inherit`, which would drop the size and the caps). */
 .leverage-gta.crew-sheet .lv-ladder-row .lv-row-name {
   display: block;
-  flex: 1 1 0;
-  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
   background: none;
-  color: var(--lv-ink);
-  font-family: var(--lv-font-ui);
   font-size: 20px;
-  font-weight: 700;
   letter-spacing: 0.06em;
-  line-height: 1.1;
-  text-align: left;
-  text-transform: uppercase;
   cursor: pointer;
 }
 
-.leverage-gta.crew-sheet .lv-ladder-row.is-blank .lv-row-name { color: var(--lv-muted); }
-
-.leverage-gta.crew-sheet .lv-ladder { margin-inline-start: auto; justify-content: flex-end; }
+.leverage-gta.crew-sheet .lv-ladder-row.is-blank .lv-row-name { color: var(--lv-muted); cursor: default; }
 
 .leverage-gta.crew-sheet .lv-ladder-row .lv-name-btn:focus-visible {
   outline: 2px solid var(--lv-select);
   outline-offset: 2px;
 }
 
-.leverage-gta.crew-sheet .lv-ladder-row.is-blank .lv-row-name { cursor: default; }
+.leverage-gta.crew-sheet .lv-ladder-row .lv-ladder { gap: 3px; margin-inline-start: auto; justify-content: flex-end; }
 
 /* Locked or read-only dice are spans: default cursor, no hover feedback */
 .leverage-gta.crew-sheet .lv-ladder span.lv-die { cursor: default; }

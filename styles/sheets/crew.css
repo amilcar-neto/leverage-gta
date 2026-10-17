@@ -1,12 +1,14 @@
-/* Crew sheet (docs/06, docs/03). Window 1180x950 (4px border => 1172 inner), columns 376/400/316, gap 16, margin 24.
-   Parts sit in .window-content; the three .lv-col wrappers are created by CrewSheet#groupColumns. */
+/* Crew sheet LAYOUT only (docs/06, docs/03): window frame, title bar, the three-column grid.
+   Window 1180x950 (4px border => 1172 inner), columns 376/400/316, gap 16, margin 24.
+   Parts sit in .window-content; the three .lv-col wrappers are created by CrewSheet#groupColumns.
+   Components live elsewhere: header.css, ladders.css, lists.css, assets.css (folder), tray.css, base.css. */
 
 /* ---- Window frame and title bar ---- */
 .leverage-gta.crew-sheet {
   min-width: 1100px;
   min-height: 900px;
   background: var(--lv-bg);
-  border: 4px solid #000;
+  border: 4px solid var(--lv-outline);
   border-radius: 8px;
   box-shadow: none;
   color: var(--lv-ink);
@@ -18,7 +20,7 @@
   height: 32px;
   gap: 10px;
   padding: 0 12px;
-  background: #000;
+  background: var(--lv-outline);
   border: 0;
   color: var(--lv-ink);
 }
@@ -57,6 +59,20 @@
   color: #fff;
 }
 
+/* Window icon: hollow yellow hexagon (mask keeps one SVG for any theme color) */
+.leverage-gta.crew-sheet .window-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  font-size: 0;
+  background: var(--lv-header);
+  -webkit-mask: url("../../assets/sheet/window-icon.svg") center / contain no-repeat;
+  mask: url("../../assets/sheet/window-icon.svg") center / contain no-repeat;
+}
+
+.leverage-gta.crew-sheet .window-icon::before { content: none; }
+
 /* Trait-lock seal */
 .leverage-gta .lv-lock-seal {
   --seal: var(--lv-header);
@@ -87,6 +103,8 @@
 
 /* Core buttons carry a min-height; our small controls must not inherit it */
 .leverage-gta.crew-sheet button { min-height: 0; }
+/* Core draws a 1px orange outline on hovered buttons; ours show hover with color or background instead */
+.leverage-gta.crew-sheet button:hover { outline: 0; }
 
 /* ---- Window body: header / three columns / tray ---- */
 .leverage-gta.crew-sheet .window-content {
@@ -115,9 +133,9 @@
 .leverage-gta.crew-sheet .lv-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--lv-col-gap);
   min-height: 0;
-  padding: 16px 0 14px;
+  padding: 14px 0 12px;
 }
 
 .leverage-gta.crew-sheet .lv-col--left { grid-column: 2; grid-row: 2; }
@@ -130,354 +148,3 @@
 .leverage-gta.crew-sheet .lv-assets { flex: 1 1 0; }
 
 .leverage-gta.crew-sheet .lv-folder { flex: 0 0 300px; }
-
-/* Core h2 margins would push the list down */
-.leverage-gta.crew-sheet .lv-panel-head { margin: 0; }
-
-.leverage-gta.crew-sheet .lv-panel-body {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-.leverage-gta.crew-sheet .lv-panel-hint {
-  font-family: var(--lv-font-ui);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: none;
-}
-
-.leverage-gta.crew-sheet .lv-empty {
-  margin: 0;
-  padding: 10px 8px;
-  color: var(--lv-muted);
-  font-size: 14px;
-}
-
-/* ---- Header ---- */
-.leverage-gta.crew-sheet .lv-header {
-  grid-column: 1 / -1;
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  height: 164px;
-  padding: 0 24px;
-  background: #27363f;
-  border-bottom: 4px solid #000;
-  overflow: hidden;
-}
-
-.leverage-gta.crew-sheet .lv-mugshot {
-  position: relative;
-  flex: none;
-  width: 112px;
-  height: 140px;
-  background: #d9d6ca repeating-linear-gradient(180deg, transparent 0 13px, rgba(0, 0, 0, 0.18) 13px 14px);
-  border: 4px solid #000;
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-}
-
-.leverage-gta.crew-sheet .lv-mugshot-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  object-fit: contain;
-  object-position: bottom;
-}
-
-.leverage-gta.crew-sheet .lv-mugshot-empty {
-  position: absolute;
-  inset: auto 0 6px;
-  text-align: center;
-  font-family: var(--lv-font-paper);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: rgba(0, 0, 0, 0.45);
-}
-
-.leverage-gta.crew-sheet .lv-identity {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.leverage-gta .lv-hud {
-  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 3px 0 #000, 3px 3px 0 #000;
-}
-
-.leverage-gta.crew-sheet .lv-name {
-  font-family: var(--lv-font-display);
-  font-size: 54px;
-  line-height: 1.15;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.leverage-gta.crew-sheet .lv-alias {
-  min-height: 25px;
-  font-family: var(--lv-font-paper);
-  font-size: 19px;
-  color: #d7dfdb;
-}
-
-.leverage-gta.crew-sheet .lv-vitals {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  margin-top: 6px;
-}
-
-.leverage-gta.crew-sheet .lv-vital {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.leverage-gta.crew-sheet .lv-vital-icon { font-size: 24px; }
-.leverage-gta.crew-sheet .lv-vital--life .lv-vital-icon { color: var(--lv-life); }
-.leverage-gta.crew-sheet .lv-vital--vest .lv-vital-icon { color: var(--lv-vest); }
-
-.leverage-gta.crew-sheet .lv-vital-value {
-  font-family: var(--lv-font-display);
-  font-size: 30px;
-  line-height: 1;
-}
-
-.leverage-gta.crew-sheet .lv-vital--life .lv-vital-value { color: #ff8fa6; }
-.leverage-gta.crew-sheet .lv-vital--vest .lv-vital-value { color: #fff; }
-
-.leverage-gta.crew-sheet .lv-vital-max {
-  align-self: flex-end;
-  margin-bottom: 3px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--lv-muted);
-}
-
-/* Booking Card */
-.leverage-gta.crew-sheet .lv-booking {
-  flex: none;
-  width: 437px;
-  padding: 0;
-  transform: rotate(1.2deg);
-}
-
-.leverage-gta.crew-sheet .lv-booking-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 24px;
-  padding: 0 10px;
-  background: #000;
-  font-family: var(--lv-font-display);
-  font-size: 14px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.leverage-gta.crew-sheet .lv-booking-number {
-  font-family: var(--lv-font-paper);
-  font-size: 12px;
-  color: var(--lv-header);
-}
-
-.leverage-gta.crew-sheet .lv-booking-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px 14px;
-  margin: 0;
-  padding: 8px 10px;
-}
-
-.leverage-gta.crew-sheet .lv-booking-field { min-width: 0; }
-.leverage-gta.crew-sheet .lv-booking-field--marks { grid-column: 1 / -1; }
-
-.leverage-gta.crew-sheet .lv-booking-field dt {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(26, 33, 35, 0.6);
-}
-
-.leverage-gta.crew-sheet .lv-booking-field dd {
-  margin: 0;
-  min-height: 17px;
-  font-size: 14px;
-}
-
-/* ---- Rows ---- */
-.leverage-gta.crew-sheet .lv-list {
-  display: flex;
-  flex-direction: column;
-  padding: 4px 8px;
-}
-
-.leverage-gta.crew-sheet .lv-row-name {
-  flex: 1;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.leverage-gta.crew-sheet .lv-row-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.leverage-gta.crew-sheet .lv-row--stack .lv-row-name { font-size: 18px; }
-
-.leverage-gta.crew-sheet .lv-row-note {
-  font-size: 13px;
-  color: var(--lv-muted);
-}
-
-.leverage-gta.crew-sheet .lv-when {
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--lv-accent-2);
-}
-
-.leverage-gta.crew-sheet .lv-ladder {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 6px;
-}
-
-.leverage-gta.crew-sheet .lv-ladder-row { min-height: 42px; }
-.leverage-gta.crew-sheet .lv-ladder-row.is-blank .lv-row-name { color: var(--lv-muted); }
-
-.leverage-gta.crew-sheet .lv-grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-content: start;
-  gap: 0 8px;
-  padding: 4px 8px;
-}
-
-.leverage-gta.crew-sheet .lv-grid-2 .lv-empty { grid-column: 1 / -1; }
-.leverage-gta.crew-sheet .lv-specialties { flex: none; min-height: 100px; }
-.leverage-gta.crew-sheet .lv-specialties .lv-row-name { font-size: 16px; }
-
-/* ---- Folder (BACKGROUND / JOBS) ---- */
-.leverage-gta.crew-sheet .lv-folder {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.leverage-gta.crew-sheet .lv-folder-tabs {
-  display: flex;
-  flex: none;
-  gap: 4px;
-  padding-left: 10px;
-}
-
-.leverage-gta.crew-sheet .lv-folder-tab {
-  padding: 3px 14px 2px;
-  background: #9d9a8c;
-  border: 2px solid #000;
-  border-bottom: 0;
-  border-radius: 6px 6px 0 0;
-  font-family: var(--lv-font-display);
-  font-size: 15px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #3b3d38;
-}
-
-.leverage-gta.crew-sheet .lv-folder-tab.is-active {
-  background: var(--lv-paper);
-  color: var(--lv-paper-ink);
-}
-
-.leverage-gta.crew-sheet .lv-folder-page {
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 6px 8px 8px 10px;
-}
-
-.leverage-gta.crew-sheet .lv-folder-text {
-  flex: 1 1 0;
-  font-size: 15px;
-  line-height: 1.4;
-}
-
-.leverage-gta.crew-sheet .lv-folder-page .lv-empty { color: rgba(26, 33, 35, 0.6); }
-
-/* ---- Tray ---- */
-.leverage-gta.crew-sheet .lv-tray {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  height: 76px;
-  padding: 0 24px;
-  background: #000;
-  border-top: 4px solid var(--lv-header);
-}
-
-.leverage-gta.crew-sheet .lv-tray[hidden] { display: none; }
-
-.leverage-gta.crew-sheet .lv-tray-title {
-  display: flex;
-  flex: none;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.leverage-gta.crew-sheet .lv-tray-label {
-  font-family: var(--lv-font-display);
-  font-size: 24px;
-  line-height: 1;
-  color: #fff;
-}
-
-.leverage-gta.crew-sheet .lv-tray-count {
-  font-size: 13px;
-  color: var(--lv-muted);
-}
-
-.leverage-gta.crew-sheet .lv-tray-chips {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.leverage-gta.crew-sheet .lv-roll-btn {
-  flex: none;
-  width: 92px;
-  height: 44px;
-  margin: 0;
-  padding: 0;
-  background: var(--lv-roll);
-  border: 2px solid #000;
-  border-radius: 2px;
-  color: #0b1012;
-  font-family: var(--lv-font-display);
-  font-size: 26px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.leverage-gta.crew-sheet .lv-roll-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}

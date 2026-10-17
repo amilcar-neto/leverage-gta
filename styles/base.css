@@ -6,14 +6,19 @@
   color: var(--lv-ink);
 }
 
-/* Panel: dark body with a yellow title strip */
+/* Outlined HUD text (GTA III): white fill, thick black outline */
+.leverage-gta .lv-hud {
+  text-shadow: var(--lv-hud-shadow);
+}
+
+/* Panel: dark body with a yellow title strip (mockup: 34px strip, Anton 21px white with outline) */
 .leverage-gta .lv-panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
   background: var(--lv-panel);
   border: var(--lv-border);
-  box-shadow: var(--lv-shadow);
+  box-shadow: var(--lv-shadow-panel);
 }
 
 .leverage-gta .lv-panel-head {
@@ -22,12 +27,17 @@
   justify-content: space-between;
   gap: 8px;
   flex: none;
-  padding: 2px 8px;
+  height: 34px;
+  margin: 0;
+  padding: 0 12px;
   background: var(--lv-header);
-  color: var(--lv-outline);
+  color: var(--lv-die-ink);
+  border: 0;
   border-bottom: var(--lv-border);
   font-family: var(--lv-font-display);
-  font-size: 16px;
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -37,7 +47,112 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #fff;
+  text-shadow: var(--lv-hud-shadow);
 }
+
+.leverage-gta .lv-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Right side of a panel strip: small count or hint, then an optional "+ ADD" */
+.leverage-gta .lv-head-tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.leverage-gta .lv-panel-hint {
+  font-family: var(--lv-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: none;
+}
+
+/* "+ ADD" in a panel strip */
+.leverage-gta .lv-add-btn {
+  display: flex;
+  align-items: center;
+  height: 22px;
+  min-height: 0;
+  margin: 0;
+  padding: 0 8px;
+  background: var(--lv-die-ink);
+  color: var(--lv-header);
+  border: 2px solid var(--lv-outline);
+  border-radius: 3px;
+  font-family: var(--lv-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-add-btn:hover,
+.leverage-gta .lv-add-btn:focus-visible { background: var(--lv-outline); }
+
+/* Tag: small pill (Role, cost, Asset duration). Variants only change colors and shape. */
+.leverage-gta .lv-tag {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  box-sizing: border-box;
+  height: 20px;
+  margin: 0;
+  padding: 0 7px;
+  background: var(--lv-header);
+  color: var(--lv-die-ink);
+  border: 2px solid var(--lv-outline);
+  border-radius: 999px;
+  font-family: var(--lv-font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-tag--role,
+.leverage-gta .lv-tag--cost { background: var(--lv-header); }
+.leverage-gta .lv-tag--open { background: var(--lv-paper); }
+
+/* Specialty Role tag: quiet outlined box */
+.leverage-gta .lv-tag--spec {
+  height: 20px;
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #c9d5d2;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+/* Asset duration tags: small square-ish */
+.leverage-gta .lv-tag--signature,
+.leverage-gta .lv-tag--job,
+.leverage-gta .lv-tag--scene {
+  height: auto;
+  padding: 0 5px;
+  border-width: 1px;
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 15px;
+}
+
+.leverage-gta .lv-tag--signature { background: var(--lv-header); border-color: var(--lv-outline); }
+.leverage-gta .lv-tag--job { background: rgba(127, 194, 180, 0.18); color: var(--lv-teal-ink); border-color: var(--lv-accent-2); }
+.leverage-gta .lv-tag--scene { background: transparent; color: var(--lv-muted); border-color: var(--lv-muted); }
+
+.leverage-gta button.lv-tag { cursor: pointer; }
+.leverage-gta button.lv-tag:hover,
+.leverage-gta button.lv-tag:focus-visible { filter: brightness(1.12); }
 
 /* Row: flat at rest, lit border when it is in the Pool */
 .leverage-gta .lv-row {
@@ -116,27 +231,35 @@
   box-shadow: 3px 3px 0 var(--lv-outline);
 }
 
-/* Delete button: discreet, red on hover */
+/* Delete button (one SVG X from templates/actor/crew/partials/x-button.hbs): quiet, red on hover */
 .leverage-gta .lv-xbtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+  margin: 0;
   padding: 0;
   border: 0;
+  border-radius: 3px;
   background: transparent;
-  color: var(--lv-muted);
-  font: inherit;
+  color: var(--lv-muted-2);
   line-height: 1;
   cursor: pointer;
 }
 
 .leverage-gta .lv-xbtn:hover,
-.leverage-gta .lv-xbtn:focus-visible {
-  color: var(--lv-stamp);
-}
+.leverage-gta .lv-xbtn:focus-visible { color: var(--lv-stamp-hover); background: rgba(255, 107, 107, 0.12); }
+
+.leverage-gta .lv-xbtn svg { display: block; width: 12px; height: 12px; }
+.leverage-gta .lv-xbtn--sm svg { width: 11px; height: 11px; }
+
+/* On paper */
+.leverage-gta .lv-paper .lv-xbtn { color: var(--lv-paper-dim); }
+.leverage-gta .lv-paper .lv-xbtn:hover,
+.leverage-gta .lv-paper .lv-xbtn:focus-visible { color: var(--lv-stamp); background: rgba(179, 32, 42, 0.1); }
 
 /* Scroll area: gutter always reserved so the bar never covers an X or a die */
 .leverage-gta .lv-scroll {
@@ -145,17 +268,17 @@
   scrollbar-gutter: stable;
   padding-inline-end: var(--lv-gutter);
   scrollbar-width: thin;
-  scrollbar-color: #8a9b98 rgba(255, 255, 255, 0.07);
+  scrollbar-color: var(--lv-scroll-thumb) rgba(255, 255, 255, 0.07);
 }
 
 .leverage-gta .lv-scroll::-webkit-scrollbar { width: var(--lv-scrollbar); }
 .leverage-gta .lv-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.07); border-radius: 4px; }
-.leverage-gta .lv-scroll::-webkit-scrollbar-thumb { background: #8a9b98; border-radius: 4px; }
+.leverage-gta .lv-scroll::-webkit-scrollbar-thumb { background: var(--lv-scroll-thumb); border-radius: 4px; }
 
 /* Scroll area on paper */
-.leverage-gta .lv-paper .lv-scroll { scrollbar-color: #6f6e62 rgba(0, 0, 0, 0.08); }
+.leverage-gta .lv-paper .lv-scroll { scrollbar-color: var(--lv-paper-dim-2) rgba(0, 0, 0, 0.08); }
 .leverage-gta .lv-paper .lv-scroll::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.08); }
-.leverage-gta .lv-paper .lv-scroll::-webkit-scrollbar-thumb { background: #6f6e62; }
+.leverage-gta .lv-paper .lv-scroll::-webkit-scrollbar-thumb { background: var(--lv-paper-dim-2); }
 
 /* Long text: ellipsis (put the full text in a tooltip) */
 .leverage-gta .lv-ellipsis {

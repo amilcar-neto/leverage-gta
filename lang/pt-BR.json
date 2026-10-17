@@ -364,12 +364,21 @@
           "attribute": "Degrau de Attribute",
           "role": "Degrau de Role"
         }
+      },
+      "Complication": {
+        "title": "Complication",
+        "target": "Complication",
+        "createNew": "Nova Complication (d6)",
+        "raise": "Subir {name}: d{from} para d{to}",
+        "name": "Nome",
+        "namePlaceholder": "O que dá errado?",
+        "hint": "O jogador ganha 1 Plot Point. A Complication vai para o Job ativo.",
+        "confirm": "Adicionar"
       }
     },
     "SystemTitle": "Leverage: Liberty City",
     "Sheet": {
       "Crew": "Ficha da Equipe",
-      "add": "+ Adicionar",
       "addToPool": "Adicionar à Pool",
       "delete": "Excluir",
       "Add": "+ Adicionar",
@@ -392,6 +401,7 @@
         "aliasPlaceholder": "apelido",
         "decrease": "Diminuir",
         "increase": "Aumentar",
+        "number": "Nº",
         "thumb": "R. Thumb"
       },
       "Ladders": {
@@ -576,7 +586,11 @@
       "keepButton": "+1 PP · Manter o 3º dado",
       "keepTip": "Gaste um Plot Point para somar o próximo maior dado ao total",
       "complicationButton": "Mestre · Complication",
-      "complicationTip": "Mestre: criar ou subir uma Complication e dar 1 Plot Point"
+      "complicationTip": "Mestre: criar ou subir uma Complication e dar 1 Plot Point",
+      "ppSpent": "+{count} PP gasto: dado extra mantido"
+    },
+    "Socket": {
+      "noGM": "Nenhum Fixer conectado para processar esta ação."
     }
   }
 }

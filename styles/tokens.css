@@ -23,6 +23,7 @@
   --lv-select: #f2efe4;
   --lv-select-rgb: 242, 239, 228;
   --lv-stamp: #b3202a;
+  --lv-stamp-hover: #ff6b6b;
   --lv-life: #ff6f8e;
   --lv-life-ink: #ff8fa6;
   --lv-vest: #c9d1d4;
@@ -52,6 +53,7 @@
   /* Shape and spacing */
   --lv-border: 3px solid var(--lv-outline);
   --lv-shadow: 4px 4px 0 var(--lv-outline);
+  --lv-hud-shadow: -2px -2px 0 var(--lv-outline), 2px -2px 0 var(--lv-outline), -2px 2px 0 var(--lv-outline), 2px 2px 0 var(--lv-outline), 0 3px 0 var(--lv-outline), 3px 3px 0 var(--lv-outline);
   --lv-shadow-panel: 5px 5px 0 rgba(0, 0, 0, 0.45);
   --lv-col-gap: 12px;
   --lv-gap: 16px;

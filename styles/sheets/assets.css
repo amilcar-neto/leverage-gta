@@ -1,34 +1,12 @@
-/* Assets panel + case folder (BACKGROUND / JOBS) + their dialogs. Layer `system`, scoped to .leverage-gta. */
-
-/* ---- Panel head tools: count + "+ ADD" ---- */
-.leverage-gta .lv-head-tools {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 8px;
-}
-
-.leverage-gta .lv-add-btn {
-  height: 22px;
-  min-height: 0;
-  margin: 0;
-  padding: 0 8px;
-  background: #10150f;
-  color: var(--lv-header);
-  border: 2px solid #000;
-  border-radius: 3px;
-  font-family: var(--lv-font-ui);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.leverage-gta .lv-add-btn:hover,
-.leverage-gta .lv-add-btn:focus-visible { background: #000; }
+/* Assets panel + case folder (BACKGROUND / JOBS) + their dialogs. Layer `system`, scoped to .leverage-gta.
+   Owner of .lv-folder, .lv-folder-tab(s), .lv-folder-page and .lv-folder-text. */
 
 /* ---- Asset rows ---- */
+.leverage-gta.crew-sheet .lv-assets .lv-list {
+  gap: 4px;
+  padding: 7px 6px 5px 7px;
+}
+
 .leverage-gta .lv-asset {
   flex: none;
   height: 48px;
@@ -57,25 +35,7 @@
   margin-top: 2px;
 }
 
-.leverage-gta .lv-tag {
-  flex: none;
-  padding: 0 5px;
-  border: 1px solid #000;
-  border-radius: 3px;
-  background: #5d6866;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  line-height: 15px;
-  text-transform: uppercase;
-}
-
-.leverage-gta .lv-tag--signature { background: var(--lv-header); color: #10150f; }
-.leverage-gta .lv-tag--job { background: #8fb8d8; color: #10150f; }
-.leverage-gta .lv-tag--scene { background: #5d6866; color: #f2efe4; }
-
-.leverage-gta .lv-asset .lv-row-note { min-width: 0; }
+.leverage-gta .lv-asset .lv-row-note { min-width: 0; font-size: 13px; }
 
 /* Die as a plain button around the die component */
 .leverage-gta .lv-die-btn {
@@ -92,7 +52,17 @@
 }
 
 /* ---- Folder: tabs sit on the page border (mockup: 25px idle, 28px active, 3px black border) ---- */
+.leverage-gta.crew-sheet .lv-folder {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .leverage-gta.crew-sheet .lv-folder-tabs {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  padding-left: 10px;
   position: relative;
   z-index: 1;
   align-items: flex-end;
@@ -106,9 +76,9 @@
   min-height: 0;
   margin: 3px 0 0;
   padding: 0 14px;
-  background: #a9a592;
-  color: #3b4242;
-  border: 3px solid #000;
+  background: var(--lv-paper-tab);
+  color: var(--lv-paper-tab-ink);
+  border: 3px solid var(--lv-outline);
   border-bottom: 0;
   border-radius: 6px 6px 0 0;
   font-family: var(--lv-font-display);
@@ -128,12 +98,24 @@
 }
 
 .leverage-gta.crew-sheet .lv-folder-page {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding: 8px 0 8px 10px;
   gap: 4px;
-  border: 3px solid #000;
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
+  border: 3px solid var(--lv-outline);
+  box-shadow: var(--lv-shadow-panel);
   overflow: hidden;
 }
+
+.leverage-gta.crew-sheet .lv-folder-text {
+  flex: 1 1 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.leverage-gta.crew-sheet .lv-folder-page .lv-empty { color: rgba(26, 33, 35, 0.6); }
 
 .leverage-gta .lv-paper-btn {
   height: 22px;
@@ -154,7 +136,7 @@
   cursor: pointer;
 }
 
-.leverage-gta .lv-paper-btn--solid { background: var(--lv-paper-ink); color: var(--lv-paper); border-color: #000; }
+.leverage-gta .lv-paper-btn--solid { background: var(--lv-paper-ink); color: var(--lv-paper); border-color: var(--lv-outline); }
 .leverage-gta .lv-paper-btn:hover,
 .leverage-gta .lv-paper-btn:focus-visible { filter: brightness(1.25); }
 
@@ -192,19 +174,18 @@
 .leverage-gta .lv-jobs-bar {
   display: flex;
   flex: none;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 4px 8px;
+  gap: 8px;
   padding-right: 10px;
 }
 
-/* Full summary; the buttons wrap below it when a longer translation needs the room */
+/* One line in every language: the summary shrinks with an ellipsis (full text in the tooltip), the buttons never wrap */
 .leverage-gta .lv-jobs-summary {
-  flex: 0 0 auto;
-  max-width: 100%;
+  flex: 0 1 auto;
+  min-width: 0;
   font-family: var(--lv-font-paper);
   font-size: 14px;
-  white-space: nowrap;
 }
 
 .leverage-gta .lv-jobs-actions { display: flex; flex: none; gap: 6px; margin-left: auto; }
@@ -216,10 +197,12 @@
   margin-right: 18px;
   padding: 0 0 2px;
   border-bottom: 2px solid var(--lv-paper-ink);
-  color: #5d6866;
+  color: var(--lv-muted-2);
+  font-family: var(--lv-font-ui);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .leverage-gta .lv-jobs-col-name { flex: 1; min-width: 0; }
@@ -258,7 +241,7 @@
 }
 
 .leverage-gta .lv-job-name:hover { text-decoration: underline; }
-.leverage-gta .lv-job.is-spent .lv-job-name { color: #6f7774; text-decoration: line-through; }
+.leverage-gta .lv-job.is-spent .lv-job-name { color: var(--lv-paper-spent); text-decoration: line-through; }
 
 .leverage-gta .lv-stamp-spent {
   flex: none;
@@ -280,7 +263,7 @@
   text-align: right;
   font-family: var(--lv-font-display);
   font-size: 14px;
-  color: #2c6e33;
+  color: var(--lv-money);
 }
 
 .leverage-gta .lv-job-callback {
@@ -292,7 +275,6 @@
 }
 
 .leverage-gta .lv-job-x { display: flex; flex: none; width: 20px; justify-content: center; }
-.leverage-gta .lv-job .lv-xbtn { width: 20px; height: 20px; color: #8b8a7c; }
 
 .leverage-gta .lv-check {
   display: flex;

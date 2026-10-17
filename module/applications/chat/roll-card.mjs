@@ -4,6 +4,8 @@
  */
 import { SYSTEM_ID } from "../../config.mjs";
 import { renderDie } from "../components/die.mjs";
+import { unresolvedOnes } from "../../dice/card-actions.mjs";
+import { cardHandlers, registerCardSocket } from "./card-handlers.mjs";
 
 /** Template of the card. */
 export const ROLL_CARD_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/roll-card.hbs`;
@@ -48,7 +50,7 @@ export function dieContext(entry, t) {
 export function rollCardContext(data, { t, isOwner = false, isGM = false, plotPoints = 0 }) {
   const entries = data.entries ?? [];
   const keptValues = entries.filter((e) => e.kept).map((e) => e.result).sort((a, b) => b - a);
-  const unresolved = Math.max(0, entries.filter((e) => e.one).length - (data.complicationsResolved?.length ?? 0));
+  const unresolved = unresolvedOnes(data).length;
   const spare = entries.some((e) => !e.kept && !e.one);
   const photo = data.actorImg && !data.actorImg.includes(NO_PHOTO) ? data.actorImg : "";
   const showKeep = isOwner && plotPoints > 0 && spare;
@@ -64,6 +66,7 @@ export function rollCardContext(data, { t, isOwner = false, isGM = false, plotPo
     onesText: unresolved ? t(`LEVERAGE.Roll.onesWarning${unresolved === 1 ? "One" : "Many"}`, { count: unresolved }) : "",
     ppNotes: [
       data.distinctionPP ? t("LEVERAGE.Roll.distinctionPP", { count: data.distinctionPP }) : "",
+      data.ppSpent ? t("LEVERAGE.Roll.ppSpent", { count: data.ppSpent }) : "",
       data.money ? t("LEVERAGE.Roll.moneyDrop") : ""
     ].filter(Boolean),
     showKeep, showComplication, showActions: showKeep || showComplication,
@@ -71,17 +74,6 @@ export function rollCardContext(data, { t, isOwner = false, isGM = false, plotPo
     complicationLabel: t("LEVERAGE.Roll.complicationButton"), complicationTip: t("LEVERAGE.Roll.complicationTip")
   };
 }
-
-/**
- * Click handlers of the card buttons, by `data-action`.
- * TODO(T-503): implement. Both edit the message flags (spend a Plot Point and keep the next die; create or raise a
- * Complication, give 1 Plot Point, mark the 1 as resolved), through a socket when the user cannot update the message.
- * @type {Record<string, (message: ChatMessage, event: Event) => void>}
- */
-export const cardActions = {
-  keepDie() { /* TODO(T-503) */ },
-  complication() { /* TODO(T-503) */ }
-};
 
 /* ------------------------------------------------------------ Foundry half */
 
@@ -105,7 +97,7 @@ function paint(message, html, data, template) {
   html.classList.add("lv-roll-message");
   host.innerHTML = template(context);
   host.querySelectorAll("[data-action]").forEach((button) => {
-    button.addEventListener("click", (event) => cardActions[button.dataset.action]?.(message, event));
+    button.addEventListener("click", (event) => cardHandlers[button.dataset.action]?.(message, event));
   });
 }
 
@@ -120,5 +112,6 @@ function onRenderMessage(message, html) {
 /** Registers the card hooks (call once, from `init`). */
 export function registerRollCard() {
   Hooks.on("renderChatMessageHTML", onRenderMessage);
+  registerCardSocket();
   Hooks.once("ready", ensureTemplate);
 }

@@ -23,7 +23,7 @@
     <div class="lv-vitals">
       <div class="lv-vital lv-vital--life{{#if openLife}} is-open{{/if}}">
         <button type="button" class="lv-vital-btn" {{#if canEditHeader}}data-action="toggleVital" data-vital="life" aria-expanded="{{#if openLife}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.life'}}">
-          <svg class="lv-vital-icon" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.2 3.4 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 5.8 3.7 4.4 7.2C19.5 16.4 12 21 12 21z" fill="#ff6f8e" stroke="#000" stroke-width="2" stroke-linejoin="round"/></svg><span class="lv-vital-value lv-hud">{{system.life.value}}</span><span class="lv-vital-max">/{{system.life.max}}</span>
+          <svg class="lv-vital-icon" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.2 3.4 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 5.8 3.7 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg><span class="lv-vital-value lv-hud">{{system.life.value}}</span><span class="lv-vital-max">/{{system.life.max}}</span>
         </button>
         {{#if openLife}}
         <div class="lv-pop" role="group" aria-label="{{localize 'LEVERAGE.Sheet.Header.life'}}">
@@ -35,7 +35,7 @@
       </div>
       <div class="lv-vital lv-vital--vest{{#if openVest}} is-open{{/if}}">
         <button type="button" class="lv-vital-btn" {{#if canEditHeader}}data-action="toggleVital" data-vital="vest" aria-expanded="{{#if openVest}}true{{else}}false{{/if}}"{{else}}disabled{{/if}} title="{{localize 'LEVERAGE.Sheet.Header.vest'}}{{#if vestLabel}} · {{localize vestLabel}}{{/if}}">
-          <svg class="lv-vital-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="#c9d1d4" stroke="#000" stroke-width="2" stroke-linejoin="round"/></svg><span class="lv-vital-value lv-hud">{{system.vest.value}}</span><span class="lv-vital-max">/{{system.vest.max}}</span>
+          <svg class="lv-vital-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z"/></svg><span class="lv-vital-value lv-hud">{{system.vest.value}}</span><span class="lv-vital-max">/{{system.vest.max}}</span>
         </button>
         {{#if openVest}}
         <div class="lv-pop lv-pop--vest" role="group" aria-label="{{localize 'LEVERAGE.Sheet.Header.vest'}}">
@@ -59,9 +59,9 @@
     <div class="lv-booking-head">
       <span>{{localize "LEVERAGE.Sheet.Header.bookingCard"}}</span>
       {{#if canEditHeader}}
-      <label class="lv-booking-number">Nº <input type="text" class="lv-booking-input lv-inline" name="system.booking.number" value="{{bookingNumber.value}}" title="{{localize bookingNumber.label}}" aria-label="{{localize bookingNumber.label}}"></label>
+      <label class="lv-booking-number">{{localize "LEVERAGE.Sheet.Header.number"}} <input type="text" class="lv-booking-input lv-inline" name="system.booking.number" value="{{bookingNumber.value}}" title="{{localize bookingNumber.label}}" aria-label="{{localize bookingNumber.label}}"></label>
       {{else}}
-      <span class="lv-booking-number">{{#if bookingNumber.value}}Nº {{bookingNumber.value}}{{/if}}</span>
+      <span class="lv-booking-number">{{#if bookingNumber.value}}{{localize "LEVERAGE.Sheet.Header.number"}} {{bookingNumber.value}}{{/if}}</span>
       {{/if}}
     </div>
     <div class="lv-booking-body">

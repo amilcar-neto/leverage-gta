@@ -1,5 +1,5 @@
 <section class="lv-panel lv-talents">
-  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.talents"}}</span><span class="lv-panel-tools"><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.clickToOpen"}}</span>{{#if canEdit}}<button type="button" class="lv-addbtn" data-action="addTraitItem" data-type="talent" title="{{localize "LEVERAGE.Sheet.New.talent"}}">{{localize "LEVERAGE.Sheet.add"}}</button>{{/if}}</span></h2>
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.talents"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.clickToOpen"}}</span>{{#if canEdit}}<button type="button" class="lv-add-btn" data-action="addTraitItem" data-type="talent" title="{{localize "LEVERAGE.Sheet.New.talent"}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}</span></h2>
   <div class="lv-panel-body lv-list lv-scroll">
     {{#each talents}}
     <div class="lv-row lv-row--talent draggable" data-item-id="{{id}}" data-action="openTraitItem">
@@ -7,14 +7,14 @@
         <span class="lv-row-line">
           <span class="lv-row-name lv-ellipsis" title="{{name}}">{{name}}</span>
           <span class="lv-tags">
-            {{#if system.cost}}<span class="lv-tag">{{localize "LEVERAGE.Sheet.Talent.cost"}}</span>{{/if}}
-            <span class="lv-tag{{#if (eq system.role "open")}} lv-tag--open{{/if}}">{{localize (lookup @root.roleLabels system.role)}}</span>
+            {{#if system.cost}}<span class="lv-tag lv-tag--cost">{{localize "LEVERAGE.Sheet.Talent.cost"}}</span>{{/if}}
+            <span class="lv-tag lv-tag--{{#if (eq system.role "open")}}open{{else}}role{{/if}}">{{localize (lookup @root.roleLabels system.role)}}</span>
           </span>
         </span>
         <span class="lv-row-note lv-ellipsis" title="{{system.activation}}">{{#if system.activation}}<b class="lv-when">{{localize "LEVERAGE.Sheet.Hint.when"}}</b> {{system.activation}}{{/if}}</span>
       </span>
       {{#if system.die}}<button type="button" class="lv-pool-btn" data-action="togglePool" data-pool-ref="item:{{id}}" aria-pressed="false" title="{{localize "LEVERAGE.Sheet.Talent.die"}}" aria-label="{{localize "LEVERAGE.Sheet.Talent.die"}}">{{lvDie system.die die=system.die size=32}}</button>{{/if}}
-      {{#if @root.canEdit}}<button type="button" class="lv-xbtn" data-action="deleteTraitItem" title="{{localize "LEVERAGE.Sheet.delete"}}" aria-label="{{localize "LEVERAGE.Sheet.delete"}}">&times;</button>{{/if}}
+      {{#if @root.canEdit}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteTraitItem" label=(localize "LEVERAGE.Sheet.delete")}}{{/if}}
     </div>
     {{else}}
     <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.talents"}}</p>

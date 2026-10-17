@@ -1,5 +1,5 @@
 <section class="lv-panel lv-distinctions">
-  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.distinctions"}}</span><span class="lv-panel-tools"><span class="lv-panel-hint">{{distinctions.length}} / {{maxDistinctions}}</span>{{#if canEdit}}<button type="button" class="lv-addbtn" data-action="addTraitItem" data-type="distinction" title="{{localize "LEVERAGE.Sheet.New.distinction"}}">{{localize "LEVERAGE.Sheet.add"}}</button>{{/if}}</span></h2>
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.distinctions"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{distinctions.length}} / {{maxDistinctions}}</span>{{#if canEdit}}{{#if (lt distinctions.length maxDistinctions)}}<button type="button" class="lv-add-btn" data-action="addTraitItem" data-type="distinction" title="{{localize "LEVERAGE.Sheet.New.distinction"}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}{{/if}}</span></h2>
   <div class="lv-panel-body lv-list">
     {{#each distinctions}}
     <div class="lv-row lv-row--dist draggable" data-item-id="{{id}}">
@@ -9,7 +9,7 @@
           <button type="button" class="lv-pool-btn" data-action="togglePool" data-pool-ref="item:{{id}}:d8" aria-pressed="false" title="{{localize "LEVERAGE.Sheet.Distinction.helps"}}" aria-label="{{localize "LEVERAGE.Sheet.Distinction.helps"}}">{{lvDie 8 die=8 size=32}}</button>
           <button type="button" class="lv-pool-btn" data-action="togglePool" data-pool-ref="item:{{id}}:d4" aria-pressed="false" title="{{localize "LEVERAGE.Sheet.Distinction.hurts"}}" aria-label="{{localize "LEVERAGE.Sheet.Distinction.hurts"}}">{{lvDie 4 die=4 size=32}}<span class="lv-dist-pp">{{localize "LEVERAGE.Sheet.Distinction.pp"}}</span></button>
         </span>
-        {{#if @root.canEdit}}<button type="button" class="lv-xbtn" data-action="deleteTraitItem" title="{{localize "LEVERAGE.Sheet.delete"}}" aria-label="{{localize "LEVERAGE.Sheet.delete"}}">&times;</button>{{/if}}
+        {{#if @root.canEdit}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteTraitItem" label=(localize "LEVERAGE.Sheet.delete")}}{{/if}}
       </span>
       <button type="button" class="lv-row-note lv-link lv-ellipsis" data-action="openTraitItem" title="{{system.note}}">{{system.note}}</button>
     </div>

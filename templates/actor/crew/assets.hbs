@@ -17,7 +17,7 @@
         </span>
       </span>
       <button type="button" class="lv-die-btn" data-action="togglePool" data-pool-ref="item:{{id}}" aria-label="{{localize 'LEVERAGE.Sheet.addToPool'}}" title="{{localize 'LEVERAGE.Sheet.addToPool'}}">{{lvDie die die=die size=32}}</button>
-      {{#if ../assetsEditable}}<button type="button" class="lv-xbtn" data-action="deleteAsset" aria-label="{{localize 'LEVERAGE.Sheet.Assets.delete'}}" title="{{localize 'LEVERAGE.Sheet.Assets.delete'}}"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>{{/if}}
+      {{#if ../assetsEditable}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="deleteAsset" label=(localize "LEVERAGE.Sheet.Assets.delete")}}{{/if}}
     </div>
     {{else}}
     <p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.assets"}}</p>

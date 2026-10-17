@@ -14,6 +14,7 @@ import * as documents from "./module/documents/_module.mjs";
 import * as sheets from "./module/applications/actor/_module.mjs";
 import * as itemSheets from "./module/applications/item/_module.mjs";
 import { registerRollHandler } from "./module/dice/roll-handler.mjs";
+import { registerSocket } from "./module/socket.mjs";
 import { registerRollCard } from "./module/applications/chat/roll-card.mjs";
 
 /** Registers one default sheet per Item type (T-401). */
@@ -49,7 +50,8 @@ Hooks.once("init", () => {
     npc: { bar: ["life", "vest"], value: [] },
     location: { bar: [], value: [] }
   };
-  // Part templates are loaded by ApplicationV2 itself; no shared partials exist yet (add loadTemplates here if one appears).
+  // Part templates are loaded by ApplicationV2 itself; shared Handlebars partials are registered here.
+  foundry.applications.handlebars.loadTemplates([`systems/${SYSTEM_ID}/templates/actor/crew/partials/x-button.hbs`]);
   foundry.applications.apps.DocumentSheetConfig.registerSheet(Actor, SYSTEM_ID, sheets.CrewSheet, {
     types: ["crew"], makeDefault: true, label: "LEVERAGE.Sheet.Crew"
   });
@@ -66,5 +68,5 @@ Hooks.once("setup", () => {
 Hooks.once("ready", async () => {
   logger.info("Ready");
   await migrateWorld();
-  // TODO(T-503): socket listener.
+  registerSocket();
 });

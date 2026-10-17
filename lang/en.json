@@ -364,12 +364,21 @@
           "attribute": "Attribute step",
           "role": "Role step"
         }
+      },
+      "Complication": {
+        "title": "Complication",
+        "target": "Complication",
+        "createNew": "New Complication (d6)",
+        "raise": "Raise {name}: d{from} to d{to}",
+        "name": "Name",
+        "namePlaceholder": "What goes wrong?",
+        "hint": "The player gets 1 Plot Point. The Complication goes to the active Job.",
+        "confirm": "Add"
       }
     },
     "SystemTitle": "Leverage: Liberty City",
     "Sheet": {
       "Crew": "Crew sheet",
-      "add": "+ Add",
       "addToPool": "Add to the dice pool",
       "delete": "Delete",
       "Add": "+ Add",
@@ -392,6 +401,7 @@
         "aliasPlaceholder": "alias",
         "decrease": "Decrease",
         "increase": "Increase",
+        "number": "Nº",
         "thumb": "R. Thumb"
       },
       "Ladders": {
@@ -576,7 +586,11 @@
       "keepButton": "+1 PP · Keep 3rd die",
       "keepTip": "Spend a Plot Point to add the next highest die to the total",
       "complicationButton": "GM · Complication",
-      "complicationTip": "GM: create or step up a Complication and give 1 Plot Point"
+      "complicationTip": "GM: create or step up a Complication and give 1 Plot Point",
+      "ppSpent": "+{count} PP spent: extra die kept"
+    },
+    "Socket": {
+      "noGM": "No Fixer is connected to process this action."
     }
   }
 }
