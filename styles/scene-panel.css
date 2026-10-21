@@ -1,12 +1,12 @@
-/* Scene strip: Scene Traits of the active scene + shared Complications, one compact wrapping band under Foundry's scene
-   navigation (corner written by scene-panel.mjs), at the HUD's z-index (over the scene, under windows). */
+/* Scene strip: Scene Traits of the active scene + shared Complications, one compact wrapping band beside Foundry's scene
+   navigation bar (corner written by scene-panel.mjs), at the HUD's z-index (over the scene, under windows). */
 #leverage-scene-panel {
   position: fixed;
-  top: var(--lv-scene-panel-top, 60px);
-  left: var(--lv-scene-panel-left, 16px);
+  top: var(--lv-scene-panel-top, 16px);
+  left: var(--lv-scene-panel-left, 310px);
   z-index: 30;
   width: max-content;
-  max-width: min(640px, calc(100vw - var(--lv-sidebar-w, 0px) - var(--lv-scene-panel-left, 16px) - 32px));
+  max-width: min(640px, calc(100vw - var(--lv-sidebar-w, 0px) - var(--lv-scene-panel-left, 310px) - 32px));
   pointer-events: none;
 }
 
@@ -40,7 +40,7 @@
   align-items: center;
   gap: 6px;
   max-width: 100%;
-  height: 28px;
+  height: 32px;
   padding: 0 8px;
   background: var(--lv-panel);
   border: 1px solid var(--lv-line);
@@ -90,8 +90,8 @@
 
 #leverage-scene-panel .lv-sp-edit {
   flex: none;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   background: var(--lv-panel);
   border: 1px solid var(--lv-line);
   border-radius: 4px;

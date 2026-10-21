@@ -13,8 +13,8 @@ import { buildScenePanel } from "./scene-panel-logic.mjs";
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const RENDER_DEBOUNCE_MS = 50;
-/** Foundry's scene navigation, which the strip hangs under. */
-const NAV_ID = "scene-navigation";
+/** Foundry's scene navigation: the viewed-scene bar and its expand button. The strip sits to the right of both. */
+const NAV_IDS = Object.freeze(["scene-navigation-viewed", "scene-navigation-expand"]);
 const DIE_SIZE = LEVERAGE.dieGeometry.uses.scenePanel;
 
 /** Hooks that keep the panel current. */
@@ -103,25 +103,24 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     if (ScenePanel.#instance === this) ScenePanel.#instance = null;
   }
 
-  /** Writes the strip's corner (under the Foundry scene navigation, same left edge) to CSS variables. */
+  /** Writes the strip's corner (beside Foundry's scene navigation bar, on its row) to CSS variables. */
   updatePosition() {
-    const nav = document.getElementById(NAV_ID);
-    const rect = nav?.getBoundingClientRect();
-    const top = Math.round((rect?.bottom ?? 0) + LEVERAGE.scenePanel.gapPx);
-    const left = Math.round(rect?.left ?? 0);
+    const rects = NAV_IDS.map((id) => document.getElementById(id)?.getBoundingClientRect()).filter((r) => r?.width);
+    const bar = rects[0];
+    const left = Math.round(Math.max(0, ...rects.map((r) => r.right)) + LEVERAGE.scenePanel.gapPx);
     const root = document.documentElement.style;
-    root.setProperty("--lv-scene-panel-top", `${top}px`);
-    root.setProperty("--lv-scene-panel-left", `${left}px`);
+    root.setProperty("--lv-scene-panel-top", `${Math.round(bar?.top ?? 16)}px`);
+    root.setProperty("--lv-scene-panel-left", `${bar ? left : 16}px`);
   }
 
-  /** Watches the scene navigation's size (it grows with the number of scenes and when it expands). */
+  /** Watches the navigation bar and its expand button (they change with the scene name and the number of scenes). */
   #bindHud() {
-    const nav = document.getElementById(NAV_ID);
+    const nav = document.getElementById(NAV_IDS[0]);
     if (!nav || nav === this.#observed) return;
     this.#observer?.disconnect();
     this.#observed = nav;
     this.#observer = new ResizeObserver(() => this.updatePosition());
-    this.#observer.observe(nav);
+    for (const id of NAV_IDS) { const el = document.getElementById(id); if (el) this.#observer.observe(el); }
   }
 
   static async #onToggle() {

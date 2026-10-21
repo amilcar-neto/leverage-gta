@@ -35,20 +35,18 @@ export async function writeSceneTraits(list, scene = activeScene()) {
 
 /**
  * Old worlds stored Scene Traits in `activeJob.sceneTraits`. Moves them to the active Scene (when it has none yet) and
- * removes them from the setting. GM only, safe to run on every start.
+ * empties them in the setting. GM only, safe to run on every start.
  * @returns {Promise<boolean>} true when something was migrated
  */
 export async function migrateSceneTraits() {
   if (!game.user.isGM) return false;
   const job = readSetting("activeJob", null);
   const old = cleanEntries(job?.sceneTraits);
-  if (!job || !Array.isArray(job.sceneTraits)) return false;
   const scene = activeScene();
-  if (old.length && !scene) return false;
-  if (old.length && !readSceneTraits(scene).length) await writeSceneTraits(old, scene);
-  const rest = foundry.utils.deepClone(job);
-  delete rest.sceneTraits;
-  await game.settings.set(SYSTEM_ID, "activeJob", rest);
+  if (!old.length || !scene) return false;
+  if (!readSceneTraits(scene).length) await writeSceneTraits(old, scene);
+  // The setting merges objects, so the key cannot be deleted: an empty list takes the old entries' place.
+  await game.settings.set(SYSTEM_ID, "activeJob", { ...foundry.utils.deepClone(job), sceneTraits: [] });
   return true;
 }
 

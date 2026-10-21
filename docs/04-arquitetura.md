@@ -100,7 +100,7 @@ leverage-gta/                       ← raiz do repositório = pasta do sistema 
 | `item:<id>` | um Item do ator (Specialty, Asset, Talent que dá dado) |
 | `item:<id>:d8` / `item:<id>:d4` | uma Distinction e o modo escolhido |
 | `money` | o maior dado de Grana (regra da casa) |
-| `scene:<id>` | um Traço de cena do Job ativo (`activeJob.sceneTraits`); `rollPool` e a bandeja aceitam |
+| `scene:<id>` | um Traço de cena da cena ativa (flag `sceneTraits` do Scene; ver `applications/gm/scene-traits.mjs`); `rollPool` e a bandeja aceitam |
 | `d6` | um dado avulso |
 
 API pública (`game.leverage`), documentada com JSDoc e exemplos em `docs/macros.md` (crie):
