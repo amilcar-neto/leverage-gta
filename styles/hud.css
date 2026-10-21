@@ -4,16 +4,13 @@
   position: fixed;
   top: 14px;
   right: calc(var(--lv-sidebar-w, 0px) + 16px);
-  z-index: var(--lv-hud-z, 500); /* above sheet windows so Money and PP stay clickable (leverage-hud.mjs raises it past the core's window counter); core menus and tooltips sit higher */
+  z-index: 30; /* like the macro bar: over the scene, under every window (core windows start at 100) */
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   pointer-events: none;
   transition: right 0.2s ease;
 }
-
-/* A dialog on screen (Pay, Lend, confirmations) goes above the HUD. */
-body:has(.application.dialog) #leverage-hud { z-index: 40; }
 
 #leverage-hud .lv-hud-body {
   position: relative;

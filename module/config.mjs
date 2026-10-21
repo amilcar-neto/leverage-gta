@@ -31,6 +31,7 @@ const HOOKS = Object.freeze({
   activeJobChanged: "leverage.activeJobChanged",
   starsChanged: "leverage.starsChanged",
   hudChanged: "leverage.hudChanged",
+  scenePanelChanged: "leverage.scenePanelChanged",
   rollRequested: "leverage.rollRequested",
   ready: "leverage.ready"
 });
@@ -80,7 +81,7 @@ const DIE_GEOMETRY = Object.freeze({
   defaultSize: 32,
   /** Size used by each surface that shows dice outside the sheets (always one of `sizes`). */
   uses: Object.freeze({
-    rollCard: 50, moneyLine: 28, hud: 38, tracker: 28, ladder: 28, oppositionCounter: 36, oppositionPreview: 28, npc: 28, npcTrait: 32, location: 28
+    rollCard: 50, moneyLine: 28, hud: 38, tracker: 28, ladder: 28, oppositionCounter: 36, oppositionPreview: 28, npc: 28, npcTrait: 32, location: 28, scenePanel: 28
   }),
   perDie: Object.freeze({
     4: geo(4, 0.44, 0.4),
@@ -213,6 +214,8 @@ export const LEVERAGE = Object.freeze({
   }),
   /** Largest gang an NPC (or the opposition roller) can bring. */
   gangMax: 12,
+  /** Scene Panel: the Actor types whose Traits it lists, and the gap under the HUD (px). */
+  scenePanel: Object.freeze({ actorTypes: Object.freeze(["npc", "location"]), gapPx: 8 }),
   /** Most loose dice of one size in the opposition roller. */
   looseDiceMax: 12,
   /** Money ladder (docs/02): a full d12 is 5 steps; the leftmost die holds the remainder. */
@@ -232,6 +235,8 @@ export const LEVERAGE = Object.freeze({
   keepDefault: 2,
   /** Role keys plus "open" (a Talent that belongs to no single Role). */
   talentRoles: Object.freeze([...ROLE_KEYS, "open"]),
+  /** Sections of the "+ DIE" menu, in display order (each is a `Sheet.Tray.menuGroup.<key>` label). */
+  poolMenuGroups: Object.freeze(["die", "money", "scene", "asset", "specialty", "distinction", "talent", "attribute", "role"]),
   /** Item types that count as Traits in a Pool. */
   traitItemTypes: Object.freeze(["distinction", "talent", "specialty"]),
   /** Actor `system` keys that hold Traits. */

@@ -154,3 +154,22 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - **Fiança:** tudo ou nada. Sem os degraus todos, não paga nada e o personagem espera resgate. Só o hospital aceita pagamento parcial, com a dívida mostrada no card.
 - **Ganging Up:** o sistema não mostra "−1 thug" no card do jogador nem mexe na gangue do NPC. O mestre diminui `gang.size` na ficha. `thugsDown` foi apagada; `docs/08` e `USO.md` dizem isso. Descartado: ligar o card do jogador ao card da gangue (exige achar o NPC da gangue a partir de uma oposição montada com vários atalhos).
 - **Oposição com um dado só:** completa com um d6 (`LEVERAGE.defaultOppositionDice[0]`), pelo livro (mínimo de dois dados, Traço que falta vale d6).
+
+## Painel da Cena (Traços de cena, Complications e Traços de NPCs sempre à vista)
+
+- **Onde fica:** faixa `#leverage-scene-panel` logo abaixo do HUD (`top` = fundo do HUD + 8 px, lido por `ResizeObserver`), a 16 px da barra lateral, `z-index: 30` como o HUD. É uma aplicação própria (`module/applications/scene-panel/`), não parte do `hud.hbs`, para não mexer no HUD nem na camada de testes dele. Descartado: pôr dentro do HUD (o HUD é só `pointer-events` nos controles e tem outro dono).
+- **O que mostra:** Traços de cena e Complications do `activeJob` (dado + nome), e os Traços (`system.traits` com dado) de NPCs e Locais cujos tokens estão na cena vista. Tokens do mesmo ator viram uma linha com "×N". Sem nada: um estado vazio discreto de uma linha. Recolhível por cliente (`scenePanel.collapsed`); recolhido mostra a contagem. O mestre tem um lápis que abre o Rastreador do Job.
+- **Esconder:** a noção não existia. Regras novas: jogadores nunca veem tokens escondidos (`token.hidden`); o mestre os vê com o ícone de olho cortado. Configuração de mundo `scenePanel.showActorTraits` (padrão ligado) esconde dos jogadores todos os Traços de NPC. Configuração de cliente `scenePanel.show` esconde o painel. Complications e Traços de cena são sempre públicos (o livro os trata assim na mesa).
+- **Tempo real:** atualiza em `activeJobChanged`, `hudChanged`, criar/atualizar/apagar token, atualizar ator e cena, `canvasReady` (debounce de 50 ms).
+- **Card de rolagem:** o chip de um dado de Traço de cena ganha a etiqueta "SCENE" (borda azul-esverdeada) e o de uma Complication na oposição do mestre (ref `job.<id>`) ganha "COMPLICATION" (borda vermelha). Não mexi em `module/dice/*`: a decisão sai do `kind`/`ref` que o card já guarda.
+
+## Minimizar por duplo clique, menu "+ DADO" completo e camada do HUD (pós R-FINAL)
+
+- **Minimizar:** o Foundry já trata o duplo clique na barra de título (`#onWindowDoubleClick`). A ficha entrava em
+  `minimized`, mas `min-height`/`min-width` das fichas (Crew 1100x900, NPC, Local) seguravam a janela grande.
+  Escolha: zerar os mínimos em `.minimizing`/`.minimized` em `styles/window.css`. Descartado: tratar o clique em JS.
+- **Menu "+ DADO":** passa a listar, em grupos (`LEVERAGE.poolMenuGroups`): dados avulsos, Grana, Traços de cena,
+  Assets, Specialties, Distinctions, Talents, Atributos, Roles. Talent só aparece se tem dado (regra: Talent não
+  rola sozinho, seu dado é um bônus declarado). Distinction entra como d8 (clicar no chip leva a d4). Atributo/Role
+  sem dado ficam de fora. O que já está na Pool não é oferecido de novo (dados avulsos podem repetir).
+- **HUD:** z-index 30, abaixo das janelas como a barra de macros; `tests/foundry/hud-layer.mjs` reescrito.

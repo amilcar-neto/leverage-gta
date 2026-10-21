@@ -1,5 +1,5 @@
 /**
- * Check: the HUD stays above an open crew sheet (Money and Plot Points clickable) and goes under a dialog.
+ * Check: the HUD sits above the scene but under open windows (a crew sheet over it wins the click, like the macro bar).
  * Player [TEST] owns a [TEST] crew; the page opens the sheet and the chat sidebar, then hit-tests the HUD buttons
  * with elementFromPoint. Deletes what it creates. Exit codes: 0 pass, 1 fail, 2 not available.
  */
@@ -28,17 +28,19 @@ try {
   const pp = playerBrowser.page;
   collectConsole(pp);
   await login(pp, { ...env, FOUNDRY_USER: "[TEST] Player", FOUNDRY_PASSWORD: "" });
-  await pp.evaluate((id) => game.actors.get(id).sheet.render(true), ids.actor);
-  await pp.locator(".application.crew-sheet").waitFor({ timeout: 10000 });
-  await pp.waitForTimeout(1500);
-  const hit = (selector) => pp.evaluate((sel) => {
+  const hudTop = (selector) => pp.evaluate((sel) => {
     const el = document.querySelector(sel);
     if (!el) return "missing";
     const r = el.getBoundingClientRect();
     const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
-    return el.contains(top) || top?.closest("#leverage-hud") ? "hud" : (top?.className ?? "none");
+    return top?.closest("#leverage-hud") ? "hud" : (top?.closest(".application")?.className ?? top?.className ?? "none");
   }, selector);
-  record("HUD money button on top of the sheet", (await hit("#leverage-hud button")) === "hud", await hit("#leverage-hud button"));
+  const hudZ = () => pp.evaluate(() => Number(getComputedStyle(document.querySelector("#leverage-hud")).zIndex));
+  await pp.waitForSelector("#leverage-hud button", { timeout: 10000 });
+  record("HUD button clickable over the bare scene", (await hudTop("#leverage-hud button")) === "hud", await hudTop("#leverage-hud button"));
+  await pp.evaluate((id) => game.actors.get(id).sheet.render(true), ids.actor);
+  await pp.locator(".application.crew-sheet").waitFor({ timeout: 10000 });
+  await pp.waitForTimeout(1500);
   // Move the sheet under the HUD to force the overlap.
   await pp.evaluate(() => {
     const hud = document.querySelector("#leverage-hud").getBoundingClientRect();
@@ -46,45 +48,27 @@ try {
     sheet.setPosition({ left: Math.max(0, hud.left - 400), top: 0, width: 900 });
   });
   await pp.waitForTimeout(500);
-  await pp.screenshot({ path: `${SHOTS}/HUDLAYER-over-sheet.png` });
+  await pp.screenshot({ path: `${SHOTS}/HUDLAYER-under-sheet.png` });
   const overlap = await pp.evaluate(() => {
     const hud = document.querySelector("#leverage-hud button").getBoundingClientRect();
     const win = document.querySelector(".application.crew-sheet").getBoundingClientRect();
     return hud.right > win.left && hud.left < win.right && hud.bottom > win.top && hud.top < win.bottom;
   });
   record("sheet overlaps the HUD", overlap);
-  record("HUD button clickable above the overlapping sheet", (await hit("#leverage-hud button")) === "hud", await hit("#leverage-hud button"));
-  const z = await pp.evaluate(() => getComputedStyle(document.querySelector("#leverage-hud")).zIndex);
-  // A stand-in for a core dialog (opening a real one crashes the GPU-less test Chromium).
-  await pp.evaluate(() => document.body.insertAdjacentHTML("beforeend", `<div class="application dialog" id="lv-test-dialog"></div>`));
-  await pp.waitForTimeout(300);
-  const zDialog = await pp.evaluate(() => getComputedStyle(document.querySelector("#leverage-hud")).zIndex);
-  record("HUD goes under a dialog", Number(zDialog) < Number(z), { z, zDialog });
-  await pp.evaluate(() => document.getElementById("lv-test-dialog")?.remove());
-  // A long session: the core's window counter passes the HUD's base z-index. The sheet comes to the front (core counter +1) and a pointerdown reaches the page.
-  await pp.evaluate(async () => {
-    // The core skips the bump for the window already in front, so another window takes the front first.
-    const mine = game.actors.contents.find((x) => x.name === "[TEST] Hud Layer");
-    const other = game.settings.sheet;
-    await other.render(true);
-    await new Promise((r) => setTimeout(r, 800));
+  const sheetZ = await pp.evaluate(() => Number(getComputedStyle(document.querySelector(".application.crew-sheet")).zIndex));
+  record("HUD sits under the overlapping sheet", (await hudTop("#leverage-hud button")).includes("crew-sheet") && (await hudZ()) < sheetZ, { hud: await hudZ(), sheetZ });
+  record("HUD stays above the scene canvas", (await hudZ()) > 0, await hudZ());
+  // After a long session the core window counter is far above the HUD: the sheet still wins.
+  await pp.evaluate(() => {
     foundry.applications.api.ApplicationV2._maxZ = 2000;
-    mine.sheet.bringToFront();
-    document.querySelector(".application.crew-sheet").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-    await other.close();
+    game.actors.contents.find((x) => x.name === "[TEST] Hud Layer").sheet.bringToFront();
   });
   await pp.waitForTimeout(300);
-  const zLong = await pp.evaluate(() => ({
-    hud: Number(getComputedStyle(document.querySelector("#leverage-hud")).zIndex),
-    sheet: Number(getComputedStyle(document.querySelector(".application.crew-sheet")).zIndex)
-  }));
-  record("HUD stays above the sheet after the core counter passes 500", zLong.sheet > 2000 && zLong.hud > zLong.sheet, zLong);
-  record("HUD button clickable above the sheet (long session)", (await hit("#leverage-hud button")) === "hud", await hit("#leverage-hud button"));
-  await pp.evaluate(() => document.body.insertAdjacentHTML("beforeend", `<div class="application dialog" id="lv-test-dialog"></div>`));
-  await pp.waitForTimeout(300);
-  const zDialogLong = await pp.evaluate(() => Number(getComputedStyle(document.querySelector("#leverage-hud")).zIndex));
-  record("HUD still goes under a dialog (long session)", zDialogLong < zLong.sheet, { zDialogLong, sheet: zLong.sheet });
-  await pp.evaluate(() => document.getElementById("lv-test-dialog")?.remove());
+  record("HUD under the sheet in a long session", (await hudTop("#leverage-hud button")).includes("crew-sheet"), await hudTop("#leverage-hud button"));
+  // Close the sheet: the HUD is clickable again.
+  await pp.evaluate(() => game.actors.contents.find((x) => x.name === "[TEST] Hud Layer").sheet.close());
+  await pp.waitForTimeout(500);
+  record("HUD clickable again after the sheet closes", (await hudTop("#leverage-hud button")) === "hud", await hudTop("#leverage-hud button"));
 } catch (error) {
   record("script ran without exceptions", false, String(error?.stack ?? error));
 } finally {

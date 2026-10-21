@@ -16,19 +16,6 @@ export function pickFocusActor({ isGM, character, controlled }) {
   return isGM ? (controlled ?? character ?? null) : (character ?? controlled ?? null);
 }
 
-/** Lowest z-index of the HUD: above the sheet windows at their start (core windows begin at 100). */
-export const HUD_BASE_Z = 500;
-
-/**
- * The HUD's z-index: above every core window. The core adds 1 to `ApplicationV2._maxZ` on each bring-to-front and
- * never resets it, so after a long session the windows pass the base value.
- * @param {number} maxZ The core's highest window z-index (`ApplicationV2._maxZ`).
- * @returns {number}
- */
-export function hudZIndex(maxZ) {
-  return Math.max(HUD_BASE_Z, (Number.isFinite(maxZ) ? maxZ : 0) + 1);
-}
-
 /**
  * New wanted level after a click on star `n`: that level, or one less when it already is the level (so the
  * first star clears the stars).

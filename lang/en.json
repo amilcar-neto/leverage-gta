@@ -371,6 +371,16 @@
       "wanted": {
         "Hint": "Current wanted level (hidden; changed by the HUD or the GM control).",
         "Name": "Wanted level"
+      },
+      "scenePanel": {
+        "show": {
+          "Hint": "Show the panel with the Scene Traits, Complications and NPC Traits under the HUD.",
+          "Name": "Show scene panel"
+        },
+        "showActorTraits": {
+          "Hint": "Players see the Traits of the NPCs and places on the scene (hidden tokens are never shown to them).",
+          "Name": "Show NPC Traits to players"
+        }
       }
     },
     "Chat": {
@@ -552,6 +562,17 @@
         "remove": "Click to take it out of the Pool",
         "cycleDistinction": "Click to switch to d4, again to take it out",
         "moneyName": "Money",
+        "menuGroup": {
+          "die": "Loose dice",
+          "money": "Wallet",
+          "scene": "Scene Traits",
+          "asset": "Assets",
+          "specialty": "Specialties",
+          "distinction": "Distinctions",
+          "talent": "Talents",
+          "attribute": "Attributes",
+          "role": "Roles"
+        },
         "kind": {
           "attribute": "Attribute",
           "role": "Role",
@@ -653,6 +674,10 @@
         "two": "{n}nd",
         "few": "{n}rd",
         "other": "{n}th"
+      },
+      "tag": {
+        "scene": "Scene",
+        "complication": "Complication"
       }
     },
     "Migration": {
@@ -1106,6 +1131,29 @@
       "npcs": "NPCs",
       "locations": "Locations",
       "talentsAssets": "Talents and Assets"
+    },
+    "ScenePanel": {
+      "title": "Scene",
+      "expand": "Show the scene panel",
+      "collapse": "Collapse the scene panel",
+      "edit": "Edit in the Job Tracker",
+      "empty": "No Scene Traits or Complications",
+      "sceneTraits": "Scene Traits",
+      "complications": "Complications",
+      "actors": "On the scene",
+      "hiddenToPlayers": "Hidden from players",
+      "traitsCount": {
+        "one": "{count} Trait",
+        "other": "{count} Traits"
+      },
+      "complicationsCount": {
+        "one": "{count} Complication",
+        "other": "{count} Complications"
+      },
+      "actorsCount": {
+        "one": "{count} NPC",
+        "other": "{count} NPCs"
+      }
     }
   }
 }

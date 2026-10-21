@@ -371,6 +371,16 @@
       "wanted": {
         "Hint": "Nível atual de procurado (escondido; mudado pelo HUD ou pelo controle do mestre).",
         "Name": "Nível de procurado"
+      },
+      "scenePanel": {
+        "show": {
+          "Hint": "Mostra, abaixo do HUD, o painel com Traços de cena, Complications e Traços dos NPCs.",
+          "Name": "Mostrar painel da cena"
+        },
+        "showActorTraits": {
+          "Hint": "Os jogadores veem os Traços dos NPCs e lugares na cena (tokens escondidos nunca aparecem).",
+          "Name": "Mostrar Traços de NPCs aos jogadores"
+        }
       }
     },
     "Chat": {
@@ -552,6 +562,17 @@
         "remove": "Clique para tirar da Pool",
         "cycleDistinction": "Clique para virar d4, de novo para tirar da Pool",
         "moneyName": "Grana",
+        "menuGroup": {
+          "die": "Dados avulsos",
+          "money": "Carteira",
+          "scene": "Traços de cena",
+          "asset": "Assets",
+          "specialty": "Specialties",
+          "distinction": "Distinctions",
+          "talent": "Talents",
+          "attribute": "Atributos",
+          "role": "Roles"
+        },
         "kind": {
           "attribute": "Attribute",
           "role": "Role",
@@ -653,6 +674,10 @@
         "two": "{n}º",
         "few": "{n}º",
         "other": "{n}º"
+      },
+      "tag": {
+        "scene": "Cena",
+        "complication": "Complication"
       }
     },
     "Migration": {
@@ -1106,6 +1131,29 @@
       "npcs": "NPCs",
       "locations": "Locais",
       "talentsAssets": "Talents e Assets"
+    },
+    "ScenePanel": {
+      "title": "Cena",
+      "expand": "Mostrar o painel da cena",
+      "collapse": "Recolher o painel da cena",
+      "edit": "Editar no Rastreador do Job",
+      "empty": "Sem Traços de cena ou Complications",
+      "sceneTraits": "Traços de cena",
+      "complications": "Complications",
+      "actors": "Na cena",
+      "hiddenToPlayers": "Escondido dos jogadores",
+      "traitsCount": {
+        "one": "{count} Traço",
+        "other": "{count} Traços"
+      },
+      "complicationsCount": {
+        "one": "{count} Complication",
+        "other": "{count} Complications"
+      },
+      "actorsCount": {
+        "one": "{count} NPC",
+        "other": "{count} NPCs"
+      }
     }
   }
 }

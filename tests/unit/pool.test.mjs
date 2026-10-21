@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { DicePool, parseRef, resolvePoolRef } from "../../module/dice/pool.mjs";
+import { DicePool, parseRef, poolMenuGroups, resolvePoolRef } from "../../module/dice/pool.mjs";
 
 const item = (id, type, name, system = {}) => [id, { id, type, name, system }];
 const actor = {
@@ -175,3 +175,42 @@ test("clear empties the Pool", () => {
   pool.clear();
   assert.deepEqual(pool.refs, []);
 });
+
+const menuSuite = () => {
+  const items = [
+    { id: "a1", type: "asset", name: "Van", system: { die: 8 } },
+    { id: "s1", type: "specialty", name: "Lockpicks", system: { die: 6, role: "thief" } },
+    { id: "d1", type: "distinction", name: "Ex-con", system: {} },
+    { id: "t1", type: "talent", name: "Ghost", system: { die: 6 } },
+    { id: "t2", type: "talent", name: "No die", system: { die: null } },
+    { id: "j1", type: "job", name: "Job", system: {} }
+  ];
+  const actor = {
+    items: { get: (id) => items.find((i) => i.id === id), [Symbol.iterator]: () => items[Symbol.iterator]() },
+    system: { attributes: { agility: { die: 8 }, vitality: { die: null } }, roles: { thief: { die: 10 } }, money: { steps: 4 } }
+  };
+  const keys = (groups) => groups.map((g) => g.key);
+
+  test("offers every rollable thing, grouped in config order", () => {
+    const groups = poolMenuGroups(actor, () => false);
+    assert.deepEqual(keys(groups), ["die", "money", "asset", "specialty", "distinction", "talent", "attribute", "role"]);
+    const get = (key) => groups.find((g) => g.key === key).entries;
+    assert.deepEqual(get("talent").map((e) => e.label), ["Ghost"]);
+    assert.deepEqual(get("attribute").map((e) => e.ref), ["attributes.agility"]);
+    assert.equal(get("distinction")[0].die, 8);
+  });
+
+  test("leaves out what is in the Pool, except loose dice, and hides Money when the rule is off", () => {
+    const inPool = (ref) => ["item:a1", "money"].includes(ref);
+    const groups = poolMenuGroups(actor, inPool, { moneyEnabled: false });
+    assert.ok(!keys(groups).includes("asset"));
+    assert.ok(!keys(groups).includes("money"));
+    assert.ok(keys(groups).includes("die"));
+  });
+
+  test("lists Scene Traits of the active Job", () => {
+    const groups = poolMenuGroups(actor, () => false, { sceneTraits: [{ id: "x", name: "Rain", die: 6 }] });
+    assert.equal(groups.find((g) => g.key === "scene").entries[0].ref, "scene:x");
+  });
+};
+menuSuite();

@@ -87,6 +87,13 @@
 }
 :is(.lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta .window-icon { display: none; }
 
+/* Minimizing: the sheets' own min-width/min-height (crew 1100x900...) would keep the collapsed window big; the core
+   only animates max-width/max-height down to the title bar, so the minimums must go while it is collapsed. */
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta:is(.minimizing, .minimized) {
+  min-width: 0;
+  min-height: 0;
+}
+
 /* Core buttons carry a min-height and an orange hover outline; ours do not */
 :is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta button { min-height: 0; }
 :is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta button:hover { outline: 0; }

@@ -7,7 +7,7 @@
  * sheet after every render) toggles `.is-pooled` on the rows (matched by `data-pool-ref`) of every part.
  */
 import { LEVERAGE } from "../../../config.mjs";
-import { DicePool, resolvePoolRef } from "../../../dice/pool.mjs";
+import { DicePool, poolMenuGroups, resolvePoolRef } from "../../../dice/pool.mjs";
 import { isValidDie } from "../../../dice/die.mjs";
 import { readSetting } from "../../../data/fields.mjs";
 import { renderDie, escapeHtml } from "../../components/die.mjs";
@@ -179,40 +179,25 @@ export async function addToSheetPool(actor, ref) {
 
 /* -------------------------------------------------------------- + DIE menu */
 
-/**
- * Entries of the "+ DIE" menu: the loose dice, Money when the actor can add it, then the Scene Traits of the active Job.
- * @param {object} actor
- * @param {boolean} withMoney The Money house rule is on.
- * @param {{id: string, name: string, die: number}[]} [scene] Scene Traits of the active Job.
- * @returns {{ref: string, die: number, label: string, money: boolean, scene?: boolean}[]} `label` is an i18n key
- *   (Money), a plain `dN` or the Scene Trait name.
- */
-export function dieMenuEntries(actor, withMoney, scene = []) {
-  const dice = LEVERAGE.dice.map((die) => ({ ref: `d${die}`, die, label: `d${die}`, money: false }));
-  const money = withMoney ? resolvePoolRef(actor, "money") : null;
-  if (money) dice.push({ ref: "money", die: money.die, label: money.nameKey, money: true });
-  for (const trait of scene) dice.push({ ref: `scene:${trait.id}`, die: trait.die, label: trait.name, money: false, scene: true });
-  return dice;
-}
-
-/** Opens the "+ DIE" menu above `anchor`. */
+/** Opens the "+ DIE" menu above `anchor`: everything the actor can roll, grouped by kind. */
 function openDieMenu(sheet, anchor) {
-  openFloatMenu(sheet, {
-    anchor,
-    className: "lv-pool-menu",
-    itemClass: "lv-pool-menu-item",
-    placement: "above",
-    items: dieMenuEntries(sheet.actor, moneyEnabled(), sceneTraits()).map((entry) => {
-      const label = entry.money ? t(entry.label) : entry.label;
+  const pool = poolOf(sheet);
+  const groups = poolMenuGroups(sheet.actor, (ref) => pool.has(ref), { moneyEnabled: moneyEnabled(), sceneTraits: sceneTraits() });
+  const items = groups.flatMap(({ key, entries }) => [
+    { header: t(`LEVERAGE.Sheet.Tray.menuGroup.${key}`) },
+    ...entries.map((entry) => {
+      const label = entry.labelKey ? t(entry.label) : entry.label;
       return {
-        html: `${renderDie({ die: entry.die, size: 28, money: entry.money })}<span class="lv-pool-menu-name" title="${escapeHtml(label)}">${escapeHtml(label)}</span>`,
+        title: label,
+        html: `${renderDie({ die: entry.die, size: 28, money: entry.kind === "money" })}<span class="lv-pool-menu-name">${escapeHtml(label)}</span>`,
         onSelect: () => {
-          poolOf(sheet).add(entry.ref);
+          pool.add(entry.ref);
           refresh(sheet);
         }
       };
     })
-  });
+  ]);
+  openFloatMenu(sheet, { anchor, className: "lv-pool-menu", itemClass: "lv-pool-menu-item", headerClass: "lv-pool-menu-header", placement: "above", items });
 }
 
 /* ----------------------------------------------------------------- actions */

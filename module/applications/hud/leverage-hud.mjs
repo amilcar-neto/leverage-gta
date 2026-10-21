@@ -10,7 +10,7 @@ import { readSetting } from "../../data/fields.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
 import { setLevel } from "../gm/stars-actions.mjs";
 import { t, tn } from "../components/i18n.mjs";
-import { hudPermissions, hudZIndex, moneyView, nextStarLevel, pickFocusActor, starsView } from "./hud-logic.mjs";
+import { hudPermissions, moneyView, nextStarLevel, pickFocusActor, starsView } from "./hud-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -75,7 +75,6 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
   #onResize = () => this.updatePosition();
 
   /** A window may have just come to the front: raise the HUD after the core has bumped its counter. */
-  #onWindowFront = () => setTimeout(() => this.raise(), 0);
 
   /** @type {ResizeObserver|null} */
   #observer = null;
@@ -163,7 +162,6 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
     });
     this.#watchSidebar();
     this.#watchWorld();
-    this.#watchWindows();
   }
 
   /** @override */
@@ -178,8 +176,6 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
     this.#observed = null;
     clearTimeout(this.#settleTimer);
     window.removeEventListener("resize", this.#onResize);
-    document.removeEventListener("pointerdown", this.#onWindowFront, true);
-    document.documentElement.style.removeProperty("--lv-hud-z");
     for (const [name, id] of this.#hooks) Hooks.off(name, id);
     this.#hooks = [];
     if (LeverageHud.#instance === this) LeverageHud.#instance = null;
@@ -192,23 +188,6 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
     const left = this.#sidebarElement()?.getBoundingClientRect().left;
     const width = Number.isFinite(left) ? Math.max(0, window.innerWidth - left) : 0;
     document.documentElement.style.setProperty("--lv-sidebar-w", `${Math.round(width)}px`);
-  }
-
-  /**
-   * Keeps the HUD above the sheet windows: the core adds 1 to `ApplicationV2._maxZ` every time a window comes to the
-   * front and never resets it, so a long session would carry the windows past a fixed HUD z-index. The CSS reads
-   * `--lv-hud-z`; dialogs and the core menus keep their own rule (hud.css).
-   */
-  #watchWindows() {
-    document.addEventListener("pointerdown", this.#onWindowFront, true);
-    this.#hooks.push(["renderApplicationV2", Hooks.on("renderApplicationV2", this.#onWindowFront)]);
-    this.raise();
-  }
-
-  /** Writes `--lv-hud-z` from the core's highest window z-index. */
-  raise() {
-    const maxZ = foundry.applications.api.ApplicationV2._maxZ;
-    document.documentElement.style.setProperty("--lv-hud-z", String(hudZIndex(maxZ)));
   }
 
   /** The current sidebar element (Foundry replaces it when it re-renders). */

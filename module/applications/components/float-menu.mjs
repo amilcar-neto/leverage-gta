@@ -37,6 +37,7 @@ function buildItem(entry, { itemClass, itemRole }, pick) {
   const button = Object.assign(document.createElement("button"), { type: "button", className: itemClass });
   if (entry.html !== undefined) button.innerHTML = entry.html;
   else button.textContent = entry.text;
+  if (entry.title) button.title = entry.title;
   const checkable = entry.current !== undefined;
   button.setAttribute("role", checkable ? "menuitemradio" : itemRole);
   if (checkable) {
@@ -45,6 +46,13 @@ function buildItem(entry, { itemClass, itemRole }, pick) {
   }
   button.addEventListener("click", () => pick(entry));
   return button;
+}
+
+/** A non-clickable section title between entries. */
+function buildHeader(text, headerClass) {
+  const header = Object.assign(document.createElement("div"), { className: headerClass, textContent: text });
+  header.setAttribute("role", "presentation");
+  return header;
 }
 
 /**
@@ -56,10 +64,11 @@ function buildItem(entry, { itemClass, itemRole }, pick) {
  * @param {string} options.itemClass CSS class of every entry.
  * @param {string} [options.itemRole="menuitem"] ARIA role of an entry (checkable entries become menuitemradio).
  * @param {"below"|"above"} [options.placement="below"]
- * @param {{text?: string, html?: string, current?: boolean, onSelect: () => (void|Promise<void>)}[]} options.items
+ * @param {string} [options.headerClass] CSS class of section titles (items of the form `{header}`).
+ * @param {({header: string}|{text?: string, html?: string, title?: string, current?: boolean, onSelect: () => (void|Promise<void>)})[]} options.items
  *   `html` must already be escaped. `current` marks the checked entry of a radio-like menu.
  */
-export function openFloatMenu(sheet, { anchor, className, itemClass, itemRole = "menuitem", placement = "below", items }) {
+export function openFloatMenu(sheet, { anchor, className, itemClass, itemRole = "menuitem", placement = "below", headerClass = "", items }) {
   closeFloatMenu(sheet);
   const abort = new AbortController();
   const menu = Object.assign(document.createElement("div"), { className });
@@ -68,7 +77,7 @@ export function openFloatMenu(sheet, { anchor, className, itemClass, itemRole = 
     closeFloatMenu(sheet);
     await entry.onSelect();
   };
-  for (const entry of items) menu.append(buildItem(entry, { itemClass, itemRole }, pick));
+  for (const entry of items) menu.append("header" in entry ? buildHeader(entry.header, headerClass) : buildItem(entry, { itemClass, itemRole }, pick));
   Object.assign(menu.style, menuPosition(sheet.element.getBoundingClientRect(), anchor.getBoundingClientRect(), placement));
   sheet.element.append(menu);
   open.set(sheet, { menu, abort });
