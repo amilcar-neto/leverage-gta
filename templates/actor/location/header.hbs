@@ -10,7 +10,7 @@
   {{/if}}
   <div class="lv-loc-identity">
     {{#if canManage}}
-    <input type="text" class="lv-loc-name lv-hud lv-ellipsis" name="name" value="{{actor.name}}" title="{{actor.name}}" placeholder="{{localize 'LEVERAGE.LocationSheet.namePlaceholder'}}" aria-label="{{localize 'LEVERAGE.LocationSheet.name'}}">
+    <input type="text" class="lv-loc-name lv-hud lv-ellipsis{{nameSize}}" name="name" value="{{actor.name}}" title="{{actor.name}}" placeholder="{{localize 'LEVERAGE.LocationSheet.namePlaceholder'}}" aria-label="{{localize 'LEVERAGE.LocationSheet.name'}}">
     <label class="lv-loc-city">
       <span class="lv-loc-city-label">{{localize "LEVERAGE.LocationSheet.city"}}</span>
       <select class="lv-loc-city-select" name="system.city" aria-label="{{localize 'LEVERAGE.LocationSheet.city'}}" title="{{localize 'LEVERAGE.LocationSheet.cityHint'}}">
@@ -19,7 +19,7 @@
       </select>
     </label>
     {{else}}
-    <div class="lv-loc-name lv-hud lv-ellipsis" title="{{actor.name}}">{{actor.name}}</div>
+    <div class="lv-loc-name lv-hud lv-ellipsis{{nameSize}}" title="{{actor.name}}">{{actor.name}}</div>
     {{#if cityName}}<div class="lv-loc-city"><span class="lv-loc-city-label">{{localize "LEVERAGE.LocationSheet.city"}}</span><span class="lv-loc-city-value lv-ellipsis" title="{{cityName}}">{{cityName}}</span></div>{{/if}}
     {{/if}}
   </div>

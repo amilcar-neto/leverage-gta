@@ -1,7 +1,7 @@
 import "./helpers/foundry-stub.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { clampVital, vestKindUpdate } from "../../module/applications/actor/parts/header.mjs";
+import { clampVital, vestKindUpdate, vitalRoute } from "../../module/applications/actor/parts/header.mjs";
 
 test("clampVital keeps the value in 0..max", () => {
   assert.equal(clampVital(5, 10), 5);
@@ -18,4 +18,12 @@ test("vestKindUpdate gives a full vest for the kind", () => {
   assert.deepEqual(vestKindUpdate("heavy"), { "system.vest.kind": "heavy", "system.vest.value": 10 });
   assert.deepEqual(vestKindUpdate("none"), { "system.vest.kind": "none", "system.vest.value": 0 });
   assert.equal(vestKindUpdate("bogus"), null);
+});
+
+test("vitalRoute makes a player pay to raise the vest, the Fixer does not", () => {
+  assert.equal(vitalRoute("vest", 2, 6, false), "restoreVest");
+  assert.equal(vitalRoute("vest", 2, 6, true), "update");
+  assert.equal(vitalRoute("vest", 6, 2, false), "update");
+  assert.equal(vitalRoute("life", 2, 6, false), "update");
+  assert.equal(vitalRoute("vest", 3, 3, false), "none");
 });

@@ -130,17 +130,11 @@ export async function relaunchWorld(page, env) {
       await page.click('form:has(input[name="adminPassword"]) button[type="submit"]');
     }
   }
-  // A Foundry tour overlay ("Backups Overview") covers setup and swallows clicks: exit it (`a.step-button.exit`).
-  await page.waitForSelector('li[data-package-id]', { state: "attached", timeout: 30000 });
-  for (let i = 0; i < 3; i++) {
-    const exit = page.locator("a.step-button.exit").first();
-    if (!(await exit.isVisible({ timeout: 1500 }).catch(() => false))) break;
-    await exit.click();
-    await page.waitForTimeout(500);
-  }
+  await dismissTours(page);
   const launch = page.locator(`li[data-package-id="${world}"] a[data-action="worldLaunch"]`).first();
   await launch.waitFor({ state: "attached", timeout: 30000 });
   await launch.evaluate((a) => a.click());
+  await confirmLaunchDialogs(page);
   // The setup page reloads/navigates while the world starts poll /join instead.
   // The setup page can crash Chromium while the world starts, so leave it right away and poll /join.
   await page.goto("about:blank").catch(() => {});
@@ -155,4 +149,44 @@ export async function relaunchWorld(page, env) {
     } catch { await new Promise((r) => setTimeout(r, 2000)); }
   }
   throw new Error("relaunchWorld: world did not reach the join screen within 90s");
+}
+
+/** Exits the Foundry tour overlays ("Backups Overview"...) that cover setup and swallow clicks (`a.step-button.exit`). */
+async function dismissTours(page) {
+  await page.waitForSelector("li[data-package-id]", { state: "attached", timeout: 30000 });
+  for (let i = 0; i < 4; i++) {
+    const exit = page.locator("a.step-button.exit").first();
+    if (!(await exit.isVisible({ timeout: 1500 }).catch(() => false))) break;
+    await exit.click();
+    await page.waitForTimeout(500);
+  }
+}
+
+/** Buttons of the dialogs Foundry shows when a world launches: data migration, backup, and plain confirmations. */
+const LAUNCH_DIALOG_BUTTONS = [
+  /Iniciar Migra|Begin Migration|Start Migration/i,
+  /Pular|Skip|N[aã]o|No Backup|Sem Backup/i,
+  /^\s*(Sim|Yes|Confirmar|Confirm|OK)\s*$/i
+];
+
+/**
+ * After clicking "launch world": clicks through the migration dialog ("Migração dos Dados de Mundo" ->
+ * "Iniciar Migração") and the backup dialog (declined, nothing to save in the test world) until the page leaves setup.
+ * Setup is also cleared of tours, which can pop up over these dialogs. Gives up quietly after 45 s; the caller polls /join.
+ */
+async function confirmLaunchDialogs(page) {
+  const deadline = Date.now() + 45000;
+  while (Date.now() < deadline && /\/setup/.test(page.url())) {
+    await dismissTours(page).catch(() => {});
+    let clicked = false;
+    for (const pattern of LAUNCH_DIALOG_BUTTONS) {
+      const button = page.locator(".application button, dialog button").filter({ hasText: pattern }).first();
+      if (await button.isVisible({ timeout: 400 }).catch(() => false)) {
+        await button.click().catch(() => {});
+        clicked = true;
+        break;
+      }
+    }
+    await page.waitForTimeout(clicked ? 800 : 1200);
+  }
 }

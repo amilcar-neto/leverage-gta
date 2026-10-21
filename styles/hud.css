@@ -4,13 +4,16 @@
   position: fixed;
   top: 14px;
   right: calc(var(--lv-sidebar-w, 0px) + 16px);
-  z-index: 40; /* above the canvas, below application windows (z-index 100+) */
+  z-index: 500; /* above sheet windows (z-index 100+) so Money and PP stay clickable; core menus and tooltips sit higher */
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   pointer-events: none;
   transition: right 0.2s ease;
 }
+
+/* A dialog on screen (Pay, Lend, confirmations) goes above the HUD. */
+body:has(.application.dialog) #leverage-hud { z-index: 40; }
 
 #leverage-hud .lv-hud-body {
   position: relative;

@@ -4,7 +4,7 @@
  */
 import { LEVERAGE } from "../../config.mjs";
 import { escapeHtml } from "../components/die.mjs";
-import { t } from "../components/i18n.mjs";
+import { t, tn } from "../components/i18n.mjs";
 
 /** Plot Point cost of an Asset duration (Signature has no PP cost: it is paid in Jobs). */
 export function assetCostOf(duration) {
@@ -36,7 +36,7 @@ function buildContent({ plotPoints, duration, die, chooseDie }) {
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.duration")}</span>
       <select name="duration">${durationOptions(duration)}</select></label>
     ${dieField}
-    <p class="lv-dlg-hint">${t("LEVERAGE.Dialog.Asset.plotPoints", { value: plotPoints })}</p>
+    <p class="lv-dlg-hint">${tn("LEVERAGE.Dialog.Asset.plotPoints", plotPoints)}</p>
   </div>`;
 }
 

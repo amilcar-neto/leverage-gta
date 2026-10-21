@@ -33,6 +33,8 @@ Itens permitidos: `distinction` (máx. 3), `talent`, `specialty`, `asset`, `job`
 | `attributes`, `roles` | iguais ao `crew`, todos nullable | Foils/Agents podem ter ficha completa |
 | `gang.size` | Integer ≥ 0 | Capangas extras (Ganging Up): cada um soma um dado |
 | `gang.die` | DieField nullable | Tamanho de cada capanga |
+| `life.value`, `life.max` | Integer ≥ 0 | `life.max` deriva da Vitality quando o NPC tem uma; senão vale o salvo (mestre define) |
+| `vest.kind`, `vest.value`, `vest.max` | String · Integer | iguais ao `crew`; `vest.max` vem do tipo |
 | `weapon.die` | DieField nullable | Dado de dano da arma (regra da casa: d6 pistola, d8 escopeta/rifle) |
 | `police` | Boolean | Se derrubar alguém, é **Busted** em vez de Wasted |
 | `notes` | HTML | |

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { moveEntry, traitRows } from "../../module/applications/actor/location-rows.mjs";
+import { moveEntry, nameSizeClass, traitRows } from "../../module/applications/actor/location-rows.mjs";
 
 test("moveEntry moves an entry and ignores bad indexes", () => {
   assert.deepEqual(moveEntry(["a", "b", "c"], 0, 2), ["b", "c", "a"]);
@@ -16,4 +16,11 @@ test("traitRows builds one selected rung per Trait", () => {
   assert.deepEqual(rows[0].ladder.filter((r) => r.selected).map((r) => r.die), [8]);
   assert.equal(rows[0].ladder.find((r) => r.die === 4).muted, true);
   assert.deepEqual(traitRows(undefined), []);
+});
+
+test("nameSizeClass steps long names down", () => {
+  assert.equal(nameSizeClass("Warehouse"), "");
+  assert.equal(nameSizeClass("Old Harbor Warehouse"), " is-long");
+  assert.equal(nameSizeClass("The Old Harbor Warehouse Annex"), " is-longer");
+  assert.equal(nameSizeClass(undefined), "");
 });

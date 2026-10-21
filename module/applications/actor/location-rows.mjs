@@ -27,3 +27,14 @@ export function traitRows(traits) {
     ladder: LEVERAGE.dice.map((die) => ({ die, selected: die === t.die, muted: die !== t.die, label: `d${die}` }))
   }));
 }
+
+/**
+ * Class suffix that steps the Location name down for long names (the header has room for about 14 big letters).
+ * @param {string} name
+ * @returns {string} `""`, `" is-long"` or `" is-longer"` (leading space, ready to append to a class list)
+ */
+export function nameSizeClass(name) {
+  const length = String(name ?? "").length;
+  if (length > 24) return " is-longer";
+  return length > 14 ? " is-long" : "";
+}

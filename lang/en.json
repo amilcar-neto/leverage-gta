@@ -385,7 +385,10 @@
         "duration": "Duration",
         "durationCost": "{name} ({cost} PP)",
         "die": "Die",
-        "plotPoints": "You have {value} Plot Points.",
+        "plotPoints": {
+          "one": "You have {count} Plot Point.",
+          "other": "You have {count} Plot Points."
+        },
         "confirm": "Create"
       },
       "Delete": {
@@ -555,7 +558,7 @@
           "distinction": "Distinction",
           "asset": "Asset",
           "talent": "Talent",
-          "money": "Money",
+          "money": "Wallet",
           "scene": "Scene Trait",
           "die": "Extra die"
         },
@@ -701,14 +704,20 @@
         },
         "EndScene": {
           "title": "End scene",
-          "body": "Remove {count} scene Asset(s) from the Crew?"
+          "body": {
+            "one": "Remove {count} scene Asset from the Crew?",
+            "other": "Remove {count} scene Assets from the Crew?"
+          }
         },
         "NewJob": {
           "title": "New Job",
           "name": "Job name",
           "hint": "Starts the Job, clears old Complications and gives Plot Points.",
           "confirm": "Start",
-          "who": "Plot Points go to {count} character(s): {names}.",
+          "who": {
+            "one": "Plot Points go to {count} character: {names}.",
+            "other": "Plot Points go to {count} characters: {names}."
+          },
           "nobody": "none (no character has a player)"
         },
         "EndJob": {

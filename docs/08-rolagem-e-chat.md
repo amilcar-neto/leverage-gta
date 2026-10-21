@@ -6,7 +6,7 @@ Alvo visual do card: `reference/mockups/png/roll-chat-card.png`. Bandeja: rodap�
 
 - A Pool é estado **do cliente**, ligado à ficha aberta (`DicePool`). Não é salva no ator.
 - Entra na Pool clicando em: nome de Attribute, nome de Role, d8 ou d4 de Distinction, nome de Specialty, dado ou
-  nome de Asset, dado de Talent, maior dado de Grana (botão `$` na bandeja, se a regra estiver ligada).
+  nome de Asset, dado de Talent, maior dado de Grana (pelo **+ DADO**, item GRANA, se a regra estiver ligada).
 - **Obrigatórios:** exatamente **1 Attribute e 1 Role** (chips sólidos). Escolher outro Attribute troca o anterior.
 - **Opcionais:** chips tracejados. No máximo **uma Distinction** por rolagem. Specialty só faz sentido com a Role
   dela; se a Role na Pool for outra, avise com um tooltip no chip (não bloqueie: o mestre pode permitir).

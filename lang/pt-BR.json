@@ -385,7 +385,10 @@
         "duration": "Duração",
         "durationCost": "{name} ({cost} PP)",
         "die": "Dado",
-        "plotPoints": "Você tem {value} Plot Points.",
+        "plotPoints": {
+          "one": "Você tem {count} Plot Point.",
+          "other": "Você tem {count} Plot Points."
+        },
         "confirm": "Criar"
       },
       "Delete": {
@@ -496,10 +499,10 @@
         "open": "Abrir Asset"
       },
       "Jobs": {
-        "summary": "{jobs} JOBS · {unspent} SEM GASTAR",
+        "summary": "{jobs} JOBS · {unspent} LIVRES",
         "trainUp": "Train up",
         "trainUpHint": "Gaste os Jobs não gastos em uma nova Specialty, Talent, Signature Asset ou um degrau de evolução",
-        "log": "+ Registrar",
+        "log": "+ Job",
         "logHint": "Registra um Job concluído: nome, rendimento e a divisão",
         "newJob": "Novo Job",
         "colJob": "Job",
@@ -555,7 +558,7 @@
           "distinction": "Distinction",
           "asset": "Asset",
           "talent": "Talent",
-          "money": "Grana",
+          "money": "Carteira",
           "scene": "Traço de cena",
           "die": "Dado extra"
         },
@@ -701,14 +704,20 @@
         },
         "EndScene": {
           "title": "Encerrar cena",
-          "body": "Remover {count} Asset(s) de cena da Equipe?"
+          "body": {
+            "one": "Remover {count} Asset de cena da Equipe?",
+            "other": "Remover {count} Assets de cena da Equipe?"
+          }
         },
         "NewJob": {
           "title": "Novo Job",
           "name": "Nome do Job",
           "hint": "Inicia o Job, limpa as Complications antigas e dá Plot Points.",
           "confirm": "Iniciar",
-          "who": "Os Plot Points vão para {count} personagem(ns): {names}.",
+          "who": {
+            "one": "Os Plot Points vão para {count} personagem: {names}.",
+            "other": "Os Plot Points vão para {count} personagens: {names}."
+          },
           "nobody": "nenhum (nenhum personagem tem jogador)"
         },
         "EndJob": {

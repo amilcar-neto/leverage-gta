@@ -5,7 +5,7 @@
 import { LEVERAGE, hasRealPortrait } from "../../config.mjs";
 import { getCityScales } from "../../world-state.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
-import { moveEntry, traitRows } from "./location-rows.mjs";
+import { moveEntry, nameSizeClass, traitRows } from "./location-rows.mjs";
 
 const TEMPLATES = `systems/${LEVERAGE.systemId}/templates/actor/location`;
 const part = (name, extra = {}) => ({ template: `${TEMPLATES}/${name}.hbs`, ...extra });
@@ -66,6 +66,7 @@ export class LocationSheet extends LeverageActorSheet {
       hasImage: hasRealPortrait(actor.img),
       cities,
       cityName: current?.name ?? "",
+      nameSize: nameSizeClass(actor.name),
       noCitySelected: !current,
       traits: traitRows(system.traits),
       notesField: system.schema.fields.notes,

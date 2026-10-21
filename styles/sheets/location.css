@@ -229,3 +229,7 @@
   font-size: 15px;
   line-height: 1.4;
 }
+
+/* Long names step the size down so they fit before an ellipsis is needed. */
+.leverage-gta.location-sheet .lv-loc-name.is-long { font-size: 34px; }
+.leverage-gta.location-sheet .lv-loc-name.is-longer { font-size: 26px; }

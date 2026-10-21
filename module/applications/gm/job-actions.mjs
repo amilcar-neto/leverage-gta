@@ -206,7 +206,7 @@ export async function endScene({ confirm = true } = {}) {
     const yes = await foundry.applications.api.DialogV2.confirm({
       classes: ["leverage-gta", "lv-dialog"],
       window: { title: t("LEVERAGE.GM.Dialog.EndScene.title") },
-      content: `<p>${t("LEVERAGE.GM.Dialog.EndScene.body", { count: total })}</p>`,
+      content: `<p>${tn("LEVERAGE.GM.Dialog.EndScene.body", total)}</p>`,
       rejectClose: false
     });
     if (!yes) return null;
@@ -252,7 +252,7 @@ export async function newJobDialog() {
     content: `<div class="lv-dlg"><label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.NewJob.name")}</span>
       <input type="text" name="name" autofocus maxlength="80" value="${escapeHtml(current)}"></label>
       <p class="lv-dlg-hint">${t("LEVERAGE.GM.Dialog.NewJob.hint")}</p>
-      <p class="lv-dlg-hint" title="${escapeHtml(who)}">${escapeHtml(t("LEVERAGE.GM.Dialog.NewJob.who", { count: crew.length, names: who }))}</p></div>`,
+      <p class="lv-dlg-hint" title="${escapeHtml(who)}">${escapeHtml(tn("LEVERAGE.GM.Dialog.NewJob.who", crew.length, { names: who }))}</p></div>`,
     ok: {
       label: t("LEVERAGE.GM.Dialog.NewJob.confirm"),
       callback: (_event, button) => {

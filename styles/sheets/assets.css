@@ -297,3 +297,23 @@
 .leverage-gta.lv-dialog .lv-dlg-option.is-disabled { opacity: 0.45; cursor: not-allowed; }
 .leverage-gta.lv-dialog .lv-dlg-option-name { flex: 1; min-width: 0; }
 .leverage-gta.lv-dialog .lv-dlg-option-cost { flex: none; font-weight: 700; }
+
+/* Radios of the choice dialogs (Train up): a light ring so they read on the dark glass. */
+.leverage-gta.lv-dialog .lv-dlg-option input[type="radio"] {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  appearance: none;
+  border: 2px solid var(--lv-muted);
+  border-radius: 50%;
+  background: transparent;
+  cursor: inherit;
+}
+
+.leverage-gta.lv-dialog .lv-dlg-option input[type="radio"]:checked {
+  border-color: var(--lv-header);
+  background: radial-gradient(circle, var(--lv-header) 0 42%, transparent 48%);
+}
+
+.leverage-gta.lv-dialog .lv-dlg-option input[type="radio"]:focus-visible { outline: 2px solid var(--lv-accent-2); outline-offset: 2px; }

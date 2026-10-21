@@ -51,14 +51,32 @@ function closePopover(sheet) {
 }
 
 /**
+ * How a change to a vital is applied (docs/02): a player cannot raise the Vest for free, it is bought again
+ * (`restoreVest`); the Fixer and every other change just write the value.
+ * @param {string} key `"life"` or `"vest"`.
+ * @param {number} current Value now.
+ * @param {number} next Wanted value, already clamped.
+ * @param {boolean} isGM Whether the user is the Fixer.
+ * @returns {"none"|"update"|"restoreVest"}
+ */
+export function vitalRoute(key, current, next, isGM) {
+  if (next === current) return "none";
+  return key === "vest" && next > current && !isGM ? "restoreVest" : "update";
+}
+
+/**
  * Writes a new value of a vital. An update re-renders the whole sheet by itself; the header is only redrawn here
  * when nothing changed (so a typed, clamped number goes back to the real value).
  */
 async function setVital(sheet, key, wanted) {
   const { value, max } = sheet.actor.system[key];
   const next = clampVital(wanted, max);
-  if (next === value) return refresh(sheet);
-  await sheet.actor.update({ [`system.${key}.value`]: next });
+  const route = vitalRoute(key, value, next, game.user.isGM);
+  if (route === "none") return refresh(sheet);
+  if (route === "update") return sheet.actor.update({ [`system.${key}.value`]: next });
+  const paid = await sheet.actor.restoreVest();
+  if (!paid.ok) ui.notifications.warn(game.i18n.format("LEVERAGE.Money.Pay.short", { n: paid.shortBy }));
+  refresh(sheet);
 }
 
 /** Applies a typed value from a popover input. */

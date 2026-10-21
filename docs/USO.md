@@ -63,8 +63,8 @@ A bandeja **POOL** fica no rodapé da ficha.
 1. Clique no nome de **um Attribute** e de **uma Role** (obrigatórios; escolher outro troca o anterior). Sem os dois, o
    botão ROLAR fica desligado.
 2. Se quiser, some: uma **Distinction** (no máximo uma; o d8 ajuda, o d4 atrapalha e dá +1 Plot Point), uma
-   **Specialty** (+d6, vale com a Role dela), **Assets** e **Talents** com dado, a **Grana** (botão `$`, se a regra
-   estiver ligada) e dados avulsos pelo **+ DADO** (d4 a d12, a Grana e os Traços de cena do Job ativo).
+   **Specialty** (+d6, vale com a Role dela), **Assets** e **Talents** com dado, e dados avulsos pelo **+ DADO** (d4 a d12, a **Grana**, se a regra
+   estiver ligada, e os Traços de cena do Job ativo).
 3. Clique em um chip para tirá-lo da Pool. **ROLAR** (ou Enter, com a ficha em foco) rola tudo.
 
 **Regra:** rola todos os dados e soma os **dois maiores**. Dado que tirou **1** não conta; se todos tirarem 1, o total

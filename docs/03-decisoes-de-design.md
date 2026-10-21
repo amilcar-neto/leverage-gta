@@ -128,7 +128,7 @@ redimensionada; as listas internas rolam, a ficha não.
   direita como no GTA III.
 - **Estrelas:** 5 grandes, amarelas quando ativas, escuras porém visíveis quando não; cada uma com o dado dela dentro.
   Só o mestre clica.
-- **Grana:** `$` verde + dados verde-dinheiro (maior à direita). Clique esquerdo +1 degrau, direito −1 (dono ou
+- **Grana:** `$` verde + dados verde-dinheiro (maior à direita). Clique esquerdo abre **Pagar**, direito abre **Emprestar** (dono ou
   mestre). Sem dinheiro: `$` e um dado tracejado "0". Sempre visível.
 - **Plot Points:** ficha de cassino amarela + número, botões − e +. Sempre visível, mesmo com 0.
 - **Ficaram fora do HUD de propósito:** Vida e Colete (moram na ficha e no token), assets temporários (moram na
