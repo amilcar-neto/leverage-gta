@@ -45,7 +45,7 @@ function lastRoll(actorId) {
       ones: Boolean(el.querySelector(".lv-roll-ones")),
       overflow: [...el.querySelectorAll(".lv-roll-card *")].some((n) => n.scrollWidth > n.clientWidth + 1 && getComputedStyle(n).overflow === "visible"),
       cardWidth: el.querySelector(".lv-roll-card").getBoundingClientRect().width,
-      headerHidden: getComputedStyle(el.querySelector(".message-header")).display === "none"
+      headerHidden: getComputedStyle(el.querySelector(".message-header .message-sender")).display === "none"
     },
     pp: actor.system.plotPoints.value, money: actor.system.money.steps
   };
@@ -85,8 +85,7 @@ try {
   record("d4 Distinction gave +1 PP", f.distinctionPP === 1 && r.pp === 2, { pp: r.pp, f: f.distinctionPP });
   record("money untouched without a money die", f.money === false && r.money === 8, r);
   record("card drawn: dice, chips, total", r.card?.dice === 4 && r.card.chips === 4 && r.card.total === String(f.total) && r.card.headerHidden, r.card);
-  record("card has KEEP button when a spare die and PP exist",
-    r.card.buttons.includes("keepDie") === (f.entries.some((e) => !e.kept && !e.one)), r.card);
+  record("the Fixer sees no KEEP button (only the character's player keeps dice)", !r.card.buttons.includes("keepDie"), r.card);
   record("card is 330-ish px wide, nothing overflows", r.card.cardWidth > 250 && !r.card.overflow, r.card);
   record("pool cleared after rolling", (await page.locator(`${sheet} .lv-tray-chips .lv-chip[data-pool-ref]`).count()) === 0);
 

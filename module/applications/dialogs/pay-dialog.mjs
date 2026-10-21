@@ -86,6 +86,7 @@ export async function openPayDialog(actor) {
     content: content(prices),
     render: (_event, dialog) => wire(dialog, actor, prices),
     ok: {
+      class: "lv-config-btn lv-config-btn--primary",
       label: t("LEVERAGE.Money.Pay.confirm"),
       callback: (_event, button) => chosenPrice(button.form, prices)
     }

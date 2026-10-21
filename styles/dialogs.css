@@ -36,3 +36,7 @@
 .leverage-gta.lv-dialog .lv-money-summary { padding: 6px 8px; border-radius: 4px; background: rgba(128, 128, 128, 0.14); }
 .leverage-gta.lv-dialog .lv-money-warn { margin: 0; color: var(--lv-stamp); font-weight: 700; font-size: 13px; }
 .leverage-gta.lv-dialog .lv-money-dlg [hidden] { display: none; }
+
+/* ---- Dialog body inside the shared window frame (window.css) ---- */
+.leverage-gta.lv-dialog .window-content { padding: 12px 14px; background: none; }
+.leverage-gta.lv-dialog .form-footer { margin-top: 10px; }

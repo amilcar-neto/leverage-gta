@@ -27,33 +27,12 @@
   font-size: 24px;
   line-height: 1;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--lv-white);
 }
 
 .leverage-gta.crew-sheet .lv-tray-count {
   font-size: 13px;
   color: var(--lv-muted);
-}
-
-.leverage-gta.crew-sheet .lv-roll-btn {
-  flex: none;
-  width: 92px;
-  height: 44px;
-  margin: 0;
-  padding: 0;
-  background: var(--lv-roll);
-  border: 2px solid var(--lv-outline);
-  border-radius: 2px;
-  color: var(--lv-bg-b);
-  font-family: var(--lv-font-display);
-  font-size: 26px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.leverage-gta.crew-sheet .lv-roll-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 .leverage-gta.crew-sheet .lv-tray-chips {
@@ -141,9 +120,6 @@
 
 .leverage-gta .lv-tray-clear:hover,
 .leverage-gta .lv-tray-clear:focus-visible { color: var(--lv-stamp); }
-
-.leverage-gta .lv-roll-btn:not(:disabled) { cursor: pointer; }
-.leverage-gta .lv-roll-btn:not(:disabled):hover { filter: brightness(1.1); }
 
 /* Floating "+ DIE" menu (opens upward from the button) */
 .leverage-gta .lv-pool-menu {

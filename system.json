@@ -8,6 +8,7 @@
     "verified": "14"
   },
   "authors": [{ "name": "amilcar" }],
+  "media": [{ "type": "icon", "url": "systems/leverage-gta/assets/logo.svg" }],
   "esmodules": ["leverage-gta.mjs"],
   "styles": ["styles/leverage-gta.css"],
   "languages": [

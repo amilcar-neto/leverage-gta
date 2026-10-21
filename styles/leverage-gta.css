@@ -5,7 +5,9 @@
 @import url("fonts.css") layer(system);
 @import url("tokens.css") layer(system);
 @import url("base.css") layer(system);
+@import url("buttons.css") layer(system);
 @import url("die.css") layer(system);
+@import url("window.css") layer(system);
 @import url("sheets/crew.css") layer(system);
 @import url("sheets/header.css") layer(system);
 @import url("sheets/ladders.css") layer(system);

@@ -117,7 +117,7 @@ try {
   const b0 = await state();
   await page.evaluate((id) => game.leverage.combat.down(id, { byPolice: true, confirm: false }), ids.crew);
   const b1 = await state();
-  record("Busted (Liberty): PP +1, no bail paid, stars +1", b1.pp === b0.pp + 1 && b1.money === b0.money && (await stars()) === 2, { b0, b1 });
+  record("Busted (Liberty): PP +1, no bail paid, stars unchanged until the rescue", b1.pp === b0.pp + 1 && b1.money === b0.money && (await stars()) === 1, { b0, b1 });
   const bustedId = await page.evaluate(() => game.messages.contents.filter((m) => m.getFlag("leverage-gta", "down")?.kind === "busted").at(-1)?.id);
   created.messages.push(bustedId);
   await page.waitForSelector(`.chat-message[data-message-id="${bustedId}"] .lv-down-title`);

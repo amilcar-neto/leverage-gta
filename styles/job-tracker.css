@@ -1,52 +1,6 @@
 /* Job Tracker (T-703). Everything is scoped to .leverage-gta.lv-tracker. */
 
-.leverage-gta.lv-tracker {
-  background: var(--lv-bg);
-  border: var(--lv-border);
-  border-radius: 8px;
-  box-shadow: var(--lv-shadow);
-  color: var(--lv-ink);
-  overflow: hidden;
-}
-
-.leverage-gta.lv-tracker .window-header {
-  flex: none;
-  height: 32px;
-  gap: 10px;
-  padding: 0 12px;
-  background: #000;
-  border: 0;
-  color: var(--lv-ink);
-}
-
-.leverage-gta.lv-tracker .window-title {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  font-family: var(--lv-font-ui);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 32px;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.leverage-gta.lv-tracker .window-header .header-control {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  border: 1px solid var(--lv-muted);
-  border-radius: 3px;
-  box-shadow: none;
-  color: var(--lv-ink);
-}
-
+/* Window frame and title bar: styles/window.css */
 .leverage-gta.lv-tracker .window-content { padding: 0; background: none; overflow: auto; scrollbar-gutter: stable; }
 .leverage-gta.lv-tracker button { min-height: 0; margin: 0; }
 
@@ -83,33 +37,11 @@
 
 .leverage-gta .lv-trk-input:focus { border-color: var(--lv-header); outline: 0; box-shadow: none; }
 
-.leverage-gta .lv-trk-btn {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background: var(--lv-die-ink);
-  border: 2px solid var(--lv-outline);
-  border-radius: 3px;
-  color: var(--lv-header);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.leverage-gta .lv-trk-btn:hover:not(:disabled) { color: #fff; }
-.leverage-gta .lv-trk-btn:disabled { opacity: 0.35; cursor: default; }
-.leverage-gta .lv-trk-btn--remove:hover:not(:disabled) { color: var(--lv-stamp-hover); }
-.leverage-gta .lv-trk-btn--add { width: 28px; height: 28px; }
-
 /* Lists */
 .leverage-gta .lv-trk-list { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .leverage-gta .lv-trk-row { display: flex; align-items: center; gap: 10px; min-height: 32px; margin: 0; }
-.leverage-gta .lv-trk-ctrl { display: flex; flex: none; gap: 4px; }
+.leverage-gta .lv-trk-ctrl { display: flex; flex: none; gap: 6px; }
+.leverage-gta .lv-trk-ctrl .lv-trk-btn--remove { margin-inline-start: 6px; }
 .leverage-gta .lv-trk-add { display: flex; align-items: center; gap: 6px; }
 
 .leverage-gta .lv-trk-name {
@@ -153,7 +85,7 @@
   white-space: nowrap;
 }
 
-.leverage-gta .lv-trk-stepper { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.leverage-gta .lv-trk-stepper { display: flex; align-items: center; gap: 6px; min-width: 0; }
 
 .leverage-gta .lv-trk-value {
   display: flex;

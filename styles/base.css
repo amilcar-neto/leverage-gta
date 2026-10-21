@@ -47,7 +47,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #fff;
+  color: var(--lv-white);
   text-shadow: var(--lv-hud-shadow);
 }
 
@@ -71,30 +71,6 @@
   letter-spacing: 0.06em;
   text-transform: none;
 }
-
-/* "+ ADD" in a panel strip */
-.leverage-gta .lv-add-btn {
-  display: flex;
-  align-items: center;
-  height: 22px;
-  min-height: 0;
-  margin: 0;
-  padding: 0 8px;
-  background: var(--lv-die-ink);
-  color: var(--lv-header);
-  border: 2px solid var(--lv-outline);
-  border-radius: 3px;
-  font-family: var(--lv-font-ui);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.leverage-gta .lv-add-btn:hover,
-.leverage-gta .lv-add-btn:focus-visible { background: var(--lv-outline); }
 
 /* Tag: small pill (Role, cost, Asset duration). Variants only change colors and shape. */
 .leverage-gta .lv-tag {
@@ -127,7 +103,7 @@
   height: 20px;
   padding: 0 4px;
   background: rgba(255, 255, 255, 0.06);
-  color: #c9d5d2;
+  color: color-mix(in srgb, var(--lv-ink) 80%, var(--lv-muted));
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 3px;
   font-size: 11px;
@@ -286,4 +262,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Redacted words in case-file text (sample data): a black bar where the text was blacked out */
+.leverage-gta .redacted {
+  display: inline-block;
+  width: 60px;
+  height: 13px;
+  background: var(--lv-outline);
+  vertical-align: -1px;
 }

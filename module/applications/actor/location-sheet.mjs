@@ -11,6 +11,9 @@ const TEMPLATES = `systems/${LEVERAGE.systemId}/templates/actor/location`;
 const part = (name, extra = {}) => ({ template: `${TEMPLATES}/${name}.hbs`, ...extra });
 
 export class LocationSheet extends LeverageActorSheet {
+  /** The Trait lock does not govern this sheet: no seal in the title bar. */
+  static HAS_LOCK_SEAL = false;
+
   /** @override */
   static DEFAULT_OPTIONS = {
     classes: ["location-sheet"],

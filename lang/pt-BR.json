@@ -1037,6 +1037,12 @@
         "one": "{count} estrela · rolagem da polícia {pool}",
         "other": "{count} estrelas · rolagem da polícia {pool}"
       }
+    },
+    "Packs": {
+      "crewExample": "Equipe de exemplo",
+      "npcs": "NPCs",
+      "locations": "Locais",
+      "talentsAssets": "Talentos e Ativos"
     }
   }
 }

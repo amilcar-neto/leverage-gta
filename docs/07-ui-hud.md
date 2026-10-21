@@ -22,7 +22,7 @@ Alvo visual: `reference/mockups/png/hud-sidebar-open.png`, `hud-sidebar-collapse
 
 ## Estrelas
 
-- Cinco estrelas de **50 px**, em linha, com contorno preto. Ativas: amarelo `#ffcf1f`, rótulo escuro. Inativas:
+- Cinco estrelas de **50 px**, em linha, sem contorno preto (só uma sombra suave, `--lv-hud-soft-shadow`). Ativas: amarelo `#ffcf1f`, rótulo escuro. Inativas:
   `#3b3313` com opacidade 0,8, rótulo `#857232`: escuras, mas claramente presentes.
 - Dentro de cada estrela, o **dado principal** daquele nível na escala da cidade atual (d8, d10, d12…), em Anton 13 px.
 - Tooltip de cada estrela: "3 stars · police roll d12 + d6".
@@ -32,7 +32,7 @@ Alvo visual: `reference/mockups/png/hud-sidebar-open.png`, `hud-sidebar-collapse
 
 ## Grana
 
-- `$` em Anton 40 px verde-dinheiro com contorno + dados verde-dinheiro de 38 px com o número dentro, **maior à
+- `$` em Anton 40 px verde-dinheiro com sombra suave (sem contorno preto) + dados verde-dinheiro de 38 px com o número dentro, **maior à
   direita**, dados novos nascendo à esquerda. Sem dinheiro: `$` + um contorno tracejado de d4 com "0".
 - **Clique esquerdo: +1 degrau. Clique direito: −1 degrau.** Só dono do personagem e mestre. Para pagar um preço em
   dados (ex.: d12 + d6) há um item no menu de contexto ("Pay…") que abre um diálogo com a tabela de preços.
@@ -40,7 +40,7 @@ Alvo visual: `reference/mockups/png/hud-sidebar-open.png`, `hud-sidebar-collapse
 
 ## Plot Points
 
-- Ficha de cassino amarela (30 px) + número em Anton 34 px amarelo com contorno, botões − e + (22 px) à esquerda.
+- Ficha de cassino amarela (30 px) + número em Anton 34 px amarelo com sombra suave, botões − e + (22 px) à esquerda.
 - Sempre visível, inclusive com 0.
 - Animação curta (pulso) quando o valor muda, para o jogador perceber que ganhou um PP.
 

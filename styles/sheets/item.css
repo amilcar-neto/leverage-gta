@@ -1,76 +1,18 @@
 /* Item sheets (T-401): small window, yellow name band, labelled fields, footer with delete.
    Reference: reference/mockups/png/talent-item-window.png. Scoped to .leverage-gta.lv-item-sheet. */
 
-/* ---- Window frame and title bar ---- */
+/* ---- Window size (frame and title bar: styles/window.css) ---- */
 .leverage-gta.lv-item-sheet {
   min-width: 420px;
   min-height: 300px;
-  background: var(--lv-bg);
-  border: 4px solid #000;
-  border-radius: 8px;
-  box-shadow: none;
-  color: var(--lv-ink);
-  overflow: hidden;
 }
 
-.leverage-gta.lv-item-sheet .window-header {
-  flex: none;
-  height: 32px;
-  gap: 10px;
-  padding: 0 12px;
-  background: #000;
-  border: 0;
-  color: var(--lv-ink);
-}
-
-/* "TALENT  · Rosa Delgado": the type in muted capitals, the owner lighter and in normal case (mockup) */
-.leverage-gta.lv-item-sheet .window-title {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  font-family: var(--lv-font-ui);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 32px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
+/* "TALENT  · Rosa Delgado": the type in muted capitals, the owner lighter and in normal case (mockup). Item windows
+   keep every title-bar control quiet except Close, which wears the mockup's boxed look. */
+.leverage-gta.lv-item-sheet { --lv-window-title-size: 15px; }
 .leverage-gta.lv-item-sheet .lv-title-type { color: var(--lv-muted); text-transform: uppercase; }
-.leverage-gta.lv-item-sheet .lv-title-owner { color: var(--lv-ink); font-weight: 500; letter-spacing: 0.02em; }
-
-/* Foundry's own controls (menu, sheet) stay quiet; only Close wears the mockup's boxed look */
-.leverage-gta.lv-item-sheet .window-header .header-control {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  border-radius: 3px;
-  box-shadow: none;
-  color: var(--lv-muted-2);
-}
-
-.leverage-gta.lv-item-sheet .window-header .header-control[data-action="close"] {
-  border: 1px solid var(--lv-muted);
-  color: var(--lv-ink);
-}
-
-/* Lock seal: icon only here (the tooltip says the rest) */
-.leverage-gta.lv-item-sheet .lv-lock-seal { width: 22px; padding: 0; justify-content: center; }
-.leverage-gta.lv-item-sheet .lv-lock-seal-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-
-.leverage-gta.lv-item-sheet .window-header .header-control:hover,
-.leverage-gta.lv-item-sheet .window-header .header-control:focus-visible {
-  border-color: var(--lv-select);
-  color: #fff;
-}
-
-.leverage-gta.lv-item-sheet button { min-height: 0; }
+.leverage-gta.lv-item-sheet .lv-title-owner { color: var(--lv-ink); font-weight: 500; letter-spacing: 0.02em; text-transform: none; }
+.leverage-gta.lv-item-sheet .window-header .header-control:not([data-action="close"]):not(.lv-lock-seal):not(:hover):not(:focus-visible) { border-color: transparent; color: var(--lv-muted-2); }
 
 .leverage-gta.lv-item-sheet .window-content {
   display: flex;
@@ -102,7 +44,7 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  color: #fff;
+  color: var(--lv-white);
   font-family: var(--lv-font-display);
   font-size: 28px;
   font-weight: 400;
@@ -213,7 +155,7 @@
   cursor: pointer;
 }
 
-.leverage-gta.lv-item-sheet .lv-item-select select option { background: #10171a; color: var(--lv-ink); }
+.leverage-gta.lv-item-sheet .lv-item-select select option { background: var(--lv-bg-b); color: var(--lv-ink); }
 
 .leverage-gta.lv-item-sheet .lv-item-select::after {
   content: "\25BE";
@@ -231,7 +173,7 @@
 .leverage-gta.lv-item-sheet .lv-item-seg {
   display: flex;
   height: 34px;
-  border: 2px solid #000;
+  border: 2px solid var(--lv-outline);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -258,7 +200,7 @@
   cursor: pointer;
 }
 
-.leverage-gta.lv-item-sheet .lv-item-seg-btn + .lv-item-seg-btn { border-left: 2px solid #000; }
+.leverage-gta.lv-item-sheet .lv-item-seg-btn + .lv-item-seg-btn { border-left: 2px solid var(--lv-outline); }
 
 .leverage-gta.lv-item-sheet .lv-item-seg-btn[aria-pressed="true"] {
   background: var(--lv-header);
@@ -380,7 +322,7 @@
   overflow-y: auto;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: #8a9b98 rgba(255, 255, 255, 0.07);
+  scrollbar-color: var(--lv-scroll-thumb) rgba(255, 255, 255, 0.07);
   color: var(--lv-ink);
 }
 
@@ -420,27 +362,3 @@
   font-size: 13px;
 }
 
-.leverage-gta.lv-item-sheet .lv-item-delete {
-  flex: 0 1 auto;
-  min-width: 0;
-  height: 30px;
-  margin: 0;
-  padding: 0 12px;
-  background: transparent;
-  border: 2px solid var(--lv-danger);
-  border-radius: 4px;
-  box-shadow: none;
-  color: var(--lv-danger);
-  font-family: var(--lv-font-ui);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.leverage-gta.lv-item-sheet .lv-item-delete:hover,
-.leverage-gta.lv-item-sheet .lv-item-delete:focus-visible {
-  background: color-mix(in srgb, var(--lv-danger) 14%, transparent);
-}

@@ -6,6 +6,8 @@
   --lv-bg: linear-gradient(165deg, var(--lv-bg-a), var(--lv-bg-b));
   --lv-panel: rgba(10, 16, 18, 0.92);
   --lv-header: #d8c24a;
+  --lv-logo-white: #ffffff;
+  --lv-logo-red: #ff1a4b;
   --lv-accent-2: #7fc2b4;
   --lv-ink: #e9f0ed;
   --lv-muted: #9fb2ad;
@@ -39,6 +41,10 @@
   --lv-outline: #000;
   --lv-die-ink: #10150f;
   --lv-money-ink: #e2f7d9;
+  --lv-white: #fff;
+  --lv-wasted: #c4161c;
+  --lv-busted: #8fb4ff;
+  --lv-paper-photo: #d9d6ca;
 
   /* Die colors, one per size (same everywhere; Grana uses --lv-money-die) */
   --lv-d4: #ee5a5a;
@@ -56,6 +62,12 @@
   --lv-border: 3px solid var(--lv-outline);
   --lv-shadow: 4px 4px 0 var(--lv-outline);
   --lv-hud-shadow: -2px -2px 0 var(--lv-outline), 2px -2px 0 var(--lv-outline), -2px 2px 0 var(--lv-outline), 2px 2px 0 var(--lv-outline), 0 3px 0 var(--lv-outline), 3px 3px 0 var(--lv-outline);
+  --lv-hud-soft-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --lv-hud-soft-glow: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35));
+  --lv-window-border: 4px solid var(--lv-outline);
+  --lv-window-radius: 8px;
+  --lv-window-title-h: 32px;
+  --lv-window-title-size: 17px;
   --lv-shadow-panel: 5px 5px 0 rgba(0, 0, 0, 0.45);
   --lv-col-gap: 12px;
   --lv-gap: 16px;

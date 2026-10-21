@@ -47,6 +47,7 @@ export function promptComplication(complications) {
       elements.target?.addEventListener("change", sync);
     },
     ok: {
+      class: "lv-config-btn lv-config-btn--primary",
       label: t("LEVERAGE.Dialog.Complication.confirm"),
       callback: (_event, button) => {
         const { target, name } = new foundry.applications.ux.FormDataExtended(button.form).object;

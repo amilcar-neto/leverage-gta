@@ -172,8 +172,7 @@ try {
   record("player sees stars, Money and Plot Points", st?.hasStars && st?.hasMoney && st?.hasPp, st);
   record("player: stars are read only", st?.disabledStars === 5, st?.disabledStars);
   record("player: gap 16px", Math.abs(st?.gap - 16) <= 1, st?.gap);
-  await clearNotes(pp); await pp.locator('#leverage-hud button[data-action="gainPlotPoint"]').click(); await wait(pp, 800);
-  record("player gains a Plot Point on his own character", (await ppOf()) === 4, await ppOf());
+  record("player has no gain Plot Point button (GM only)", (await pp.locator('#leverage-hud button[data-action="gainPlotPoint"]').count()) === 0);
   await clearNotes(pp); await pp.locator('#leverage-hud button[data-action="spendPlotPoint"]').click(); await wait(pp, 800);
   await clearNotes(pp); await pp.locator("#leverage-hud .lv-hud-money").click(); await wait(pp, 900);
   record("player: click on Money opens the Pay dialog", (await pp.locator(".application.lv-dialog").count()) > 0);
@@ -192,6 +191,7 @@ try {
   await wait(pp, 1200);
   st = await hudState(pp);
   record("empty state: Money and Plot Points dimmed with the hint", st.hasMoney && st.hasPp && st.dim && /character|personagem/i.test(st.moneyTip ?? ""), { dim: st.dim, tip: st.moneyTip });
+  await pp.mouse.move(400, 400); await wait(pp, 600);
   await pp.screenshot({ path: `${SHOTS}/T-701-empty.png`, clip });
   record("no system errors in the GM console", log.own().length === 0, log.own());
   record("no system errors in the player console", playerLog.own().length === 0, playerLog.own());

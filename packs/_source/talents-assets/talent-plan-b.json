@@ -8,7 +8,7 @@
     "role": "mastermind",
     "cost": 1,
     "activation": "The plan falls apart.",
-    "effect": "<p>Spend a Plot Point to turn a Complication into a flashback that gives you an Asset.</p>",
+    "effect": "<p>Once per Job, when a Complication hits you, name the contingency you prepared: the Complication is replaced by a die one size smaller, and you gain an Asset for the scene.</p>",
     "die": null
   },
   "sort": 0,

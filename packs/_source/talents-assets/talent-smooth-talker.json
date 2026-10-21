@@ -8,7 +8,7 @@
     "role": "grifter",
     "cost": 1,
     "activation": "You bluff your way past a guard or clerk.",
-    "effect": "<p>Spend a Plot Point to keep an extra die on a social roll.</p>",
+    "effect": "<p>Once per Job, after a social roll, pick one die you did not keep and swap it for a d6; the new die is rolled and counts as kept.</p>",
     "die": null
   },
   "sort": 0,

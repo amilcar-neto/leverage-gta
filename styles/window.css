@@ -1,0 +1,119 @@
+/* One window frame for every Leverage application window (sheets, item sheets, GM tools, config apps).
+   Per-window files only set size and body layout. Reference: reference/mockups/png/sheet-*.png (title bar),
+   talent-item-window.png (item sheet). */
+
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta {
+  background: var(--lv-bg);
+  border: var(--lv-window-border);
+  border-radius: var(--lv-window-radius);
+  box-shadow: var(--lv-shadow);
+  color: var(--lv-ink);
+  overflow: hidden;
+}
+
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta .window-header {
+  flex: none;
+  height: var(--lv-window-title-h);
+  gap: 10px;
+  padding: 0 12px;
+  background: var(--lv-outline);
+  border: 0;
+  color: var(--lv-ink);
+}
+
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta .window-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--lv-font-ui);
+  font-size: var(--lv-window-title-size);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: var(--lv-window-title-h);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Title-bar controls: small boxed buttons */
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta .window-header .header-control {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--lv-muted);
+  border-radius: 3px;
+  box-shadow: none;
+  color: var(--lv-ink);
+}
+
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta .window-header .header-control:hover,
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta .window-header .header-control:focus-visible {
+  border-color: var(--lv-select);
+  color: var(--lv-white);
+}
+
+/* Window icon: three-arc symbol; two masks (white body + red accent), official logo colors via tokens. Sheets only; tools and items have none. */
+/* Masks live on the pseudo-elements: a mask on .window-icon itself would also clip its children. */
+:is(.crew-sheet, .npc-sheet, .location-sheet).leverage-gta .window-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  font-size: 0;
+  position: relative;
+}
+
+:is(.crew-sheet, .npc-sheet, .location-sheet).leverage-gta .window-icon::before,
+:is(.crew-sheet, .npc-sheet, .location-sheet).leverage-gta .window-icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+:is(.crew-sheet, .npc-sheet, .location-sheet).leverage-gta .window-icon::before {
+  background: var(--lv-logo-white);
+  -webkit-mask: url("../assets/sheet/window-icon.svg") center / contain no-repeat;
+  mask: url("../assets/sheet/window-icon.svg") center / contain no-repeat;
+}
+
+:is(.crew-sheet, .npc-sheet, .location-sheet).leverage-gta .window-icon::after {
+  background: var(--lv-logo-red);
+  -webkit-mask: url("../assets/sheet/window-icon-accent.svg") center / contain no-repeat;
+  mask: url("../assets/sheet/window-icon-accent.svg") center / contain no-repeat;
+}
+:is(.lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta .window-icon { display: none; }
+
+/* Core buttons carry a min-height and an orange hover outline; ours do not */
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta button { min-height: 0; }
+:is(.crew-sheet, .npc-sheet, .location-sheet, .lv-item-sheet, .lv-opposition, .lv-tracker, .lv-config, .lv-dialog).leverage-gta button:hover { outline: 0; }
+
+/* Trait-lock seal */
+.leverage-gta .lv-lock-seal {
+  --seal: var(--lv-header);
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--seal);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--seal) 12%, transparent);
+  color: var(--seal);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-lock-seal.is-unlocked { --seal: var(--lv-accent-2); }
+.leverage-gta .lv-lock-seal-icon { font-size: 11px; }
+
+/* Item sheets: the seal shows the icon only (the tooltip says the rest) */
+.leverage-gta.lv-item-sheet .lv-lock-seal { width: 22px; padding: 0; justify-content: center; background: none; border-color: transparent; color: var(--lv-muted-2); }
+.leverage-gta.lv-item-sheet .lv-lock-seal-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }

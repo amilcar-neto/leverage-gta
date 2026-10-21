@@ -113,3 +113,13 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - `registerDiceSoNice()` roda no `init` (nao no `ready`): o hook `diceSoNiceReady` pode disparar antes do `ready` do sistema. O hook so existe com o modulo ativo, entao sem ele nada roda.
 - Um colorset por tamanho de dado (`leverage-d4`..`d12`, cor de `dieStyles`) e `leverage-cash` (cor de `money.color`). Texto branco e contorno preto fixos em `module/dice/dsn.mjs`.
 - `evaluateDice(sizes, kinds)` poe `options.appearance` em cada termo; so a rolagem da Pool passa `kinds` (Grana fica verde). Dano e oposicao usam a cor do tamanho.
+
+## HUD sem contorno preto (pedido do dono)
+- Desvio dos mockups `hud-*.png`: estrelas, Grana, Plot Points e textos do HUD não têm mais contorno preto duro. Usam o token `--lv-hud-soft-shadow` (`text-shadow`) e `--lv-hud-soft-glow` (`drop-shadow`), ambos `0 1px 2px` a 35% de preto. As estrelas mantêm um traço de 0,75 px a 30% só para a apagada não sumir.
+- O resto do HUD e o `--lv-hud-shadow` das fichas continuam como estavam. Alternativa descartada: remover toda sombra (some em cena clara).
+
+## Logo oficial na title bar (ícone da janela)
+
+- Contexto: o dono trocou o hexágono amarelo pelo logo do sistema (três arcos com bolinhas).
+- Escolha: o logo oficial mantém as cores originais (branco e vermelho), não herda o amarelo da title bar. Cores nos tokens `--lv-logo-white` e `--lv-logo-red` (`styles/tokens.css`). Na title bar usamos duas máscaras SVG (`assets/sheet/window-icon.svg` e `window-icon-accent.svg`) com traço mais grosso para ler em 16px. Versão fiel (traço 52) em `assets/logo.svg`, usada como ícone do sistema em `system.json` (`media`). Fundo da title bar é escuro, então o branco tem contraste e não precisou de contorno.
+- Descartado: `currentColor` (amarelo) e PNG.

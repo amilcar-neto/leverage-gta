@@ -1,0 +1,7 @@
+# Ritmo de uso (janela de limite = 5h, informada pelo dono)
+2026-10-21 02:43  Dono informou: limite reseta às ~03:53.
+2026-10-21 03:53  (previsto) reset. Próximo reset previsto: 08:53 (janela de 5h).
+Regra: ao esgotar o limite, não ficar tentando de hora em hora; agendar um único disparo para o próximo reset + 5 min.
+Cada sessão de trabalho anota aqui: hora de início e hora em que o limite acabou (se souber).
+2026-10-21 02:45  Revisão da onda B+T-902 voltou: 2 bloqueios, 7 deveria. Correção em andamento.
+2026-10-21 03:11  Onda B corrigida + logo + HUD sombra suave; commit; revisão curta a seguir.

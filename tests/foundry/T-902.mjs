@@ -33,6 +33,7 @@ try {
   const sizes = Object.fromEntries(Object.entries(packs).map(([k, v]) => [k, v.count]));
   record("four packs registered", Object.keys(packs).length === 4, sizes);
   record("crew-exemplo has Rosa", packs["leverage-gta.crew-exemplo"]?.names.includes("Rosa Delgado"), packs);
+  record("pack titles are localized", Object.values(packs).every((p) => p.title && !p.title.startsWith("LEVERAGE.")), Object.values(packs).map((p) => p.title));
   record("npcs has 5 NPCs", packs["leverage-gta.npcs"]?.count === 5, sizes);
   record("locais has 1 location", packs["leverage-gta.locais"]?.count === 1, sizes);
   record("talents-assets has items", packs["leverage-gta.talents-assets"]?.count >= 8, sizes);

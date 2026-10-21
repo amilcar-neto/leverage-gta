@@ -1,52 +1,6 @@
 /* GM configuration apps (T-705): city scales, price list, training costs. Scoped to .leverage-gta.lv-config. */
 
-.leverage-gta.lv-config {
-  background: var(--lv-bg);
-  border: var(--lv-border);
-  border-radius: 8px;
-  box-shadow: var(--lv-shadow);
-  color: var(--lv-ink);
-  overflow: hidden;
-}
-
-.leverage-gta.lv-config .window-header {
-  flex: none;
-  height: 32px;
-  gap: 10px;
-  padding: 0 12px;
-  background: #000;
-  border: 0;
-  color: var(--lv-ink);
-}
-
-.leverage-gta.lv-config .window-title {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  font-family: var(--lv-font-ui);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 32px;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.leverage-gta.lv-config .window-header .header-control {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  border: 1px solid var(--lv-muted);
-  border-radius: 3px;
-  box-shadow: none;
-  color: var(--lv-ink);
-}
-
+/* Window frame and title bar: styles/window.css */
 .leverage-gta.lv-config .window-content {
   display: flex;
   flex-direction: column;
@@ -101,39 +55,6 @@
 }
 
 .leverage-gta .lv-config-input:focus-visible { outline: 2px solid var(--lv-header); outline-offset: 1px; }
-
-.leverage-gta .lv-config-btn {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 4px;
-  color: var(--lv-ink);
-  font-family: var(--lv-font-ui);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.leverage-gta .lv-config-btn:hover { background: rgba(255, 255, 255, 0.16); }
-
-.leverage-gta .lv-config-btn--primary {
-  background: var(--lv-header);
-  border: 2px solid var(--lv-outline);
-  color: var(--lv-die-ink);
-}
-
-.leverage-gta .lv-config-btn--primary:hover { background: var(--lv-header); filter: brightness(1.1); }
-.leverage-gta .lv-config-btn--link { background: none; border-color: transparent; color: var(--lv-muted); }
-.leverage-gta .lv-config-btn--link:hover { background: none; color: var(--lv-ink); }
 
 .leverage-gta .lv-config-icon {
   display: inline-flex;
@@ -232,7 +153,7 @@
 .leverage-gta .lv-cost-unit { flex: none; width: 40px; color: var(--lv-muted); font-size: 13px; }
 
 /* Footer: errors then buttons */
-.leverage-gta .lv-config-foot { display: flex; flex: none; flex-direction: column; gap: 8px; padding: 10px 14px 14px; background: #000; border-top: 4px solid var(--lv-header); }
+.leverage-gta .lv-config-foot { display: flex; flex: none; flex-direction: column; gap: 8px; padding: 10px 14px 14px; background: var(--lv-outline); border-top: 4px solid var(--lv-header); }
 .leverage-gta .lv-config-errors { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
 .leverage-gta .lv-config-errors:empty { display: none; }
 .leverage-gta .lv-config-error { color: var(--lv-life-ink); font-size: 13px; font-weight: 700; }

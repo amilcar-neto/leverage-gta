@@ -1037,6 +1037,12 @@
         "one": "{count} star · police roll {pool}",
         "other": "{count} stars · police roll {pool}"
       }
+    },
+    "Packs": {
+      "crewExample": "Example Crew",
+      "npcs": "NPCs",
+      "locations": "Locations",
+      "talentsAssets": "Talents and Assets"
     }
   }
 }

@@ -2,13 +2,13 @@
   <header class="lv-roll-head">
     {{#if opposition}}{{else if img}}<img class="lv-roll-mug" src="{{img}}" alt="{{name}}">{{else}}<span class="lv-roll-mug lv-roll-mug--empty" aria-hidden="true"></span>{{/if}}
     <span class="lv-roll-who">
-      <span class="lv-roll-name lv-hud" title="{{name}}">{{name}}</span>
-      <span class="lv-roll-flavor" title="{{flavor}}">{{flavor}}</span>
+      <span class="lv-roll-name lv-hud" data-tooltip="{{name}}">{{name}}</span>
+      <span class="lv-roll-flavor" data-tooltip="{{flavor}}">{{flavor}}</span>
     </span>
   </header>
 
   <div class="lv-roll-chips">
-    {{#each chips}}<span class="lv-roll-chip" title="{{label}} {{die}}"><span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}{{#if money}} lv-roll-chip-die--money{{/if}}">{{die}}</span></span>{{/each}}
+    {{#each chips}}<span class="lv-roll-chip" data-tooltip="{{label}} {{die}}"><span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}{{#if money}} lv-roll-chip-die--money{{/if}}">{{die}}</span></span>{{/each}}
   </div>
 
   <div class="lv-roll-dice" data-count="{{dice.length}}">
@@ -23,7 +23,7 @@
   <div class="lv-roll-total">
     <span class="lv-roll-total-label">{{localize "LEVERAGE.Roll.total"}}</span>
     <span class="lv-roll-total-num lv-hud">{{total}}</span>
-    <span class="lv-roll-explain"><span>{{countText}}</span>{{#if sumText}}<span class="lv-roll-explain-sum">{{sumText}}</span>{{/if}}</span>
+    <span class="lv-roll-explain" data-tooltip="{{countText}}{{#if sumText}} {{sumText}}{{/if}}"><span>{{countText}}</span>{{#if sumText}}<span class="lv-roll-explain-sum">{{sumText}}</span>{{/if}}</span>
   </div>
 
   {{#each ppNotes}}<div class="lv-roll-note">{{this}}</div>{{/each}}
@@ -39,9 +39,9 @@
 
   {{#if showActions}}
   <div class="lv-roll-actions">
-    {{#if showKeep}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="keepDie" title="{{keepTip}}" {{#if keepDisabled}}disabled{{/if}}>{{keepLabel}}</button>{{/if}}
-    {{#if showComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="complication" title="{{complicationTip}}">{{complicationLabel}}</button>{{/if}}
-    {{#if showDamage}}<button type="button" class="lv-roll-btn lv-roll-btn--damage" data-action="applyDamage" title="{{damageTip}}">{{damageLabel}}</button>{{/if}}
+    {{#if showKeep}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="keepDie" data-tooltip="{{keepTip}}" {{#if keepDisabled}}disabled{{/if}}>{{keepLabel}}</button>{{/if}}
+    {{#if showComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="complication" data-tooltip="{{complicationTip}}">{{complicationLabel}}</button>{{/if}}
+    {{#if showDamage}}<button type="button" class="lv-roll-btn lv-roll-btn--damage" data-action="applyDamage" data-tooltip="{{damageTip}}">{{damageLabel}}</button>{{/if}}
   </div>
   {{/if}}
 </div>

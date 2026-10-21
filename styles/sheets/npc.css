@@ -3,68 +3,12 @@
    .lv-scroll, .lv-ellipsis, .lv-hud) come from base.css; the rules the crew sheet scopes to `.crew-sheet`
    (frame, inline inputs, ladders, mugshot, Life/Vest) are restated here under `.npc-sheet`. */
 
-/* ---- Window frame and title bar ---- */
+/* ---- Window size (frame and title bar: styles/window.css) ---- */
 .leverage-gta.npc-sheet {
   --npc-police: var(--lv-d10);
   min-width: 700px;
   min-height: 760px;
-  background: var(--lv-bg);
-  border: 4px solid var(--lv-outline);
-  border-radius: 8px;
-  box-shadow: none;
-  color: var(--lv-ink);
-  overflow: hidden;
 }
-
-.leverage-gta.npc-sheet .window-header {
-  flex: none;
-  height: 32px;
-  gap: 10px;
-  padding: 0 12px;
-  background: var(--lv-outline);
-  border: 0;
-  color: var(--lv-ink);
-}
-
-.leverage-gta.npc-sheet .window-title {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  font-family: var(--lv-font-ui);
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 32px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.leverage-gta.npc-sheet .window-header .header-control {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  border: 1px solid var(--lv-muted);
-  border-radius: 3px;
-  box-shadow: none;
-  color: var(--lv-ink);
-}
-
-.leverage-gta.npc-sheet .window-header .header-control:hover,
-.leverage-gta.npc-sheet .window-header .header-control:focus-visible {
-  border-color: var(--lv-select);
-  color: #fff;
-}
-
-.leverage-gta.npc-sheet .window-icon { color: var(--lv-header); }
-
-/* Core buttons carry a min-height and an orange hover outline; ours do not */
-.leverage-gta.npc-sheet button { min-height: 0; }
-.leverage-gta.npc-sheet button:hover { outline: 0; }
 
 /* ---- Window body: header / two columns / footer ---- */
 .leverage-gta.npc-sheet .window-content {
@@ -128,7 +72,7 @@
   width: 88px;
   height: 110px;
   padding: 0;
-  background: #d9d6ca url("../../assets/sheet/mugshot-wall.svg") center / 100% 100% no-repeat;
+  background: var(--lv-paper-photo) url("../../assets/sheet/mugshot-wall.svg") center / 100% 100% no-repeat;
   border: 4px solid var(--lv-outline);
   box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
   color: inherit;
@@ -203,7 +147,7 @@
   font-weight: 400;
   line-height: 50px;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--lv-white);
 }
 
 .leverage-gta.npc-sheet .lv-inline.lv-hud { text-shadow: var(--lv-hud-shadow); }
@@ -504,7 +448,7 @@
 }
 
 .leverage-gta.npc-sheet .lv-npc-roll:hover,
-.leverage-gta.npc-sheet .lv-npc-roll:focus-visible { background: #fff; }
+.leverage-gta.npc-sheet .lv-npc-roll:focus-visible { background: var(--lv-white); }
 .leverage-gta.npc-sheet .lv-npc-roll:active { box-shadow: 1px 1px 0 var(--lv-outline); transform: translate(2px, 2px); }
 
 .leverage-gta.npc-sheet .lv-npc-roll-hint {

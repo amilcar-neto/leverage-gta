@@ -41,6 +41,9 @@ const sourceNames = () => ({
 });
 
 export class NpcSheet extends LeverageActorSheet {
+  /** The Trait lock does not govern this sheet: no seal in the title bar. */
+  static HAS_LOCK_SEAL = false;
+
   /** @override */
   static DEFAULT_OPTIONS = {
     classes: ["npc-sheet"],

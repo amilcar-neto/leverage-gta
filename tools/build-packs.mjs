@@ -4,7 +4,7 @@
  *   node tools/build-packs.mjs
  *
  * Source files hold ONE document each. The CLI skips files without `_key`, so each needs `_id` (16 chars) and
- * `_key` (`!actors!id`, `!items!id`); embedded Items carry `!actors.items!actorId.itemId`. Checked here.
+ * `_key` (`!actors!id`, `!items!id`); embedded Items carry `!actors.items!actorId.itemId` (only the top-level `_key` is validated here).
  */
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { compilePack } from "@foundryvtt/foundryvtt-cli";

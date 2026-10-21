@@ -74,6 +74,7 @@ export async function openLendDialog(actor) {
     content: content(actor, others),
     render: (_event, dialog) => wire(dialog, actor),
     ok: {
+      class: "lv-config-btn lv-config-btn--primary",
       label: t("LEVERAGE.Money.Lend.confirm"),
       callback: (_event, button) => ({ to: button.form.elements.to.value, amount: Number(button.form.elements.amount.value) })
     }

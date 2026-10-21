@@ -21,6 +21,9 @@ export class LeverageActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     form: { submitOnChange: true }
   };
 
+  /** Whether this sheet wears the Trait-lock seal (NPCs and Locations are not governed by the lock). */
+  static HAS_LOCK_SEAL = true;
+
   /** Seal in the title bar; the lock hook re-renders the sheet because every part's permissions depend on it. */
   #seal = new LockSeal(() => {
     if (this.rendered) this.render();
@@ -49,19 +52,19 @@ export class LeverageActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
   /** @override */
   async _renderFrame(options) {
     const frame = await super._renderFrame(options);
-    this.#seal.mount(frame);
+    if (this.constructor.HAS_LOCK_SEAL) this.#seal.mount(frame);
     return frame;
   }
 
   /** @override */
   _onFirstRender(context, options) {
     super._onFirstRender(context, options);
-    this.#seal.watch();
+    if (this.constructor.HAS_LOCK_SEAL) this.#seal.watch();
   }
 
   /** @override */
   _onClose(options) {
     super._onClose(options);
-    this.#seal.unwatch();
+    if (this.constructor.HAS_LOCK_SEAL) this.#seal.unwatch();
   }
 }

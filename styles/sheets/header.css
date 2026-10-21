@@ -31,7 +31,7 @@
   width: 112px;
   height: 140px;
   padding: 0;
-  background: #d9d6ca url("../../assets/sheet/mugshot-wall.svg") center / 100% 100% no-repeat;
+  background: var(--lv-paper-photo) url("../../assets/sheet/mugshot-wall.svg") center / 100% 100% no-repeat;
   border: 4px solid var(--lv-outline);
   box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
   color: inherit;
@@ -99,7 +99,7 @@
   font-weight: 400;
   line-height: 62px;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--lv-white);
 }
 
 .leverage-gta.crew-sheet div.lv-name { white-space: nowrap; }
@@ -118,7 +118,7 @@
   font-size: 19px;
   font-weight: 400;
   letter-spacing: 0;
-  color: #d7dfdb;
+  color: color-mix(in srgb, var(--lv-ink) 90%, var(--lv-muted));
 }
 
 .leverage-gta.crew-sheet .lv-alias-prefix,
@@ -209,7 +209,7 @@
 }
 
 .leverage-gta.crew-sheet .lv-pop-step:hover,
-.leverage-gta.crew-sheet .lv-pop-step:focus-visible { background: #fff; }
+.leverage-gta.crew-sheet .lv-pop-step:focus-visible { background: var(--lv-white); }
 
 .leverage-gta.crew-sheet .lv-pop-value {
   width: 52px;
@@ -271,7 +271,7 @@
   height: 24px;
   padding: 0 10px;
   background: var(--lv-outline);
-  color: #fff;
+  color: var(--lv-white);
   font-family: var(--lv-font-display);
   font-size: 14px;
   letter-spacing: 0.08em;
@@ -303,7 +303,7 @@
   text-align: left;
 }
 
-.leverage-gta.crew-sheet .lv-booking-head .lv-inline:hover { border-bottom-color: rgba(216, 194, 74, 0.5); }
+.leverage-gta.crew-sheet .lv-booking-head .lv-inline:hover { border-bottom-color: color-mix(in srgb, var(--lv-header) 50%, transparent); }
 .leverage-gta.crew-sheet .lv-booking-head .lv-inline:focus { border-bottom-color: var(--lv-header); }
 
 .leverage-gta.crew-sheet .lv-booking-body {
@@ -325,7 +325,7 @@
   padding: 0;
 }
 
-.leverage-gta.crew-sheet .lv-booking-field { min-width: 0; border-bottom: 1px dashed rgba(26, 33, 35, 0.5); }
+.leverage-gta.crew-sheet .lv-booking-field { min-width: 0; border-bottom: 1px dashed color-mix(in srgb, var(--lv-paper-ink) 50%, transparent); }
 .leverage-gta.crew-sheet .lv-booking-field--marks { grid-column: 1 / -1; }
 
 .leverage-gta.crew-sheet .lv-booking-field dt {
@@ -354,7 +354,7 @@
 }
 
 .leverage-gta.crew-sheet .lv-booking-field dd > * { flex: 1; min-width: 0; max-height: 16px; }
-.leverage-gta.crew-sheet .lv-booking .lv-inline:hover { border-bottom-color: rgba(26, 33, 35, 0.4); }
+.leverage-gta.crew-sheet .lv-booking .lv-inline:hover { border-bottom-color: color-mix(in srgb, var(--lv-paper-ink) 40%, transparent); }
 .leverage-gta.crew-sheet .lv-booking .lv-inline:focus { border-bottom-color: var(--lv-stamp); }
 .leverage-gta.crew-sheet .lv-booking-field .lv-inline {
   box-sizing: border-box;
@@ -381,7 +381,7 @@
   width: 72px;
   height: 76px;
   border: 2px solid var(--lv-paper-ink);
-  background: #eceade url("../../assets/sheet/fingerprint.svg") center / 62px 70px no-repeat;
+  background: color-mix(in srgb, var(--lv-paper) 70%, var(--lv-white)) url("../../assets/sheet/fingerprint.svg") center / 62px 70px no-repeat;
 }
 
 .leverage-gta.crew-sheet .lv-fingerprint-label {

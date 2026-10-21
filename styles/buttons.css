@@ -1,0 +1,133 @@
+/* One button system. Every text or icon button of the system (panel "+ ADD", chat card, Job Tracker, GM tools,
+   config apps, paper folder, item footer) shares this shape, type and states. A button only picks a variant, and a
+   variant only sets the custom properties below. Never restyle a button in a component file. */
+
+.leverage-gta :is(.lv-add-btn, .lv-trk-btn, .lv-opp-step, .lv-roll-btn, .lv-config-btn, .lv-paper-btn, .lv-item-delete, .lv-opp-roll, .lv-opp-clear) {
+  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-ink: var(--lv-ink);
+  --btn-line: rgba(255, 255, 255, 0.25);
+  --btn-h: 28px;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  height: var(--btn-h);
+  min-height: 0;
+  margin: 0;
+  padding: 0 12px;
+  overflow: hidden;
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  border: 2px solid var(--btn-line);
+  border-radius: 4px;
+  box-shadow: none;
+  font-family: var(--lv-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.leverage-gta :is(.lv-add-btn, .lv-trk-btn, .lv-opp-step, .lv-roll-btn, .lv-config-btn, .lv-paper-btn, .lv-item-delete, .lv-opp-roll, .lv-opp-clear):hover:not(:disabled),
+.leverage-gta :is(.lv-add-btn, .lv-trk-btn, .lv-opp-step, .lv-roll-btn, .lv-config-btn, .lv-paper-btn, .lv-item-delete, .lv-opp-roll, .lv-opp-clear):focus-visible {
+  filter: brightness(1.15);
+}
+
+.leverage-gta :is(.lv-add-btn, .lv-trk-btn, .lv-opp-step, .lv-roll-btn, .lv-config-btn, .lv-paper-btn, .lv-item-delete, .lv-opp-roll, .lv-opp-clear):disabled {
+  opacity: 0.4;
+  filter: none;
+  cursor: default;
+}
+
+.leverage-gta :is(.lv-add-btn, .lv-trk-btn, .lv-opp-step, .lv-roll-btn, .lv-config-btn, .lv-paper-btn, .lv-item-delete, .lv-opp-roll, .lv-opp-clear):focus-visible {
+  outline: 2px solid var(--lv-select);
+  outline-offset: 1px;
+}
+
+/* Variant: dark (yellow ink on near-black). "+ ADD" in a panel strip, and the square +/- steppers. */
+.leverage-gta :is(.lv-add-btn, .lv-trk-btn, .lv-opp-step) {
+  --btn-bg: var(--lv-die-ink);
+  --btn-ink: var(--lv-header);
+  --btn-line: var(--lv-outline);
+}
+
+.leverage-gta .lv-add-btn { --btn-h: 22px; padding: 0 8px; }
+
+/* Square stepper (-, +, remove): the icon fills the box */
+.leverage-gta :is(.lv-trk-btn, .lv-opp-step) { --btn-h: 24px; width: var(--btn-h); padding: 0; font-size: 14px; }
+.leverage-gta .lv-opp-step { --btn-h: 22px; }
+.leverage-gta .lv-trk-btn--add { --btn-h: 28px; }
+.leverage-gta .lv-trk-btn--remove:hover:not(:disabled) { --btn-ink: var(--lv-stamp-hover); filter: none; }
+
+/* Variant: solid (the primary action) */
+.leverage-gta :is(.lv-config-btn--primary, .lv-roll-btn--keep) {
+  --btn-bg: var(--lv-header);
+  --btn-ink: var(--lv-die-ink);
+  --btn-line: var(--lv-outline);
+}
+
+/* Variant: danger (outlined red) */
+.leverage-gta :is(.lv-roll-btn--gm, .lv-item-delete) {
+  --btn-bg: transparent;
+  --btn-ink: var(--lv-danger);
+  --btn-line: var(--lv-danger);
+}
+
+.leverage-gta .lv-item-delete { --btn-h: 30px; flex: 0 1 auto; }
+
+/* Variant: stamp (filled red, the damage action) */
+.leverage-gta .lv-roll-btn--damage {
+  --btn-bg: var(--lv-stamp);
+  --btn-ink: var(--lv-white);
+  --btn-line: var(--lv-outline);
+}
+
+/* Variant: go (ROLL: opposition roller and the Pool tray) */
+.leverage-gta .lv-opp-roll,
+.leverage-gta.crew-sheet .lv-roll-btn {
+  --btn-bg: var(--lv-roll);
+  --btn-ink: var(--lv-die-ink);
+  --btn-line: var(--lv-outline);
+  --btn-h: 36px;
+  min-width: 110px;
+  padding: 0 14px;
+  font-family: var(--lv-font-display);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+/* The tray ROLL is the big one */
+.leverage-gta.crew-sheet .lv-roll-btn { --btn-h: 44px; border-radius: 2px; flex: none; width: 92px; min-width: 0; padding: 0; font-size: 26px; letter-spacing: 0.04em; }
+
+/* Variant: link (quiet text) */
+.leverage-gta :is(.lv-config-btn--link, .lv-opp-clear) {
+  --btn-bg: transparent;
+  --btn-ink: var(--lv-muted);
+  --btn-line: transparent;
+}
+
+.leverage-gta :is(.lv-config-btn--link, .lv-opp-clear):hover:not(:disabled) { --btn-ink: var(--lv-ink); filter: none; }
+.leverage-gta .lv-opp-clear { padding: 0 6px; text-decoration: underline; text-transform: none; letter-spacing: 0.02em; }
+
+/* Variant: paper (on the folder) */
+.leverage-gta .lv-paper-btn {
+  --btn-bg: transparent;
+  --btn-ink: var(--lv-paper-ink);
+  --btn-line: var(--lv-paper-ink);
+  --btn-h: 22px;
+  padding: 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+.leverage-gta .lv-paper-btn--solid { --btn-bg: var(--lv-paper-ink); --btn-ink: var(--lv-paper); --btn-line: var(--lv-outline); }
+
+/* Chat card action row: the buttons share the width */
+.leverage-gta .lv-roll-btn { --btn-h: 34px; flex: 1 1 0; padding: 0 6px; font-size: 14px; }

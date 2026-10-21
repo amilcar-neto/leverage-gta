@@ -38,11 +38,11 @@
 
 #leverage-hud button:disabled { cursor: default; opacity: 1; }
 
-/* Outlined Anton text (GTA III) */
+/* Anton text with a faint soft shadow (owner request: no hard black outline in the HUD) */
 #leverage-hud .lv-hud-text {
   font-family: var(--lv-font-display);
   line-height: 1;
-  text-shadow: var(--lv-hud-shadow);
+  text-shadow: var(--lv-hud-soft-shadow);
 }
 
 /* Minimize: a discreet button that appears on hover, left of the stars. */
@@ -75,10 +75,11 @@
 #leverage-hud .lv-hud-star svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 #leverage-hud .lv-hud-star path {
   fill: var(--lv-star-off);
-  stroke: var(--lv-outline);
-  stroke-width: 1.5;
+  stroke: rgba(0, 0, 0, 0.3);
+  stroke-width: 0.75;
   stroke-linejoin: round;
 }
+#leverage-hud .lv-hud-star svg { filter: var(--lv-hud-soft-glow); }
 #leverage-hud .lv-hud-star.is-on path { fill: var(--lv-star-on); }
 #leverage-hud .lv-hud-star-die {
   position: absolute;
@@ -89,16 +90,17 @@
   font-family: var(--lv-font-display);
   font-size: 13px;
   letter-spacing: 0.02em;
-  color: #857232;
+  color: color-mix(in srgb, var(--lv-star-on) 55%, var(--lv-star-off));
 }
-#leverage-hud .lv-hud-star.is-on .lv-hud-star-die { color: #1d1500; }
+#leverage-hud .lv-hud-star.is-on .lv-hud-star-die { color: color-mix(in srgb, var(--lv-star-off) 40%, var(--lv-outline)); }
 #leverage-hud button.lv-hud-star:not(:disabled):hover { transform: scale(1.06); }
 #leverage-hud button.lv-hud-star:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 2px; }
 
 /* Money */
 #leverage-hud .lv-hud-money { display: flex; align-items: center; gap: 4px; }
 #leverage-hud .lv-hud-dollar { font-size: 40px; color: var(--lv-money); margin-right: 4px; }
-#leverage-hud .lv-hud-money .lv-die { flex: none; }
+#leverage-hud .lv-hud-money .lv-die { flex: none; --die-stroke: var(--die-fill); filter: var(--lv-hud-soft-glow); }
+#leverage-hud .lv-hud-money .lv-die--empty { --die-stroke: var(--lv-money-die); }
 #leverage-hud .lv-hud-money:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 2px; }
 
 /* Plot Points */
@@ -110,9 +112,9 @@
   flex: none;
   width: 22px;
   height: 22px;
-  background: #000;
-  color: #fff;
-  border: 2px solid #fff;
+  background: var(--lv-outline);
+  color: var(--lv-white);
+  border: 2px solid var(--lv-white);
   border-radius: 50%;
 }
 #leverage-hud button.lv-hud-round:disabled { opacity: 0.4; }
@@ -125,10 +127,11 @@
   stroke-linecap: round;
 }
 #leverage-hud .lv-hud-chip { width: 30px; height: 30px; margin-left: 4px; flex: none; }
-#leverage-hud .lv-hud-chip circle:first-child { fill: var(--lv-pp); stroke: var(--lv-outline); stroke-width: 2; }
+#leverage-hud .lv-hud-chip circle:first-child { fill: var(--lv-pp); stroke: none; }
+#leverage-hud .lv-hud-chip { filter: var(--lv-hud-soft-glow); }
 #leverage-hud .lv-hud-chip circle:last-child {
   fill: none;
-  stroke: var(--lv-outline);
+  stroke: rgba(0, 0, 0, 0.45);
   stroke-width: 1.6;
   stroke-dasharray: 3 2.2;
 }
