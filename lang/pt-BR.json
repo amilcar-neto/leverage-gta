@@ -16,7 +16,7 @@
   "LEVERAGE": {
     "Asset": {
       "job": "Job",
-      "scene": "Cena",
+      "scene": "Scene",
       "signature": "Signature"
     },
     "Attribute": {
@@ -78,7 +78,7 @@
           "label": "Apelido"
         },
         "background": {
-          "label": "Histórico"
+          "label": "Background"
         },
         "booking": {
           "age": {
@@ -208,7 +208,7 @@
       "talent": {
         "FIELDS": {
           "activation": {
-            "label": "Ativação"
+            "label": "Activation"
           },
           "cost": {
             "label": "Custo"
@@ -217,7 +217,7 @@
             "label": "Dado"
           },
           "effect": {
-            "label": "Efeito"
+            "label": "Effect"
           },
           "role": {
             "label": "Role"
@@ -259,7 +259,7 @@
           "label": "Polícia"
         },
         "tier": {
-          "label": "Tipo"
+          "label": "Tier"
         },
         "traits": {
           "label": "Traços"
@@ -273,9 +273,9 @@
     },
     "Price": {
       "bail": "Fiança (Busted)",
-      "buyMiddle": "Compra: imóvel médio",
-      "buyPoor": "Compra: imóvel pobre",
-      "buyRich": "Compra: imóvel de milionário",
+      "buyMiddle": "Compra: casa média",
+      "buyPoor": "Compra: casa pobre",
+      "buyRich": "Compra: casa de milionário",
       "hospital": "Hospital (Wasted)",
       "rentMiddle": "Aluguel: casa média",
       "rentPoor": "Aluguel: casa pobre",
@@ -291,12 +291,12 @@
       "hacker": "Hacker",
       "hitter": "Hitter",
       "mastermind": "Mastermind",
-      "open": "Livre",
+      "open": "Open",
       "thief": "Thief"
     },
     "Settings": {
       "activeJob": {
-        "Hint": "Job atual e suas Complicações (escondido; usado pelo Rastreador do Job).",
+        "Hint": "Job atual e suas Complications (escondido; usado pelo Rastreador do Job).",
         "Name": "Job ativo"
       },
       "cityScalesMenu": {
@@ -407,13 +407,13 @@
         }
       },
       "Complication": {
-        "title": "Complicação",
-        "target": "Complicação",
-        "createNew": "Nova Complicação (d{die})",
+        "title": "Complication",
+        "target": "Complication",
+        "createNew": "Nova Complication (d{die})",
         "raise": "Subir {name}: d{from} para d{to}",
         "name": "Nome",
         "namePlaceholder": "O que dá errado?",
-        "hint": "O jogador ganha 1 Plot Point. A Complicação vai para o Job ativo.",
+        "hint": "O jogador ganha 1 Plot Point. A Complication vai para o Job ativo.",
         "confirm": "Adicionar"
       }
     },
@@ -485,13 +485,13 @@
         "changeRole": "Trocar Role"
       },
       "Assets": {
-        "addHint": "Novo Asset: Signature (permanente), Job (2 PP) ou Cena (1 PP)",
+        "addHint": "Novo Asset: Signature (permanente), Job (2 PP) ou Scene (1 PP)",
         "dblclick": "Clique duplo para abrir",
-        "delete": "Excluir asset",
+        "delete": "Excluir Asset",
         "tip": {
           "signature": "Permanente. Vai com o personagem em todo Job.",
           "job": "Dura este Job.",
-          "scene": "Dura esta Cena."
+          "scene": "Dura esta cena."
         }
       },
       "Jobs": {
@@ -508,7 +508,7 @@
         "openHint": "clique para abrir o Job",
         "spent": "Gasto",
         "callbackLabel": "Callback usado nesta sessão",
-        "delete": "Excluir job"
+        "delete": "Excluir Job"
       },
       "Panel": {
         "attributes": "Attributes",
@@ -528,7 +528,7 @@
         "talents": "Nenhum Talent ainda. O mestre pode destravar a ficha para adicionar.",
         "specialties": "Nenhuma Specialty ainda. O mestre pode destravar a ficha para adicionar.",
         "assets": "Nenhum Asset ainda.",
-        "background": "Nenhum background escrito ainda.",
+        "background": "Nenhum Background escrito ainda.",
         "jobs": "Nenhum Job registrado ainda."
       },
       "Folder": {
@@ -560,13 +560,13 @@
         },
         "problem": {
           "noAttribute": "Escolha um Attribute.",
-          "noRole": "Escolha um Role.",
+          "noRole": "Escolha uma Role.",
           "blankAttribute": "O Attribute não tem dado.",
-          "blankRole": "Esse Role está em branco: dê um dado a ele ou escolha outro.",
+          "blankRole": "Essa Role está em branco: dê um dado a ela ou escolha outra.",
           "blank": "Este Traço está em branco e não dá dado."
         },
         "warn": {
-          "specialtyRole": "Esta Especialidade é de outro Role que não o da Pool. O mestre ainda pode permitir."
+          "specialtyRole": "Esta Specialty é de outra Role, não a da Pool. O mestre ainda pode permitir."
         }
       },
       "Item": "Ficha de item"
@@ -585,15 +585,15 @@
       "apiNotReady": "A API do sistema ainda não está pronta: rolar por macro chega numa versão futura."
     },
     "ItemSheet": {
-      "role": "Papel",
-      "roleHint": "O Papel a que isto pertence",
+      "role": "Role",
+      "roleHint": "A Role a que isto pertence",
       "cost": "Custo",
       "free": "Grátis",
       "onePP": "1 Plot Point",
       "costHint": "O que custa para usar",
-      "activation": "Ativação · quando dispara",
+      "activation": "Activation · quando dispara",
       "activationPlaceholder": "Quando...",
-      "effect": "Efeito · o que faz",
+      "effect": "Effect · o que faz",
       "description": "Descrição",
       "note": "Nota",
       "notePlaceholder": "Uma linha: quando ajuda, quando atrapalha",
@@ -602,14 +602,14 @@
       "dieHint": "Tamanho do dado",
       "duration": "Duração",
       "weapon": "Arma",
-      "weaponHint": "Armas se perdem em Wasted ou Busted quando a duração é Cena",
+      "weaponHint": "Armas se perdem em Wasted ou Busted quando a duração é Scene",
       "purchased": "Comprado com Grana",
       "payoutTotal": "Rendimento do Job (degraus)",
       "payoutShare": "Sua parte (degraus)",
       "callbackUsed": "Callback usado nesta sessão",
       "spent": "Gasto em treino",
       "jobNotes": "Notas · cliente, alvo, resumo",
-      "specialtyDie": "Soma um d6 à Pool com o seu Papel",
+      "specialtyDie": "Soma um d6 à Pool com a sua Role",
       "saves": "As mudanças são salvas enquanto você digita.",
       "readOnly": "Você só pode ler isto.",
       "delete": "Apagar {type}",
@@ -619,7 +619,7 @@
       "descriptionPlaceholder": "Nada escrito ainda.",
       "effectPlaceholder": "Nada escrito ainda.",
       "notesPlaceholder": "Sem anotações ainda.",
-      "protectedHint": "Só o Narrador altera isto."
+      "protectedHint": "Só o mestre altera isto."
     },
     "Roll": {
       "defaultFlavor": "rola a Pool",
@@ -629,14 +629,14 @@
       "total": "Total",
       "explain": "{count} maiores mantidos",
       "noneKept": "Nenhum dado mantido",
-      "onesWarningOne": "Um dado tirou 1. O Fixer pode criar uma Complicação e te dar um Plot Point.",
-      "onesWarningMany": "{count} dados tiraram 1. O Fixer pode criar uma Complicação e te dar um Plot Point.",
+      "onesWarningOne": "Um dado tirou 1. O mestre pode criar uma Complication e te dar um Plot Point.",
+      "onesWarningMany": "{count} dados tiraram 1. O mestre pode criar uma Complication e te dar um Plot Point.",
       "distinctionPP": "Distinction d4: +{count} Plot Point",
       "moneyDrop": "Dado de Grana usado: a Grana desce um degrau",
       "keepButton": "+1 PP · Manter o {n} dado",
       "keepTip": "Gaste um Plot Point para somar o próximo maior dado ao total",
-      "complicationButton": "Mestre · Complicação",
-      "complicationTip": "Mestre: criar ou subir uma Complicação e dar 1 Plot Point",
+      "complicationButton": "Mestre · Complication",
+      "complicationTip": "Mestre: criar ou subir uma Complication e dar 1 Plot Point",
       "ppSpentOne": "+1 PP gasto: dado extra mantido",
       "ppSpentMany": "+{count} PP gastos: dados extras mantidos",
       "noPlotPoints": "Sem Plot Points para manter outro dado.",
@@ -649,7 +649,7 @@
       }
     },
     "Socket": {
-      "noGM": "Nenhum Fixer conectado para processar esta ação."
+      "noGM": "Nenhum mestre conectado para processar esta ação."
     },
     "GM": {
       "Controls": {
@@ -667,15 +667,15 @@
         "givePlotPoint": "Dar Plot Point"
       },
       "Warn": {
-        "gmOnly": "Só o Fixer pode fazer isso.",
+        "gmOnly": "Só o mestre pode fazer isso.",
         "soon": "Em breve.",
         "noCrew": "Não há personagens na Equipe.",
         "jobNameRequired": "Dê um nome ao Job."
       },
       "Chat": {
-        "speaker": "Fixer",
-        "traitsLocked": "O Fixer travou os Traços.",
-        "traitsUnlocked": "O Fixer destravou os Traços.",
+        "speaker": "Mestre",
+        "traitsLocked": "O mestre travou os Traços.",
+        "traitsUnlocked": "O mestre destravou os Traços.",
         "plotPoints": "{names} recebem {count} Plot Point(s).",
         "newSession": "Nova sessão. Callbacks zerados em {count} Job(s).",
         "endScene": "Cena encerrada. Assets de cena removidos: {count}.",
@@ -695,7 +695,7 @@
         "NewJob": {
           "title": "Novo Job",
           "name": "Nome do Job",
-          "hint": "Inicia o Job, limpa as Complicações antigas e dá Plot Points.",
+          "hint": "Inicia o Job, limpa as Complications antigas e dá Plot Points.",
           "confirm": "Iniciar",
           "who": "Os Plot Points vão para {count} personagem(ns): {names}.",
           "nobody": "nenhum (nenhum personagem tem jogador)"
@@ -718,8 +718,8 @@
     },
     "Opposition": {
       "title": "Rolador de oposição",
-      "fixer": "FIXER",
-      "gmOnly": "Só o Fixer pode rolar a oposição.",
+      "fixer": "MESTRE",
+      "gmOnly": "Só o mestre pode rolar a oposição.",
       "dieLabel": "Oposição",
       "defaultFlavor": "Oposição",
       "noneLabel": "Sem oposição",
@@ -738,11 +738,11 @@
       "npcEmpty": "Este NPC não tem dados.",
       "useGang": "Gangue: {size} × d{die}",
       "location": "Local",
-      "complications": "Complicações",
+      "complications": "Complications",
       "traitFallback": "Traço",
       "poolCount": "{count} dados · mantém {keep}",
       "poolEmpty": "Sem dados",
-      "poolDefault": "Nada escolhido: rola os dados padrão de nenhuma oposição",
+      "poolDefault": "Nada escolhido: rola os dados de nenhuma oposição",
       "clear": "Limpar",
       "label": "Descrição",
       "labelPlaceholder": "O que a oposição está fazendo?",
@@ -752,13 +752,13 @@
       "title": "Rastreador do Job",
       "job": "Job",
       "jobPlaceholder": "Nome do Job",
-      "complications": "Complicações",
+      "complications": "Complications",
       "sceneTraits": "Traços de cena",
       "crew": "Equipe",
-      "noComplications": "Nenhuma Complicação.",
+      "noComplications": "Nenhuma Complication.",
       "noSceneTraits": "Nenhum Traço de cena.",
       "noCrew": "Nenhum personagem na Equipe.",
-      "newComplication": "Nova Complicação",
+      "newComplication": "Nova Complication",
       "newSceneTrait": "Novo Traço de cena",
       "add": "Adicionar",
       "remove": "Remover",
@@ -784,10 +784,10 @@
           "role": "Role",
           "distinction": "Distinction"
         },
-        "noAttribute": "A Pool precisa de um Atributo.",
-        "noRole": "A Pool precisa de um Papel.",
-        "blankAttribute": "O Atributo escolhido não tem dado.",
-        "blankRole": "O Papel escolhido não tem dado."
+        "noAttribute": "A Pool precisa de um Attribute.",
+        "noRole": "A Pool precisa de uma Role.",
+        "blankAttribute": "O Attribute escolhido não tem dado.",
+        "blankRole": "A Role escolhida não tem dado."
       },
       "Stars": {
         "invalidLevel": "As estrelas devem ser um número inteiro de {min} a {max}.",
@@ -795,7 +795,7 @@
       }
     },
     "NpcSheet": {
-      "tier": "Nível",
+      "tier": "Tier",
       "police": "Polícia",
       "policeHint": "Marcar este NPC como polícia",
       "lifeMax": "Vida máxima",
@@ -869,10 +869,10 @@
       }
     },
     "Damage": {
-      "speaker": "Fixer",
+      "speaker": "Mestre",
       "flavor": "Dano em {name}",
       "button": "APLICAR DANO",
-      "buttonTip": "Fixer: aplica o dano desta oposição a um personagem",
+      "buttonTip": "Mestre: aplica o dano desta oposição a um personagem",
       "ruleOff": "A regra da casa de Vida e Colete está desligada.",
       "noTarget": "Escolha um personagem com Vida para levar o dano.",
       "applied": "Dano aplicado em {name}: {damage} (Vida {life}/{max}).",
@@ -917,7 +917,7 @@
         "rescue": "Sem fiança nesta cidade: a Equipe precisa tirar {name} de lá numa cena. Quando conseguir, clique em Resgatado (as estrelas sobem 1).",
         "fullLife": "Volta com a Vida cheia ({max}).",
         "assetsLost": "Assets de arma da cena perdidos: {names}.",
-        "assetsKept": "O Fixer manteve os Assets de arma.",
+        "assetsKept": "O mestre manteve os Assets de arma.",
         "plotPoint": {
           "one": "+{count} Plot Point.",
           "other": "+{count} Plot Points."
@@ -937,7 +937,7 @@
       "Reason": {
         "raise": "A polícia apertou o cerco",
         "custom": "{text}",
-        "setLevel": "Definido pelo Fixer",
+        "setLevel": "Definido pelo mestre",
         "waitScenes": "Fora de vista por {scenes} cena(s)",
         "waitSession": "Fora de vista entre sessões",
         "disguise": "Mudou de cara",
@@ -952,7 +952,7 @@
       },
       "Error": {
         "disabled": "A regra da casa Estrelas está desligada.",
-        "notAllowed": "Só o Fixer mexe nas estrelas.",
+        "notAllowed": "Só o mestre mexe nas estrelas.",
         "noActor": "Escolha um personagem da Equipe.",
         "unknownAction": "Ação de estrelas desconhecida.",
         "invalidAmount": "A quantidade deve ser um número inteiro, 1 ou mais.",
@@ -1042,7 +1042,7 @@
       "crewExample": "Equipe de exemplo",
       "npcs": "NPCs",
       "locations": "Locais",
-      "talentsAssets": "Talentos e Ativos"
+      "talentsAssets": "Talents e Assets"
     }
   }
 }

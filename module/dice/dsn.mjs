@@ -45,7 +45,7 @@ export function buildColorsets(config = LEVERAGE, localize = (key) => key) {
     { name: colorsetName(0, "money"), color: config.money.color, label: "LEVERAGE.Roll.dsnMoney" }
   ];
   return bodies.map(({ name, color, label }) => ({
-    name, description: localize(label), category: "Leverage: Liberty City",
+    name, description: localize(label), category: localize("LEVERAGE.SystemTitle"),
     foreground: FOREGROUND, background: color, outline: OUTLINE, edge: color, material: "plastic"
   }));
 }

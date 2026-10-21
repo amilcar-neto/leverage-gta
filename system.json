@@ -2,7 +2,7 @@
   "id": "leverage-gta",
   "title": "Leverage: Liberty City",
   "description": "Leverage RPG (Cortex Plus) with GTA-style house rules: wanted stars, life and vest, money ladder.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "compatibility": {
     "minimum": "14",
     "verified": "14"
