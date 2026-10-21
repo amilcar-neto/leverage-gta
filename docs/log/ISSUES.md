@@ -74,3 +74,12 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - Barra lateral fechada esconde o chat: avisar quando ha acao pendente no card.
 - Mundo de teste com Trava de Tracos desligada: o dono confere antes de jogar de verdade.
 - Retratos para fichas e tokens; dado de 1 degrau da Grana no Rastreador muito pequeno.
+
+## Revisão de usabilidade 2026-10-21 (detalhes em `docs/log/REVIEW-USABILIDADE.md`)
+- **Média, aberto:** textos explicativos continuam em fichas e diálogos (regra do dono: nenhum). Exemplos: "clique para abrir" e "+d6 com a sua Role" nos painéis, "Escolha um Traço para montar a Pool." na bandeja, tooltips de Attributes e Roles, texto de Novo Job, Nível de procurado e Aplicar dano.
+- **Média, aberto:** APLICAR DANO herda a margem da última rolagem de Pool, não da oposição do card. Passos: jogador rola, mestre rola oposição de um NPC, clica APLICAR DANO.
+- **Baixa, aberto:** o grupo Leverage das ferramentas do mestre só mostra os botões depois de clicar na logo (última da coluna). Quem entra como mestre não vê nenhuma ferramenta.
+- **Baixa, aberto:** Rolador de oposição aberto pelo botão do mestre começa vazio e CAPANGAS em 3 × d6, mesmo com NPC de 4 × d8 na cena (pelo botão da ficha do NPC funciona).
+- **Baixa, aberto:** ficha Local mostra "Nenhum NPC" mesmo com NPCs no cenário; não há ligação automática.
+- **Baixa, aberto:** Rastreador do Job sem Job ativo mostra campos vazios e nenhum botão de iniciar.
+- Scripts antigos que gravam `traitsLocked` (desatualizados): phase1, sheet-states, sheet-structure, T-303, T-307-lock, T-401, T-505, T-702.
