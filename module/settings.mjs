@@ -12,9 +12,9 @@ import { getCityScales } from "./world-state.mjs";
 
 const fields = () => foundry.data.fields;
 
-/** Builds the common `name`/`hint` pair for a setting key. */
+/** Builds the label (`name`) of a setting key; settings carry no help text. */
 function labels(key) {
-  return { name: `LEVERAGE.Settings.${key}.Name`, hint: `LEVERAGE.Settings.${key}.Hint` };
+  return { name: `LEVERAGE.Settings.${key}.Name` };
 }
 
 /** Registers a visible world Boolean (house-rule toggles). */
@@ -51,7 +51,6 @@ function menu(key, type, icon) {
   game.settings.registerMenu(SYSTEM_ID, key, {
     name: `LEVERAGE.Settings.${key}.Name`,
     label: `LEVERAGE.Settings.${key}.Label`,
-    hint: `LEVERAGE.Settings.${key}.Hint`,
     icon, type, restricted: true
   });
 }

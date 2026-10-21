@@ -20,18 +20,16 @@ export function isSheetLocked({ playersCanUnlock, unlocked }) {
  * @param {object} args
  * @param {boolean} args.locked Whether the sheet is locked ({@link isSheetLocked}).
  * @param {boolean} args.playersCanUnlock World setting.
- * @param {boolean} args.isGM Whether the viewer is the GM.
- * @returns {{locked: boolean, disabled: boolean, icon: string, label: string, hint: ?string}} `label` is an i18n key; `hint` is one too, or `null` when the seal is forced (no text, only the disabled look).
+ * @param {boolean} args.isGM Whether the viewer is the GM (the GM can always unlock).
+ * @returns {{locked: boolean, disabled: boolean, icon: string, label: string}} `label` is an i18n key.
  */
 export function sealState({ locked, playersCanUnlock, isGM }) {
   const key = locked ? "locked" : "unlocked";
   const forced = !playersCanUnlock && !isGM;
-  const hint = isGM ? `${key}GmHint` : `${key}Hint`;
   return {
     locked,
     disabled: forced,
     icon: locked ? "fa-lock" : "fa-lock-open",
-    label: `LEVERAGE.Sheet.Seal.${key}`,
-    hint: forced ? null : `LEVERAGE.Sheet.Seal.${hint}`
+    label: `LEVERAGE.Sheet.Seal.${key}`
   };
 }

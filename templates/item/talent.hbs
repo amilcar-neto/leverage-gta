@@ -2,11 +2,11 @@
   <div class="lv-item-row">
     <label class="lv-item-field">
       <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.role"}}</span>
-      <span class="lv-item-select" title="{{localize 'LEVERAGE.ItemSheet.roleHint'}}">
+      <span class="lv-item-select">
         <select name="system.role" {{disabled readonly}}>{{selectOptions roleChoices selected=system.role}}</select>
       </span>
     </label>
-    <div class="lv-item-field" title="{{localize 'LEVERAGE.ItemSheet.costHint'}}">
+    <div class="lv-item-field">
       <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.cost"}}</span>
       <div class="lv-item-seg" role="group" aria-label="{{localize 'LEVERAGE.ItemSheet.cost'}}">
         {{#each costs}}<button type="button" class="lv-item-seg-btn" data-action="setCost" data-value="{{value}}" aria-pressed="{{#if pressed}}true{{else}}false{{/if}}" {{disabled @root.readonly}}>{{label}}</button>{{/each}}

@@ -6,16 +6,12 @@
  */
 import { SYSTEM_ID, LEVERAGE } from "../../config.mjs";
 import { t } from "../components/i18n.mjs";
+import { HEIGHT, WIDTH, placeBeside } from "./pool-builder-layout.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /** Tab that shows every group. */
 const ALL = "all";
-
-/** Window size (px) and the gap kept between it and the sheet. */
-const WIDTH = 620;
-const HEIGHT = 580;
-const GAP = 8;
 
 /** Open window per sheet. */
 const open = new WeakMap();
@@ -171,9 +167,8 @@ export async function openPoolBuilder(sheet, source) {
     return existing;
   }
   const box = sheet.element.getBoundingClientRect();
-  const left = Math.max(GAP, Math.min(box.right + GAP, window.innerWidth - WIDTH - GAP));
-  const top = Math.max(GAP, Math.min(box.top, window.innerHeight - HEIGHT - GAP));
-  const app = new PoolBuilder(source, { id: `leverage-pool-builder-${sheet.actor.id}`, position: { left, top } });
+  const position = placeBeside(box, { width: window.innerWidth, height: window.innerHeight });
+  const app = new PoolBuilder(source, { id: `leverage-pool-builder-${sheet.actor.id}`, position });
   open.set(sheet, app);
   const closed = app.close.bind(app);
   app.close = async (options) => {

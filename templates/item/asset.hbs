@@ -8,7 +8,7 @@
     </div>
     <div class="lv-item-field">
       <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.duration"}}</span>
-      <div class="lv-item-seg" {{#unless canEditProtected}}title="{{localize 'LEVERAGE.ItemSheet.protectedHint'}}" {{/unless}}role="group" aria-label="{{localize 'LEVERAGE.ItemSheet.duration'}}">
+      <div class="lv-item-seg" role="group" aria-label="{{localize 'LEVERAGE.ItemSheet.duration'}}">
         {{#each durations}}<button type="button" class="lv-item-seg-btn" data-action="setDuration" data-value="{{value}}" aria-pressed="{{#if pressed}}true{{else}}false{{/if}}" {{#if @root.readonly}}disabled{{else}}{{#unless @root.canEditProtected}}disabled{{/unless}}{{/if}}>{{label}}</button>{{/each}}
       </div>
     </div>
@@ -18,7 +18,7 @@
     <input type="text" class="lv-item-input" name="system.note" value="{{system.note}}" title="{{system.note}}" {{disabled readonly}}>
   </label>
   <div class="lv-item-checks">
-    <label class="lv-item-check" title="{{localize 'LEVERAGE.ItemSheet.weaponHint'}}"><input type="checkbox" name="system.weapon" {{checked system.weapon}} {{disabled readonly}}><span>{{localize "LEVERAGE.ItemSheet.weapon"}}</span></label>
+    <label class="lv-item-check"><input type="checkbox" name="system.weapon" {{checked system.weapon}} {{disabled readonly}}><span>{{localize "LEVERAGE.ItemSheet.weapon"}}</span></label>
     <label class="lv-item-check"><input type="checkbox" name="system.purchased" {{checked system.purchased}} {{disabled readonly}}><span>{{localize "LEVERAGE.ItemSheet.purchased"}}</span></label>
   </div>
 </div>

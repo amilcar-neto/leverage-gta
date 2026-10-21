@@ -14,18 +14,18 @@
   </section>
   {{#if rulesOn}}
   <section class="lv-opp-sec">
-    <h3 class="lv-opp-title"><span class="lv-opp-title-text">{{localize "LEVERAGE.Stars.Dialog.actions"}}</span><span class="lv-opp-title-sub" title="{{localize "LEVERAGE.Stars.Dialog.rolled"}}">{{localize "LEVERAGE.Stars.Dialog.rolled"}}</span></h3>
+    <h3 class="lv-opp-title"><span class="lv-opp-title-text">{{localize "LEVERAGE.Stars.Dialog.actions"}}</span></h3>
     <div class="lv-wanted-row">
       <input type="text" class="lv-opp-input lv-wanted-grow" name="reason" placeholder="{{localize "LEVERAGE.Stars.Dialog.reasonPlaceholder"}}" aria-label="{{localize "LEVERAGE.Stars.Dialog.reason"}}">
-      <button type="button" class="lv-opp-chip" data-action="raise" title="{{raiseTip}}"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.raise"}}</span></button>
+      <button type="button" class="lv-opp-chip" data-action="raise"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.raise"}}</span></button>
     </div>
     <div class="lv-wanted-row">
       {{#if tips.perScene}}<input type="number" class="lv-opp-input lv-wanted-num" name="scenes" value="1" min="1" aria-label="{{localize "LEVERAGE.Stars.Dialog.scenes"}}" title="{{localize "LEVERAGE.Stars.Dialog.scenes"}}">{{/if}}
-      <button type="button" class="lv-opp-chip" data-action="wait" title="{{tips.wait}}"><span class="lv-opp-chip-name">{{#if tips.perScene}}{{localize "LEVERAGE.Stars.Dialog.wait"}}{{else}}{{localize "LEVERAGE.Stars.Dialog.betweenSessions"}}{{/if}}</span></button>
+      <button type="button" class="lv-opp-chip" data-action="wait"><span class="lv-opp-chip-name">{{#if tips.perScene}}{{localize "LEVERAGE.Stars.Dialog.wait"}}{{else}}{{localize "LEVERAGE.Stars.Dialog.betweenSessions"}}{{/if}}</span></button>
     </div>
     <div class="lv-wanted-row">
-      <button type="button" class="lv-opp-chip" data-action="disguise" data-kind="simple" title="{{tips.disguise}}"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.disguise"}}</span></button>
-      <button type="button" class="lv-opp-chip" data-action="disguise" data-kind="both" title="{{tips.disguise}}"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.disguiseBoth"}}</span></button>
+      <button type="button" class="lv-opp-chip" data-action="disguise" data-kind="simple"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.disguise"}}</span></button>
+      <button type="button" class="lv-opp-chip" data-action="disguise" data-kind="both"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.disguiseBoth"}}</span></button>
       {{#if tips.sketch}}<label class="lv-wanted-check"><input type="checkbox" name="sketched"><span class="lv-wanted-check-text" title="{{localize "LEVERAGE.Stars.Dialog.sketched"}}">{{localize "LEVERAGE.Stars.Dialog.sketched"}}</span></label>{{/if}}
     </div>
     <div class="lv-wanted-row">
@@ -34,8 +34,8 @@
       </select>
     </div>
     <div class="lv-wanted-row">
-      <button type="button" class="lv-opp-chip" data-action="buySilence"{{#unless tips.silenceOn}} disabled{{/unless}}{{#unless hasCrew}} disabled{{/unless}} title="{{tips.silence}}"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.silence"}}</span></button>
-      <button type="button" class="lv-opp-chip" data-action="lastResort"{{#if lastResort.disabled}} disabled{{/if}} title="{{lastResort.tip}}"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.lastResort"}}</span></button>
+      <button type="button" class="lv-opp-chip" data-action="buySilence"{{#unless tips.silenceOn}} disabled{{/unless}}{{#unless hasCrew}} disabled{{/unless}}><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.silence"}}</span></button>
+      <button type="button" class="lv-opp-chip" data-action="lastResort"{{#if lastResort.disabled}} disabled{{/if}}><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.lastResort"}}</span></button>
     </div>
   </section>
   {{else}}

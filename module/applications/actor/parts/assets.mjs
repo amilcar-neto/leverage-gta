@@ -273,8 +273,7 @@ const assetRow = (item) => ({
   note: item.system.note,
   die: item.system.die,
   duration: item.system.duration,
-  durationLabel: t(LEVERAGE.assetDurations[item.system.duration]?.label ?? ""),
-  durationTip: t(`LEVERAGE.Sheet.Assets.tip.${item.system.duration}`)
+  durationLabel: t(LEVERAGE.assetDurations[item.system.duration]?.label ?? "")
 });
 
 const jobRow = (item) => ({

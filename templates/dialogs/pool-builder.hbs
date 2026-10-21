@@ -9,13 +9,13 @@
   </div>
   <div class="lv-pb-body lv-scroll">
     {{#each sections}}
-    <section class="lv-pb-section" data-label="{{label}}">
+    <section class="lv-pb-section" data-label="{{label}}" data-kind="{{key}}">
       <h3 class="lv-pb-heading">{{label}}</h3>
       <div class="lv-pb-grid">
         {{#each options}}
-        <button type="button" class="lv-pb-chip{{#if pooled}} is-on{{/if}}" data-action="pick" data-ref="{{ref}}" data-kind="{{kind}}" data-search="{{search}}" aria-pressed="{{#if pooled}}true{{else}}false{{/if}}" title="{{title}}">
+        <button type="button" class="lv-pb-chip{{#if pooled}} is-on{{/if}}{{#if (eq kind "die")}} lv-pb-chip--die{{/if}}" data-action="pick" data-ref="{{ref}}" data-kind="{{kind}}" data-search="{{search}}" aria-pressed="{{#if pooled}}true{{else}}false{{/if}}" aria-label="{{title}}" title="{{title}}">
           {{lvDie die die=die size=@root.chipDie money=money}}
-          <span class="lv-pb-chip-name">{{name}}</span>
+          {{#unless (eq kind "die")}}<span class="lv-pb-chip-name">{{name}}</span>{{/unless}}
           {{#if pooled}}<svg class="lv-pb-check" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>{{/if}}
         </button>
         {{/each}}

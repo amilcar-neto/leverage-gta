@@ -26,7 +26,7 @@
   {{#if money.show}}
   <button type="button" class="lv-hud-money{{#unless money.interactive}} is-locked{{/unless}}{{#unless money.hasActor}} is-dim{{/unless}}"
     data-action="payMoney" data-tooltip="{{money.tip}}" aria-label="{{money.tip}}" {{#unless money.interactive}}disabled{{/unless}}>
-    <span class="lv-hud-text lv-hud-dollar">$</span>
+    <span class="lv-hud-label"><span class="lv-hud-text lv-hud-dollar" aria-hidden="true">$</span><span class="lv-hud-text lv-hud-cap">{{localize "LEVERAGE.HUD.moneyCap"}}</span></span>
     {{#if money.empty}}
       {{{lvDie 0 die=4 size=@root.dieSize money=true empty=true}}}
     {{else}}
@@ -64,15 +64,15 @@
   <div class="lv-hud-pp{{#unless plotPoints.hasActor}} is-dim{{/unless}}" data-tooltip="{{plotPoints.tip}}">
     <button type="button" class="lv-hud-round" data-action="spendPlotPoint" aria-label="{{plotPoints.spendLabel}}"
       data-tooltip="{{plotPoints.spendLabel}}" {{#unless plotPoints.canSpend}}disabled{{/unless}}>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
+      <span class="lv-hud-text lv-hud-round-text" aria-hidden="true">&minus;1</span>
     </button>
     {{#if plotPoints.canGain}}
     <button type="button" class="lv-hud-round" data-action="gainPlotPoint" aria-label="{{plotPoints.gainLabel}}"
       data-tooltip="{{plotPoints.gainLabel}}">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>
+      <span class="lv-hud-text lv-hud-round-text" aria-hidden="true">+1</span>
     </button>
     {{/if}}
-    <svg class="lv-hud-chip" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
+    <svg class="lv-hud-chip" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><text x="12" y="15.4" text-anchor="middle" class="lv-hud-chip-text">{{localize "LEVERAGE.HUD.ppCap"}}</text></svg>
     <span class="lv-hud-text lv-hud-pp-value{{#if plotPoints.pulse}} is-pulse{{/if}}"{{#if plotPoints.canGain}} data-action="gainPlotPoint" role="button" tabindex="0" aria-label="{{plotPoints.gainLabel}}"{{/if}}>{{plotPoints.value}}</span>
   </div>
   {{/if}}

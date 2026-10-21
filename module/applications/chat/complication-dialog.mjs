@@ -26,7 +26,6 @@ function buildContent(complications) {
   return `<div class="lv-dlg">${picker}
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Complication.name")}</span>
       <input type="text" name="name" autofocus maxlength="80" placeholder="${escapeHtml(t("LEVERAGE.Dialog.Complication.namePlaceholder"))}"></label>
-    <p class="lv-dlg-hint">${t("LEVERAGE.Dialog.Complication.hint")}</p>
   </div>`;
 }
 

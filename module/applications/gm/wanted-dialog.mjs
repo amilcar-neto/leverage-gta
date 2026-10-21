@@ -9,7 +9,7 @@ import { readSetting } from "../../data/fields.mjs";
 import { bailAllowed, getCityScale, lastResortKind, mainDie, policePool, poolText } from "../../rules/stars.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
 import { escapeHtml } from "../components/die.mjs";
-import { t, tn } from "../components/i18n.mjs";
+import { t } from "../components/i18n.mjs";
 import * as starsActions from "./stars-actions.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -17,23 +17,13 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const WATCHED_SETTINGS = new Set(["wanted", "cityScales", "houseRules.stars"].map((key) => `${SYSTEM_ID}.${key}`));
 
 /**
- * Tooltips with the rules of a city, read from its scale.
+ * What the city rules change in the window (which controls exist), read from its scale.
  * @param {object} scale City scale.
- * @returns {{wait: string, disguise: string, silence: string, silenceOn: boolean, perScene: boolean, sketch: boolean}}
+ * @returns {{silenceOn: boolean, perScene: boolean, sketch: boolean}}
  */
 export function cityRuleTips(scale) {
-  const perScene = Boolean(scale.wait);
-  const wait = perScene ? tn("LEVERAGE.Stars.Dialog.waitTipScene", scale.wait) : t("LEVERAGE.Stars.Dialog.waitTipSession");
-  const sketch = Boolean(scale.sketchBlocksDisguise);
-  const disguise = scale.disguise === "clear"
-    ? t("LEVERAGE.Stars.Dialog.disguiseTipClear")
-    : t("LEVERAGE.Stars.Dialog.disguiseTipLower", { one: scale.disguise ?? 1, both: scale.disguiseBoth ?? scale.disguise ?? 1 })
-      + (sketch ? t("LEVERAGE.Stars.Dialog.disguiseTipSketch") : "");
   const offer = starsActions.silenceOffer(scale.id, [scale]);
-  const silence = offer
-    ? t("LEVERAGE.Stars.Dialog.silenceTip", { die: `d${offer.die}`, stars: offer.starsPerDie })
-    : t("LEVERAGE.Stars.Dialog.silenceNone");
-  return { wait, disguise, silence, silenceOn: Boolean(offer), perScene, sketch };
+  return { silenceOn: Boolean(offer), perScene: Boolean(scale.wait), sketch: Boolean(scale.sketchBlocksDisguise) };
 }
 
 /** Wanted level window. One instance at a time. */
@@ -86,7 +76,7 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
       }),
       cities: scales.map((c) => ({ id: c.id, name: c.name, selected: c.id === scale.id })),
       pool: poolText(policePool(scale.id, level, scales)) || t("LEVERAGE.Stars.Dialog.none"), bail: bailAllowed(scale.id, scales),
-      tips: cityRuleTips(scale), crew, hasCrew: crew.length > 0, raiseTip: t("LEVERAGE.Stars.Dialog.raiseTip"),
+      tips: cityRuleTips(scale), crew, hasCrew: crew.length > 0,
       lastResort: this.#lastResortContext(scale, crew.length > 0)
     };
   }
@@ -94,7 +84,7 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
   /** The last resort button of the city: its tooltip and whether it can be used (it needs a character where it pays). */
   #lastResortContext(scale, hasCrew) {
     const kind = lastResortKind(scale.id, getCityScales());
-    return { kind, tip: t(`LEVERAGE.Stars.LastResort.${kind}.tip`), disabled: kind !== "scapegoat" && !hasCrew };
+    return { kind, disabled: kind !== "scapegoat" && !hasCrew };
   }
 
   /** @override */

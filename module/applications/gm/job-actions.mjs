@@ -174,7 +174,7 @@ export async function giveEachPlotPointDialog() {
     window: { title: t("LEVERAGE.GM.Dialog.PlotPoint.title") },
     position: { width: 360 },
     rejectClose: false,
-    content: `<div class="lv-dlg"><p class="lv-dlg-hint">${t("LEVERAGE.GM.Dialog.PlotPoint.hint")}</p>${rows}</div>`,
+    content: `<div class="lv-dlg">${rows}</div>`,
     ok: {
       label: t("LEVERAGE.GM.Dialog.PlotPoint.confirm"),
       callback: (_event, button) => [...button.form.querySelectorAll('input[name="actor"]:checked')].map((i) => i.value)
@@ -248,8 +248,6 @@ export async function newJob(name, goal = "") {
 export async function newJobDialog() {
   if (!requireGM()) return false;
   const current = readJob();
-  const crew = crewActors();
-  const who = crew.map((a) => a.name).join(", ") || t("LEVERAGE.GM.Dialog.NewJob.nobody");
   const answer = await foundry.applications.api.DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog"],
     window: { title: t("LEVERAGE.GM.Dialog.NewJob.title") },
@@ -258,9 +256,7 @@ export async function newJobDialog() {
     content: `<div class="lv-dlg"><label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.NewJob.name")}</span>
       <input type="text" name="name" autofocus maxlength="80" value="${escapeHtml(current.name)}"></label>
       <label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.NewJob.goal")}</span>
-      <input type="text" name="goal" maxlength="200" value="${escapeHtml(current.goal)}" placeholder="${escapeHtml(t("LEVERAGE.GM.Dialog.NewJob.goalPlaceholder"))}"></label>
-      <p class="lv-dlg-hint">${t("LEVERAGE.GM.Dialog.NewJob.hint")}</p>
-      <p class="lv-dlg-hint" title="${escapeHtml(who)}">${escapeHtml(tn("LEVERAGE.GM.Dialog.NewJob.who", crew.length, { names: who }))}</p></div>`,
+      <input type="text" name="goal" maxlength="200" value="${escapeHtml(current.goal)}" placeholder="${escapeHtml(t("LEVERAGE.GM.Dialog.NewJob.goalPlaceholder"))}"></label></div>`,
     render: (_event, dialog) => requireTextField(dialog, "name", "LEVERAGE.GM.Warn.jobNameRequired"),
     ok: {
       label: t("LEVERAGE.GM.Dialog.NewJob.confirm"),

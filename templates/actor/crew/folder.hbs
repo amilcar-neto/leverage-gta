@@ -19,21 +19,21 @@
       <span class="lv-jobs-summary lv-ellipsis" title="{{jobsSummary}}">{{jobsSummary}}</span>
       {{#if canEdit}}
       <span class="lv-jobs-actions">
-      <button type="button" class="lv-paper-btn lv-paper-btn--solid" data-action="trainUp" title="{{localize 'LEVERAGE.Sheet.Jobs.trainUpHint'}}">{{localize "LEVERAGE.Sheet.Jobs.trainUp"}}</button>
-      <button type="button" class="lv-paper-btn" data-action="logJob" title="{{localize 'LEVERAGE.Sheet.Jobs.logHint'}}">{{localize "LEVERAGE.Sheet.Jobs.log"}}</button>
+      <button type="button" class="lv-paper-btn lv-paper-btn--solid" data-action="trainUp">{{localize "LEVERAGE.Sheet.Jobs.trainUp"}}</button>
+      <button type="button" class="lv-paper-btn" data-action="logJob">{{localize "LEVERAGE.Sheet.Jobs.log"}}</button>
       </span>
       {{/if}}
     </div>
     <div class="lv-jobs-cols" aria-hidden="true">
       <span class="lv-jobs-col-name">{{localize "LEVERAGE.Sheet.Jobs.colJob"}}</span>
-      <span class="lv-jobs-col-share" title="{{localize 'LEVERAGE.Sheet.Jobs.colShareHint'}}">$</span>
-      <span class="lv-jobs-col-callback" title="{{localize 'LEVERAGE.Sheet.Jobs.colCallbackHint'}}">{{localize "LEVERAGE.Sheet.Jobs.colCallback"}}</span>
+      <span class="lv-jobs-col-share" title="{{localize 'LEVERAGE.Sheet.Jobs.colShare'}}">$</span>
+      <span class="lv-jobs-col-callback">{{localize "LEVERAGE.Sheet.Jobs.colCallback"}}</span>
       <span class="lv-jobs-col-x"></span>
     </div>
     <div class="lv-folder-text lv-scroll lv-jobs-list">
       {{#each jobRows}}
       <div class="draggable lv-job{{#if spent}} is-spent{{/if}}" data-item-id="{{id}}">
-        <button type="button" class="lv-job-name lv-ellipsis" data-action="openJob" title="{{name}} - {{localize 'LEVERAGE.Sheet.Jobs.openHint'}}">{{name}}</button>
+        <button type="button" class="lv-job-name lv-ellipsis" data-action="openJob" title="{{name}}">{{name}}</button>
         {{#if spent}}<span class="lv-stamp-spent">{{localize "LEVERAGE.Sheet.Jobs.spent"}}</span>{{/if}}
         <span class="lv-job-share">{{#if share}}+{{share}}{{/if}}</span>
         <span class="lv-job-callback">{{#unless spent}}<button type="button" class="lv-check{{#if callbackUsed}} is-on{{/if}}" data-action="toggleCallback" aria-pressed="{{#if callbackUsed}}true{{else}}false{{/if}}" aria-label="{{localize 'LEVERAGE.Sheet.Jobs.callbackLabel'}}" title="{{localize 'LEVERAGE.Sheet.Jobs.callbackLabel'}}"{{#unless @root.canEdit}} disabled{{/unless}}><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></button>{{/unless}}</span>

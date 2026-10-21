@@ -1,5 +1,5 @@
 <section class="lv-panel lv-specialties">
-  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.specialties"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{localize "LEVERAGE.Sheet.Hint.specialtyDie"}}</span>{{#if canEditTraits}}<button type="button" class="lv-add-btn" data-action="addTraitItem" data-type="specialty" title="{{localize "LEVERAGE.Sheet.New.specialty"}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}</span></h2>
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.Sheet.Panel.specialties"}}</span><span class="lv-head-tools">{{#if canEditTraits}}<button type="button" class="lv-add-btn" data-action="addTraitItem" data-type="specialty" title="{{localize "LEVERAGE.Sheet.New.specialty"}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}</span></h2>
   <div class="lv-panel-body lv-grid-2 lv-scroll">
     {{#each specialties}}
     <div class="lv-row draggable" data-item-id="{{id}}">

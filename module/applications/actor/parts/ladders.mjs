@@ -27,29 +27,24 @@ export function nextDie(group, current, clicked) {
  * @param {"attributes"|"roles"} args.group
  * @param {Record<string, {die: number|null}>} args.values the actor's `system[group]`
  * @param {boolean} args.canEdit whether the dice are clickable
- * @param {boolean} args.locked whether the Trait lock is on (changes the tooltip)
  * @param {(key: string, data?: object) => string} args.t translate function (i18n key, format data)
- * @returns {object[]} rows: key, label, desc, die, blank, poolRef, nameTitle, ladder[]
+ * @returns {object[]} rows: key, label, die, blank, poolRef, nameTitle, ladder[]
  */
-export function buildRows({ group, values, canEdit, locked, t }) {
+export function buildRows({ group, values, canEdit, t }) {
   const defs = LEVERAGE[group];
-  const kind = group === "attributes" ? "Attributes" : "Roles";
   return Object.keys(defs).map((key) => {
     const die = values[key]?.die ?? null;
     const label = t(defs[key].label);
-    const desc = t(`LEVERAGE.Sheet.${kind}.${key}`);
-    const lockTip = locked ? t("LEVERAGE.Sheet.Ladders.locked") : "";
-    const blankTip = die === null ? `${desc}\n${t("LEVERAGE.Sheet.Ladders.blankHint")}` : desc;
     const ladder = LEVERAGE.dice.map((d) => ({
       die: d,
       muted: d !== die,
       action: canEdit ? "setDie" : undefined,
       pressed: d === die,
       label: t("LEVERAGE.Sheet.Ladders.dieLabel", { trait: label, die: d }),
-      title: lockTip || `d${d}`
+      title: `d${d}`
     }));
     return {
-      key, group, label, die, blank: die === null, ladder, nameTitle: blankTip,
+      key, group, label, die, blank: die === null, ladder, nameTitle: label,
       poolRef: `${group}.${key}`
     };
   });

@@ -1,4 +1,4 @@
 <div class="lv-item-foot">
-  <span class="lv-item-hint lv-ellipsis">{{#if canEdit}}{{localize "LEVERAGE.ItemSheet.saves"}}{{else}}{{localize "LEVERAGE.ItemSheet.readOnly"}}{{/if}}</span>
+  <span class="lv-item-hint lv-ellipsis">{{#unless canEdit}}{{localize "LEVERAGE.ItemSheet.readOnly"}}{{/unless}}</span>
   {{#if canDelete}}<button type="button" class="lv-item-delete lv-ellipsis" data-action="deleteItem">{{deleteLabel}}</button>{{/if}}
 </div>

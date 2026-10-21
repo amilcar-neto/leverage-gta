@@ -71,7 +71,7 @@
   <footer class="lv-opp-foot">
     <div class="lv-opp-pool">
       <div class="lv-opp-pool-dice">
-        {{#each pool.dice}}{{{this}}}{{else}}<span class="lv-opp-empty">{{localize "LEVERAGE.Opposition.poolDefault"}}</span>{{/each}}
+        {{#each pool.dice}}{{{this}}}{{/each}}
       </div>
       <span class="lv-opp-pool-text">{{pool.text}}</span>
       {{#unless pool.empty}}<button type="button" class="lv-opp-clear" data-action="clear">{{localize "LEVERAGE.Opposition.clear"}}</button>{{/unless}}

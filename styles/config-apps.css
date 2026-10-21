@@ -25,7 +25,7 @@
 
 .leverage-gta .lv-config-hint { margin: 0; color: var(--lv-muted); font-size: 13px; }
 .leverage-gta .lv-config-empty { color: var(--lv-muted); font-size: 13px; }
-.leverage-gta .lv-config-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.leverage-gta .lv-config-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
 .leverage-gta .lv-config-bar .lv-config-hint { flex: 1; min-width: 0; }
 
 .leverage-gta .lv-config-title {

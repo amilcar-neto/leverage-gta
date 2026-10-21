@@ -36,7 +36,6 @@ function content(prices) {
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Money.Pay.item")}</span>
       <select name="price">${itemOptions(prices)}</select></label>
     <div class="lv-money-custom" data-custom hidden>
-      <p class="lv-dlg-hint">${t("LEVERAGE.Money.Pay.customHint")}</p>
       <div class="lv-money-counts">${customInputs()}</div></div>
     <div class="lv-money-row lv-money-summary" data-summary></div>
     <p class="lv-money-warn" data-warn hidden></p></div>`;

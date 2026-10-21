@@ -36,7 +36,6 @@
       "addDie": "Add {die}",
       "removeDie": "Remove {die}",
       "CityScales": {
-        "hint": "Each city has its own police Pool per star and its own rules. Click a die to remove it; click a faded die to add one.",
         "addCity": "Add city",
         "newCity": "New city",
         "name": "City name",
@@ -52,17 +51,10 @@
         "sketch": "Composite sketch blocks disguise",
         "wait": "Scenes out of sight per star",
         "waitNone": "Sessions",
-        "waitHint": "Empty: stars only go down between sessions.",
         "disguise": "Disguise removes",
         "disguiseAll": "All",
         "disguiseBoth": "Car and clothes",
         "sameAsDisguise": "Same"
-      },
-      "Prices": {
-        "hint": "Price of each item in dice. Click a die to remove it; click a faded die to add one."
-      },
-      "Training": {
-        "hint": "How many unspent Jobs each Train up option costs."
       },
       "Error": {
         "noCities": "Add at least one city.",
@@ -299,89 +291,70 @@
     },
     "Settings": {
       "activeJob": {
-        "Hint": "Current Job and its Complications (hidden; used by the Job Tracker).",
         "Name": "Active Job"
       },
       "cityScalesMenu": {
-        "Hint": "Edit the cities and the Pool for each star level.",
         "Label": "Edit city scales",
         "Name": "City scales"
       },
       "debug": {
-        "Hint": "Detailed log in the console.",
         "Name": "Debug log"
       },
       "hud": {
         "showPartyMoney": {
-          "Hint": "GM only. Shows a compact list with the Grana of every player character under your own Grana in the HUD.",
           "Name": "Show players' Grana"
         },
         "showMoney": {
-          "Hint": "Show the money ladder on the HUD.",
           "Name": "Show money"
         },
         "showPlotPoints": {
-          "Hint": "Show the Plot Points on the HUD.",
           "Name": "Show Plot Points"
         },
         "showStars": {
-          "Hint": "Show the wanted stars on the HUD.",
           "Name": "Show stars"
         }
       },
       "houseRules": {
         "life": {
-          "Hint": "Turns on Life and Vest (sheet header, token bar, damage).",
           "Name": "Life and vest"
         },
         "money": {
-          "Hint": "Turns on Money (HUD, tray, prices, paid Wasted/Busted).",
           "Name": "Money ladder"
         },
         "stars": {
-          "Hint": "Turns on Stars (HUD, police die).",
           "Name": "Wanted stars"
         }
       },
       "jobStartPlotPoints": {
-        "Hint": "Plot Points each character has at least when a new Job starts (those who have more keep them).",
         "Name": "Plot Points per Job"
       },
       "lifeBase": {
-        "Hint": "Maximum life = this value + the Vitality die.",
         "Name": "Base life"
       },
       "moneyStart": {
-        "Hint": "Money steps new characters start with.",
         "Name": "Starting money"
       },
       "pool": {
         "keepAfterRoll": {
-          "Hint": "Do not clear the Pool after rolling.",
           "Name": "Keep Pool after roll"
         }
       },
       "pricesMenu": {
-        "Hint": "Edit the prices in dice.",
         "Label": "Edit price list",
         "Name": "Price list"
       },
       "trainingCostsMenu": {
-        "Hint": "Cost in Jobs of each advancement.",
         "Label": "Edit training costs",
         "Name": "Training costs"
       },
       "playersCanUnlock": {
-        "Hint": "On: each player locks and unlocks their own sheet with the seal in its title bar. Off: every sheet is forced locked and players cannot unlock it. The GM always edits.",
         "Name": "Players can unlock their sheets"
       },
       "wanted": {
-        "Hint": "Current wanted level (hidden; changed by the HUD or the GM control).",
         "Name": "Wanted level"
       },
       "scenePanel": {
         "show": {
-          "Hint": "Show the Scene Traits and Complications strip under the scene navigation.",
           "Name": "Show scene panel"
         }
       }
@@ -431,7 +404,6 @@
         "raise": "Raise {name}: d{from} to d{to}",
         "name": "Name",
         "namePlaceholder": "What goes wrong?",
-        "hint": "The player gets 1 Plot Point. The Complication goes to the active Job.",
         "confirm": "Add",
         "nameRequired": "Name the Complication."
       }
@@ -445,11 +417,7 @@
       "Add": "+ Add",
       "Seal": {
         "locked": "Locked",
-        "lockedHint": "Locked. Click to unlock.",
-        "unlocked": "Editing on",
-        "unlockedHint": "Unlocked. Click to lock.",
-        "lockedGmHint": "Locked for the player. Click to unlock.",
-        "unlockedGmHint": "Unlocked. Click to lock."
+        "unlocked": "Editing on"
       },
       "Header": {
         "noPhoto": "No photo",
@@ -468,24 +436,7 @@
         "thumb": "R. Thumb"
       },
       "Ladders": {
-        "locked": "Traits are locked by the GM.",
-        "blankHint": "Blank: not in the Pool. Click a die to rate it.",
         "dieLabel": "{trait}: d{die}"
-      },
-      "Attributes": {
-        "agility": "Balance, reflexes and speed.",
-        "alertness": "Awareness, perception and spotting what is wrong.",
-        "intelligence": "Reasoning, memory and book smarts.",
-        "strength": "Raw physical power.",
-        "vitality": "Health and endurance. Sets your Life.",
-        "willpower": "Mental toughness and nerve."
-      },
-      "Roles": {
-        "grifter": "Cons, lies and fast talk.",
-        "hacker": "Computers, electronics and surveillance.",
-        "hitter": "Fighting, guns and muscle.",
-        "mastermind": "Plans, leadership and reading people.",
-        "thief": "Stealth, locks and getting in and out."
       },
       "New": {
         "distinction": "New Distinction",
@@ -493,43 +444,31 @@
         "specialty": "New Specialty"
       },
       "Distinction": {
-        "helps": "Helps you: add a d8",
-        "hurts": "Works against you: add a d4 and gain 1 Plot Point",
+        "helps": "Helps",
+        "hurts": "Hinders (+1 PP)",
         "pp": "+1 PP"
       },
       "Talent": {
-        "cost": "1 PP",
-        "die": "Add this Talent's die to the Pool"
+        "cost": "1 PP"
       },
       "Specialty": {
         "changeRole": "Change Role"
       },
       "Assets": {
-        "addHint": "New Asset: Signature (permanent), Job (2 PP) or Scene (1 PP)",
-        "dblclick": "Double-click to open",
         "delete": "Delete asset",
-        "tip": {
-          "signature": "Permanent. Comes with her to every Job.",
-          "job": "Lasts for this Job.",
-          "scene": "Lasts for this Scene."
-        },
         "open": "Open Asset"
       },
       "Jobs": {
-        "summary": "{jobs} JOBS · {unspent} UNSPENT",
+        "summary": "{jobs} JOBS · {unspent} TO TRAIN",
         "trainUp": "Train up",
-        "trainUpHint": "Spend unspent Jobs on a new Specialty, Talent, Signature Asset, or a step up",
         "log": "+ Log",
-        "logHint": "Log a finished Job: name and payout (the GM sets the split)",
         "newJob": "New Job",
         "colJob": "Job",
-        "colShareHint": "Money steps she got from this Job",
         "colCallback": "Callback",
-        "colCallbackHint": "One callback per Job per session",
-        "openHint": "click to open the Job",
         "spent": "Spent",
         "callbackLabel": "Callback used this session",
-        "delete": "Delete job"
+        "delete": "Delete job",
+        "colShare": "Share"
       },
       "Panel": {
         "attributes": "Attributes",
@@ -540,8 +479,6 @@
         "assets": "Assets"
       },
       "Hint": {
-        "clickToOpen": "click to open",
-        "specialtyDie": "+d6 with its Role",
         "when": "When"
       },
       "Empty": {
@@ -561,13 +498,10 @@
       },
       "Tray": {
         "pool": "Pool",
-        "count": "{count} dice · keep {keep}",
-        "empty": "Pick a Trait to start a Pool.",
+        "count": "{count} dice",
         "roll": "Roll",
         "addDie": "+ Die",
         "clear": "Clear",
-        "remove": "Click to take it out of the Pool",
-        "cycleDistinction": "Click to switch to d4, again to take it out",
         "builder": {
           "title": "Build Pool",
           "search": "Search",
@@ -599,8 +533,8 @@
           "die": "Extra die"
         },
         "problem": {
-          "noAttribute": "Pick an Attribute.",
-          "noRole": "Pick a Role.",
+          "noAttribute": "Missing an Attribute.",
+          "noRole": "Missing a Role.",
           "blankAttribute": "The Attribute has no die.",
           "blankRole": "That Role is blank: rate it or pick another.",
           "blank": "This Trait is blank and adds no die."
@@ -618,7 +552,7 @@
       "standard": "Standard"
     },
     "Warn": {
-      "traitsLocked": "This sheet is locked. Unlock it with the seal in the title bar (unless the GM forbade it).",
+      "traitsLocked": "This sheet is locked.",
       "maxDistinctions": "A character can have at most {max} Distinctions.",
       "notEnoughPlotPoints": "Not enough Plot Points: it costs {cost} and you have {have}.",
       "noUnspentJobs": "No unspent Jobs to spend.",
@@ -628,11 +562,9 @@
     },
     "ItemSheet": {
       "role": "Role",
-      "roleHint": "The Role this belongs to",
       "cost": "Cost",
       "free": "Free",
       "onePP": "1 Plot Point",
-      "costHint": "What it costs to use",
       "activation": "Activation · when it triggers",
       "activationPlaceholder": "When...",
       "effect": "Effect · what it does",
@@ -644,15 +576,12 @@
       "dieHint": "Die size",
       "duration": "Duration",
       "weapon": "Weapon",
-      "weaponHint": "Weapons are lost on Wasted or Busted when the duration is Scene",
       "purchased": "Bought with Money",
       "payoutTotal": "Job payout (steps)",
       "payoutShare": "Your share (steps)",
       "callbackUsed": "Callback used this session",
       "spent": "Spent on training",
       "jobNotes": "Notes · client, target, summary",
-      "specialtyDie": "Adds a d6 to the Pool with its Role",
-      "saves": "Changes save as you type.",
       "readOnly": "You can only read this.",
       "delete": "Delete {type}",
       "namePlaceholder": "Name",
@@ -661,7 +590,6 @@
       "descriptionPlaceholder": "Nothing written yet.",
       "effectPlaceholder": "Nothing written yet.",
       "notesPlaceholder": "No notes yet.",
-      "protectedHint": "Only the GM changes this.",
       "jobGoal": "Goal",
       "jobGoalPlaceholder": "What does the Crew want from this Job?"
     },
@@ -753,7 +681,6 @@
       "Dialog": {
         "PlotPoint": {
           "title": "Give Plot Point",
-          "hint": "Who gets 1 Plot Point?",
           "confirm": "Give"
         },
         "EndScene": {
@@ -766,13 +693,7 @@
         "NewJob": {
           "title": "New Job",
           "name": "Job name",
-          "hint": "Starts the Job, clears old Complications and gives Plot Points.",
           "confirm": "Start",
-          "who": {
-            "one": "Plot Points go to {count} character: {names}.",
-            "other": "Plot Points go to {count} characters: {names}."
-          },
-          "nobody": "none (no character has a player)",
           "goal": "Goal",
           "goalPlaceholder": "What does the Crew want from this Job?"
         },
@@ -816,9 +737,8 @@
       "location": "Location",
       "complications": "Complications",
       "traitFallback": "Trait",
-      "poolCount": "{count} dice · keep {keep}",
+      "poolCount": "{count} dice",
       "poolEmpty": "No dice",
-      "poolDefault": "Nothing chosen: rolls the default no-opposition dice",
       "clear": "Clear",
       "label": "Description",
       "labelPlaceholder": "What is the opposition doing?",
@@ -908,6 +828,7 @@
       "emptyTraits": "No Traits",
       "people": "NPCs",
       "emptyPeople": "No NPCs",
+      "linkNpc": "Link to this place",
       "notes": "Notes"
     },
     "Money": {
@@ -924,7 +845,6 @@
         "item": "Item",
         "customItem": "Custom price...",
         "customName": "a purchase",
-        "customHint": "How many dice of each size does it cost?",
         "short": {
           "one": "Not enough Money: short by {count} step.",
           "other": "Not enough Money: short by {count} steps."
@@ -936,7 +856,6 @@
         "title": "Lend Money: {name}",
         "to": "Lend to",
         "amount": "Steps to lend",
-        "hint": "One step is one rung of the Money ladder (a d12 is 5 steps).",
         "you": "You",
         "them": "Them",
         "nobody": "There is no other Crew character.",
@@ -968,8 +887,6 @@
         "cover": "Target is in cover (halves the damage)",
         "police": "Police (Busted instead of Wasted)",
         "confirm": "Apply",
-        "hintLinked": "Margin filled from the Pool roll above. Damage = margin + weapon die.",
-        "hintFree": "Damage = margin + weapon die, halved by cover, then the vest, then Life.",
         "assetsTitle": "Weapon Assets",
         "assetsBody": "{name} loses the weapon Assets of the scene: {names}. Remove them?"
       },
@@ -1082,29 +999,17 @@
         "actions": "Actions",
         "off": "The Stars house rule is off: the level and the actions are disabled.",
         "raise": "Raise",
-        "raiseTip": "One more star: seen committing a crime, shot in public, cop hurt, big attack or jailbreak.",
         "reason": "Reason",
         "reasonPlaceholder": "What happened?",
         "wait": "Wait out of sight",
         "scenes": "Scenes",
         "betweenSessions": "Between sessions",
-        "waitTipScene": {
-          "one": "Free. Lowers 1 star per {count} scene out of sight.",
-          "other": "Free. Lowers 1 star per {count} scenes out of sight."
-        },
-        "waitTipSession": "Free. Lowers 1 star only between sessions.",
         "disguise": "Change looks",
         "disguiseBoth": "Car and clothes",
         "sketched": "Composite sketch is out",
-        "disguiseTipClear": "Quick roll against the police Pool. Success clears all stars.",
-        "disguiseTipLower": "Quick roll against the police Pool. Success: lowers the level by {one}; by {both} changing car and clothes.",
-        "disguiseTipSketch": " Blocked while a composite sketch exists.",
         "silence": "Buy silence",
-        "silenceTip": "Quick roll against the police Pool. If it passes, apply it here: pays one {die} of Money for -{stars} stars.",
-        "silenceNone": "Does not work in this city.",
         "character": "Character",
         "noCrew": "No Crew characters",
-        "rolled": "Apply these after the roll is passed.",
         "lastResort": "Last resort"
       },
       "LastResort": {
@@ -1117,16 +1022,13 @@
           "wait": "Waited it out"
         },
         "any": {
-          "tip": "Last resort in this city: any way out above (change looks, buy silence or wait it out). The stars go to 0.",
-          "body": "Any way out works here: the Crew changes looks, buys silence or waits it out. Pick the one they used. The stars go to 0."
+          "body": "Which exit did the Crew use?"
         },
         "disguiseAndSilence": {
-          "tip": "Last resort in this city: change looks and buy silence, both. The stars go to 0.",
-          "body": "The Crew must change looks and buy silence. Confirm they did both; the silence is paid by the character picked. The stars go to 0."
+          "body": "Disguise and silence both done?"
         },
         "scapegoat": {
-          "tip": "Last resort in this city: hand over a scapegoat (a mini-heist). Silence does not work here. The stars go to 0.",
-          "body": "The Crew hands over a scapegoat in a mini-heist. Confirm it was done. The stars go to 0."
+          "body": "Scapegoat handed over?"
         }
       }
     },
@@ -1134,8 +1036,8 @@
       "expand": "Show everything",
       "minimize": "Show only the stars",
       "stars": "Wanted level",
-      "moneyTip": "Grana · {steps} steps · click to pay, right click to lend",
-      "moneyTipReadOnly": "Grana · {steps} steps",
+      "moneyTip": "Grana · {steps}",
+      "moneyTipReadOnly": "Grana · {steps}",
       "plotPointsTip": "Plot Points · {value}",
       "noCharacter": "No character assigned",
       "party": "Party Grana",
@@ -1149,7 +1051,9 @@
       "starTip": {
         "one": "{count} star · police roll {pool}",
         "other": "{count} stars · police roll {pool}"
-      }
+      },
+      "moneyCap": "Grana",
+      "ppCap": "PP"
     },
     "Packs": {
       "crewExample": "Example Crew",

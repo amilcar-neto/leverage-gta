@@ -57,9 +57,8 @@ export function poolOf(sheet) {
  */
 export function chipOf(entry, t) {
   const name = entry.nameKey ? t(entry.nameKey) : entry.name;
-  const cycles = entry.kind === "distinction" && !entry.hinders;
   const title = [name, entry.warn && t(`LEVERAGE.Sheet.Tray.warn.${entry.warn}`),
-    entry.blank && t("LEVERAGE.Sheet.Tray.problem.blank"), t(`LEVERAGE.Sheet.Tray.${cycles ? "cycleDistinction" : "remove"}`)].filter(Boolean).join("\n");
+    entry.blank && t("LEVERAGE.Sheet.Tray.problem.blank")].filter(Boolean).join("\n");
   return {
     ref: entry.ref, name, title, die: entry.die, kind: entry.kind, optional: entry.optional,
     kindLabel: t(`LEVERAGE.Sheet.Tray.kind.${entry.kind}`), money: entry.kind === "money",

@@ -122,6 +122,11 @@
 
 .leverage-gta .lv-pb-chip > .lv-die { flex: none; }
 
+/* Loose dice (d4..d12): one compact row of die-only buttons under a single heading. */
+.leverage-gta .lv-pb-section[data-kind="die"] .lv-pb-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.leverage-gta .lv-pb-chip--die { width: 48px; padding: 0; justify-content: center; position: relative; }
+.leverage-gta .lv-pb-chip--die .lv-pb-check { position: absolute; top: -5px; right: -5px; background: var(--lv-select); color: var(--lv-black, #000); border-radius: 50%; padding: 1px; }
+
 .leverage-gta .lv-pb-chip-name {
   flex: 1 1 auto;
   min-width: 0;

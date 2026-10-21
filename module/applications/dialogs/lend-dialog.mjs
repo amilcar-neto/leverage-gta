@@ -21,7 +21,6 @@ function content(actor, others) {
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Money.Lend.to")}</span><select name="to">${options}</select></label>
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Money.Lend.amount")}</span>
       <input type="number" name="amount" min="1" max="${actor.system.money.steps}" step="1" value="1"></label>
-    <p class="lv-dlg-hint">${t("LEVERAGE.Money.Lend.hint")}</p>
     <div class="lv-money-row lv-money-summary" data-summary></div>
     <p class="lv-money-warn" data-warn hidden></p></div>`;
 }

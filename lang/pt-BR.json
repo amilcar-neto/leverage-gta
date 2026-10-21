@@ -36,7 +36,6 @@
       "addDie": "Adicionar {die}",
       "removeDie": "Remover {die}",
       "CityScales": {
-        "hint": "Cada cidade tem a sua Pool da polícia por estrela e as suas regras. Clique num dado para remover; clique num dado apagado para adicionar.",
         "addCity": "Adicionar cidade",
         "newCity": "Nova cidade",
         "name": "Nome da cidade",
@@ -52,17 +51,10 @@
         "sketch": "Retrato falado impede o disfarce",
         "wait": "Cenas fora de vista por estrela",
         "waitNone": "Sessões",
-        "waitHint": "Vazio: as estrelas só baixam entre sessões.",
         "disguise": "Disfarce remove",
         "disguiseAll": "Todas",
         "disguiseBoth": "Carro e roupa",
         "sameAsDisguise": "Igual"
-      },
-      "Prices": {
-        "hint": "Preço de cada item em dados. Clique num dado para remover; clique num dado apagado para adicionar."
-      },
-      "Training": {
-        "hint": "Quantos Jobs sem uso cada opção de Train up custa."
       },
       "Error": {
         "noCities": "Adicione pelo menos uma cidade.",
@@ -299,89 +291,70 @@
     },
     "Settings": {
       "activeJob": {
-        "Hint": "Job atual e suas Complications (escondido; usado pelo Rastreador do Job).",
         "Name": "Job ativo"
       },
       "cityScalesMenu": {
-        "Hint": "Edita as cidades e a Pool de cada estrela.",
         "Label": "Editar escalas das cidades",
         "Name": "Escalas das cidades"
       },
       "debug": {
-        "Hint": "Log detalhado no console.",
         "Name": "Log de depuração"
       },
       "hud": {
         "showPartyMoney": {
-          "Hint": "Só para o mestre. Mostra no HUD, abaixo da sua Grana, uma lista compacta com a Grana de cada personagem de jogador.",
           "Name": "Mostrar Grana dos jogadores"
         },
         "showMoney": {
-          "Hint": "Mostra a escada de Grana no HUD.",
           "Name": "Mostrar Grana"
         },
         "showPlotPoints": {
-          "Hint": "Mostra os Plot Points no HUD.",
           "Name": "Mostrar Plot Points"
         },
         "showStars": {
-          "Hint": "Mostra as estrelas de procurado no HUD.",
           "Name": "Mostrar Estrelas"
         }
       },
       "houseRules": {
         "life": {
-          "Hint": "Liga Vida e Colete (cabeçalho da ficha, barra do token, dano).",
           "Name": "Vida e Colete"
         },
         "money": {
-          "Hint": "Liga a Grana (HUD, bandeja, preços, Wasted/Busted pagos).",
           "Name": "Grana em escada"
         },
         "stars": {
-          "Hint": "Liga as Estrelas (HUD, dado da polícia).",
           "Name": "Estrelas de procurado"
         }
       },
       "jobStartPlotPoints": {
-        "Hint": "Plot Points que cada personagem tem no mínimo quando um novo Job começa (quem tem mais, mantém).",
         "Name": "Plot Points por Job"
       },
       "lifeBase": {
-        "Hint": "Vida máxima = este valor + o dado de Vitality.",
         "Name": "Vida base"
       },
       "moneyStart": {
-        "Hint": "Degraus de Grana com que começam os novos personagens.",
         "Name": "Grana inicial"
       },
       "pool": {
         "keepAfterRoll": {
-          "Hint": "Não limpa a Pool depois de rolar.",
           "Name": "Manter a Pool depois de rolar"
         }
       },
       "pricesMenu": {
-        "Hint": "Edita os preços em dados.",
         "Label": "Editar tabela de preços",
         "Name": "Tabela de preços"
       },
       "trainingCostsMenu": {
-        "Hint": "Custo em Jobs de cada evolução.",
         "Label": "Editar custos de treinamento",
         "Name": "Custos de treinamento"
       },
       "playersCanUnlock": {
-        "Hint": "Ligado: cada jogador trava e destrava a própria ficha pelo selo na barra de título. Desligado: todas as fichas ficam travadas à força e os jogadores não conseguem destravar. O mestre sempre edita.",
         "Name": "Jogadores podem destravar suas fichas"
       },
       "wanted": {
-        "Hint": "Nível atual de procurado (escondido; mudado pelo HUD ou pelo controle do mestre).",
         "Name": "Nível de procurado"
       },
       "scenePanel": {
         "show": {
-          "Hint": "Mostra, abaixo do seletor de cenas, a faixa com os Traços da cena e as Complications.",
           "Name": "Mostrar painel da cena"
         }
       }
@@ -431,7 +404,6 @@
         "raise": "Subir {name}: d{from} para d{to}",
         "name": "Nome",
         "namePlaceholder": "O que dá errado?",
-        "hint": "O jogador ganha 1 Plot Point. A Complication vai para o Job ativo.",
         "confirm": "Adicionar",
         "nameRequired": "Dê um nome à Complication."
       }
@@ -445,11 +417,7 @@
       "Add": "+ Adicionar",
       "Seal": {
         "locked": "Travada",
-        "lockedHint": "Travada. Clique para destravar.",
-        "unlocked": "Edição ligada",
-        "unlockedHint": "Destravada. Clique para travar.",
-        "lockedGmHint": "Travada para o jogador. Clique para destravar.",
-        "unlockedGmHint": "Destravada. Clique para travar."
+        "unlocked": "Edição ligada"
       },
       "Header": {
         "noPhoto": "Sem foto",
@@ -468,24 +436,7 @@
         "thumb": "R. Thumb"
       },
       "Ladders": {
-        "locked": "Os Traços estão travados pelo mestre.",
-        "blankHint": "Vazio: fora da Pool. Clique em um dado para classificar.",
         "dieLabel": "{trait}: d{die}"
-      },
-      "Attributes": {
-        "agility": "Equilíbrio, reflexos e velocidade.",
-        "alertness": "Atenção, percepção e notar o que está errado.",
-        "intelligence": "Raciocínio, memória e conhecimento.",
-        "strength": "Força física bruta.",
-        "vitality": "Saúde e resistência. Define sua Vida.",
-        "willpower": "Firmeza mental e sangue frio."
-      },
-      "Roles": {
-        "grifter": "Golpes, mentiras e lábia.",
-        "hacker": "Computadores, eletrônica e vigilância.",
-        "hitter": "Briga, armas e força bruta.",
-        "mastermind": "Planos, liderança e ler pessoas.",
-        "thief": "Furtividade, fechaduras e entrar e sair."
       },
       "New": {
         "distinction": "Nova Distinction",
@@ -493,43 +444,31 @@
         "specialty": "Nova Specialty"
       },
       "Distinction": {
-        "helps": "Ajuda você: adiciona um d8",
-        "hurts": "Atua contra você: adiciona um d4 e ganha 1 Plot Point",
+        "helps": "Ajuda",
+        "hurts": "Atrapalha (+1 PP)",
         "pp": "+1 PP"
       },
       "Talent": {
-        "cost": "1 PP",
-        "die": "Adiciona o dado deste Talent à Pool"
+        "cost": "1 PP"
       },
       "Specialty": {
         "changeRole": "Trocar Role"
       },
       "Assets": {
-        "addHint": "Novo Asset: Signature (permanente), Job (2 PP) ou Scene (1 PP)",
-        "dblclick": "Clique duplo para abrir",
         "delete": "Excluir Asset",
-        "tip": {
-          "signature": "Permanente. Vai com o personagem em todo Job.",
-          "job": "Dura este Job.",
-          "scene": "Dura esta cena."
-        },
         "open": "Abrir Asset"
       },
       "Jobs": {
-        "summary": "{jobs} JOBS · {unspent} LIVRES",
+        "summary": "{jobs} JOBS · {unspent} PARA TREINO",
         "trainUp": "Train up",
-        "trainUpHint": "Gaste os Jobs não gastos em uma nova Specialty, Talent, Signature Asset ou um degrau de evolução",
         "log": "+ Job",
-        "logHint": "Registra um Job concluído: nome e rendimento (a divisão é do mestre)",
         "newJob": "Novo Job",
         "colJob": "Job",
-        "colShareHint": "Degraus de Grana que o personagem recebeu deste Job",
         "colCallback": "Callback",
-        "colCallbackHint": "Um Callback por Job por sessão",
-        "openHint": "clique para abrir o Job",
         "spent": "Gasto",
         "callbackLabel": "Callback usado nesta sessão",
-        "delete": "Excluir Job"
+        "delete": "Excluir Job",
+        "colShare": "Parte"
       },
       "Panel": {
         "attributes": "Attributes",
@@ -540,8 +479,6 @@
         "assets": "Assets"
       },
       "Hint": {
-        "clickToOpen": "clique para abrir",
-        "specialtyDie": "+d6 com a sua Role",
         "when": "Quando"
       },
       "Empty": {
@@ -561,13 +498,10 @@
       },
       "Tray": {
         "pool": "Pool",
-        "count": "{count} dados · mantém {keep}",
-        "empty": "Escolha um Traço para montar a Pool.",
+        "count": "{count} dados",
         "roll": "Rolar",
         "addDie": "+ Dado",
         "clear": "Limpar",
-        "remove": "Clique para tirar da Pool",
-        "cycleDistinction": "Clique para virar d4, de novo para tirar da Pool",
         "builder": {
           "title": "Montar Pool",
           "search": "Buscar",
@@ -584,7 +518,7 @@
           "specialty": "Specialties",
           "distinction": "Distinctions",
           "talent": "Talents",
-          "attribute": "Atributos",
+          "attribute": "Attributes",
           "role": "Roles"
         },
         "kind": {
@@ -599,8 +533,8 @@
           "die": "Dado extra"
         },
         "problem": {
-          "noAttribute": "Escolha um Attribute.",
-          "noRole": "Escolha uma Role.",
+          "noAttribute": "Falta um Attribute.",
+          "noRole": "Falta uma Role.",
           "blankAttribute": "O Attribute não tem dado.",
           "blankRole": "Essa Role está em branco: dê um dado a ela ou escolha outra.",
           "blank": "Este Traço está em branco e não dá dado."
@@ -618,7 +552,7 @@
       "standard": "Comum"
     },
     "Warn": {
-      "traitsLocked": "Esta ficha está travada. Destrave pelo selo na barra de título (a menos que o mestre tenha proibido).",
+      "traitsLocked": "Esta ficha está travada.",
       "maxDistinctions": "Um personagem pode ter no máximo {max} Distinctions.",
       "notEnoughPlotPoints": "Plot Points insuficientes: custa {cost} e você tem {have}.",
       "noUnspentJobs": "Nenhum Job sem gastar para gastar.",
@@ -628,11 +562,9 @@
     },
     "ItemSheet": {
       "role": "Role",
-      "roleHint": "A Role a que isto pertence",
       "cost": "Custo",
       "free": "Grátis",
       "onePP": "1 Plot Point",
-      "costHint": "O que custa para usar",
       "activation": "Activation · quando dispara",
       "activationPlaceholder": "Quando...",
       "effect": "Effect · o que faz",
@@ -644,15 +576,12 @@
       "dieHint": "Tamanho do dado",
       "duration": "Duração",
       "weapon": "Arma",
-      "weaponHint": "Armas se perdem em Wasted ou Busted quando a duração é Scene",
       "purchased": "Comprado com Grana",
       "payoutTotal": "Rendimento do Job (degraus)",
       "payoutShare": "Sua parte (degraus)",
       "callbackUsed": "Callback usado nesta sessão",
       "spent": "Gasto em treino",
       "jobNotes": "Notas · cliente, alvo, resumo",
-      "specialtyDie": "Soma um d6 à Pool com a sua Role",
-      "saves": "As mudanças são salvas enquanto você digita.",
       "readOnly": "Você só pode ler isto.",
       "delete": "Apagar {type}",
       "namePlaceholder": "Nome",
@@ -661,7 +590,6 @@
       "descriptionPlaceholder": "Nada escrito ainda.",
       "effectPlaceholder": "Nada escrito ainda.",
       "notesPlaceholder": "Sem anotações ainda.",
-      "protectedHint": "Só o mestre altera isto.",
       "jobGoal": "Objetivo",
       "jobGoalPlaceholder": "O que a equipe quer deste Job?"
     },
@@ -753,7 +681,6 @@
       "Dialog": {
         "PlotPoint": {
           "title": "Dar Plot Point",
-          "hint": "Quem recebe 1 Plot Point?",
           "confirm": "Dar"
         },
         "EndScene": {
@@ -766,13 +693,7 @@
         "NewJob": {
           "title": "Novo Job",
           "name": "Nome do Job",
-          "hint": "Inicia o Job, limpa as Complications antigas e dá Plot Points.",
           "confirm": "Iniciar",
-          "who": {
-            "one": "Os Plot Points vão para {count} personagem: {names}.",
-            "other": "Os Plot Points vão para {count} personagens: {names}."
-          },
-          "nobody": "nenhum (nenhum personagem tem jogador)",
           "goal": "Objetivo",
           "goalPlaceholder": "O que a equipe quer deste Job?"
         },
@@ -816,9 +737,8 @@
       "location": "Local",
       "complications": "Complications",
       "traitFallback": "Traço",
-      "poolCount": "{count} dados · mantém {keep}",
+      "poolCount": "{count} dados",
       "poolEmpty": "Sem dados",
-      "poolDefault": "Nada escolhido: rola os dados de nenhuma oposição",
       "clear": "Limpar",
       "label": "Descrição",
       "labelPlaceholder": "O que a oposição está fazendo?",
@@ -908,6 +828,7 @@
       "emptyTraits": "Nenhum Traço",
       "people": "NPCs",
       "emptyPeople": "Nenhum NPC",
+      "linkNpc": "Ligar a este local",
       "notes": "Notas"
     },
     "Money": {
@@ -924,7 +845,6 @@
         "item": "Item",
         "customItem": "Preço livre...",
         "customName": "uma compra",
-        "customHint": "Quantos dados de cada tamanho custa?",
         "short": {
           "one": "Grana insuficiente: falta {count} degrau.",
           "other": "Grana insuficiente: faltam {count} degraus."
@@ -936,7 +856,6 @@
         "title": "Emprestar Grana: {name}",
         "to": "Emprestar para",
         "amount": "Degraus a emprestar",
-        "hint": "Um degrau é um passo da escada de Grana (um d12 vale 5 degraus).",
         "you": "Você",
         "them": "Ele(a)",
         "nobody": "Não há outro personagem da Equipe.",
@@ -968,8 +887,6 @@
         "cover": "Alvo em cobertura (corta o dano pela metade)",
         "police": "Polícia (Busted em vez de Wasted)",
         "confirm": "Aplicar",
-        "hintLinked": "Margem preenchida pela rolagem de Pool acima. Dano = margem + dado da arma.",
-        "hintFree": "Dano = margem + dado da arma, cortado pela cobertura, depois o colete, depois a Vida.",
         "assetsTitle": "Assets de arma",
         "assetsBody": "{name} perde os Assets de arma da cena: {names}. Remover?"
       },
@@ -1082,29 +999,17 @@
         "actions": "Ações",
         "off": "A regra da casa Estrelas está desligada: o nível e as ações ficam desligados.",
         "raise": "Subir",
-        "raiseTip": "Mais uma estrela: visto cometendo crime, tiro em público, policial ferido, ataque grande ou fuga de prisão.",
         "reason": "Motivo",
         "reasonPlaceholder": "O que aconteceu?",
         "wait": "Esperar fora de vista",
         "scenes": "Cenas",
         "betweenSessions": "Entre sessões",
-        "waitTipScene": {
-          "one": "Grátis. Baixa 1 estrela a cada {count} cena fora de vista.",
-          "other": "Grátis. Baixa 1 estrela a cada {count} cenas fora de vista."
-        },
-        "waitTipSession": "Grátis. Baixa 1 estrela só entre sessões.",
         "disguise": "Mudar de cara",
         "disguiseBoth": "Carro e roupa",
         "sketched": "Há retrato falado",
-        "disguiseTipClear": "Jogada rápida contra a Pool da polícia. Sucesso zera as estrelas.",
-        "disguiseTipLower": "Jogada rápida contra a Pool da polícia. Sucesso: baixa o nível em {one}; em {both} trocando carro e roupa.",
-        "disguiseTipSketch": " Bloqueado enquanto houver retrato falado.",
         "silence": "Comprar silêncio",
-        "silenceTip": "Jogada rápida contra a Pool da polícia. Se passar, aplique aqui: paga um {die} de Grana por -{stars} estrelas.",
-        "silenceNone": "Não funciona nesta cidade.",
         "character": "Personagem",
         "noCrew": "Nenhum personagem da Equipe",
-        "rolled": "Aplique depois de passar na jogada.",
         "lastResort": "Última saída"
       },
       "LastResort": {
@@ -1117,16 +1022,13 @@
           "wait": "Esperou a poeira baixar"
         },
         "any": {
-          "tip": "Última saída nesta cidade: qualquer saída acima (mudar de cara, comprar silêncio ou esperar). As estrelas vão a 0.",
-          "body": "Qualquer saída vale aqui: a Equipe muda de cara, compra silêncio ou espera a poeira baixar. Escolha a que usaram. As estrelas vão a 0."
+          "body": "Qual saída a Equipe usou?"
         },
         "disguiseAndSilence": {
-          "tip": "Última saída nesta cidade: mudar de cara e comprar silêncio, as duas. As estrelas vão a 0.",
-          "body": "A Equipe precisa mudar de cara e comprar silêncio. Confirme que fez as duas; o silêncio é pago pelo personagem escolhido. As estrelas vão a 0."
+          "body": "Mudou de cara e comprou silêncio?"
         },
         "scapegoat": {
-          "tip": "Última saída nesta cidade: entregar um bode expiatório (um mini-golpe). Aqui o silêncio não funciona. As estrelas vão a 0.",
-          "body": "A Equipe entrega um bode expiatório num mini-golpe. Confirme que foi feito. As estrelas vão a 0."
+          "body": "Bode expiatório entregue?"
         }
       }
     },
@@ -1140,8 +1042,8 @@
       "partyCollapse": "Recolher a lista",
       "partyExpand": "Expandir a lista",
       "partyEmpty": "Nenhum personagem de jogador ainda",
-      "moneyTip": "Grana · {steps} degraus · clique para pagar, botão direito para emprestar",
-      "moneyTipReadOnly": "Grana · {steps} degraus",
+      "moneyTip": "Grana · {steps}",
+      "moneyTipReadOnly": "Grana · {steps}",
       "plotPointsTip": "Plot Points · {value}",
       "noCharacter": "Nenhum personagem atribuído",
       "spendPlotPoint": "Gastar um Plot Point",
@@ -1149,7 +1051,9 @@
       "starTip": {
         "one": "{count} estrela · rolagem da polícia {pool}",
         "other": "{count} estrelas · rolagem da polícia {pool}"
-      }
+      },
+      "moneyCap": "Grana",
+      "ppCap": "PP"
     },
     "Packs": {
       "crewExample": "Equipe de exemplo",

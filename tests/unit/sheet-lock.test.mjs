@@ -14,12 +14,10 @@ test("a sheet is locked unless the owner unlocked it and the GM allows unlocking
 test("the seal is disabled for a player when the GM forbids unlocking, never for the GM", () => {
   const forced = sealState({ locked: true, playersCanUnlock: false, isGM: false });
   assert.equal(forced.disabled, true);
-  assert.equal(forced.hint, null);
   assert.equal(sealState({ locked: true, playersCanUnlock: false, isGM: true }).disabled, false);
   const own = sealState({ locked: false, playersCanUnlock: true, isGM: false });
-  assert.deepEqual([own.disabled, own.icon, own.hint], [false, "fa-lock-open", "LEVERAGE.Sheet.Seal.unlockedHint"]);
-  assert.equal(sealState({ locked: true, playersCanUnlock: true, isGM: false }).hint, "LEVERAGE.Sheet.Seal.lockedHint");
-  assert.equal(sealState({ locked: true, playersCanUnlock: true, isGM: true }).hint, "LEVERAGE.Sheet.Seal.lockedGmHint");
+  assert.deepEqual([own.disabled, own.icon, own.label], [false, "fa-lock-open", "LEVERAGE.Sheet.Seal.unlocked"]);
+  assert.equal(sealState({ locked: true, playersCanUnlock: true, isGM: true }).label, "LEVERAGE.Sheet.Seal.locked");
 });
 
 test("party Money lines are sorted by name and carry dice", () => {
