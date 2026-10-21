@@ -134,7 +134,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Revisão final
 
-- [ ] **R-FINAL.** `integration-reviewer` faz duas passadas: (1) código e arquitetura completos; (2) uso real no
+- [x] **R-FINAL.** `integration-reviewer` faz duas passadas: (1) código e arquitetura completos; (2) uso real no
   Foundry, clicando em tudo como mestre e como jogador (prints). Builders corrigem. Segunda rodada do revisor só nos
   pontos corrigidos. Escreva `docs/log/FINAL-REPORT.md`: o que ficou pronto, o que ficou de fora e por quê, problemas
   conhecidos, decisões tomadas sozinho, o que o dono precisa testar na mesa. Depois: `DONE` em `STATUS.md`.

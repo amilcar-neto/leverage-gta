@@ -40,3 +40,4 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 ## 2026-10-21 03:58 — retomada após reset
 - Corrigindo achados da R-F9 (builder em andamento), depois R-FINAL.
 - R-F9 concluída; logo nos controles do mestre. Em andamento: ajuste do T-702, depois R-FINAL.
+- R-FINAL concluída (2 passadas + 2ª rodada). FINAL-REPORT.md escrito. STATUS: DONE.

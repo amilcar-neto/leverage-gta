@@ -29,7 +29,7 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - Dono precisa: criar um usuário `Claude` (Mestre do Jogo, sem senha) no mundo e avisar; depois trocar `FOUNDRY_USER=Claude` no `.env`.
 - Até lá: seguir com testes de unidade e revisão de código; repetir o smoke ao fim de cada fase.
 
-## 2026-10-17 - Campos protegidos dos Items so na ficha (R-F4/R-F5)
+## 2026-10-17 - Campos protegidos dos Items so na ficha (R-F4/R-F5) — RESOLVIDO na R-FINAL (guarda em LeverageItem#_preUpdate)
 - Gravidade baixa. `die`/`duration` do Asset e `payout.share`/`spent` do Job so sao protegidos nas fichas (acoes e formulario). Um jogador que chame `item.update` pelo console ainda consegue mudar esses campos. Correcao possivel: guarda em `preUpdateItem` usando `LEVERAGE.protectedItemFields`. Nao resolvido (arquivo `documents/item.mjs` fora do escopo desta parte).
 
 ## T-506 - Dice So Nice nao testado com o modulo ativo
