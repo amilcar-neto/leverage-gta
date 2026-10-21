@@ -54,3 +54,11 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - **Gravidade:** menor · **Situação:** aberto
 - **Detalhe:** não existe `LICENSE` nem decisão de licença nos logs. O release deixou de listar `LICENSE` e `README-SYSTEM.md` (não existem). O `system.json` pode precisar de um campo `license` quando houver uma.
 - **O que o dono precisa fazer:** escolher uma licença (ex.: MIT) e adicionar `LICENSE` na raiz e em `SHIP` de `tools/release.mjs`.
+
+## Playtest 2026-10-21 - bugs achados (detalhes e prints em `docs/log/PLAYTEST.md`)
+- **Média, aberto:** Asset com Nome em branco no `+ Adicionar` fecha o diálogo sem aviso e gera `DataModelValidationError` no console. O `DialogV2.prompt` troca o `null` do callback por `"ok"` e o `if (!choice) return` de `assets.mjs` deixa passar. Passos: ficha de jogador, + Adicionar, nome vazio, CRIAR.
+- **Média, aberto:** a ficha da Equipe minimizada (duplo clique) não mostra o nome do personagem, só o selo de trava e o X. Print `playtest-05-rosa-sheet-minimized.png`.
+- **Baixa, aberto:** em Encerrar Job, o nome longo do personagem quebra em 3 linhas por cima do campo numérico. Print `playtest-71-gm-end-job-filled.png`.
+- **Baixa, aberto:** card de rolagem diz "1 maiores mantidos" (falta singular em `LEVERAGE.Roll.explain`).
+- Melhorias (sem gravidade): campo "Objetivo" no Job, gangue do NPC da cena como sugestão no Rolador de oposição, arma preenchida no APLICAR DANO, aviso ao trocar de colete por um pior. Ver PLAYTEST.md.
+- O mundo de teste está com a Trava de Traços desligada; o dono deve conferir antes de jogar.
