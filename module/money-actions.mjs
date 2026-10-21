@@ -29,18 +29,24 @@ export async function payPrice(actor, dice, item) {
 /**
  * Moves Money between two characters (at most what the lender has and the receiver can hold) and posts the line.
  * Runs with the permissions of the caller: use it as the Fixer or when the caller owns both sides.
+ * Each step reads the balance again after the previous await (`money.pay` / `money.add` do), so two loans from the
+ * same wallet can never take more than it holds: the lender is charged first, the receiver is credited what fits, and
+ * what did not fit goes back to the lender.
  * @param {Actor} from
  * @param {Actor} to
  * @param {number} amount Steps.
  * @returns {Promise<number>} steps moved
  */
 export async function transferNow(from, to, amount) {
-  const moved = lend(from.system.money.steps, to.system.money.steps, amount);
-  if (!moved.moved) return 0;
-  await from.update({ "system.money.steps": moved.from });
-  await to.update({ "system.money.steps": moved.to });
-  await postLendLine(from, to, moved.moved);
-  return moved.moved;
+  const plan = lend(from.system.money.steps, to.system.money.steps, amount);
+  if (!plan.moved) return 0;
+  const charged = await from.money.pay(plan.moved);
+  if (!charged.ok) return 0;
+  const received = await to.money.add(plan.moved);
+  if (received < plan.moved) await from.money.add(plan.moved - received);
+  if (!received) return 0;
+  await postLendLine(from, to, received);
+  return received;
 }
 
 /**

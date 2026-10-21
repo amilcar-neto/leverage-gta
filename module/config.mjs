@@ -65,7 +65,9 @@ const DIE_GEOMETRY = Object.freeze({
   sizes: Object.freeze([28, 32, 36, 38, 50]),
   defaultSize: 32,
   /** Size used by each surface that shows dice outside the sheets (always one of `sizes`). */
-  uses: Object.freeze({ rollCard: 50, moneyLine: 28 }),
+  uses: Object.freeze({
+    rollCard: 50, moneyLine: 28, hud: 38, tracker: 28, ladder: 28, oppositionCounter: 36, oppositionPreview: 28, npc: 28, npcTrait: 32, location: 28
+  }),
   perDie: Object.freeze({
     4: geo(4, 0.44, 0.4),
     6: geo(6, 0.25, 0.47),

@@ -7,6 +7,7 @@ import { SYSTEM_ID } from "../../config.mjs";
 import { logger } from "../../logger.mjs";
 import { executeAsGM, registerSocketAction } from "../../socket.mjs";
 import { applyComplication, keepNextDie, resolveNextOne } from "../../dice/card-actions.mjs";
+import { readJob } from "../gm/job-actions.mjs";
 import { promptComplication } from "./complication-dialog.mjs";
 import { damageFromCard } from "./damage.mjs";
 
@@ -126,7 +127,7 @@ function keepDie(message, event) {
 async function writeComplication(message, choice) {
   const data = rollOf(message);
   const resolved = data && resolveNextOne(data);
-  const job = foundry.utils.deepClone(game.settings.get(SYSTEM_ID, "activeJob"));
+  const job = readJob();
   const result = resolved && applyComplication(job, choice, foundry.utils.randomID);
   if (!result) return;
   await game.settings.set(SYSTEM_ID, "activeJob", result.job);
@@ -138,8 +139,7 @@ async function writeComplication(message, choice) {
 function complication(message) {
   if (!game.user.isGM) return undefined;
   return exclusive(message, async () => {
-    const job = game.settings.get(SYSTEM_ID, "activeJob");
-    const choice = await promptComplication(job?.complications ?? []);
+    const choice = await promptComplication(readJob().complications);
     if (choice) await writeComplication(message, choice);
   });
 }

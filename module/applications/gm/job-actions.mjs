@@ -3,11 +3,11 @@
  * new Job, end Job. Pure helpers come first (unit tested); the Foundry parts follow. Every action checks that the
  * user is the GM, and everything here is also exported for the API (`game.leverage.*`, T-505).
  */
-import { SYSTEM_ID } from "../../config.mjs";
+import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
+import { readSetting } from "../../data/fields.mjs";
 import { escapeHtml } from "../components/die.mjs";
-
-/** @param {string} key @param {object} [data] */
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
+import { t } from "../components/i18n.mjs";
+import { normalizeJob } from "./job-tracker-logic.mjs";
 
 /* -------------------------------------------- */
 /*  Pure helpers                                */
@@ -88,12 +88,23 @@ export function usedCallbackIds(items) {
   return [...items].filter((i) => i.type === "job" && i.system?.callbackUsed).map((i) => i.id);
 }
 
+/**
+ * Whether a Crew character is played: some player (not the Fixer) owns it or has it as his character. Pre-made
+ * characters nobody plays are left out of the bulk Fixer actions (Plot Points, new session, end of scene, Jobs).
+ * @param {{id: string, testUserPermission?: Function}} actor
+ * @param {{isGM: boolean, character?: ?{id: string}}[]} users
+ * @returns {boolean}
+ */
+export function isPlayedCrew(actor, users) {
+  return [...users].some((u) => !u.isGM && (u.character?.id === actor.id || Boolean(actor.testUserPermission?.(u, "OWNER"))));
+}
+
 /* -------------------------------------------- */
 /*  Foundry helpers                             */
 /* -------------------------------------------- */
 
-/** All Crew characters of the world. */
-export const crewActors = () => game.actors.filter((a) => a.type === "crew");
+/** The Crew characters that bulk Fixer actions reach: those a player owns or plays (see `isPlayedCrew`). */
+export const crewActors = () => game.actors.filter((a) => a.type === "crew" && isPlayedCrew(a, game.users.contents));
 
 /** Whether the current user may use the Fixer tools; warns otherwise. */
 export function requireGM() {
@@ -107,8 +118,11 @@ function say(html) {
   return ChatMessage.create({ content: `<p class="lv-gm-note">${html}</p>`, speaker: { alias: t("LEVERAGE.GM.Chat.speaker") } });
 }
 
-/** Reads the active Job (a copy). */
-const readJob = () => foundry.utils.deepClone(game.settings.get(SYSTEM_ID, "activeJob") ?? emptyJob());
+/** Reads the active Job (a normalised copy: every list exists, every entry is valid). */
+export const readJob = () => normalizeJob(foundry.utils.deepClone(readSetting("activeJob", emptyJob())));
+
+/** Whether the Money house rule is on. */
+const moneyRuleOn = () => Boolean(readSetting("houseRules.money", true));
 
 /** Resolves actor ids / documents to Crew documents. */
 function resolveCrew(actors) {
@@ -203,8 +217,8 @@ export async function endScene({ confirm = true } = {}) {
     if (!yes) return null;
   }
   for (const { actor, ids } of targets) if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
-  const job = game.settings.get(SYSTEM_ID, "activeJob");
-  if (Array.isArray(job?.sceneTraits) && job.sceneTraits.length) {
+  const job = readJob();
+  if (job.sceneTraits.length) {
     await game.settings.set(SYSTEM_ID, "activeJob", jobAfterScene(job));
   }
   const detail = targets.filter((x) => x.ids.length).map((x) => `${escapeHtml(x.actor.name)} (${x.ids.length})`).join(", ");
@@ -222,7 +236,7 @@ export async function newJob(name) {
   const job = freshJob(name);
   if (!job.name) return false;
   await game.settings.set(SYSTEM_ID, "activeJob", job);
-  const each = toSteps(game.settings.get(SYSTEM_ID, "jobStartPlotPoints"));
+  const each = toSteps(readSetting("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints));
   if (each) await Promise.all(crewActors().map((a) => a.addPlotPoints(each)));
   await say(t("LEVERAGE.GM.Chat.newJob", { name: escapeHtml(job.name), count: each }));
   return true;
@@ -232,6 +246,8 @@ export async function newJob(name) {
 export async function newJobDialog() {
   if (!requireGM()) return false;
   const current = readJob().name;
+  const crew = crewActors();
+  const who = crew.map((a) => a.name).join(", ") || t("LEVERAGE.GM.Dialog.NewJob.nobody");
   const name = await foundry.applications.api.DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog"],
     window: { title: t("LEVERAGE.GM.Dialog.NewJob.title") },
@@ -239,8 +255,16 @@ export async function newJobDialog() {
     rejectClose: false,
     content: `<div class="lv-dlg"><label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.NewJob.name")}</span>
       <input type="text" name="name" autofocus maxlength="80" value="${escapeHtml(current)}"></label>
-      <p class="lv-dlg-hint">${t("LEVERAGE.GM.Dialog.NewJob.hint")}</p></div>`,
-    ok: { label: t("LEVERAGE.GM.Dialog.NewJob.confirm"), callback: (_event, button) => button.form.elements.name.value.trim() }
+      <p class="lv-dlg-hint">${t("LEVERAGE.GM.Dialog.NewJob.hint")}</p>
+      <p class="lv-dlg-hint" title="${escapeHtml(who)}">${escapeHtml(t("LEVERAGE.GM.Dialog.NewJob.who", { count: crew.length, names: who }))}</p></div>`,
+    ok: {
+      label: t("LEVERAGE.GM.Dialog.NewJob.confirm"),
+      callback: (_event, button) => {
+        const value = button.form.elements.name.value.trim();
+        if (!value) ui.notifications.warn(t("LEVERAGE.GM.Warn.jobNameRequired"));
+        return value;
+      }
+    }
   });
   return name ? newJob(name) : false;
 }
@@ -257,7 +281,7 @@ export async function endJob({ name, total, shares }) {
   for (const actor of crewActors()) {
     const share = toSteps(shares?.[actor.id]);
     await actor.createEmbeddedDocuments("Item", [jobItemData(name, total, share)]);
-    if (share) await actor.money.add(share);
+    if (share && moneyRuleOn()) await actor.money.add(share);
     const ids = assetIdsOf(actor.items, "job");
     if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
     paid += 1;
@@ -314,7 +338,10 @@ export async function endJobDialog() {
       callback: (_event, button) => {
         const f = button.form.elements;
         const name = f.name.value.trim();
-        if (!name) return null;
+        if (!name) {
+          ui.notifications.warn(t("LEVERAGE.GM.Warn.jobNameRequired"));
+          return null;
+        }
         return { name, total: toSteps(f.total.value), shares: Object.fromEntries(crew.map((a) => [a.id, toSteps(f[`share-${a.id}`].value)])) };
       }
     }

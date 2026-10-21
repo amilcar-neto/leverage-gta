@@ -32,10 +32,10 @@ test("down lines: Wasted pays the hospital and gets a Plot Point", () => {
   assert.ok(lines.some((l) => l.includes("Down.assetsLost")));
 });
 
-test("down lines: Busted in Liberty City says rescue and shows the stars", () => {
-  const lines = downLines(info({ byPolice: true }, { stars: { from: 1, to: 2 } }), t);
+test("down lines: Busted in Liberty City says rescue (the stars wait for the Fixer)", () => {
+  const lines = downLines(info({ byPolice: true }, {}), t);
   assert.ok(lines.some((l) => l.includes("Down.rescue")));
-  assert.ok(lines.some((l) => l.includes("Down.stars")));
+  assert.ok(!lines.some((l) => l.includes("Down.stars")));
   assert.ok(!lines.some((l) => l.includes("payBail")));
   assert.equal(downCardContext(info({ byPolice: true }), t).kind, "busted");
 });

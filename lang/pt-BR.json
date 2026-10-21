@@ -296,7 +296,7 @@
     },
     "Settings": {
       "activeJob": {
-        "Hint": "Job atual e suas Complications (escondido; usado pelo Rastreador do Job).",
+        "Hint": "Job atual e suas Complicações (escondido; usado pelo Rastreador do Job).",
         "Name": "Job ativo"
       },
       "cityScalesMenu": {
@@ -365,7 +365,7 @@
         "Name": "Custos de treinamento"
       },
       "traitsLocked": {
-        "Hint": "Ninguém pode adicionar, remover ou alterar Traços. O mestre ainda pode.",
+        "Hint": "Os jogadores não podem adicionar, remover ou alterar Traços. O mestre ainda pode.",
         "Name": "Trava de Traços"
       },
       "wanted": {
@@ -407,13 +407,13 @@
         }
       },
       "Complication": {
-        "title": "Complication",
-        "target": "Complication",
-        "createNew": "Nova Complication (d{die})",
+        "title": "Complicação",
+        "target": "Complicação",
+        "createNew": "Nova Complicação (d{die})",
         "raise": "Subir {name}: d{from} para d{to}",
         "name": "Nome",
         "namePlaceholder": "O que dá errado?",
-        "hint": "O jogador ganha 1 Plot Point. A Complication vai para o Job ativo.",
+        "hint": "O jogador ganha 1 Plot Point. A Complicação vai para o Job ativo.",
         "confirm": "Adicionar"
       }
     },
@@ -629,14 +629,14 @@
       "total": "Total",
       "explain": "{count} maiores mantidos",
       "noneKept": "Nenhum dado mantido",
-      "onesWarningOne": "Um dado tirou 1. O Fixer pode criar uma Complication e te dar um Plot Point.",
-      "onesWarningMany": "{count} dados tiraram 1. O Fixer pode criar uma Complication e te dar um Plot Point.",
+      "onesWarningOne": "Um dado tirou 1. O Fixer pode criar uma Complicação e te dar um Plot Point.",
+      "onesWarningMany": "{count} dados tiraram 1. O Fixer pode criar uma Complicação e te dar um Plot Point.",
       "distinctionPP": "Distinction d4: +{count} Plot Point",
       "moneyDrop": "Dado de Grana usado: a Grana desce um degrau",
       "keepButton": "+1 PP · Manter o {n} dado",
       "keepTip": "Gaste um Plot Point para somar o próximo maior dado ao total",
-      "complicationButton": "Mestre · Complication",
-      "complicationTip": "Mestre: criar ou subir uma Complication e dar 1 Plot Point",
+      "complicationButton": "Mestre · Complicação",
+      "complicationTip": "Mestre: criar ou subir uma Complicação e dar 1 Plot Point",
       "ppSpentOne": "+1 PP gasto: dado extra mantido",
       "ppSpentMany": "+{count} PP gastos: dados extras mantidos",
       "noPlotPoints": "Sem Plot Points para manter outro dado.",
@@ -669,7 +669,8 @@
       "Warn": {
         "gmOnly": "Só o Fixer pode fazer isso.",
         "soon": "Em breve.",
-        "noCrew": "Não há personagens na Equipe."
+        "noCrew": "Não há personagens na Equipe.",
+        "jobNameRequired": "Dê um nome ao Job."
       },
       "Chat": {
         "speaker": "Fixer",
@@ -694,8 +695,10 @@
         "NewJob": {
           "title": "Novo Job",
           "name": "Nome do Job",
-          "hint": "Inicia o Job, limpa as Complications antigas e dá Plot Points.",
-          "confirm": "Iniciar"
+          "hint": "Inicia o Job, limpa as Complicações antigas e dá Plot Points.",
+          "confirm": "Iniciar",
+          "who": "Os Plot Points vão para {count} personagem(ns): {names}.",
+          "nobody": "nenhum (nenhum personagem tem jogador)"
         },
         "EndJob": {
           "title": "Encerrar Job",
@@ -749,13 +752,13 @@
       "title": "Rastreador do Job",
       "job": "Job",
       "jobPlaceholder": "Nome do Job",
-      "complications": "Complications",
+      "complications": "Complicações",
       "sceneTraits": "Traços de cena",
       "crew": "Equipe",
-      "noComplications": "Nenhuma Complication.",
+      "noComplications": "Nenhuma Complicação.",
       "noSceneTraits": "Nenhum Traço de cena.",
       "noCrew": "Nenhum personagem na Equipe.",
-      "newComplication": "Nova Complication",
+      "newComplication": "Nova Complicação",
       "newSceneTrait": "Novo Traço de cena",
       "add": "Adicionar",
       "remove": "Remover",
@@ -910,13 +913,20 @@
         "arrested": "{name} é preso e fica fora até ser solto.",
         "payHospital": "Hospital: {price} ({steps} degrau(s) de Grana pago(s)).",
         "payBail": "Fiança: {price} ({steps} degrau(s) de Grana pago(s)).",
-        "short": "Faltaram {steps} degrau(s) de Grana.",
-        "rescue": "Sem fiança nesta cidade: a Equipe precisa tirar {name} de lá numa cena.",
-        "stars": "Estrelas de procurado {from} para {to} (fuga de prisão).",
+        "short": "Dívida: {debt} ({steps} degrau(s) sem pagar).",
+        "rescue": "Sem fiança nesta cidade: a Equipe precisa tirar {name} de lá numa cena. Quando conseguir, clique em Resgatado (as estrelas sobem 1).",
         "fullLife": "Volta com a Vida cheia ({max}).",
-        "plotPoint": "+{count} Plot Point.",
         "assetsLost": "Assets de arma da cena perdidos: {names}.",
-        "assetsKept": "O Fixer manteve os Assets de arma."
+        "assetsKept": "O Fixer manteve os Assets de arma.",
+        "plotPoint": {
+          "one": "+{count} Plot Point.",
+          "other": "+{count} Plot Points."
+        },
+        "rescueUnpaid": "Fiança não paga por inteiro: {name} fica preso até a Equipe tirá-lo de lá (clique em Resgatado).",
+        "rescuedButton": "Resgatado",
+        "rescuedTip": "A Equipe tirou o personagem da prisão: sobe 1 estrela (fuga de prisão).",
+        "rescuedDone": "Resgatado: fuga de prisão feita.",
+        "rescueReason": "Fuga de prisão: {name} foi resgatado"
       }
     },
     "Stars": {
@@ -933,11 +943,16 @@
         "disguise": "Mudou de cara",
         "disguiseBoth": "Mudou de carro e de roupa",
         "silence": "{name} comprou silêncio ({dice})",
-        "giveIn": "{name} se entregou à polícia"
+        "lastResortDisguise": "Última saída: mudou de cara",
+        "lastResortWait": "Última saída: esperou a poeira baixar",
+        "lastResortSilence": "{name} comprou silêncio como última saída ({dice})",
+        "lastResortBoth": "{name} mudou de cara e comprou silêncio como última saída ({dice})",
+        "lastResortBothFree": "{name} mudou de cara como última saída (sem precisar de silêncio)",
+        "lastResortScapegoat": "Última saída: um bode expiatório foi entregue (mini-golpe)"
       },
       "Error": {
         "disabled": "A regra da casa Estrelas está desligada.",
-        "notAllowed": "Você não pode fazer isto.",
+        "notAllowed": "Só o Fixer mexe nas estrelas.",
         "noActor": "Escolha um personagem da Equipe.",
         "unknownAction": "Ação de estrelas desconhecida.",
         "invalidAmount": "A quantidade deve ser um número inteiro, 1 ou mais.",
@@ -951,7 +966,8 @@
         "sketched": "Há retrato falado: mudar de cara não adianta aqui.",
         "noSilence": "Comprar silêncio não funciona nesta cidade.",
         "short": "Grana insuficiente (faltam {shortBy} degrau(s)).",
-        "noGM": "Nenhum Fixer conectado para processar isto."
+        "needsConfirm": "Confirme que a Equipe fez o que a última saída pede.",
+        "invalidWay": "Saída desconhecida."
       },
       "Dialog": {
         "title": "Nível de procurado",
@@ -960,7 +976,7 @@
         "police": "Pool da polícia",
         "none": "Sem pressão da polícia",
         "actions": "Ações",
-        "off": "A regra da casa Estrelas está desligada: dá para definir o nível, as ações ficam escondidas.",
+        "off": "A regra da casa Estrelas está desligada: o nível e as ações ficam desligados.",
         "raise": "Subir",
         "raiseTip": "Mais uma estrela: visto cometendo crime, tiro em público, policial ferido, ataque grande ou fuga de prisão.",
         "reason": "Motivo",
@@ -977,26 +993,50 @@
         "disguiseTipLower": "Jogada rápida contra a Pool da polícia. Sucesso: -{one} estrela(s); -{both} trocando carro e roupa.",
         "disguiseTipSketch": " Bloqueado enquanto houver retrato falado.",
         "silence": "Comprar silêncio",
-        "silenceTip": "Jogada rápida contra a Pool da polícia. Paga um {die} de Grana por -{stars} estrelas.",
+        "silenceTip": "Jogada rápida contra a Pool da polícia. Se passar, aplique aqui: paga um {die} de Grana por -{stars} estrelas.",
         "silenceNone": "Não funciona nesta cidade.",
-        "giveIn": "Entregar-se",
-        "giveInTip": "Última saída: o personagem se entrega (em Liberty City, entrega um bode expiatório). As estrelas vão a 0.",
         "character": "Personagem",
         "noCrew": "Nenhum personagem da Equipe",
-        "rolled": "Aplique depois de passar na jogada."
+        "rolled": "Aplique depois de passar na jogada.",
+        "lastResort": "Última saída"
+      },
+      "LastResort": {
+        "title": "Última saída",
+        "confirm": "A Equipe fez",
+        "wayLabel": "Saída",
+        "way": {
+          "disguise": "Mudou de cara",
+          "silence": "Comprou silêncio",
+          "wait": "Esperou a poeira baixar"
+        },
+        "any": {
+          "tip": "Última saída nesta cidade: qualquer saída acima (mudar de cara, comprar silêncio ou esperar). As estrelas vão a 0.",
+          "body": "Qualquer saída vale aqui: a Equipe muda de cara, compra silêncio ou espera a poeira baixar. Escolha a que usaram. As estrelas vão a 0."
+        },
+        "disguiseAndSilence": {
+          "tip": "Última saída nesta cidade: mudar de cara e comprar silêncio, as duas. As estrelas vão a 0.",
+          "body": "A Equipe precisa mudar de cara e comprar silêncio. Confirme que fez as duas; o silêncio é pago pelo personagem escolhido. As estrelas vão a 0."
+        },
+        "scapegoat": {
+          "tip": "Última saída nesta cidade: entregar um bode expiatório (um mini-golpe). Aqui o silêncio não funciona. As estrelas vão a 0.",
+          "body": "A Equipe entrega um bode expiatório num mini-golpe. Confirme que foi feito. As estrelas vão a 0."
+        }
       }
     },
     "HUD": {
       "expand": "Mostrar tudo",
       "minimize": "Mostrar só as estrelas",
       "stars": "Nível de procurado",
-      "starTip": "{n} estrelas · rolagem da polícia {pool}",
       "moneyTip": "Grana · {steps} degraus · clique para pagar, botão direito para emprestar",
       "moneyTipReadOnly": "Grana · {steps} degraus",
       "plotPointsTip": "Plot Points · {value}",
       "noCharacter": "Nenhum personagem atribuído",
       "spendPlotPoint": "Gastar um Plot Point",
-      "gainPlotPoint": "Ganhar um Plot Point"
+      "gainPlotPoint": "Ganhar um Plot Point",
+      "starTip": {
+        "one": "{count} estrela · rolagem da polícia {pool}",
+        "other": "{count} estrelas · rolagem da polícia {pool}"
+      }
     }
   }
 }

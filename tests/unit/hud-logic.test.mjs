@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { hudPermissions, moneyView, nextStarLevel, pickFocusActor, poolText, starsView } from "../../module/applications/hud/hud-logic.mjs";
+import { hudPermissions, moneyView, nextStarLevel, pickFocusActor, starsView } from "../../module/applications/hud/hud-logic.mjs";
+import { poolText } from "../../module/rules/stars.mjs";
 
 test("focus actor: player prefers his character, the Fixer the selected token", () => {
   const mine = { id: "mine" };
@@ -35,8 +36,8 @@ test("money view: dice with the biggest on the right, empty at zero", () => {
 });
 
 test("permissions: Fixer everything, owner his own, others look only", () => {
-  assert.deepEqual(hudPermissions({ isGM: true, isOwner: false, hasActor: true }), { money: true, plotPoints: true, stars: true });
-  assert.deepEqual(hudPermissions({ isGM: false, isOwner: true, hasActor: true }), { money: true, plotPoints: true, stars: false });
-  assert.deepEqual(hudPermissions({ isGM: false, isOwner: false, hasActor: true }), { money: false, plotPoints: false, stars: false });
-  assert.deepEqual(hudPermissions({ isGM: false, isOwner: true, hasActor: false }), { money: false, plotPoints: false, stars: false });
+  assert.deepEqual(hudPermissions({ isGM: true, isOwner: false, hasActor: true }), { money: true, spendPlotPoints: true, gainPlotPoints: true, stars: true });
+  assert.deepEqual(hudPermissions({ isGM: false, isOwner: true, hasActor: true }), { money: true, spendPlotPoints: true, gainPlotPoints: false, stars: false });
+  assert.deepEqual(hudPermissions({ isGM: false, isOwner: false, hasActor: true }), { money: false, spendPlotPoints: false, gainPlotPoints: false, stars: false });
+  assert.deepEqual(hudPermissions({ isGM: false, isOwner: true, hasActor: false }), { money: false, spendPlotPoints: false, gainPlotPoints: false, stars: false });
 });

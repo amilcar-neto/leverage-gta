@@ -4,9 +4,7 @@
  */
 import { LEVERAGE } from "../../config.mjs";
 import { escapeHtml } from "../components/die.mjs";
-
-/** @param {string} key @param {object} [data] */
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
+import { t } from "../components/i18n.mjs";
 
 /** Plot Point cost of an Asset duration (Signature has no PP cost: it is paid in Jobs). */
 export function assetCostOf(duration) {

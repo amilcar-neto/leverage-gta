@@ -1,4 +1,5 @@
 {
+  "_key": "!actors!TAJeAYyea94KqaFg",
   "_id": "TAJeAYyea94KqaFg",
   "name": "Rosa Delgado",
   "type": "crew",
@@ -66,6 +67,7 @@
   },
   "items": [
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.xkVNichCOSTfLTjM",
       "_id": "xkVNichCOSTfLTjM",
       "name": "Old Docks Loyalty",
       "type": "distinction",
@@ -78,6 +80,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.G7NMMqPDUux9ZIJc",
       "_id": "G7NMMqPDUux9ZIJc",
       "name": "Adrenaline Junkie",
       "type": "distinction",
@@ -90,6 +93,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.kOVvmvm8nfHsiwy6",
       "_id": "kOVvmvm8nfHsiwy6",
       "name": "Wanted in Three States",
       "type": "distinction",
@@ -102,6 +106,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.8s2AHQ3P8obVsEud",
       "_id": "8s2AHQ3P8obVsEud",
       "name": "Ghost in the Hallway",
       "type": "talent",
@@ -117,6 +122,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.7pa3ySWv8RmbF1j0",
       "_id": "7pa3ySWv8RmbF1j0",
       "name": "Wheelman's Nerve",
       "type": "talent",
@@ -132,6 +138,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.LB199AJnAvjVzlHy",
       "_id": "LB199AJnAvjVzlHy",
       "name": "Soft Hands",
       "type": "talent",
@@ -147,6 +154,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.VjCxLbWm14bza90d",
       "_id": "VjCxLbWm14bza90d",
       "name": "Safecracking",
       "type": "specialty",
@@ -159,6 +167,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.fjxFMcQVU4THgwXh",
       "_id": "fjxFMcQVU4THgwXh",
       "name": "Getaway Driving",
       "type": "specialty",
@@ -171,6 +180,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.Z22XjhDgdHNjN2zo",
       "_id": "Z22XjhDgdHNjN2zo",
       "name": "Pickpocketing",
       "type": "specialty",
@@ -183,6 +193,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.zhShmMyOIhearn1q",
       "_id": "zhShmMyOIhearn1q",
       "name": "Borrowed Hatchback",
       "type": "asset",
@@ -198,6 +209,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.69zxPZZq0J3B7aUg",
       "_id": "69zxPZZq0J3B7aUg",
       "name": "Lockpick Roll",
       "type": "asset",
@@ -213,6 +225,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.843hEXdQ4z5M0sie",
       "_id": "843hEXdQ4z5M0sie",
       "name": "Fake Inspector Badge",
       "type": "asset",
@@ -228,6 +241,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.sdUwAWtV0LRe4LnS",
       "_id": "sdUwAWtV0LRe4LnS",
       "name": "Crowbar",
       "type": "asset",
@@ -243,6 +257,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.oHn4mjAWPT6egALX",
       "_id": "oHn4mjAWPT6egALX",
       "name": "Unlocked Service Door",
       "type": "asset",
@@ -258,6 +273,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.gobPbhl6ySvuwPna",
       "_id": "gobPbhl6ySvuwPna",
       "name": "The Dockside Job",
       "type": "job",
@@ -275,6 +291,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.CNLYOEemU9Z0fhZq",
       "_id": "CNLYOEemU9Z0fhZq",
       "name": "The Charity Gala Job",
       "type": "job",
@@ -292,6 +309,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.zqUayRhuqnE0W4US",
       "_id": "zqUayRhuqnE0W4US",
       "name": "The Tow-Truck Job",
       "type": "job",
@@ -309,6 +327,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.4M1LXsnelwIac4PJ",
       "_id": "4M1LXsnelwIac4PJ",
       "name": "The Museum Night Job",
       "type": "job",
@@ -326,6 +345,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.qjdRu9jygxQRGtut",
       "_id": "qjdRu9jygxQRGtut",
       "name": "The Pawnshop Job",
       "type": "job",
@@ -343,6 +363,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.EFst1aN1By9X54kE",
       "_id": "EFst1aN1By9X54kE",
       "name": "The Ferry Terminal Job",
       "type": "job",
@@ -360,6 +381,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.Q2pjK0mEgdCjV2tl",
       "_id": "Q2pjK0mEgdCjV2tl",
       "name": "The Casino Cage Job",
       "type": "job",
@@ -377,6 +399,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.e2HR1RQsYWIidBXX",
       "_id": "e2HR1RQsYWIidBXX",
       "name": "The Radio Tower Job",
       "type": "job",
@@ -394,6 +417,7 @@
       "flags": {}
     },
     {
+      "_key": "!actors.items!TAJeAYyea94KqaFg.2DYnFP3KhevJ41MB",
       "_id": "2DYnFP3KhevJ41MB",
       "name": "The Train Yard Job",
       "type": "job",

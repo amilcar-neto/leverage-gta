@@ -1,13 +1,14 @@
 /**
  * Wanted level window of the Fixer (docs/09 "Nivel de procurado", docs/02 "Estrelas"): the level 0-5, the city, the
- * police Pool, and the actions that move the stars (raise, wait, disguise, buy silence, give in) with the rules of
+ * police Pool, and the actions that move the stars (raise, wait, disguise, buy silence, last resort) with the rules of
  * the current city in tooltips. The actions live in `stars-actions.mjs`; this window only collects the inputs.
  * It reuses the look of the opposition roller window (`lv-opposition`).
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
-import { bailAllowed, clampStars, getCityScale, mainDie, policePool } from "../../rules/stars.mjs";
-import { getCityScales } from "../../settings.mjs";
+import { bailAllowed, getCityScale, lastResortKind, mainDie, policePool, poolText } from "../../rules/stars.mjs";
+import { getCityScales, readWanted } from "../../world-state.mjs";
+import { escapeHtml } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
 import { setWanted } from "./controls.mjs";
 import * as starsActions from "./stars-actions.mjs";
@@ -15,9 +16,6 @@ import * as starsActions from "./stars-actions.mjs";
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const WATCHED_SETTINGS = new Set(["wanted", "cityScales", "houseRules.stars"].map((key) => `${SYSTEM_ID}.${key}`));
-
-/** `d4 + d6` text of a Pool, or an empty string. @param {number[]} pool */
-const poolText = (pool) => pool.map((die) => `d${die}`).join(" + ");
 
 /**
  * Tooltips with the rules of a city, read from its scale.
@@ -50,7 +48,7 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
     position: { width: 420, height: "auto", left: 90, top: 120 },
     actions: {
       setLevel: WantedDialog.#onSetLevel, raise: WantedDialog.#onRaise, wait: WantedDialog.#onWait,
-      disguise: WantedDialog.#onDisguise, buySilence: WantedDialog.#onBuySilence, giveIn: WantedDialog.#onGiveIn
+      disguise: WantedDialog.#onDisguise, buySilence: WantedDialog.#onBuySilence, lastResort: WantedDialog.#onLastResort
     }
   };
 
@@ -60,7 +58,7 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
   /** The one open instance. */
   static #instance = null;
 
-  /** Character picked for buy silence / give in. */
+  /** Character picked for buy silence / the last resort. */
   #actorId = "";
 
   /** @type {[string, number][]} */
@@ -76,13 +74,13 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** @override */
   async _prepareContext() {
-    const wanted = readSetting("wanted", { city: LEVERAGE.stars.defaultCity, level: LEVERAGE.stars.min });
+    const wanted = readWanted();
     const scales = getCityScales();
     const scale = getCityScale(wanted.city, scales);
-    const level = clampStars(wanted.level ?? 0);
+    const { level } = wanted;
     const crew = game.actors.filter((a) => a.type === "crew").map((a) => ({ id: a.uuid, name: a.name, selected: a.uuid === this.#actorId }));
     return {
-      level, rulesOn: Boolean(game.settings.get(SYSTEM_ID, "houseRules.stars")),
+      level, rulesOn: Boolean(readSetting("houseRules.stars", true)),
       stars: Array.from({ length: LEVERAGE.stars.max + 1 }, (_, n) => {
         const die = mainDie(scale.id, n, scales);
         return { n, on: n === level, die: die ? `d${die}` : "", tip: poolText(policePool(scale.id, n, scales)) || t("LEVERAGE.Stars.Dialog.none") };
@@ -90,8 +88,14 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
       cities: scales.map((c) => ({ id: c.id, name: c.name, selected: c.id === scale.id })),
       pool: poolText(policePool(scale.id, level, scales)) || t("LEVERAGE.Stars.Dialog.none"), bail: bailAllowed(scale.id, scales),
       tips: cityRuleTips(scale), crew, hasCrew: crew.length > 0, raiseTip: t("LEVERAGE.Stars.Dialog.raiseTip"),
-      giveInTip: t("LEVERAGE.Stars.Dialog.giveInTip")
+      lastResort: this.#lastResortContext(scale, crew.length > 0)
     };
+  }
+
+  /** The last resort button of the city: its tooltip and whether it can be used (it needs a character where it pays). */
+  #lastResortContext(scale, hasCrew) {
+    const kind = lastResortKind(scale.id, getCityScales());
+    return { kind, tip: t(`LEVERAGE.Stars.LastResort.${kind}.tip`), disabled: kind !== "scapegoat" && !hasCrew };
   }
 
   /** @override */
@@ -124,8 +128,7 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** Changes the city, keeping the level. */
   #onCity(city) {
-    const wanted = readSetting("wanted", { level: LEVERAGE.stars.min });
-    return setWanted(wanted.level ?? 0, city);
+    return setWanted(readWanted().level, city);
   }
 
   /* ------------------------------------------------------------ actions */
@@ -153,9 +156,38 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
     return starsActions.buySilence(this.#field("actor")?.value);
   }
 
-  static #onGiveIn() {
-    return starsActions.giveIn(this.#field("actor")?.value);
+  /** Asks the Fixer to confirm what the city's last resort needs, then applies it. */
+  static async #onLastResort() {
+    const { city } = readWanted();
+    const kind = lastResortKind(city, getCityScales());
+    const answer = await confirmLastResort(kind);
+    if (answer) await starsActions.lastResort(this.#field("actor")?.value, { ...answer, confirmed: true });
   }
+}
+
+/** Ways out of Carcer City's last resort as `<option>`s. */
+const wayOptions = () => starsActions.LAST_RESORT_WAYS
+  .map((way) => `<option value="${way}">${escapeHtml(t(`LEVERAGE.Stars.LastResort.way.${way}`))}</option>`).join("");
+
+/**
+ * Asks the Fixer whether the Crew did what the city's last resort needs (docs/02).
+ * @param {"any"|"disguiseAndSilence"|"scapegoat"} kind
+ * @returns {Promise<{way?: string}|null>} the way chosen where any exit will do; null when cancelled
+ */
+function confirmLastResort(kind) {
+  const chooser = kind === "any"
+    ? `<label class="lv-dlg-field"><span>${escapeHtml(t("LEVERAGE.Stars.LastResort.wayLabel"))}</span><select name="way">${wayOptions()}</select></label>` : "";
+  return foundry.applications.api.DialogV2.prompt({
+    classes: ["leverage-gta", "lv-dialog"],
+    window: { title: t("LEVERAGE.Stars.LastResort.title") },
+    position: { width: 400 },
+    rejectClose: false,
+    content: `<div class="lv-dlg"><p>${escapeHtml(t(`LEVERAGE.Stars.LastResort.${kind}.body`))}</p>${chooser}</div>`,
+    ok: {
+      label: t("LEVERAGE.Stars.LastResort.confirm"),
+      callback: (_event, button) => (kind === "any" ? { way: button.form.elements.way.value } : {})
+    }
+  });
 }
 
 /** Opens the wanted level window (Fixer only). */

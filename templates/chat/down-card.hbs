@@ -7,4 +7,9 @@
   <ul class="lv-down-lines">
     {{#each lines}}<li>{{this}}</li>{{/each}}
   </ul>
+  {{#if rescuable}}
+  <div class="lv-down-actions">
+    <button type="button" class="lv-roll-btn lv-roll-btn--damage lv-down-rescue" data-action="rescued" title="{{rescueTip}}">{{rescueLabel}}</button>
+  </div>
+  {{/if}}
 </div>

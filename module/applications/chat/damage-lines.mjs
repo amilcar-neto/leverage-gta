@@ -56,6 +56,9 @@ export function damageSummary(r, t) {
   return r.down ? `${base} ${t(`LEVERAGE.Damage.Down.${r.kind}`)}` : base;
 }
 
+/** A plural formatter over `t` that splits like English (`<key>.one` for 1, `<key>.other` otherwise). */
+const englishPlural = (t) => (key, count, data = {}) => t(`${key}.${count === 1 ? "one" : "other"}`, { count, ...data });
+
 /**
  * Lines of the WASTED / BUSTED card, from what `planDown` decided and what was actually done.
  * @param {object} info
@@ -64,23 +67,24 @@ export function damageSummary(r, t) {
  * @param {boolean} info.isCrew
  * @param {number} info.max Life the character came back with.
  * @param {string} info.price Price as dice text (`d4`), empty if none.
+ * @param {string} [info.debt] What the character could not pay, as dice text (`d4`), empty if nothing.
  * @param {string[]} info.lostAssets Names of the weapon Assets removed.
  * @param {boolean} info.assetsKept The Fixer chose to keep the weapon Assets.
- * @param {{from: number, to: number}|null} info.stars Wanted level change.
  * @param {(key: string, data?: object) => string} t
+ * @param {(key: string, count: number, data?: object) => string} [tn] Plural messages (`components/i18n.mjs`); defaults
+ *   to English's one/other split over `t`.
  * @returns {string[]}
  */
-export function downLines({ plan, name, isCrew, max, price, lostAssets, assetsKept, stars }, t) {
+export function downLines({ plan, name, isCrew, max, price, debt = "", lostAssets, assetsKept }, t, tn = englishPlural(t)) {
   if (!isCrew) return [t("LEVERAGE.Damage.Down.npc", { name })];
   const busted = plan.kind === "busted";
   const lines = [t(busted ? "LEVERAGE.Damage.Down.arrested" : "LEVERAGE.Damage.Down.hospital", { name })];
   if (plan.priceKind === "hospital") lines.push(t("LEVERAGE.Damage.Down.payHospital", { price, steps: plan.paidSteps }));
   if (plan.priceKind === "bail") lines.push(t("LEVERAGE.Damage.Down.payBail", { price, steps: plan.paidSteps }));
-  if (plan.shortBy > 0) lines.push(t("LEVERAGE.Damage.Down.short", { steps: plan.shortBy }));
-  if (plan.rescue) lines.push(t("LEVERAGE.Damage.Down.rescue", { name }));
-  if (stars) lines.push(t("LEVERAGE.Damage.Down.stars", stars));
+  if (plan.shortBy > 0) lines.push(t("LEVERAGE.Damage.Down.short", { steps: plan.shortBy, debt }));
+  if (plan.rescuable) lines.push(t(plan.rescue ? "LEVERAGE.Damage.Down.rescue" : "LEVERAGE.Damage.Down.rescueUnpaid", { name }));
   lines.push(t("LEVERAGE.Damage.Down.fullLife", { max }));
-  if (plan.plotPoints) lines.push(t("LEVERAGE.Damage.Down.plotPoint", { count: plan.plotPoints }));
+  if (plan.plotPoints) lines.push(tn("LEVERAGE.Damage.Down.plotPoint", plan.plotPoints));
   if (lostAssets.length) lines.push(t("LEVERAGE.Damage.Down.assetsLost", { names: lostAssets.join(", ") }));
   else if (assetsKept) lines.push(t("LEVERAGE.Damage.Down.assetsKept"));
   return lines;
@@ -90,11 +94,16 @@ export function downLines({ plan, name, isCrew, max, price, lostAssets, assetsKe
  * Template data of the WASTED / BUSTED card.
  * @param {object} info Same as `downLines`, plus `img`.
  * @param {(key: string, data?: object) => string} t
- * @returns {{kind: string, title: string, name: string, img: string, lines: string[]}}
+ * @param {(key: string, count: number, data?: object) => string} [tn]
+ * @returns {{kind: string, title: string, name: string, img: string, lines: string[], rescuable: boolean,
+ *   rescueLabel: string, rescueTip: string}} `rescuable`: show the "Rescued" button (the Fixer sees it).
  */
-export function downCardContext(info, t) {
-  const { kind } = info.plan;
-  return { kind, title: t(`LEVERAGE.Damage.Down.${kind}`), name: info.name, img: info.img ?? "", lines: downLines(info, t) };
+export function downCardContext(info, t, tn) {
+  const { kind, rescuable } = info.plan;
+  return {
+    kind, title: t(`LEVERAGE.Damage.Down.${kind}`), name: info.name, img: info.img ?? "", lines: downLines(info, t, tn),
+    rescuable, rescueLabel: t("LEVERAGE.Damage.Down.rescuedButton"), rescueTip: t("LEVERAGE.Damage.Down.rescuedTip")
+  };
 }
 
 /**

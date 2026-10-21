@@ -6,9 +6,8 @@ import { LEVERAGE, SYSTEM_ID } from "./config.mjs";
 import { CityScalesConfig } from "./applications/gm/city-scales-config.mjs";
 import { PriceListConfig } from "./applications/gm/price-list-config.mjs";
 import { TrainingCostsConfig } from "./applications/gm/training-costs-config.mjs";
-import { readSetting } from "./data/fields.mjs";
-import { resolveCityScales, resolvePrices, resolveTrainingCosts } from "./rules/config-data.mjs";
 import { setScalesProvider } from "./rules/stars.mjs";
+import { getCityScales } from "./world-state.mjs";
 
 const fields = () => foundry.data.fields;
 
@@ -54,30 +53,6 @@ function menu(key, type, icon) {
     hint: `LEVERAGE.Settings.${key}.Hint`,
     icon, type, restricted: true
   });
-}
-
-/**
- * City scales from the `cityScales` setting; unusable data falls back to the defaults (docs/02).
- * @returns {object[]} fresh normalized copies (safe to mutate)
- */
-export function getCityScales() {
-  return resolveCityScales(readSetting("cityScales", null));
-}
-
-/**
- * Price list in dice from the `prices` setting; missing or invalid items fall back to the defaults.
- * @returns {{id: string, label: string, dice: number[]}[]}
- */
-export function getPrices() {
-  return resolvePrices(readSetting("prices", null));
-}
-
-/**
- * Training Up cost in Jobs per option from the `trainingCosts` setting, with fallback to the defaults.
- * @returns {Record<string, number>}
- */
-export function getTrainingCosts() {
-  return resolveTrainingCosts(readSetting("trainingCosts", null));
 }
 
 /** Re-renders interested UI when a setting changes. */

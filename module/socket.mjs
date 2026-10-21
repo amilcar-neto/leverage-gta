@@ -3,6 +3,8 @@
  * sent to the Fixer; only the active GM with the lowest id processes them. `game.socket.emit` does not reach the
  * sender, so `executeAsGM` runs the action locally when the sender is that GM.
  *
+ * Packets are processed one at a time (`createSerialQueue`), in the order they arrive.
+ *
  * Authenticity: the Foundry server relays a package of a system channel as `(data, senderUserId)` and fills the
  * second argument itself from the session (checked in `dist/server/sockets.mjs`, `handleCustomSocket`). The requester
  * is therefore ONLY that argument; the package carries no user id, so a console cannot forge another player.
@@ -12,6 +14,24 @@ import { logger } from "./logger.mjs";
 
 /** Socket channel name (needs `"socket": true` in system.json). */
 export const SOCKET_CHANNEL = `system.${SYSTEM_ID}`;
+
+/**
+ * A queue that runs tasks one after another. A task that throws rejects only its own promise; the next one still runs.
+ * Socket handlers read the state, await a write and then write again, so two at once (two loans from the same
+ * wallet) could both see the old state and create Money. The Fixer processes the packets through one queue.
+ * @returns {<T>(task: () => Promise<T>|T) => Promise<T>} `enqueue`
+ */
+export function createSerialQueue() {
+  let tail = Promise.resolve();
+  return (task) => {
+    const result = tail.then(task);
+    tail = result.catch(() => {});
+    return result;
+  };
+}
+
+/** The queue of the packets the Fixer processes (also used by the local path of `executeAsGM`). */
+const packetQueue = createSerialQueue();
 
 /** @type {Map<string, (data: object, userId: string) => Promise<void>|void>} */
 const HANDLERS = new Map();
@@ -54,7 +74,8 @@ const isProcessingGM = () => game.user.isGM && lowestActiveGM(game.users) === ga
 /** Registers the channel listener (call once, from `ready`). */
 export function registerSocket() {
   game.socket.on(SOCKET_CHANNEL, (packet, userId) => {
-    routePacket(packet, { isProcessor: isProcessingGM(), userId }).catch((err) => logger.error("Socket action failed", err));
+    packetQueue(() => routePacket(packet, { isProcessor: isProcessingGM(), userId }))
+      .catch((err) => logger.error("Socket action failed", err));
   });
 }
 
@@ -66,7 +87,7 @@ export function registerSocket() {
  */
 export async function executeAsGM(action, data) {
   const packet = { action, data };
-  if (isProcessingGM()) return routePacket(packet, { isProcessor: true, userId: game.user.id });
+  if (isProcessingGM()) return packetQueue(() => routePacket(packet, { isProcessor: true, userId: game.user.id }));
   if (!lowestActiveGM(game.users)) {
     ui.notifications.warn(game.i18n.localize("LEVERAGE.Socket.noGM"));
     return false;

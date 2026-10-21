@@ -4,7 +4,7 @@
  */
 import { LEVERAGE } from "../../config.mjs";
 import { stepsToDice } from "../../rules/money.mjs";
-import { clampStars, mainDie, policePool } from "../../rules/stars.mjs";
+import { clampStars, mainDie, poolText, policePool } from "../../rules/stars.mjs";
 
 /**
  * The character the HUD shows (docs/07 "Personagem mostrado"): the user's own character, then the controlled
@@ -26,9 +26,6 @@ export function pickFocusActor({ isGM, character, controlled }) {
 export function nextStarLevel(n, current) {
   return clampStars(n === clampStars(current) ? n - 1 : n);
 }
-
-/** `[12, 6]` -> `d12 + d6`. */
-export const poolText = (dice) => dice.map((d) => `d${d}`).join(" + ");
 
 /**
  * One entry per star for the template.
@@ -58,11 +55,12 @@ export function moneyView(steps) {
 }
 
 /**
- * What the user may do with the focused character (the Fixer: everything; a player: his own).
+ * What the user may do with the focused character. The Fixer: everything. A player (owner): Money and spending his
+ * Plot Points. Giving Plot Points is the Fixer's (the "+" and the number click), and so are the stars.
  * @param {{isGM: boolean, isOwner: boolean, hasActor: boolean}} who
- * @returns {{money: boolean, plotPoints: boolean, stars: boolean}}
+ * @returns {{money: boolean, spendPlotPoints: boolean, gainPlotPoints: boolean, stars: boolean}}
  */
 export function hudPermissions({ isGM, isOwner, hasActor }) {
   const mine = hasActor && (isGM || isOwner);
-  return { money: mine, plotPoints: mine, stars: isGM };
+  return { money: mine, spendPlotPoints: mine, gainPlotPoints: hasActor && isGM, stars: isGM };
 }

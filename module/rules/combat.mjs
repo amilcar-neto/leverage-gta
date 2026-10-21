@@ -75,7 +75,7 @@ export function restScene(life, max) {
 /**
  * What happens when Life hits 0. Taken down by anyone but the police: Wasted (pays the hospital). Taken down by
  * the police: Busted (pays bail at the end of the scene unless the city has no bail, or rescue, which raises
- * 1 star). Both: full Life, +1 Plot Point, weapon Assets of the scene lost.
+ * 1 star when they do, set by the Fixer). Both: full Life, +1 Plot Point, weapon Assets of the scene lost.
  * @param {object} p
  * @param {boolean} p.byPolice whether the police took the character down (Busted instead of Wasted)
  * @param {number} p.max max Life
@@ -159,11 +159,12 @@ export function damageRound({ margin, weaponRoll = 0, life, vest, cover = false 
 /**
  * Everything that follows Life reaching 0, with the house rules and the character's means applied
  * (docs/02 "Quando a Vida zera"). Pure: the caller performs the writes.
- * - Wasted: the hospital is paid now (what the character has, when short).
+ * - Wasted: the hospital is paid now, with what the character has; what is missing is a debt (`shortBy`), shown on
+ *   the card and not tracked: the Fixer settles it at the next payout.
  * - Busted with bail (the city allows it): bail is paid now (the book says "end of the scene"; this is a
- *   simplification). Without bail (Liberty City): the character waits for a rescue, which counts as a prison
- *   break, so the stars rise 1 now.
- * - NPCs only fall: no Plot Point, money, stars or full Life.
+ *   simplification). Without bail (Liberty City), or with bail the character could not pay in full, the character
+ *   waits for a rescue (`rescuable`); the stars rise 1 when the Fixer marks the rescue, not when the arrest happens.
+ * - NPCs only fall: no Plot Point, money or full Life.
  * @param {object} p
  * @param {boolean} p.byPolice
  * @param {boolean} p.isCrew whether the target is a Crew character (NPCs have no Plot Points or Money)
@@ -172,10 +173,10 @@ export function damageRound({ margin, weaponRoll = 0, life, vest, cover = false 
  * @param {number} p.bailSteps
  * @param {boolean} p.bailAllowed
  * @param {number} p.moneySteps Money the character has now
- * @param {{money: boolean, stars: boolean}} p.rules the `houseRules.money` / `houseRules.stars` switches
+ * @param {{money: boolean}} p.rules the `houseRules.money` switch
  * @returns {{kind: "wasted"|"busted", restoreLife: number|null, plotPoints: number, loseWeaponAssets: boolean,
  *   priceKind: "hospital"|"bail"|null, dueSteps: number, paidSteps: number, shortBy: number, rescue: boolean,
- *   starsRaise: number}}
+ *   rescuable: boolean}} `rescue`: no bail in this city; `rescuable`: a Crew character still waiting to be broken out.
  */
 export function planDown({ byPolice, isCrew, max, hospitalSteps, bailSteps, bailAllowed, moneySteps, rules }) {
   const down = resolveDown({ byPolice, max, hospitalSteps, bailSteps, bailAllowed });
@@ -184,14 +185,15 @@ export function planDown({ byPolice, isCrew, max, hospitalSteps, bailSteps, bail
   const priceKind = !isCrew || !rules.money ? null : (busted ? (rescue ? null : "bail") : "hospital");
   const dueSteps = priceKind === "bail" ? down.bailCostSteps : (priceKind === "hospital" ? down.costSteps : 0);
   const paidSteps = Math.min(dueSteps, Math.max(0, moneySteps));
+  const shortBy = dueSteps - paidSteps;
   return {
     kind: down.kind,
     restoreLife: isCrew ? down.life : null,
     plotPoints: isCrew ? down.plotPoints : 0,
     loseWeaponAssets: isCrew && down.loseWeaponAssets,
-    priceKind, dueSteps, paidSteps, shortBy: dueSteps - paidSteps,
+    priceKind, dueSteps, paidSteps, shortBy,
     rescue,
-    starsRaise: rescue && rules.stars ? down.rescueRaisesStars : 0
+    rescuable: isCrew && busted && (rescue || shortBy > 0)
   };
 }
 

@@ -6,22 +6,20 @@ import { LEVERAGE } from "../../config.mjs";
 import { payPrice } from "../../money-actions.mjs";
 import { MAX_DICE_PER_SIZE, checkPayment, diceFromCounts, describeCost } from "../../rules/money-flow.mjs";
 import { stepsToDice } from "../../rules/money.mjs";
-import { getPrices } from "../../settings.mjs";
+import { poolText } from "../../rules/stars.mjs";
+import { getPrices } from "../../world-state.mjs";
 import { block } from "../chat/money-lines.mjs";
 import { escapeHtml } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
 
 const CUSTOM = "__custom";
 
-/** "d6 + d12" for a dice list. */
-const diceText = (dice) => dice.map((d) => `d${d}`).join(" + ");
-
 /** Display name of a price entry: i18n key for the built-in ones, plain text for the GM's own. */
 const priceLabel = (price) => t(price.label);
 
 /** Options of the item select. */
 function itemOptions(prices) {
-  const rows = prices.map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(priceLabel(p))} (${diceText(p.dice)})</option>`);
+  const rows = prices.map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(priceLabel(p))} (${poolText(p.dice)})</option>`);
   rows.push(`<option value="${CUSTOM}">${t("LEVERAGE.Money.Pay.customItem")}</option>`);
   return rows.join("");
 }

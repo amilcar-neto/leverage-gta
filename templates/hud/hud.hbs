@@ -21,9 +21,9 @@
     data-action="payMoney" data-tooltip="{{money.tip}}" aria-label="{{money.tip}}" {{#unless money.interactive}}disabled{{/unless}}>
     <span class="lv-hud-text lv-hud-dollar">$</span>
     {{#if money.empty}}
-      {{{lvDie 0 die=4 size=38 money=true empty=true}}}
+      {{{lvDie 0 die=4 size=@root.dieSize money=true empty=true}}}
     {{else}}
-      {{#each money.dice as |d|}}{{{lvDie d die=d size=38 money=true}}}{{/each}}
+      {{#each money.dice as |d|}}{{{lvDie d die=d size=@root.dieSize money=true}}}{{/each}}
     {{/if}}
   </button>
   {{/if}}
@@ -31,15 +31,17 @@
   {{#if plotPoints.show}}
   <div class="lv-hud-pp{{#unless plotPoints.hasActor}} is-dim{{/unless}}" data-tooltip="{{plotPoints.tip}}">
     <button type="button" class="lv-hud-round" data-action="spendPlotPoint" aria-label="{{plotPoints.spendLabel}}"
-      data-tooltip="{{plotPoints.spendLabel}}" {{#unless plotPoints.interactive}}disabled{{/unless}}>
+      data-tooltip="{{plotPoints.spendLabel}}" {{#unless plotPoints.canSpend}}disabled{{/unless}}>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
     </button>
+    {{#if plotPoints.canGain}}
     <button type="button" class="lv-hud-round" data-action="gainPlotPoint" aria-label="{{plotPoints.gainLabel}}"
-      data-tooltip="{{plotPoints.gainLabel}}" {{#unless plotPoints.interactive}}disabled{{/unless}}>
+      data-tooltip="{{plotPoints.gainLabel}}">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>
     </button>
+    {{/if}}
     <svg class="lv-hud-chip" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
-    <span class="lv-hud-text lv-hud-pp-value{{#if plotPoints.pulse}} is-pulse{{/if}}" data-action="gainPlotPoint">{{plotPoints.value}}</span>
+    <span class="lv-hud-text lv-hud-pp-value{{#if plotPoints.pulse}} is-pulse{{/if}}"{{#if plotPoints.canGain}} data-action="gainPlotPoint"{{/if}}>{{plotPoints.value}}</span>
   </div>
   {{/if}}
 </div>

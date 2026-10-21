@@ -6,26 +6,31 @@
  * Everything here is Fixer only, and respects the `houseRules.life`, `.money` and `.stars` switches.
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
+import { readSetting } from "../../data/fields.mjs";
+import { getPriceDice } from "../../world-state.mjs";
 import { damageRound, linkedRollIndex, lostBy, oppositionWins, planDown } from "../../rules/combat.mjs";
-import { resolvePrices } from "../../rules/config-data.mjs";
 import { priceToSteps, stepsToDice } from "../../rules/money.mjs";
-import { bailAllowed, clampStars } from "../../rules/stars.mjs";
+import { bailAllowed, poolText } from "../../rules/stars.mjs";
+import { readWanted } from "../../world-state.mjs";
 import { evaluateDice } from "../../dice/roll-core.mjs";
 import { escapeHtml } from "../components/die.mjs";
+import { t, tn } from "../components/i18n.mjs";
 import { requireGM } from "../gm/job-actions.mjs";
+import { raise } from "../gm/stars-actions.mjs";
 import { damageLines, damageSummary, isPoliceSource, downCardContext, weaponOptions } from "./damage-lines.mjs";
 
 /** Template of the WASTED / BUSTED card. */
 export const DOWN_CARD_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/down-card.hbs`;
 
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
-const setting = (key, fallback) => { try { return game.settings.get(SYSTEM_ID, key) ?? fallback; } catch { return fallback; } };
 const rollOf = (message) => message?.getFlag(SYSTEM_ID, "roll") ?? null;
-const dieText = (steps) => stepsToDice(steps).map((d) => `d${d}`).join(" ");
+const dieText = (steps) => poolText(stepsToDice(steps));
 
 /** The three house-rule switches. */
 function houseRules() {
-  return { life: Boolean(setting("houseRules.life", true)), money: Boolean(setting("houseRules.money", true)), stars: Boolean(setting("houseRules.stars", true)) };
+  return {
+    life: Boolean(readSetting("houseRules.life", true)), money: Boolean(readSetting("houseRules.money", true)),
+    stars: Boolean(readSetting("houseRules.stars", true))
+  };
 }
 
 /** Whether damage may be applied now: Fixer, and the Life rule on. Warns otherwise. */
@@ -208,10 +213,7 @@ export async function applyDamage({ target, margin = 0, weaponDie = 0, weaponRol
 /* ------------------------------------------------------------ Wasted / Busted */
 
 /** Price of a price-list id, in steps. */
-function priceSteps(id) {
-  const dice = resolvePrices(setting("prices", null)).find((p) => p.id === id)?.dice ?? [];
-  return priceToSteps(dice);
-}
+const priceSteps = (id) => priceToSteps(getPriceDice(id));
 
 /** Scene weapon Assets of a character (lost on Wasted/Busted). */
 const weaponAssets = (actor) => actor.items.filter((i) => i.type === "asset" && i.system.weapon && i.system.duration === "scene");
@@ -236,62 +238,92 @@ async function loseWeapons(actor, confirm) {
   return { lost: names, kept: false };
 }
 
-/** Raises the wanted level for a rescue. @returns {Promise<{from: number, to: number}|null>} */
-async function raiseStars(by) {
-  const wanted = setting("wanted", {});
-  const from = clampStars(wanted.level ?? 0);
-  const to = clampStars(from + by);
-  if (to !== from) await game.settings.set(SYSTEM_ID, "wanted", { ...wanted, level: to });
-  return { from, to };
-}
-
 /** Posts the WASTED / BUSTED card. */
-async function postDownCard(info) {
-  const context = downCardContext(info, t);
+async function postDownCard(info, uuid) {
+  const context = downCardContext(info, t, tn);
   const content = await foundry.applications.handlebars.renderTemplate(DOWN_CARD_TEMPLATE, context);
-  return ChatMessage.create({ content, speaker: { alias: info.name }, flags: { [SYSTEM_ID]: { down: { kind: context.kind, name: info.name } } } });
+  const down = { kind: context.kind, name: info.name, uuid, rescuable: context.rescuable, rescued: false };
+  return ChatMessage.create({ content, speaker: { alias: info.name }, flags: { [SYSTEM_ID]: { down } } });
 }
 
 /**
  * Life reached 0 (docs/02 "Quando a Vida zera"). Crew: Life back to full, +1 Plot Point, scene weapon Assets lost
- * (the Fixer is asked), Wasted pays the hospital, Busted pays bail where the city allows it, otherwise waits for a
- * rescue and the stars rise by 1. NPCs just fall (Life stays 0). Posts the WASTED / BUSTED card. Fixer only.
+ * (the Fixer is asked), Wasted pays the hospital, Busted pays bail where the city allows it. Money that is missing
+ * is shown on the card as a debt (paid with what the character has, nothing is tracked). A Busted character that
+ * could not buy his way out waits for a rescue: the card has a "Rescued" button for the Fixer, and the stars rise
+ * then (`rescued`), not at the arrest. NPCs just fall (Life stays 0). Posts the WASTED / BUSTED card. Fixer only.
  * @param {Actor|string} target
  * @param {object} [options]
  * @param {boolean} [options.byPolice=false] Busted instead of Wasted.
  * @param {boolean} [options.confirm=true] Ask before removing weapon Assets.
- * @returns {Promise<{kind: "wasted"|"busted", plan: object, lostAssets: string[], stars: {from: number, to: number}|null}|null>}
+ * @returns {Promise<{kind: "wasted"|"busted", plan: object, lostAssets: string[]}|null>}
  */
 export async function down(target, { byPolice = false, confirm = true } = {}) {
   if (!allowed()) return null;
   const actor = targetOf(target);
   if (!actor) return null;
-  const rules = houseRules();
   const isCrew = actor.type === "crew";
-  const city = setting("wanted", {}).city ?? LEVERAGE.stars.defaultCity;
   const plan = planDown({
     byPolice, isCrew, max: actor.system.life.max, hospitalSteps: priceSteps("hospital"), bailSteps: priceSteps("bail"),
-    bailAllowed: bailAllowed(city), moneySteps: actor.system.money?.steps ?? 0, rules
+    bailAllowed: bailAllowed(readWanted().city), moneySteps: actor.system.money?.steps ?? 0, rules: houseRules()
   });
   let assets = { lost: [], kept: false };
-  let stars = null;
   if (isCrew) {
     await actor.update({ "system.life.value": plan.restoreLife });
     await actor.addPlotPoints(plan.plotPoints);
     if (plan.paidSteps) await actor.money.pay(plan.paidSteps);
     if (plan.loseWeaponAssets) assets = await loseWeapons(actor, confirm);
-    if (plan.starsRaise) stars = await raiseStars(plan.starsRaise);
   }
   await postDownCard({
     plan, name: actor.name, img: actor.img, isCrew, max: actor.system.life.max, price: dieText(plan.dueSteps),
-    lostAssets: assets.lost, assetsKept: assets.kept, stars
-  });
-  return { kind: plan.kind, plan, lostAssets: assets.lost, stars };
+    debt: dieText(plan.shortBy), lostAssets: assets.lost, assetsKept: assets.kept
+  }, actor.uuid);
+  return { kind: plan.kind, plan, lostAssets: assets.lost };
+}
+
+/** Cards whose "Rescued" click is being handled (a double click must not raise two stars). */
+const rescuing = new Set();
+
+/**
+ * The Crew broke a Busted character out (docs/02: a jailbreak raises the stars by 1): raises the stars through the
+ * one way they change (`raise`, with its chat line, only when the Stars rule is on) and marks the card. Fixer only.
+ * @param {ChatMessage} message The BUSTED card.
+ * @returns {Promise<boolean>} false when it was not a card waiting for a rescue
+ */
+export async function rescued(message) {
+  const info = message?.getFlag(SYSTEM_ID, "down");
+  if (!requireGM() || !info?.rescuable || info.rescued || rescuing.has(message.id)) return false;
+  rescuing.add(message.id);
+  try {
+    if (houseRules().stars) await raise(1, t("LEVERAGE.Damage.Down.rescueReason", { name: info.name }));
+    await message.setFlag(SYSTEM_ID, "down", { ...info, rescued: true });
+  } finally {
+    rescuing.delete(message.id);
+  }
+  return true;
+}
+
+/** The actions box of a down card: the button for the Fixer while the rescue is pending, a note once done. */
+function wireDownCard(message, html) {
+  const info = message.getFlag(SYSTEM_ID, "down");
+  const box = html.querySelector(".lv-down-actions");
+  if (!box) return;
+  if (info.rescued) {
+    const note = document.createElement("p");
+    note.className = "lv-down-status";
+    note.textContent = t("LEVERAGE.Damage.Down.rescuedDone");
+    box.replaceChildren(note);
+  } else if (!game.user.isGM || !info.rescuable) {
+    box.remove();
+  } else {
+    box.querySelector('[data-action="rescued"]')?.addEventListener("click", () => rescued(message));
+  }
 }
 
 /** Adds the card class to the damage and down messages (they draw their own header). Call once. */
 export function registerDamageMessages() {
   Hooks.on("renderChatMessageHTML", (message, html) => {
     if (message.getFlag(SYSTEM_ID, "down") || message.getFlag(SYSTEM_ID, "damage")) html.classList.add("lv-roll-message");
+    if (message.getFlag(SYSTEM_ID, "down")) wireDownCard(message, html);
   });
 }

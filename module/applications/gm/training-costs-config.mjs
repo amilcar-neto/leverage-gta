@@ -4,7 +4,7 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { CONFIG_LIMITS, validateTrainingCosts } from "../../rules/config-data.mjs";
-import { getTrainingCosts } from "../../settings.mjs";
+import { getTrainingCosts } from "../../world-state.mjs";
 import { t } from "../components/i18n.mjs";
 import { CONFIG_FOOTER, ConfigAppBase } from "./config-app-base.mjs";
 
@@ -28,11 +28,13 @@ export class TrainingCostsConfig extends ConfigAppBase {
   };
 
   /** Working copy: option key -> cost (kept as typed, validated on Save). */
-  #draft = getTrainingCosts();
+  /** Working copy; read from the setting when the window first renders (not when the object is built). */
+  #draft = null;
 
   /** @override */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    this.#draft ??= getTrainingCosts();
     context.costs = Object.keys(LEVERAGE.defaultTrainingCosts)
       .map((key) => ({ key, label: optionLabel(key), value: this.#draft[key], max: CONFIG_LIMITS.trainingCost }));
     return context;

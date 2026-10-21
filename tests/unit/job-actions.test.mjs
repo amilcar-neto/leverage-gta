@@ -1,3 +1,4 @@
+import "./helpers/foundry-stub.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { emptyJob, freshJob, jobAfterScene, evenSplit, toSteps, jobItemData, assetIdsOf, usedCallbackIds } from "../../module/applications/gm/job-actions.mjs";

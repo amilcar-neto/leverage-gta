@@ -6,23 +6,22 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import {
-  complicationSources, emptyCounts, gangDice, locationSources, looseDice, npcSources, pickedDice, policeDice, rollOpposition, stepCount
+  complicationSources, emptyCounts, gangDice, locationSources, looseDice, npcSources, pickedDice, policeCity, policeDice, rollOpposition, stepCount
 } from "../../dice/opposition.mjs";
 import { readSetting } from "../../data/fields.mjs";
-import { getCityScales } from "../../settings.mjs";
+import { poolText } from "../../rules/stars.mjs";
+import { getCityScales, readWanted } from "../../world-state.mjs";
 import { renderDie } from "../components/die.mjs";
+import { t } from "../components/i18n.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /** Size of a die in the counters and in the Pool preview. */
-const COUNTER_DIE = 36;
-const PREVIEW_DIE = 28;
+const COUNTER_DIE = LEVERAGE.dieGeometry.uses.oppositionCounter;
+const PREVIEW_DIE = LEVERAGE.dieGeometry.uses.oppositionPreview;
 
 /** Settings that change what the roller shows. */
 const WATCHED_SETTINGS = new Set(["wanted", "cityScales", "activeJob", "houseRules.stars"].map((key) => `${SYSTEM_ID}.${key}`));
-
-/** @param {string} key @param {object} [data] */
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
 
 /** First selected token actor of the type, or null. */
 function selectedActor(type) {
@@ -93,10 +92,11 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
 
   /* ---------------------------------------------------------- state -> data */
 
-  /** City, stars and scales from the settings. */
+  /** Stars and scales from the settings; the city is the one of the Location in play when it names one (docs/06). */
   #wanted() {
-    const wanted = readSetting("wanted", { city: LEVERAGE.stars.defaultCity, level: LEVERAGE.stars.min });
-    return { city: wanted.city, stars: wanted.level ?? 0, scales: getCityScales() };
+    const wanted = readWanted();
+    const scales = getCityScales();
+    return { city: policeCity(wanted.city, sceneLocations(), scales), stars: wanted.level, scales };
   }
 
   /** Whether the Stars house rule is on (the police shortcut is hidden otherwise). */
@@ -155,7 +155,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
         die, count: this.#counts[die],
         html: renderDie({ die, value: die, size: COUNTER_DIE, muted: this.#counts[die] === 0 })
       })),
-      police: { hidden: !this.#starsOn(), on: this.#police, disabled: !police.length, stars, dice: police.map((d) => `d${d.die}`).join(" + "), city },
+      police: { hidden: !this.#starsOn(), on: this.#police, disabled: !police.length, stars, dice: poolText(police.map((d) => d.die)), city },
       gang: { ...this.#gang, options: dieOptions, max: LEVERAGE.gangMax },
       npc: sources.npc && {
         name: sources.npc.name, sources: withState(sources.npcSources, this.#picked),

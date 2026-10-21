@@ -29,3 +29,7 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - T-601, T-705 concluídos (de3c291). Em andamento: T-602, T-603, T-801, T-802, pendências da bandeja.
 - T-602, T-603, T-802 e pendências da bandeja concluídos. Em andamento: T-801, T-604.
 - T-604, T-701, R-F5 parte A concluídos. Em andamento: R-F4 parte B (visual).
+
+## 2026-10-20 22:51 — sessão retomada
+- Onda A (JS/regras) da correção de R-F4/R-F5 e R-F6..R-F8 fechada: 214 testes verdes, lint limpo.
+- Em andamento: onda B (CSS/UI) de R-F4..R-F8, depois T-902, T-901, T-903, T-904, R-F9, R-FINAL.

@@ -5,9 +5,7 @@
 import { escapeHtml } from "../components/die.mjs";
 import { LEVERAGE } from "../../config.mjs";
 import { stepUp } from "../../dice/die.mjs";
-
-/** @param {string} key @param {object} [data] */
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
+import { t } from "../components/i18n.mjs";
 
 /** `<option>` list: a new Complication first, then each existing one with the die it would become. */
 function targetOptions(complications) {

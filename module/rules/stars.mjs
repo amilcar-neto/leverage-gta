@@ -26,6 +26,13 @@ export function clampStars(n) {
 }
 
 /**
+ * `[12, 6]` -> `d12 + d6`: how a Pool (or a price) of dice is written in the UI and in chat.
+ * @param {number[]} dice
+ * @returns {string}
+ */
+export const poolText = (dice) => dice.map((d) => `d${d}`).join(" + ");
+
+/**
  * @param {number} stars
  * @param {number} [by=1]
  * @returns {number} stars after raising (capped at max).
@@ -135,4 +142,20 @@ export function bribeRule(cityId, scales) {
  */
 export function bailAllowed(cityId, scales) {
   return getCityScale(cityId, scales).bail === true;
+}
+
+/** Ways out of the "last resort" (docs/02 "Como baixar estrelas"). */
+export const LAST_RESORT_KINDS = Object.freeze(["any", "disguiseAndSilence", "scapegoat"]);
+
+/**
+ * What the last resort asks for in a city, read from its scale (docs/02): where a disguise clears the stars, any way
+ * out is enough (`any`); where silence can be bought, a disguise and silence together (`disguiseAndSilence`); where
+ * silence does not work, a scapegoat handed over in a mini-heist (`scapegoat`).
+ * @param {string} cityId
+ * @param {object[]} [scales]
+ * @returns {"any"|"disguiseAndSilence"|"scapegoat"}
+ */
+export function lastResortKind(cityId, scales) {
+  if (getCityScale(cityId, scales).disguise === "clear") return "any";
+  return bribeRule(cityId, scales) ? "disguiseAndSilence" : "scapegoat";
 }

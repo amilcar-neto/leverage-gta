@@ -58,9 +58,17 @@ test("buy silence pays the city die and removes 2 stars per die", () => {
   assert.equal(plan("buySilence", {}, state("carcer", 0, { steps: 25 })).error, "noStars");
 });
 
-test("giveIn clears the stars in any city", () => {
-  assert.equal(plan("giveIn", { name: "Ana" }, state("liberty", 4)).to, 0);
-  assert.equal(plan("giveIn", {}, state("liberty", 0)).error, "noStars");
+test("last resort needs the Fixer's confirmation and depends on the city", () => {
+  assert.equal(plan("lastResort", {}, state("liberty", 4)).error, "needsConfirm");
+  assert.equal(plan("lastResort", { confirmed: true }, state("liberty", 0)).error, "noStars");
+  const scapegoat = plan("lastResort", { confirmed: true, name: "Ana" }, state("liberty", 4));
+  assert.deepEqual([scapegoat.ok, scapegoat.to, scapegoat.reason.key], [true, 0, "lastResortScapegoat"]);
+  const free = plan("lastResort", { confirmed: true, way: "disguise" }, state("carcer", 4));
+  assert.deepEqual([free.ok, free.to, free.cost], [true, 0, undefined]);
+  assert.equal(plan("lastResort", { confirmed: true, way: "fly" }, state("carcer", 4)).error, "invalidWay");
+  const paid = plan("lastResort", { confirmed: true, way: "silence" }, state("carcer", 4, { steps: 20 }));
+  assert.deepEqual([paid.ok, paid.to, paid.cost.length > 0], [true, 0, true]);
+  assert.equal(plan("lastResort", { confirmed: true, way: "silence" }, state("carcer", 4, { steps: 0 })).error, "short");
 });
 
 test("rule off and unknown actions are refused", () => {
@@ -68,11 +76,12 @@ test("rule off and unknown actions are refused", () => {
   assert.equal(plan("fly", {}, state("liberty", 1)).error, "unknownAction");
 });
 
-test("only the Fixer, or an owner for silence and giving in", () => {
+test("only the Fixer starts any stars action (a player buys silence through him)", () => {
   assert.equal(mayStart("raise", { isGM: true }), true);
-  assert.equal(mayStart("raise", { isGM: false, ownsActor: true }), false);
-  assert.equal(mayStart("buySilence", { isGM: false, ownsActor: true }), true);
-  assert.equal(mayStart("giveIn", { isGM: false, ownsActor: false }), false);
+  assert.equal(mayStart("raise", { isGM: false }), false);
+  assert.equal(mayStart("buySilence", { isGM: false }), false);
+  assert.equal(mayStart("lastResort", { isGM: false }), false);
+  assert.equal(mayStart("giveIn", { isGM: true }), false);
 });
 
 test("silenceOffer and chat context", () => {

@@ -3,7 +3,7 @@
  * (`locationSources`) and notes. Only the GM edits; everyone else with access reads (docs/06 "Fichas de NPC e Local").
  */
 import { LEVERAGE, hasRealPortrait } from "../../config.mjs";
-import { getCityScales } from "../../settings.mjs";
+import { getCityScales } from "../../world-state.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
 import { moveEntry, traitRows } from "./location-rows.mjs";
 

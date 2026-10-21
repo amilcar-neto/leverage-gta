@@ -669,7 +669,8 @@
       "Warn": {
         "gmOnly": "Only the Fixer can do this.",
         "soon": "Coming soon.",
-        "noCrew": "There are no Crew characters."
+        "noCrew": "There are no Crew characters.",
+        "jobNameRequired": "Give the Job a name."
       },
       "Chat": {
         "speaker": "Fixer",
@@ -695,7 +696,9 @@
           "title": "New Job",
           "name": "Job name",
           "hint": "Starts the Job, clears old Complications and gives Plot Points.",
-          "confirm": "Start"
+          "confirm": "Start",
+          "who": "Plot Points go to {count} character(s): {names}.",
+          "nobody": "none (no character has a player)"
         },
         "EndJob": {
           "title": "End Job",
@@ -910,13 +913,20 @@
         "arrested": "{name} is arrested and stays out until released.",
         "payHospital": "Hospital: {price} ({steps} Money step(s) paid).",
         "payBail": "Bail: {price} ({steps} Money step(s) paid).",
-        "short": "Short on Money by {steps} step(s).",
-        "rescue": "No bail in this city: the crew must break {name} out in a scene.",
-        "stars": "Wanted stars {from} to {to} (prison break).",
+        "short": "Debt: {debt} ({steps} step(s) unpaid).",
+        "rescue": "No bail in this city: the crew must break {name} out in a scene. When they do, click Rescued (the stars rise by 1).",
         "fullLife": "Back with full Life ({max}).",
-        "plotPoint": "+{count} Plot Point.",
         "assetsLost": "Weapon Assets of the scene lost: {names}.",
-        "assetsKept": "The Fixer kept the weapon Assets."
+        "assetsKept": "The Fixer kept the weapon Assets.",
+        "plotPoint": {
+          "one": "+{count} Plot Point.",
+          "other": "+{count} Plot Points."
+        },
+        "rescueUnpaid": "Bail not paid in full: {name} stays in jail until the crew breaks them out (click Rescued).",
+        "rescuedButton": "Rescued",
+        "rescuedTip": "The crew broke the character out: raises the stars by 1 (jailbreak).",
+        "rescuedDone": "Rescued: jailbreak done.",
+        "rescueReason": "Jailbreak: {name} was broken out"
       }
     },
     "Stars": {
@@ -933,11 +943,16 @@
         "disguise": "Changed looks",
         "disguiseBoth": "Changed car and clothes",
         "silence": "{name} bought silence ({dice})",
-        "giveIn": "{name} gave in to the police"
+        "lastResortDisguise": "Last resort: changed looks",
+        "lastResortWait": "Last resort: waited it out",
+        "lastResortSilence": "{name} bought silence as a last resort ({dice})",
+        "lastResortBoth": "{name} changed looks and bought silence as a last resort ({dice})",
+        "lastResortBothFree": "{name} changed looks as a last resort (no silence needed)",
+        "lastResortScapegoat": "Last resort: a scapegoat was handed over (mini-heist)"
       },
       "Error": {
         "disabled": "The Stars house rule is off.",
-        "notAllowed": "You cannot do this.",
+        "notAllowed": "Only the Fixer moves the stars.",
         "noActor": "Pick a Crew character.",
         "unknownAction": "Unknown stars action.",
         "invalidAmount": "The amount must be a whole number, 1 or more.",
@@ -951,7 +966,8 @@
         "sketched": "A composite sketch is out: disguising does nothing here.",
         "noSilence": "Buying silence does not work in this city.",
         "short": "Not enough Money (short by {shortBy} step(s)).",
-        "noGM": "No Fixer is connected to process this."
+        "needsConfirm": "Confirm that the Crew did what the last resort asks.",
+        "invalidWay": "Unknown way out."
       },
       "Dialog": {
         "title": "Wanted level",
@@ -960,7 +976,7 @@
         "police": "Police Pool",
         "none": "No police pressure",
         "actions": "Actions",
-        "off": "The Stars house rule is off: the level can be set, the actions are hidden.",
+        "off": "The Stars house rule is off: the level and the actions are disabled.",
         "raise": "Raise",
         "raiseTip": "One more star: seen committing a crime, shot in public, cop hurt, big attack or jailbreak.",
         "reason": "Reason",
@@ -977,26 +993,50 @@
         "disguiseTipLower": "Quick roll against the police Pool. Success: -{one} star(s); -{both} changing car and clothes.",
         "disguiseTipSketch": " Blocked while a composite sketch exists.",
         "silence": "Buy silence",
-        "silenceTip": "Quick roll against the police Pool. Pays one {die} of Money for -{stars} stars.",
+        "silenceTip": "Quick roll against the police Pool. If it passes, apply it here: pays one {die} of Money for -{stars} stars.",
         "silenceNone": "Does not work in this city.",
-        "giveIn": "Give in",
-        "giveInTip": "Last way out: the character gives in (in Liberty City, hands over a scapegoat). Stars go to 0.",
         "character": "Character",
         "noCrew": "No Crew characters",
-        "rolled": "Apply these after the roll is passed."
+        "rolled": "Apply these after the roll is passed.",
+        "lastResort": "Last resort"
+      },
+      "LastResort": {
+        "title": "Last resort",
+        "confirm": "The Crew did it",
+        "wayLabel": "Way out",
+        "way": {
+          "disguise": "Changed looks",
+          "silence": "Bought silence",
+          "wait": "Waited it out"
+        },
+        "any": {
+          "tip": "Last resort in this city: any way out above (change looks, buy silence or wait it out). The stars go to 0.",
+          "body": "Any way out works here: the Crew changes looks, buys silence or waits it out. Pick the one they used. The stars go to 0."
+        },
+        "disguiseAndSilence": {
+          "tip": "Last resort in this city: change looks and buy silence, both. The stars go to 0.",
+          "body": "The Crew must change looks and buy silence. Confirm they did both; the silence is paid by the character picked. The stars go to 0."
+        },
+        "scapegoat": {
+          "tip": "Last resort in this city: hand over a scapegoat (a mini-heist). Silence does not work here. The stars go to 0.",
+          "body": "The Crew hands over a scapegoat in a mini-heist. Confirm it was done. The stars go to 0."
+        }
       }
     },
     "HUD": {
       "expand": "Show everything",
       "minimize": "Show only the stars",
       "stars": "Wanted level",
-      "starTip": "{n} stars · police roll {pool}",
       "moneyTip": "Grana · {steps} steps · click to pay, right click to lend",
       "moneyTipReadOnly": "Grana · {steps} steps",
       "plotPointsTip": "Plot Points · {value}",
       "noCharacter": "No character assigned",
       "spendPlotPoint": "Spend a Plot Point",
-      "gainPlotPoint": "Gain a Plot Point"
+      "gainPlotPoint": "Gain a Plot Point",
+      "starTip": {
+        "one": "{count} star · police roll {pool}",
+        "other": "{count} stars · police roll {pool}"
+      }
     }
   }
 }

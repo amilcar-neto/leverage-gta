@@ -130,7 +130,6 @@
 .leverage-gta .lv-roll-total-label { flex: none; white-space: nowrap; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lv-muted); }
 .leverage-gta .lv-roll-total-num { flex: none; font-family: var(--lv-font-display); font-size: 48px; line-height: 1; color: #fff; }
 .leverage-gta .lv-roll-explain { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; min-width: 0; color: var(--lv-muted); }
-.leverage-gta .lv-roll-explain-sum::before { content: "\00B7"; margin-inline-end: 6px; }
 
 /* House-rule notes (+1 PP from a d4, Money step) */
 .leverage-gta .lv-roll-note {

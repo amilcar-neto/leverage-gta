@@ -5,7 +5,8 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { CONFIG_LIMITS, addDie, makeCityId, removeDieAt, validateCityScales } from "../../rules/config-data.mjs";
-import { getCityScales } from "../../settings.mjs";
+import { poolText } from "../../rules/stars.mjs";
+import { getCityScales } from "../../world-state.mjs";
 import { t } from "../components/i18n.mjs";
 import { ConfigAppBase, CONFIG_FOOTER as FOOTER } from "./config-app-base.mjs";
 
@@ -42,13 +43,16 @@ export class CityScalesConfig extends ConfigAppBase {
   };
 
   /** Working copy of the scales (full shape, `default: true` on one). */
-  #draft = getCityScales();
+  /** Working copy; read from the setting when the window first renders (not when the object is built). */
+  #draft = null;
 
   /* ----------------------------------------------------------------- context */
 
   /** @override */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    this.#draft ??= getCityScales();
+    context.dieSize = LEVERAGE.dieGeometry.uses.ladder;
     context.cities = this.#draft.map((city) => this.#cityData(city));
     context.adders = LEVERAGE.dice.map((die) => ({ die, label: t("LEVERAGE.Config.addDie", { die: `d${die}` }) }));
     return context;
@@ -61,7 +65,7 @@ export class CityScalesConfig extends ConfigAppBase {
       id: city.id, name: city.name, isDefault: city.default === true, canRemove: this.#draft.length > 1,
       levels: city.levels.map((dice, i) => ({
         n: i + 1, dice, full: dice.length >= maxDice,
-        summary: dice.length ? dice.map((d) => `d${d}`).join(" + ") : t("LEVERAGE.Config.CityScales.noDice")
+        summary: dice.length ? poolText(dice) : t("LEVERAGE.Config.CityScales.noDice")
       })),
       silence: LEVERAGE.dice.map((die) => ({
         die, on: city.silence?.includes(die) ?? false, off: !city.silence?.includes(die),

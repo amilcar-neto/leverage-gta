@@ -67,7 +67,7 @@ export function rollCardContext(data, { t, isOwner = false, isLatest = true, isG
   const showComplication = !opposition && isGM && unresolved > 0;
   return {
     opposition, name: data.actorName, img: opposition ? "" : photo, flavor: data.flavor,
-    chips: entries.map((e) => ({ label: e.label, die: `d${e.faces}`, faces: e.faces })),
+    chips: entries.map((e) => ({ label: e.label, die: `d${e.faces}`, faces: e.faces, money: e.kind === "money" })),
     dice: entries.map((e) => dieContext(e, t)),
     total: data.total,
     countText: keptValues.length ? t("LEVERAGE.Roll.explain", { count: keptValues.length }) : t("LEVERAGE.Roll.noneKept"),

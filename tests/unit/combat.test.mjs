@@ -121,23 +121,23 @@ test("planDown: Wasted pays the hospital, +1 PP, loses weapon Assets", () => {
   const plan = planDown({ ...down, byPolice: false, isCrew: true });
   assert.equal(plan.kind, "wasted");
   assert.deepEqual([plan.priceKind, plan.dueSteps, plan.paidSteps, plan.shortBy], ["hospital", 1, 1, 0]);
-  assert.deepEqual([plan.restoreLife, plan.plotPoints, plan.loseWeaponAssets, plan.starsRaise], [18, 1, true, 0]);
+  assert.deepEqual([plan.restoreLife, plan.plotPoints, plan.loseWeaponAssets, plan.rescuable], [18, 1, true, false]);
 });
 
 test("planDown: short on Money pays what there is", () => {
   const plan = planDown({ ...down, byPolice: true, isCrew: true, moneySteps: 1 });
-  assert.deepEqual([plan.priceKind, plan.dueSteps, plan.paidSteps, plan.shortBy, plan.starsRaise], ["bail", 2, 1, 1, 0]);
+  assert.deepEqual([plan.priceKind, plan.dueSteps, plan.paidSteps, plan.shortBy, plan.rescuable], ["bail", 2, 1, 1, true]);
 });
 
-test("planDown: Busted without bail waits for rescue and raises a star", () => {
+test("planDown: Busted without bail waits for rescue (the Fixer raises the star)", () => {
   const plan = planDown({ ...down, byPolice: true, isCrew: true, bailAllowed: false });
   assert.equal(plan.kind, "busted");
-  assert.deepEqual([plan.rescue, plan.priceKind, plan.dueSteps, plan.starsRaise], [true, null, 0, 1]);
+  assert.deepEqual([plan.rescue, plan.priceKind, plan.dueSteps, plan.rescuable], [true, null, 0, true]);
 });
 
 test("planDown: house rules off and NPCs", () => {
   const off = planDown({ ...down, byPolice: true, isCrew: true, bailAllowed: false, rules: { money: false, stars: false } });
-  assert.deepEqual([off.starsRaise, off.dueSteps, off.plotPoints], [0, 0, 1]);
+  assert.deepEqual([off.rescuable, off.dueSteps, off.plotPoints], [true, 0, 1]);
   const wastedOff = planDown({ ...down, byPolice: false, isCrew: true, rules: { money: false, stars: true } });
   assert.deepEqual([wastedOff.priceKind, wastedOff.dueSteps], [null, 0]);
   const npc = planDown({ ...down, byPolice: false, isCrew: false });

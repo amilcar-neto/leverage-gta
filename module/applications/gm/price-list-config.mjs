@@ -4,7 +4,8 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { CONFIG_LIMITS, addDie, removeDieAt, validatePrices } from "../../rules/config-data.mjs";
-import { getPrices } from "../../settings.mjs";
+import { poolText } from "../../rules/stars.mjs";
+import { getPrices } from "../../world-state.mjs";
 import { t } from "../components/i18n.mjs";
 import { CONFIG_FOOTER, ConfigAppBase } from "./config-app-base.mjs";
 
@@ -26,14 +27,17 @@ export class PriceListConfig extends ConfigAppBase {
   };
 
   /** Working copy of the price list. */
-  #draft = getPrices();
+  /** Working copy; read from the setting when the window first renders (not when the object is built). */
+  #draft = null;
 
   /** @override */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    this.#draft ??= getPrices();
+    context.dieSize = LEVERAGE.dieGeometry.uses.ladder;
     context.prices = this.#draft.map((price) => ({
       id: price.id, label: t(price.label), dice: price.dice, full: price.dice.length >= CONFIG_LIMITS.priceDice,
-      summary: price.dice.length ? price.dice.map((d) => `d${d}`).join(" + ") : t("LEVERAGE.Config.CityScales.noDice")
+      summary: price.dice.length ? poolText(price.dice) : t("LEVERAGE.Config.CityScales.noDice")
     }));
     context.adders = LEVERAGE.dice.map((die) => ({ die, label: t("LEVERAGE.Config.addDie", { die: `d${die}` }) }));
     return context;

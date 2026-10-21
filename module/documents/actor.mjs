@@ -7,7 +7,7 @@ import { LEVERAGE } from "../config.mjs";
 import { readSetting } from "../data/fields.mjs";
 import { maxLife, restScene } from "../rules/combat.mjs";
 import * as money from "../rules/money.mjs";
-import { resolvePrices } from "../rules/config-data.mjs";
+import { getPriceDice } from "../world-state.mjs";
 import { canEditTraits, checkItemBatch, warnBatchFailure, warnUser } from "./guards.mjs";
 
 /** Hook fired by the house-rule settings (the sheet header uses the same one). */
@@ -15,9 +15,6 @@ const HOUSE_RULES_HOOK = "leverage.houseRulesChanged";
 
 /** True when the Life/Vest house rule is on (safe before settings are ready). */
 const lifeRuleOn = () => Boolean(readSetting("houseRules.life", true));
-
-/** Price (list of dice) of a price-list id, from the world `prices` setting. */
-const priceDice = (id) => resolvePrices(readSetting("prices", null)).find((p) => p.id === id)?.dice ?? [];
 
 /**
  * Token bars follow `houseRules.life`: with the rule off the Life and Vest bars are hidden (data is kept).
@@ -136,7 +133,7 @@ export class LeverageActor extends Actor {
    */
   async medicalTreatment() {
     if (this.type !== "crew") return { ok: false, shortBy: 0 };
-    const paid = await this.money.pay(priceDice("hospital"));
+    const paid = await this.money.pay(getPriceDice("hospital"));
     if (paid.ok) await this.update({ "system.life.value": this.system.life.max });
     return { ok: paid.ok, shortBy: paid.shortBy ?? 0 };
   }
@@ -149,7 +146,7 @@ export class LeverageActor extends Actor {
   async buyVest(kind) {
     const def = LEVERAGE.vestKinds[kind];
     if (this.type !== "crew" || !def?.priceId) return { ok: false, shortBy: 0 };
-    const paid = await this.money.pay(priceDice(def.priceId));
+    const paid = await this.money.pay(getPriceDice(def.priceId));
     if (paid.ok) await this.update({ "system.vest.kind": kind, "system.vest.value": def.points });
     return { ok: paid.ok, shortBy: paid.shortBy ?? 0 };
   }

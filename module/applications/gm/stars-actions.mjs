@@ -1,35 +1,36 @@
 /**
- * Wanted-star actions (docs/02 "Estrelas de procurado"): raise, wait out of sight, disguise, buy silence, give in.
+ * Wanted-star actions (docs/02 "Estrelas de procurado"): raise, set, wait out of sight, disguise, buy silence and the
+ * city's last resort. The stars belong to the table and only the Fixer moves them, so every action is Fixer only
+ * (a player's request would only be a button the Fixer has to confirm, so there is none).
  * The first half is pure (`planStarsAction`, unit tested): it takes the state (city, level, scales, the actor's Money)
  * and says what would change. The second half applies a plan: pays the Money, writes the `wanted` setting and posts
- * the chat line. Only the Fixer writes `wanted`; a player who owns the character may buy silence or give in, and then
- * the request goes to the Fixer through the socket (`starsAction`), which plans again from its own state.
+ * the chat line. It is the ONLY way the stars change (`api.stars.*`, the HUD, the controls and the Wasted/Busted card
+ * all end here), one action at a time (`createSerialQueue`), so two actions never plan on the same old state.
  * Every action is refused when the `houseRules.stars` switch is off.
+ * Buying silence and the disguise are "a quick roll against the police Pool": the Fixer rolls it, and applies the
+ * action here after the roll passed.
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
-import { logger } from "../../logger.mjs";
+import { readSetting } from "../../data/fields.mjs";
 import { pay as payMoney, priceToSteps } from "../../rules/money.mjs";
 import {
-  bribeRule, clampStars, getCityScale, lowerStars, raiseStars, starsAfterDisguise, starsAfterWaiting
+  bribeRule, clampStars, getCityScale, lastResortKind, lowerStars, poolText, raiseStars, starsAfterDisguise, starsAfterWaiting
 } from "../../rules/stars.mjs";
-import { getCityScales } from "../../settings.mjs";
-import { executeAsGM, registerSocketAction } from "../../socket.mjs";
+import { getCityScales, readWanted } from "../../world-state.mjs";
+import { createSerialQueue } from "../../socket.mjs";
 import { t } from "../components/i18n.mjs";
 
 /** Template of the chat line. */
 export const STARS_LINE_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/stars-line.hbs`;
 
-/** Socket action that carries a player's request to the Fixer. */
-export const STARS_SOCKET_ACTION = "starsAction";
-
-/** Actions an owner of the character may start without being the Fixer. */
-export const PLAYER_ACTIONS = Object.freeze(["buySilence", "giveIn"]);
-
 /** All action names. */
-export const STARS_ACTIONS = Object.freeze(["raise", "setLevel", "wait", "disguise", "buySilence", "giveIn"]);
+export const STARS_ACTIONS = Object.freeze(["raise", "setLevel", "wait", "disguise", "buySilence", "lastResort"]);
 
 /** Disguise kinds. `both` is changing car and clothes. */
 export const DISGUISE_KINDS = Object.freeze(["simple", "both"]);
+
+/** Ways out accepted by the last resort where any exit will do (Carcer City). */
+export const LAST_RESORT_WAYS = Object.freeze(["disguise", "silence", "wait"]);
 
 /* ------------------------------------------------------------------ pure planning */
 
@@ -58,14 +59,13 @@ const done = (from, to, reason, cost) => ({ ok: true, from, to, reason, ...(cost
 const positiveInt = (n) => (Number.isInteger(Number(n)) && Number(n) > 0 ? Number(n) : 0);
 
 /**
- * Whether a user may start an action.
+ * Whether a user may start an action: only the Fixer.
  * @param {string} action
- * @param {{isGM: boolean, ownsActor?: boolean}} who
+ * @param {{isGM: boolean}} who
  * @returns {boolean}
  */
-export function mayStart(action, { isGM, ownsActor = false }) {
-  if (isGM) return true;
-  return PLAYER_ACTIONS.includes(action) && ownsActor;
+export function mayStart(action, { isGM }) {
+  return Boolean(isGM) && STARS_ACTIONS.includes(action);
 }
 
 /** Raise by `n` (default 1), for a reason typed by the Fixer. */
@@ -120,6 +120,13 @@ export function silenceOffer(cityId, scales) {
   return { die, starsPerDie: rule.stars };
 }
 
+/** Pays `count` dice of silence from the state's Money; the plan result is `{cost}` or a refusal. */
+function silenceCost(state, offer, count) {
+  const cost = Array(count).fill(offer.die);
+  const paid = payMoney(state.steps ?? 0, priceToSteps(cost));
+  return paid.ok ? { ok: true, cost } : refuse("short", { shortBy: paid.shortBy });
+}
+
 /** Buying silence: pays `count` dice, each removing the city's stars; never pays for more dice than needed. */
 function planBribe(state, { count = 1, name = "" }) {
   const offer = silenceOffer(state.city, state.scales);
@@ -127,20 +134,51 @@ function planBribe(state, { count = 1, name = "" }) {
   const from = clampStars(state.level);
   if (!from) return refuse("noStars");
   const dice = Math.min(positiveInt(count) || 1, Math.ceil(from / offer.starsPerDie));
-  const cost = Array(dice).fill(offer.die);
-  const paid = payMoney(state.steps ?? 0, priceToSteps(cost));
-  if (!paid.ok) return refuse("short", { shortBy: paid.shortBy });
-  const text = cost.map((d) => `d${d}`).join(" + ");
-  return done(from, lowerStars(from, dice * offer.starsPerDie), { key: "silence", data: { name, dice: text } }, cost);
+  const priced = silenceCost(state, offer, dice);
+  if (!priced.ok) return priced;
+  const text = poolText(priced.cost);
+  return done(from, lowerStars(from, dice * offer.starsPerDie), { key: "silence", data: { name, dice: text } }, priced.cost);
 }
 
-/** Giving in: the last way out, the stars go to 0. */
-function planGiveIn(state, { name = "" }) {
+/** Reason of a last resort that was a single exit (Carcer City). */
+const WAY_REASON = Object.freeze({ disguise: "lastResortDisguise", silence: "lastResortSilence", wait: "lastResortWait" });
+
+/** The way out where any exit will do: a disguise or waiting is free, silence pays what clears the stars. */
+function lastResortAny(state, from, way, name) {
+  if (!LAST_RESORT_WAYS.includes(way)) return refuse("invalidWay");
+  const reason = { key: WAY_REASON[way], data: { name } };
+  if (way !== "silence") return done(from, LEVERAGE.stars.min, reason);
+  const offer = silenceOffer(state.city, state.scales);
+  if (!offer) return refuse("noSilence");
+  const priced = silenceCost(state, offer, Math.ceil(from / offer.starsPerDie));
+  return priced.ok ? done(from, LEVERAGE.stars.min, { key: reason.key, data: { name, dice: poolText(priced.cost) } }, priced.cost) : priced;
+}
+
+/** The way out of Las Venturas: change looks, then buy silence for the stars that are left. */
+function lastResortBoth(state, from, name) {
+  const offer = silenceOffer(state.city, state.scales);
+  if (!offer) return refuse("noSilence");
+  const left = starsAfterDisguise(state.city, from, {}, state.scales);
+  if (!left) return done(from, LEVERAGE.stars.min, { key: "lastResortBothFree", data: { name } });
+  const priced = silenceCost(state, offer, Math.ceil(left / offer.starsPerDie));
+  return priced.ok ? done(from, LEVERAGE.stars.min, { key: "lastResortBoth", data: { name, dice: poolText(priced.cost) } }, priced.cost) : priced;
+}
+
+/**
+ * The last resort (docs/02): what it takes depends on the city (`lastResortKind`). The Fixer confirms (`confirmed`)
+ * that the Crew did it: any exit (Carcer City), changing looks and buying silence (Las Venturas) or handing over a
+ * scapegoat in a mini-heist (Liberty City). The stars go to 0.
+ */
+function planLastResort(state, { way = "disguise", confirmed = false, name = "" }) {
   const from = clampStars(state.level);
-  return from ? done(from, LEVERAGE.stars.min, { key: "giveIn", data: { name } }) : refuse("noStars");
+  if (!from) return refuse("noStars");
+  if (confirmed !== true) return refuse("needsConfirm");
+  const kind = lastResortKind(state.city, state.scales);
+  if (kind === "scapegoat") return done(from, LEVERAGE.stars.min, { key: "lastResortScapegoat", data: { name } });
+  return kind === "any" ? lastResortAny(state, from, way, name) : lastResortBoth(state, from, name);
 }
 
-const PLANNERS = { raise: planRaise, setLevel: planSetLevel, wait: planWait, disguise: planDisguise, buySilence: planBribe, giveIn: planGiveIn };
+const PLANNERS = { raise: planRaise, setLevel: planSetLevel, wait: planWait, disguise: planDisguise, buySilence: planBribe, lastResort: planLastResort };
 
 /**
  * Plans an action without touching anything.
@@ -169,22 +207,17 @@ export function starsLineContext({ from, to, reasonText }) {
 
 /* ------------------------------------------------------------------ foundry side */
 
-const setting = (key, fallback) => game.settings.get(SYSTEM_ID, key) ?? fallback;
-
 /** Current state of the stars for planning. @param {Actor} [actor] */
 function readState(actor) {
-  const wanted = setting("wanted", {});
   return {
-    city: wanted.city ?? LEVERAGE.stars.defaultCity, level: clampStars(wanted.level ?? 0), scales: getCityScales(),
-    rulesOn: Boolean(setting("houseRules.stars", true)), steps: actor?.system.money?.steps ?? 0
+    ...readWanted(), scales: getCityScales(), rulesOn: Boolean(readSetting("houseRules.stars", true)),
+    steps: actor?.system.money?.steps ?? 0
   };
 }
 
 /** Shows the warning of a refused plan to the person who asked. */
-function warn(plan, userId) {
-  const message = t(`LEVERAGE.Stars.Error.${plan.error}`, plan.data);
-  if (userId === game.user.id) ui.notifications.warn(message);
-  else logger.warn(`Stars action refused for ${userId}: ${plan.error}`);
+function warn(plan) {
+  ui.notifications.warn(t(`LEVERAGE.Stars.Error.${plan.error}`, plan.data));
 }
 
 /** Posts the chat line of a change. */
@@ -206,51 +239,51 @@ function crewFrom(ref) {
   return doc?.documentName === "Actor" && doc.type === "crew" ? doc : null;
 }
 
-/**
- * Plans and applies one action with the Fixer's rights: pays the Money, writes `wanted`, posts the line.
- * @param {string} action
- * @param {object} [params] `actor` (UUID or document) for buySilence and giveIn.
- * @param {string} [userId] Who asked (a player must own the character).
- * @returns {Promise<StarsPlan>}
- */
-export async function performStarsAction(action, params = {}, userId = game.user.id) {
-  const user = game.users.get(userId);
-  const actor = params.actor ? crewFrom(params.actor) : null;
-  const needsActor = PLAYER_ACTIONS.includes(action);
-  let plan;
-  if (!user || (needsActor && !actor)) plan = refuse("noActor");
-  else if (!mayStart(action, { isGM: user.isGM, ownsActor: Boolean(actor?.testUserPermission(user, "OWNER")) })) plan = refuse("notAllowed");
-  else plan = planStarsAction(action, { ...params, name: actor?.name }, readState(actor));
-  if (!plan.ok) {
-    warn(plan, userId);
-    return plan;
-  }
+/** Whether an action must name a character: it pays Money (the last resort only where it asks for dice). */
+function needsActor(action, params, state) {
+  if (action === "buySilence") return true;
+  if (action !== "lastResort") return false;
+  const kind = lastResortKind(state.city, state.scales);
+  return kind === "disguiseAndSilence" || (kind === "any" && params.way === "silence");
+}
+
+/** Plans an action on the current state; refuses when the user is not the Fixer or a character is missing. */
+function planNow(action, params, actor) {
+  const state = readState(actor);
+  if (!mayStart(action, { isGM: game.user.isGM })) return refuse("notAllowed");
+  if (state.rulesOn !== false && needsActor(action, params, state) && !actor) return refuse("noActor");
+  return planStarsAction(action, { ...params, name: actor?.name }, state);
+}
+
+/** One action at a time: planning, paying and writing never interleave with another action. */
+const serial = createSerialQueue();
+
+/** Pays and writes a plan that was made on the state `readState` returned a moment ago. */
+async function apply(plan, actor) {
   if (plan.cost) {
     const paid = await actor.money.pay(plan.cost);
-    if (!paid.ok) {
-      const failed = refuse("short", { shortBy: paid.shortBy });
-      warn(failed, userId);
-      return failed;
-    }
+    if (!paid.ok) return refuse("short", { shortBy: paid.shortBy });
   }
-  const wanted = setting("wanted", {});
-  await game.settings.set(SYSTEM_ID, "wanted", { ...wanted, city: wanted.city ?? LEVERAGE.stars.defaultCity, level: plan.to });
-  await postLine(plan, PLAYER_ACTIONS.includes(action) ? actor : null);
+  const wanted = readWanted();
+  await game.settings.set(SYSTEM_ID, "wanted", { ...readSetting("wanted", {}), city: wanted.city, level: plan.to });
+  await postLine(plan, actor);
   return plan;
 }
 
-/** Runs an action: here when the user is the Fixer, through the socket when a player starts it. */
-async function dispatch(action, params) {
-  const actor = params.actor ? crewFrom(params.actor) : null;
-  if (game.user.isGM) return performStarsAction(action, { ...params, actor: actor?.uuid }, game.user.id);
-  const allowed = mayStart(action, { isGM: false, ownsActor: Boolean(actor?.isOwner) });
-  const plan = allowed ? planStarsAction(action, { ...params, name: actor?.name }, readState(actor)) : refuse("notAllowed");
-  if (!plan.ok) {
-    warn(plan, game.user.id);
-    return plan;
-  }
-  const sent = await executeAsGM(STARS_SOCKET_ACTION, { action, params: { ...params, actor: actor.uuid } });
-  return sent ? { ...plan, pending: true } : refuse("noGM");
+/**
+ * Plans and applies one action: pays the Money, writes `wanted`, posts the chat line. Fixer only; one at a time.
+ * @param {string} action One of `STARS_ACTIONS`.
+ * @param {object} [params] Parameters of the action; `actor` (UUID or document) for the ones that pay Money.
+ * @returns {Promise<StarsPlan>}
+ */
+export function performStarsAction(action, params = {}) {
+  return serial(async () => {
+    const actor = params.actor ? crewFrom(params.actor) : null;
+    const plan = planNow(action, params, actor);
+    const result = plan.ok ? await apply(plan, actor) : plan;
+    if (!result.ok) warn(result);
+    return result;
+  });
 }
 
 /**
@@ -259,14 +292,14 @@ async function dispatch(action, params) {
  * @param {string} [reason] Free text for the chat line.
  * @returns {Promise<StarsPlan>}
  */
-export const raise = (n = 1, reason = "") => dispatch("raise", { n, reason });
+export const raise = (n = 1, reason = "") => performStarsAction("raise", { n, reason });
 
 /**
  * Sets the level directly with a chat line. Fixer only.
  * @param {number} level 0..5
  * @returns {Promise<StarsPlan>}
  */
-export const setLevel = (level) => dispatch("setLevel", { level });
+export const setLevel = (level) => performStarsAction("setLevel", { level });
 
 /**
  * Waiting out of sight (free). `scenes` counts toward the city's scenes-per-star; in cities that only allow
@@ -275,7 +308,7 @@ export const setLevel = (level) => dispatch("setLevel", { level });
  * @param {{betweenSessions?: boolean}} [options]
  * @returns {Promise<StarsPlan>}
  */
-export const lowerByWaiting = (scenes = 1, options = {}) => dispatch("wait", { scenes, ...options });
+export const lowerByWaiting = (scenes = 1, options = {}) => performStarsAction("wait", { scenes, ...options });
 
 /**
  * A disguise that worked (the quick roll against the police Pool was passed). Fixer only.
@@ -283,36 +316,23 @@ export const lowerByWaiting = (scenes = 1, options = {}) => dispatch("wait", { s
  * @param {{sketched?: boolean}} [options] `sketched`: someone has a composite sketch (blocks it in Liberty City).
  * @returns {Promise<StarsPlan>}
  */
-export const lowerByDisguise = (kind = "simple", options = {}) => dispatch("disguise", { kind, ...options });
+export const lowerByDisguise = (kind = "simple", options = {}) => performStarsAction("disguise", { kind, ...options });
 
 /**
- * Buys silence with Money dice from the character (the city decides the die and the stars; some cities refuse).
- * The Fixer, or a player for his own character.
+ * Buys silence with Money dice from the character, after the quick roll against the police Pool was passed (the
+ * city decides the die and the stars; some cities refuse). Fixer only.
  * @param {Actor|string} actor
  * @param {{count?: number}} [options] Number of dice to pay (never more than needed).
  * @returns {Promise<StarsPlan>}
  */
-export const buySilence = (actor, options = {}) => dispatch("buySilence", { actor, ...options });
+export const buySilence = (actor, options = {}) => performStarsAction("buySilence", { actor, ...options });
 
 /**
- * The last way out: the character gives in (or hands over a scapegoat) and the stars go to 0.
- * The Fixer, or a player for his own character.
- * @param {Actor|string} actor
+ * The last resort of the city (docs/02): the stars go to 0 once the Crew did what the city asks.
+ * Carcer City: any way out (`way`: disguise, silence or wait). Las Venturas: change looks and buy silence (paid by
+ * `actor`). Liberty City: hand over a scapegoat (a mini-heist). Fixer only, and `confirmed` must be true.
+ * @param {Actor|string} [actor] Pays the silence where it is needed.
+ * @param {{way?: string, confirmed?: boolean}} [options]
  * @returns {Promise<StarsPlan>}
  */
-export const giveIn = (actor) => dispatch("giveIn", { actor });
-
-/**
- * Fixer side of the socket request of a player.
- * @param {{action: string, params: object}} request
- * @param {string} userId
- */
-export async function onStarsRequest({ action, params }, userId) {
-  if (!PLAYER_ACTIONS.includes(action)) return logger.warn("Stars request refused: not a player action");
-  await performStarsAction(action, params, userId);
-}
-
-/** Registers the socket action (call from `setup`, with the API). */
-export function registerStarsActions() {
-  registerSocketAction(STARS_SOCKET_ACTION, onStarsRequest);
-}
+export const lastResort = (actor, options = {}) => performStarsAction("lastResort", { actor, ...options });

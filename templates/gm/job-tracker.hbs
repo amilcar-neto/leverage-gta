@@ -38,6 +38,7 @@
       <div class="lv-trk-member" data-actor-id="{{id}}">
         <span class="lv-trk-name" title="{{name}}">{{name}}</span>
         <div class="lv-trk-stats">
+          {{#if @root.rules.life}}
           <div class="lv-trk-cell" data-stat="life">
             <span class="lv-trk-label">{{localize "LEVERAGE.Tracker.life"}}</span>
             <span class="lv-trk-stepper">
@@ -54,6 +55,8 @@
               <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="vest" data-delta="1" aria-label="{{localize "LEVERAGE.Tracker.raise"}}">+</button>
             </span>
           </div>
+          {{/if}}
+          {{#if @root.rules.money}}
           <div class="lv-trk-cell" data-stat="money">
             <span class="lv-trk-label">{{localize "LEVERAGE.Tracker.money"}}</span>
             <span class="lv-trk-stepper">
@@ -62,6 +65,7 @@
               <button type="button" class="lv-trk-btn" data-action="adjust" data-id="{{id}}" data-field="money" data-delta="1" aria-label="{{localize "LEVERAGE.Tracker.raise"}}">+</button>
             </span>
           </div>
+          {{/if}}
           <div class="lv-trk-cell" data-stat="pp">
             <span class="lv-trk-label">{{localize "LEVERAGE.Tracker.plotPoints"}}</span>
             <span class="lv-trk-stepper">

@@ -7,6 +7,7 @@
 import { LEVERAGE, SYSTEM_ID } from "../config.mjs";
 import { isValidDie } from "./die.mjs";
 import { policePool } from "../rules/stars.mjs";
+import { t } from "../applications/components/i18n.mjs";
 import { buildRollData, evaluateDice } from "./roll-core.mjs";
 
 /** `kind` of the entries of an opposition roll. */
@@ -69,6 +70,19 @@ export function looseDice(counts, label) {
  */
 export function policeDice(cityId, stars, label, scales) {
   return policePool(cityId, stars, scales).map((size, i) => entry(`police.${i}`, label, size));
+}
+
+/**
+ * City whose scale gives the police Pool (docs/02, docs/06): the first Location that names a city the scales know
+ * (the Location is where the Crew is, and each city has its own police), else the city of the wanted state.
+ * @param {string} wantedCity City id of the `wanted` setting.
+ * @param {{system?: {city?: string}}[]} locations Locations in play (selected one first).
+ * @param {{id: string}[]} scales City scales in use.
+ * @returns {string}
+ */
+export function policeCity(wantedCity, locations, scales) {
+  const known = new Set(scales.map((scale) => scale.id));
+  return locations.map((location) => location?.system?.city).find((city) => city && known.has(city)) ?? wantedCity;
 }
 
 /**
@@ -166,8 +180,6 @@ export function buildOppositionData({ dice, values, name, flavor, source = "" })
 }
 
 /* ------------------------------------------------------------ Foundry half */
-
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
 
 /**
  * Rolls the Fixer's opposition and posts the card (header "FIXER", no portrait, no Plot Point buttons). Only the Fixer.

@@ -3,29 +3,26 @@
  * (Life, Vest, Money, Plot Points with +/-). The Job lives in the world setting `activeJob`; only the GM writes it.
  * Re-renders on `leverage.activeJobChanged` and when a Crew actor changes.
  */
-import { SYSTEM_ID } from "../../config.mjs";
+import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
 import { clampSteps } from "../../rules/money.mjs";
 import { renderDie } from "../components/die.mjs";
-import { crewActors, emptyJob } from "./job-actions.mjs";
-import { addEntry, clampedAdd, normalizeJob, removeEntry, renameJob, stepEntry } from "./job-tracker-logic.mjs";
+import { t } from "../components/i18n.mjs";
+import { crewActors, readJob } from "./job-actions.mjs";
+import { addEntry, clampedAdd, removeEntry, renameJob, stepEntry } from "./job-tracker-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-/** Die sizes in the lists and in the Money cell. */
-const ENTRY_DIE = 28;
-const MONEY_DIE = 22;
+/** Die size in the lists and in the Money cell. */
+const DIE_SIZE = LEVERAGE.dieGeometry.uses.tracker;
 
-/** @param {string} key @param {object} [data] */
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
-
-/** Reads the active Job (normalised copy). */
-const readJob = () => normalizeJob(readSetting("activeJob", emptyJob()));
+/** Settings that decide which cells the Crew rows show. */
+const RULES_HOOK = "leverage.houseRulesChanged";
 
 /** Template data of one Complication / scene Trait row. */
 const entryRow = (list) => (e) => ({
   id: e.id, list, name: e.name, die: e.die,
-  html: renderDie({ die: e.die, value: e.die, size: ENTRY_DIE, title: `d${e.die}` }),
+  html: renderDie({ die: e.die, value: e.die, size: DIE_SIZE, title: `d${e.die}` }),
   canUp: e.die < 12, canDown: e.die > 4
 });
 
@@ -35,7 +32,7 @@ function crewRow(actor) {
   const { steps, dice } = actor.money;
   return {
     id: actor.id, name: actor.name, life, vest, pp: plotPoints.value, steps,
-    moneyHtml: dice.map((d) => renderDie({ die: d, value: d, size: MONEY_DIE, money: true })).join("")
+    moneyHtml: dice.map((d) => renderDie({ die: d, value: d, size: DIE_SIZE, money: true })).join("")
   };
 }
 
@@ -63,7 +60,8 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
       name: job.name,
       complications: job.complications.map(entryRow("complications")),
       sceneTraits: job.sceneTraits.map(entryRow("sceneTraits")),
-      crew: crewActors().map(crewRow)
+      crew: crewActors().map(crewRow),
+      rules: { life: Boolean(readSetting("houseRules.life", true)), money: Boolean(readSetting("houseRules.money", true)) }
     };
   }
 
@@ -74,6 +72,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     const onActor = (actor) => actor?.type === "crew" && refresh();
     this.#hooks = [
       ["leverage.activeJobChanged", Hooks.on("leverage.activeJobChanged", refresh)],
+      [RULES_HOOK, Hooks.on(RULES_HOOK, refresh)],
       ["updateActor", Hooks.on("updateActor", onActor)],
       ["createActor", Hooks.on("createActor", onActor)],
       ["deleteActor", Hooks.on("deleteActor", onActor)]

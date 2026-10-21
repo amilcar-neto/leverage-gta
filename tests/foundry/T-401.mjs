@@ -36,7 +36,7 @@ async function openSheet({ actorId, id }) {
   const box = el.getBoundingClientRect();
   const sc = [...el.querySelectorAll(".window-content *")].filter((n) => n.scrollWidth > n.clientWidth + 1
     && getComputedStyle(n).overflowX === "visible" && n.children.length === 0 && n.clientWidth > 0);
-  return { title: el.querySelector(".window-title")?.textContent.trim(), w: box.width, h: box.height, overflow: sc.map((n) => n.className) };
+  return { title: el.querySelector(".window-title")?.textContent.trim(), typeSpan: el.querySelector(".window-title .lv-title-type")?.textContent.trim(), ownerSpan: el.querySelector(".window-title .lv-title-owner")?.textContent.trim(), seal: Boolean(el.querySelector(".lv-lock-seal")), contentGap: (() => { const c = el.querySelector(".window-content").getBoundingClientRect(); const last = [...el.querySelectorAll(".lv-item-foot, .lv-item-foot *")].reduce((m, n) => Math.max(m, n.getBoundingClientRect().bottom), 0); return Math.round(c.bottom - last); })(), w: box.width, h: box.height, overflow: sc.map((n) => n.className) };
 }
 
 /** Closes every item window, then opens the one of `type` alone (stacked windows hide each other). */
@@ -50,7 +50,7 @@ async function show(state, type) {
 
 const owned = (state, type) => page.evaluate((a) => {
   const i = game.actors.get(a.actorId).items.get(a.id);
-  return { name: i.name, system: i.system.toObject(), img: i.img };
+  return { name: i.name, system: i.toObject().system, img: i.img };
 }, { actorId: state.actorId, id: state.ids[type] });
 
 try {
@@ -60,7 +60,10 @@ try {
   for (const type of ["distinction", "talent", "specialty", "asset", "job"]) {
     await show(state, type);
     const facts = await page.evaluate(openSheet, { actorId: state.actorId, id: state.ids[type] });
-    record(`${type}: opens with type and owner in the title`, /Rosa/.test(facts.title ?? ""), facts);
+    record(`${type}: title is a muted type plus the owner`, Boolean(facts.typeSpan) && /Rosa/.test(facts.ownerSpan ?? ""), facts);
+    const sealed = ["talent", "distinction", "specialty"].includes(type);
+    record(`${type}: lock seal ${sealed ? "shown" : "absent"}`, facts.seal === sealed, facts);
+    if (type === "asset") record("asset: no dead space under the footer", facts.contentGap < 30, facts);
     record(`${type}: no clipped text`, facts.overflow.length === 0, facts.overflow);
     const it = await owned(state, type);
     record(`${type}: default icon`, it.img.endsWith(`/assets/items/${type}.svg`), it.img);

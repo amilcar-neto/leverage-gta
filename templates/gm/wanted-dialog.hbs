@@ -3,7 +3,7 @@
     <h3 class="lv-opp-title"><span class="lv-opp-title-text">{{localize "LEVERAGE.Stars.Dialog.level"}}</span><span class="lv-opp-title-sub" title="{{pool}}">{{localize "LEVERAGE.Stars.Dialog.police"}}: {{pool}}</span></h3>
     <div class="lv-wanted-levels" role="group" aria-label="{{localize "LEVERAGE.Stars.Dialog.level"}}">
       {{#each stars}}
-      <button type="button" class="lv-wanted-level{{#if on}} is-on{{/if}}" data-action="setLevel" data-level="{{n}}" aria-pressed="{{on}}" title="{{tip}}">
+      <button type="button" class="lv-wanted-level{{#if on}} is-on{{/if}}" data-action="setLevel" data-level="{{n}}" aria-pressed="{{on}}" title="{{tip}}"{{#unless @root.rulesOn}} disabled{{/unless}}>
         <span class="lv-wanted-n">{{n}}</span><span class="lv-wanted-die">{{die}}</span>
       </button>
       {{/each}}
@@ -35,7 +35,7 @@
     </div>
     <div class="lv-wanted-row">
       <button type="button" class="lv-opp-chip" data-action="buySilence"{{#unless tips.silenceOn}} disabled{{/unless}}{{#unless hasCrew}} disabled{{/unless}} title="{{tips.silence}}"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.silence"}}</span></button>
-      <button type="button" class="lv-opp-chip" data-action="giveIn"{{#unless hasCrew}} disabled{{/unless}} title="{{giveInTip}}"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.giveIn"}}</span></button>
+      <button type="button" class="lv-opp-chip" data-action="lastResort"{{#if lastResort.disabled}} disabled{{/if}} title="{{lastResort.tip}}"><span class="lv-opp-chip-name">{{localize "LEVERAGE.Stars.Dialog.lastResort"}}</span></button>
     </div>
   </section>
   {{else}}

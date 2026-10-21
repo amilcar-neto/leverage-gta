@@ -3,11 +3,9 @@
  * Only returns the choice; parts/assets.mjs marks the Jobs as spent.
  */
 import { escapeHtml } from "../components/die.mjs";
+import { t } from "../components/i18n.mjs";
 
 const OPTIONS = ["signatureAsset", "specialty", "talent", "attribute", "role"];
-
-/** @param {string} key @param {object} [data] */
-const t = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
 
 /** One radio row; disabled when the actor has too few unspent Jobs. */
 function optionRow(key, cost, unspent) {
