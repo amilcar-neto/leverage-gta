@@ -41,9 +41,13 @@ navegador e use o inspetor para medir). As decisões estão em `docs/03-decisoes
 - **Sem espaço morto:** as listas preenchem a altura disponível da coluna; quando cabem, não mostram barra.
 - Texto que não cabe: reticências + `title`/tooltip com o texto inteiro.
 - Os dados da escada têm 32 px; os da bandeja 36 px; mesma geometria e cores de `docs/03`.
-- Estados vazios com frase curta em `--lv-muted` (ex.: "No talents yet. The GM can unlock the sheet to add one.").
-- **Trava:** com `traitsLocked` e usuário não-mestre, escondem-se "+ ADD" e X de Distinctions, Talents e
-  Specialties, e a escada de dados não muda valor (cursor padrão, tooltip explica). Selo na barra de título.
+- Estados vazios com frase curta em `--lv-muted` (ex.: "No talents yet. Unlock the sheet to add one.").
+- **Trava (selo-botão):** cada ficha tem a sua trava (flag `sheetUnlocked`, padrão travada). O selo na barra de título
+  é um **botão**: o dono clica para travar/destravar a própria ficha, livremente (o mestre também pode clicar).
+  Se o mestre desliga `playersCanUnlock`, toda ficha fica travada à força e o selo do jogador fica **desabilitado**
+  (só o visual com cadeado, sem frase). Tooltips do selo são curtos ("Travada. Clique para destravar."). Travada e
+  usuário não-mestre: escondem-se "+ ADD" e X de Distinctions, Talents e
+  Specialties, e a escada de dados não muda valor (cursor padrão, tooltip explica). Selo-botão na barra de título.
 
 ## Permissões
 

@@ -545,9 +545,9 @@
         "when": "Quando"
       },
       "Empty": {
-        "distinctions": "Nenhuma Distinction ainda. O mestre pode destravar a ficha para adicionar.",
-        "talents": "Nenhum Talent ainda. O mestre pode destravar a ficha para adicionar.",
-        "specialties": "Nenhuma Specialty ainda. O mestre pode destravar a ficha para adicionar.",
+        "distinctions": "Nenhuma Distinction ainda.",
+        "talents": "Nenhum Talent ainda.",
+        "specialties": "Nenhuma Specialty ainda.",
         "assets": "Nenhum Asset ainda.",
         "background": "Nenhum Background escrito ainda.",
         "jobs": "Nenhum Job registrado ainda."

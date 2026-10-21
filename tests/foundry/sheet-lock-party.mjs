@@ -45,13 +45,14 @@ try {
   await pp.click(".lv-lock-seal");
   await pp.waitForFunction(() => document.querySelector(".lv-lock-seal.is-unlocked"), null, { timeout: 8000 });
   record("owner click unlocks (flag set)", await pp.evaluate((id) => game.actors.get(id).getFlag("leverage-gta", "sheetUnlocked") === true, ids.a));
-  record("unlocked: + ADD visible", (await pp.locator(".lv-add-btn").count()) > 0);
+  record("unlocked: + ADD visible", (await pp.locator("[data-action=addTraitItem]").count()) > 0);
   await pp.screenshot({ path: `${SHOTS}/lock-unlocked.png` });
   // GM forbids unlocking
   await page.evaluate(() => game.settings.set("leverage-gta", "playersCanUnlock", false));
   await pp.waitForFunction(() => document.querySelector(".lv-lock-seal.is-locked"), null, { timeout: 8000 });
+  await pp.waitForTimeout(800);
   s = await seal();
-  record("forced lock: seal disabled with tooltip, + ADD gone", s?.disabled && s.locked && s.title.length > 10 && (await pp.locator(".lv-add-btn").count()) === 0, s);
+  record("forced lock: seal disabled without text, + ADD gone", s?.disabled && s.locked && s.title === "" && (await pp.locator("[data-action=addTraitItem]").count()) === 0, s);
   await pp.screenshot({ path: `${SHOTS}/lock-forced.png` });
   await page.evaluate(() => game.settings.set("leverage-gta", "playersCanUnlock", true));
   await pp.waitForFunction(() => document.querySelector(".lv-lock-seal.is-unlocked"), null, { timeout: 8000 });

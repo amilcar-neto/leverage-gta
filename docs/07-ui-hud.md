@@ -20,6 +20,18 @@ Alvo visual: `reference/mockups/png/hud-sidebar-open.png`, `hud-sidebar-collapse
   ocultos; a visão de grupo fica no Rastreador do Job (`docs/09`).
 - Some quando as regras da casa correspondentes estão desligadas (estrelas e Grana); Plot Points sempre aparecem.
 
+## Grana dos jogadores (só mestre, opcional)
+
+- Opção de cliente `hud.showPartyMoney` ("Mostrar grana dos jogadores"), **desligada por padrão**, nas configurações e
+  num botão discreto (ícone de pessoas, no hover) ao lado do minimizar. Desligada, o HUD não muda nada.
+- Ligada: painel compacto abaixo da Grana principal, "GRANA DO GRUPO · N", com uma linha por personagem de jogador
+  (nome com reticências + dados de Grana de 28 px, ou o d4 tracejado vazio). Cabeçalho clicável **recolhe/expande**
+  (`hud.partyCollapsed`). Mais de ~5 linhas rolam, com a calha da barra reservada.
+- Personagens de jogador = personagem atribuído a cada usuário não-mestre + atores Crew que um jogador possui de forma
+  explícita. Some minimizado ou com a regra de Grana desligada. Jogadores nunca veem a lista; veem só a própria Grana.
+- Mestre sem token selecionado: a Grana principal fica oculta; com a lista ligada ele ainda vê a Grana de todos
+  (útil sem selecionar nada); desligada, vê as estrelas.
+
 ## Estrelas
 
 - Cinco estrelas de **50 px**, em linha, sem contorno preto (só uma sombra suave, `--lv-hud-soft-shadow`). Ativas: amarelo `#ffcf1f`, rótulo escuro. Inativas:
@@ -43,6 +55,24 @@ Alvo visual: `reference/mockups/png/hud-sidebar-open.png`, `hud-sidebar-collapse
 - Ficha de cassino amarela (30 px) + número em Anton 34 px amarelo com sombra suave, botão − (22 px) à esquerda; o botão + só aparece para o mestre (e o clique no número também dá +1 só ao mestre; botão direito no número gasta 1).
 - Sempre visível, inclusive com 0.
 - Animação curta (pulso) quando o valor muda, para o jogador perceber que ganhou um PP.
+
+## Faixa da cena (Traços de cena e Complications)
+
+Não faz parte do bloco do HUD: é uma faixa compacta e pública, logo abaixo do seletor de cenas do Foundry
+(`#scene-navigation`), alinhada à borda esquerda dele e no mesmo z-index do HUD (sobre a cena, sob as janelas).
+
+- **Traços de cena** pertencem à **cena ativa**: ficam no flag `flags.leverage-gta.sceneTraits` do documento Scene
+  (lista `{ id, name, die }`). Mudar a cena ativa muda os Traços mostrados. O mestre edita no Rastreador do Job; os
+  jogadores só leem.
+- **Complications** são do Job (`activeJob.complications`) e **compartilhadas entre cenas**.
+- Cada item é um chip `[dado] nome` (borda verde-água para Traço, vermelha para Complication). Nome longo vira
+  reticências + tooltip. Para o mestre o chip e o lápis abrem o Rastreador do Job. O objetivo do Job aparece como um
+  chip com ícone de alvo, quando existe.
+- Aba de recolher (por cliente): recolhida mostra só as contagens. Sem nada para mostrar fica só a aba, discreta, sem
+  frase de ajuda.
+- Atualiza em tempo real (`updateScene` do flag e `leverage.activeJobChanged`). Mundos antigos: os Traços que estavam
+  em `activeJob.sceneTraits` migram para a cena ativa na primeira abertura do mestre.
+- Não há mais lista de Traços de NPCs/lugares nem a opção `scenePanel.showActorTraits`: o mestre consulta as fichas.
 
 ## Qualidade
 

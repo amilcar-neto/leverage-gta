@@ -53,8 +53,9 @@ ainda não foi testada com o módulo ativo.)
 - **Distinctions** (até 3), **Talents**, **Specialties** e **Assets** com o botão **+ Adicionar**. Cada item abre na
   própria janela ao clicar.
 - **Background** (texto livre) e **Jobs** (o histórico de golpes) numa pasta com duas orelhas.
-- **Trava de Traços:** com a trava ligada (padrão), os jogadores não mudam Attributes, Roles, Distinctions, Talents nem
-  Specialties. O selo na barra do título mostra o estado. Quem tem só permissão de observador vê a ficha sem controles.
+- **Trava da ficha:** a ficha começa travada (Attributes, Roles, Distinctions, Talents e Specialties não mudam). O selo
+  na barra do título é um botão: o dono clica para destravar e travar a própria ficha. Se o mestre desligar "Jogadores
+  podem destravar suas fichas", o selo fica desabilitado e a ficha, travada. Quem tem só permissão de observador vê a ficha sem controles.
 
 ## 3. Rolar a Pool
 
@@ -64,7 +65,7 @@ A bandeja **POOL** fica no rodapé da ficha.
    botão ROLAR fica desligado.
 2. Se quiser, some: uma **Distinction** (no máximo uma; o d8 ajuda, o d4 atrapalha e dá +1 Plot Point), uma
    **Specialty** (+d6, vale com a Role dela), **Assets** e **Talents** com dado, e dados avulsos pelo **+ DADO** (d4 a d12, a **Grana**, se a regra
-   estiver ligada, e os Traços de cena do Job ativo).
+   estiver ligada, e os Traços da cena ativa).
 3. Clique em um chip para tirá-lo da Pool. **ROLAR** (ou Enter, com a ficha em foco) rola tudo.
 
 **Regra:** rola todos os dados e soma os **dois maiores**. Dado que tirou **1** não conta; se todos tirarem 1, o total
@@ -190,7 +191,13 @@ Um **Job** é um golpe completo.
 
 ![Rastreador do Job](img/rastreador.png)
 
-- **Encerrar cena:** apaga os Assets de cena da Equipe (com confirmação) e limpa os Traços de cena.
+- **Encerrar cena:** apaga os Assets de cena da Equipe (com confirmação) e limpa os Traços da cena ativa.
+
+### Faixa da cena
+
+Logo abaixo do seletor de cenas fica uma faixa com os **Traços da cena ativa** (borda verde-água) e as
+**Complications** do Job (borda vermelha, valem em todas as cenas). Todos veem. O mestre clica num chip (ou no lápis)
+para abrir o Rastreador e editar; os Traços de cada cena ficam guardados nela. A setinha à esquerda recolhe a faixa.
 - **Encerrar Job:** pede o nome, o rendimento total em degraus e a parte de cada um. Cria um Job no histórico de cada
   ficha, soma a Grana e apaga os Assets de Job.
 - **Nova sessão:** devolve o **Callback** de todos os Jobs.
@@ -221,7 +228,7 @@ Na barra de controles à esquerda, o grupo **Leverage** (só o mestre vê):
 
 | Ferramenta | O que faz |
 | --- | --- |
-| Trava de Traços | Liga e desliga a trava e avisa no chat |
+| Jogadores podem destravar fichas | Desligado = todas as fichas travadas à força; avisa no chat |
 | Nível de procurado | Define estrelas e cidade |
 | Rolador de oposição | Rolagens do mestre (seção 3) |
 | Rastreador do Job | A janela da seção 9 |
@@ -255,12 +262,12 @@ Engrenagem → **Configure Settings** → **System Settings** → *Leverage: Lib
 | Vida base | Vida máxima = isto + Vitality | 10 |
 | Grana inicial | Degraus de novos personagens | 2 |
 | Plot Points por Job | PP de cada um em Novo Job | 1 |
-| Trava de Traços | Trava a edição dos Traços pelos jogadores | ligada |
+| Jogadores podem destravar suas fichas | Desligado: fichas travadas à força | ligada |
 | Escalas das cidades | Menu: cidades e Pool de cada estrela | |
 | Tabela de preços | Menu: preços em dados | |
 | Custos de treinamento | Menu: Jobs que cada Train up custa | |
 
-**Do cliente (cada usuário):** mostrar Estrelas, Grana e Plot Points no HUD; manter a Pool depois de rolar (padrão: a
+**Do cliente (cada usuário):** mostrar Estrelas, Grana e Plot Points no HUD; (mestre) mostrar a Grana dos jogadores no HUD, desligado por padrão; manter a Pool depois de rolar (padrão: a
 Pool limpa); log de depuração no console.
 
 ## 14. Macros
@@ -274,8 +281,8 @@ ficha para a barra de atalhos cria uma macro que põe aquele Traço na Pool.
 - **O HUD não aparece ou está vazio.** Confira as configurações de cliente (partes escondidas) e se as regras da casa
   estão ligadas. Sem personagem atribuído, a Grana e os Plot Points aparecem apagados com o aviso "Nenhum personagem
   atribuído".
-- **O jogador não consegue mudar os Traços.** É a **Trava de Traços**. O mestre destrava nas ferramentas ou nas
-  configurações.
+- **O jogador não consegue mudar os Traços.** A ficha está travada: o jogador clica no selo da barra do título.
+  Se o selo está desabilitado, o mestre desligou "Jogadores podem destravar suas fichas".
 - **ROLAR está desligado.** Falta um Attribute ou uma Role, ou a Role escolhida está em branco.
 - **O botão +1 PP não aparece (ou está apagado).** Sem Plot Points ele fica apagado; some se não resta dado para manter
   (os 1 não valem), se o card não é o mais recente do personagem ou se quem olha é o mestre.

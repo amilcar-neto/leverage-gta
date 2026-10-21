@@ -186,3 +186,34 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - **"Gangue":** o conceito (cada capanga soma um dado, Ganging Up) estava certo, o nome não. Virou **Capangas / Henchmen** na ficha, no rolador e nos rótulos de campo; o campo de dados continua `gang`. Resolvido por nome e estrutura (número × dado), sem texto explicativo.
 - **Correção do dono no meio da tarefa:** nada de dicas, tooltips ou legendas explicativas nas fichas. Removidos `policeHint`, `rollHint`, `cityHint`, `traitsHint`; estados vazios só com o rótulo ("Nenhum Traço", "Nenhum NPC"). Ficam só `aria-label` e nomes de controles.
 - **Descartado:** Jobs ligados ao Local (Jobs vivem em configuração do mundo, não são documentos); fica para depois.
+
+## Faixa da cena: Traços por cena, Complications globais (sessão atual)
+
+- **Contexto:** o "quadradão" do painel de cena no HUD (com Traços, Complications e Traços de NPCs) foi rejeitado pelo dono.
+- **Escolha:** Traços de cena viram o flag `leverage-gta.sceneTraits` da cena **ativa** (`game.scenes.active`, não a
+  vista). Complications continuam em `activeJob`. Faixa compacta de chips, pública, abaixo de `#scene-navigation`.
+  O rastreador de NPCs/lugares e a opção `scenePanel.showActorTraits` foram removidos junto com `scenePanelChanged` e
+  `LEVERAGE.scenePanel.actorTypes`.
+- **Migração:** no `ready`, o mestre move `activeJob.sceneTraits` para a cena ativa (se ela não tem Traços) e esvazia a
+  lista no setting (o setting faz merge de objetos, então a chave fica como `[]`).
+- **Edição:** clicar num chip (mestre) abre o Rastreador do Job, que já tem +/-/remover; o Rastreador grava os Traços
+  no flag via `writeJob`. Sem cena ativa, adicionar Traço não grava nada.
+- **Encerrar cena** limpa os Traços da cena ativa. **Novo Job / Encerrar Job** não mexem nos Traços (pertencem às cenas).
+- **Sem texto de ajuda** na faixa (pedido do dono): estado vazio mostra só a aba discreta; tooltips são só o nome.
+- **Descartado:** editar no próprio chip com diálogo; manter o objetivo fora da faixa (ficou como chip pequeno).
+
+## Trava por ficha e Grana do grupo no HUD
+
+- **Trava:** a trava passou a ser por ficha (flag `sheetUnlocked`, ausente = travada, como o padrão antigo). A
+  configuração de mundo `traitsLocked` foi trocada por `playersCanUnlock` (padrão ligado), com sentido invertido: o
+  mestre só tira a liberdade. `game.leverage.lock/unlock/isLocked` seguem existindo (lock = desligar o destravamento).
+  Os guardas dos documentos (`canEditTraits(user, actor)`) leem o flag do ator dono; o mestre sempre passa.
+  Descartado: guardar a trava por usuário (não sobrevive a troca de personagem) ou manter as duas configurações.
+- Selo desabilitado pelo mestre: só o visual (cadeado, apagado), **sem tooltip**, a pedido do dono (sem textos
+  explicativos). Tooltips dos outros estados ficaram de uma frase curta; frases "O mestre pode destravar a ficha"
+  dos estados vazios foram cortadas.
+- **Grana do grupo:** `hud.showPartyMoney` (cliente, desligada) + botão discreto no HUD + recolhível
+  (`hud.partyCollapsed`). "Personagens de jogadores" = personagem atribuído a usuários não-mestre + atores Crew com
+  posse explícita de um jogador (não conta posse padrão). Dados de 28 px (tamanho mínimo permitido em `DIE_GEOMETRY`).
+- Testes antigos em `tests/foundry/` que ainda gravam `traitsLocked` (phase1, T-30x, T-401, T-505, T-702...) ficam
+  desatualizados; o novo `tests/foundry/sheet-lock-party.mjs` cobre o comportamento atual.

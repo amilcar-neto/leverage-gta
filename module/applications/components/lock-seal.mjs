@@ -62,7 +62,7 @@ export class LockSeal {
     this.#el.classList.toggle("is-locked", state.locked);
     this.#el.classList.toggle("is-unlocked", !state.locked);
     this.#el.disabled = state.disabled || !actor.isOwner;
-    this.#el.title = t(state.hint);
+    this.#el.title = state.hint ? t(state.hint) : "";
     this.#el.setAttribute("aria-pressed", String(!state.locked));
     this.#el.querySelector(".lv-lock-seal-icon").className = `lv-lock-seal-icon fa-solid ${state.icon}`;
     this.#el.querySelector(".lv-lock-seal-label").textContent = t(state.label);

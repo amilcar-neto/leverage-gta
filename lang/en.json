@@ -545,9 +545,9 @@
         "when": "When"
       },
       "Empty": {
-        "distinctions": "No Distinctions yet. The GM can unlock the sheet to add one.",
-        "talents": "No talents yet. The GM can unlock the sheet to add one.",
-        "specialties": "No specialties yet. The GM can unlock the sheet to add one.",
+        "distinctions": "No Distinctions yet.",
+        "talents": "No talents yet.",
+        "specialties": "No specialties yet.",
         "assets": "No assets yet.",
         "background": "No background written yet.",
         "jobs": "No Jobs logged yet."
