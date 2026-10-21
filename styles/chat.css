@@ -91,7 +91,7 @@
   padding: 1px 7px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--lv-wash-06);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -110,13 +110,12 @@
 .leverage-gta .lv-roll-chip-die.lv-roll-chip-die--money { color: var(--lv-money); }
 
 /* Dice */
-.leverage-gta .lv-roll-dice { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 14px 10px 6px; }
+.leverage-gta .lv-roll-dice { --cell: 46px; --cell-gap: 6px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 14px 10px 6px; }
 .leverage-gta .lv-roll-die { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 
 /* 5+ dice: shrink them (zoom keeps the die proportions) and give each one a cell as wide as its caption, then cap
    the row so the rows come out balanced (never a die standing alone): 5-6 dice in 3 columns, 7-8 in 4, 9-10 in 5, 11-12 in 4.
    The widest card (sidebar) holds 5 cells; a narrower one just wraps earlier. */
-.leverage-gta .lv-roll-dice { --cell: 46px; --cell-gap: 6px; }
 .leverage-gta .lv-roll-dice[data-count="1"], .leverage-gta .lv-roll-dice[data-count="2"],
 .leverage-gta .lv-roll-dice[data-count="3"], .leverage-gta .lv-roll-dice[data-count="4"] { max-width: none; }
 .leverage-gta .lv-roll-dice:where(:not([data-count="1"], [data-count="2"], [data-count="3"], [data-count="4"])) {

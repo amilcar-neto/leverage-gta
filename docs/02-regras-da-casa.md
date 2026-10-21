@@ -21,7 +21,8 @@ desliga** nas configurações do sistema; com as três desligadas, o sistema é 
 ## Estrelas de procurado
 
 **As estrelas medem o quanto a polícia está atrás da Equipe numa cidade.** Vão de 0 a 5, são do grupo e só o mestre
-mexe (clicando nas estrelas do HUD ou pelo controle do mestre). Zeram quando a Equipe sai da cidade.
+mexe (clicando nas estrelas do HUD ou pelo controle do mestre). Zeram quando a Equipe sai da cidade: trocar a cidade
+atual (a única, `wanted.city`; o campo de cidade do Local é só informativo) é uma ação de estrelas que zera o nível.
 
 ### O que faz subir (1 estrela cada, até 5)
 
@@ -123,9 +124,11 @@ do livro**. Discussões, perseguições e golpes seguem o livro. O mestre avisa 
 ### Quando a Vida zera
 
 - **Wasted** (qualquer um que não seja a polícia): acorda no hospital, perde os Assets de arma daquela cena, paga
-  **d4 de Grana** (1 degrau), volta com a Vida cheia e **ganha 1 PP**.
+  **d4 de Grana** (1 degrau), volta com a Vida cheia e **ganha 1 PP**. O hospital é o único preço que aceita
+  pagamento parcial: o que faltar vira dívida no card.
 - **Busted** (a polícia): é preso, perde os Assets de arma daquela cena e fica fora até sair:
-  - **Fiança:** **d6 de Grana** (2 degraus), no fim da cena. Não funciona em Liberty City.
+  - **Fiança:** **d6 de Grana** (2 degraus), no fim da cena. Não funciona em Liberty City. É tudo ou nada: sem os
+    degraus todos, não paga nada e o personagem espera o resgate.
   - **Resgate:** a Equipe tira ele numa cena; é fuga de prisão, sobe 1 estrela.
 
   Sai com a Vida cheia e **ganha 1 PP**.

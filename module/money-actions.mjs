@@ -5,25 +5,42 @@
  * ownership of the lender and the balance again before moving anything.
  */
 import { postLendLine, postPayLine } from "./applications/chat/money-lines.mjs";
+import { LEVERAGE } from "./config.mjs";
 import { logger } from "./logger.mjs";
 import { checkLend, checkPayment, describeCost } from "./rules/money-flow.mjs";
 import { lend } from "./rules/money.mjs";
 
 /**
- * Pays a price in dice from a character's Money and posts the chat line. Nothing is spent when short.
+ * Price-list ids that do more than take Money: the hospital also restores all Life and a vest also puts that vest on,
+ * full (docs/02). The effect pays the price itself (the `hospital` / `vest*` entries of the price list).
+ * @type {Record<string, (actor: Actor) => Promise<{ok: boolean, shortBy: number}>>}
+ */
+const PRICE_EFFECTS = Object.freeze({
+  hospital: (actor) => actor.medicalTreatment(),
+  ...Object.fromEntries(Object.entries(LEVERAGE.vestKinds)
+    .filter(([, def]) => def.priceId)
+    .map(([kind, def]) => [def.priceId, (actor) => actor.buyVest(kind)]))
+});
+
+/**
+ * Pays a price in dice from a character's Money and posts the chat line. Nothing is spent when short. A price-list
+ * `id` with an effect (hospital, vests) runs that effect instead of a plain payment: Life back to full, or the vest on.
  * @param {Actor} actor Crew actor the caller may change.
  * @param {number[]} dice Price dice.
  * @param {string} item What is being bought (translated).
+ * @param {string} [id] Id of the price-list entry (`hospital`, `vestLight`...).
  * @returns {Promise<{ok: boolean, error?: string, cost: number, shortBy: number}>}
  */
-export async function payPrice(actor, dice, item) {
+export async function payPrice(actor, dice, item, id) {
   const price = describeCost(dice);
   const check = checkPayment(actor.system.money.steps, price.dice);
   if (!check.ok) return check;
-  const paid = await actor.money.pay(price.dice);
-  if (!paid.ok) return { ok: false, error: "short", cost: check.cost, after: paid.steps, shortBy: paid.shortBy };
-  await postPayLine(actor, { item, cost: price.dice, after: paid.steps });
-  return { ...check, after: paid.steps };
+  const effect = PRICE_EFFECTS[id];
+  const paid = effect ? await effect(actor) : await actor.money.pay(price.dice);
+  const after = actor.system.money.steps;
+  if (!paid.ok) return { ok: false, error: "short", cost: check.cost, after, shortBy: paid.shortBy };
+  await postPayLine(actor, { item, cost: price.dice, after });
+  return { ...check, after };
 }
 
 /**

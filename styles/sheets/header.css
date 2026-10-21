@@ -63,7 +63,7 @@
   font-family: var(--lv-font-paper);
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--lv-shade-45);
 }
 
 /* ---- Inline inputs: look like text until hovered or focused ---- */
@@ -86,7 +86,7 @@
   text-shadow: inherit;
 }
 
-.leverage-gta.crew-sheet .lv-inline:hover { border-bottom-color: rgba(233, 240, 237, 0.35); }
+.leverage-gta.crew-sheet .lv-inline:hover { border-bottom-color: var(--lv-ink-35); }
 .leverage-gta.crew-sheet .lv-inline:focus { border-bottom-color: var(--lv-header); outline: none; }
 .leverage-gta.crew-sheet .lv-inline::placeholder { color: var(--lv-muted); opacity: 0.6; text-shadow: none; }
 

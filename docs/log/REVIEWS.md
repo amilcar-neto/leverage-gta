@@ -53,3 +53,10 @@ Um resumo por revisão: tarefa ou fase, veredito, defeitos encontrados, o que fo
 - Deveria: Complications fora do + DADO; janela Nível de procurado descrita como "só API"; card WASTED/BUSTED só sai por APLICAR DANO ou pela API; Give In é manual (`giveIn()` de `rules/combat.mjs` é código morto); botão +1 PP apagado sem PP e só no card mais recente; cidade do Local; Novo Job somava PP em vez de seguir o livro; CHANGELOG com termos fora do livro e itens faltando; "FIXER" na interface em inglês; texto de `apiNotReady`; logs.
 - Corrigido: todos acima (decisão sobre PP do Novo Job em DECISIONS.md), T-505 agora confere cada função documentada e o erro do exemplo, prints refeitos num Foundry com o sistema atual. Nits: HUD minimizado, Dice So Nice não testado, Talents de 1 PP descontados à mão, Callback só marca, "Train up" igual em todo texto, README aponta para o guia.
 
+
+## R-FINAL passada 1 — código e arquitetura (Opus)
+- Veredito: precisa de correções. Base saudável (testes, lint, i18n, socket autenticado, fila serial de estrelas).
+- Bloqueios: (1) Pagar não vestia colete nem curava; popover dava colete de graça. (2) Jogador escolhia o dado de um Asset. (3) Oposição com um dado só rolava um dado.
+- Deveria: fiança parcial; cidade com duas fontes e sem zerar estrelas; campos protegidos dos Items só na ficha; arrastar copiava Job/Asset sem custo; Ganging Up prometido e não feito (agora é manual e documentado); `job.end` sem validação; hooks e helpers duplicados; código morto; CSS repetido; acessibilidade (Asset, PP do HUD).
+- Corrigido em 2 frentes (regras/API/mestre e fichas/itens/HUD/CSS) + chaves de i18n. 225 testes verdes.
+- Fica: botões −/+ do popover de Vida/Colete mudam o colete sem cobrar o jogador; barra do token (API do núcleo não confirmada na v14); varredura de mensagens no chat O(n²); ~40 rgba() soltos; empréstimo sem consentimento (decisão registrada).

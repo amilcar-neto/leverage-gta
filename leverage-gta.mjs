@@ -1,6 +1,6 @@
 /**
  * Leverage: Liberty City - system entry point.
- * Registers only what already exists; later tasks (docs/10-backlog.md) add the rest.
+ * Registers the system: settings, data models, sheets, HUD, Fixer tools, chat cards and the `game.leverage` API.
  */
 
 import { LEVERAGE, SYSTEM_ID } from "./module/config.mjs";

@@ -131,7 +131,7 @@
 #leverage-hud .lv-hud-chip { filter: var(--lv-hud-soft-glow); }
 #leverage-hud .lv-hud-chip circle:last-child {
   fill: none;
-  stroke: rgba(0, 0, 0, 0.45);
+  stroke: var(--lv-shade-45);
   stroke-width: 1.6;
   stroke-dasharray: 3 2.2;
 }
@@ -151,6 +151,8 @@
   40% { transform: scale(1.35); }
   100% { transform: scale(1); }
 }
+#leverage-hud .lv-hud-pp-value[role="button"] { cursor: pointer; }
+#leverage-hud .lv-hud-pp-value[role="button"]:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 2px; }
 #leverage-hud .lv-hud-pp-value.is-pulse { animation: lv-hud-pulse 0.5s ease-out; transform-origin: right center; }
 
 @media (prefers-reduced-motion: reduce) {

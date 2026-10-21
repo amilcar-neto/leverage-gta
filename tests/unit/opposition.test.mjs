@@ -2,7 +2,7 @@ import "./helpers/foundry-stub.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  buildOppositionData, complicationSources, emptyCounts, gangDice, locationSources, looseDice, normalizeDice, npcSources,
+  buildOppositionData, policeCity, complicationSources, emptyCounts, gangDice, locationSources, looseDice, normalizeDice, npcSources,
   pickedDice, policeDice, stepCount
 } from "../../module/dice/opposition.mjs";
 import { rollCardContext } from "../../module/applications/chat/roll-card.mjs";
@@ -72,6 +72,21 @@ test("normalizeDice: sizes or objects, invalid dropped, empty is 2d6", () => {
   assert.equal(none.fallback, true);
   assert.deepEqual(none.dice.map((d) => d.die), [6, 6]);
   assert.equal(normalizeDice(undefined, "Opp").fallback, true);
+});
+
+test("normalizeDice: a single die is completed with one d6 (at least two dice)", () => {
+  const one = normalizeDice([8], "Opp");
+  assert.equal(one.fallback, false);
+  assert.deepEqual(one.dice.map((d) => d.die), [8, 6]);
+  assert.deepEqual(normalizeDice([4, 12], "Opp").dice.map((d) => d.die), [4, 12]);
+});
+
+test("policeCity: wanted.city is the one source; a Location only helps when it is unknown", () => {
+  const scales = [{ id: "carcer" }, { id: "liberty" }];
+  const here = [{ system: { city: "liberty" } }];
+  assert.equal(policeCity("carcer", here, scales), "carcer");
+  assert.equal(policeCity("nowhere", here, scales), "liberty");
+  assert.equal(policeCity("nowhere", [], scales), "nowhere");
 });
 
 test("opposition roll data: Pool rules, no actor, opposition flag", () => {

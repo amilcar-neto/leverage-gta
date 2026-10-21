@@ -146,3 +146,11 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - Escolha: no início do Job cada personagem fica com pelo menos o valor da configuração (padrão 1). Quem tem mais guarda os seus; ninguém perde PP nem ganha por cima. Código (`job-actions.mjs`), textos (`Chat.newJob`, hint da configuração), `docs/09` e `docs/USO.md` alinhados.
 - Descartado: somar (quem sobrou de um Job anterior acumularia sem fim) e definir o valor exato (tiraria PP ganho no fim do Job anterior).
 
+
+## R-FINAL passada 1: regras que mudaram nas correções
+
+- **Empréstimo (Lend):** `docs/02` diz que os dois donos concordam. O código atual deixa o dono do emprestador mandar (o mestre confere saldo e posse pelo socket). Decisão: manter assim por ora; não há pedido de consentimento ao receptor. Descartado por enquanto: janela de aceite no receptor (mais socket e estado, pouco ganho na mesa pequena).
+- **Cidade atual:** uma só fonte, `wanted.city`. O campo `city` do Local é só informativo. Trocar de cidade é a ação de estrelas `setCity` (fila serial, nível vai a 0, linha no chat), porque `docs/02` diz que as estrelas zeram quando a Equipe sai da cidade.
+- **Fiança:** tudo ou nada. Sem os degraus todos, não paga nada e o personagem espera resgate. Só o hospital aceita pagamento parcial, com a dívida mostrada no card.
+- **Ganging Up:** o sistema não mostra "−1 thug" no card do jogador nem mexe na gangue do NPC. O mestre diminui `gang.size` na ficha. `thugsDown` foi apagada; `docs/08` e `USO.md` dizem isso. Descartado: ligar o card do jogador ao card da gangue (exige achar o NPC da gangue a partir de uma oposição montada com vários atalhos).
+- **Oposição com um dado só:** completa com um d6 (`LEVERAGE.defaultOppositionDice[0]`), pelo livro (mínimo de dois dados, Traço que falta vale d6).

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  stepsToDice, diceToSteps, clampSteps, priceToSteps, pay, canAfford, cheapIsFree, earn, lend,
+  stepsToDice, diceToSteps, clampSteps, priceToSteps, pay, canAfford, earn, lend,
   moneyRollDie, afterMoneyRoll
 } from "../../module/rules/money.mjs";
 import { LEVERAGE } from "../../module/config.mjs";
@@ -43,11 +43,6 @@ test("pay", () => {
   assert.deepEqual(pay(7, 0), { ok: true, steps: 7, shortBy: 0 });
   assert.ok(canAfford(5, 5));
   assert.ok(!canAfford(4, 5));
-});
-
-test("cheap things are free only with some money", () => {
-  assert.ok(cheapIsFree(1));
-  assert.ok(!cheapIsFree(0));
 });
 
 test("earn caps at 25", () => {

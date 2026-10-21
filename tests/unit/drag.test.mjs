@@ -1,6 +1,7 @@
+import "./helpers/foundry-stub.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { dropMode, itemPoolRef, macroCommand } from "../../module/applications/actor/parts/drag.mjs";
+import { copyPolicy, dropMode, itemPoolRef, macroCommand } from "../../module/applications/actor/parts/drag.mjs";
 
 test("a Distinction drags as its d8 unless the d4 button started the drag", () => {
   const item = { id: "abc", type: "distinction", system: {} };
@@ -24,6 +25,16 @@ test("drop mode: sort, move an owned Job, copy everything else", () => {
   assert.equal(dropMode({ ...base, ownsSource: false }), "copy");
   assert.equal(dropMode({ ...base, hasSource: false, ownsSource: false }), "copy");
   assert.equal(dropMode({ ...base, type: "talent" }), "copy");
+});
+
+test("copy policy: players cannot copy foreign Jobs and pay for dropped Assets", () => {
+  assert.equal(copyPolicy({ isGM: false, type: "job", hasSource: true }), "denyJob");
+  assert.equal(copyPolicy({ isGM: false, type: "job", hasSource: false }), "copy");
+  assert.equal(copyPolicy({ isGM: false, type: "asset", hasSource: true }), "buyAsset");
+  assert.equal(copyPolicy({ isGM: false, type: "asset", hasSource: false }), "buyAsset");
+  assert.equal(copyPolicy({ isGM: false, type: "talent", hasSource: true }), "copy");
+  assert.equal(copyPolicy({ isGM: true, type: "job", hasSource: true }), "copy");
+  assert.equal(copyPolicy({ isGM: true, type: "asset", hasSource: true }), "copy");
 });
 
 test("macro command is guarded while game.leverage does not exist", () => {

@@ -7,6 +7,7 @@ import { SYSTEM_ID } from "../../config.mjs";
 import { logger } from "../../logger.mjs";
 import { executeAsGM, registerSocketAction } from "../../socket.mjs";
 import { applyComplication, keepNextDie, resolveNextOne } from "../../dice/card-actions.mjs";
+import { resolveActor, rollOf } from "../components/common.mjs";
 import { readJob } from "../gm/job-actions.mjs";
 import { promptComplication } from "./complication-dialog.mjs";
 import { damageFromCard } from "./damage.mjs";
@@ -17,8 +18,7 @@ const busy = new Set();
 /** How long a player's "+1 PP" button stays disabled while it waits for the Fixer to update the card (ms). */
 const WAIT_FOR_FIXER = 4000;
 
-const rollOf = (message) => message?.getFlag(SYSTEM_ID, "roll") ?? null;
-const actorOf = (data) => (data?.actorUuid ? fromUuidSync(data.actorUuid) : null);
+const actorOf = (data) => (data?.actorUuid ? resolveActor(data.actorUuid) : null);
 const plotPointsOf = (actor) => actor?.system?.plotPoints?.value ?? 0;
 
 /** Runs `task` unless an action on this message is already running. */

@@ -7,6 +7,7 @@
  * The pure decisions are exported for unit tests; the rest is thin glue on the sheet.
  */
 import { LEVERAGE } from "../../../config.mjs";
+import { buyAsset } from "./assets.mjs";
 
 /** Mime prefix that tells `dragover` (which cannot read the payload) the type of the Item being dragged. */
 export const ITEM_MIME = "application/x-leverage-item-";
@@ -44,6 +45,21 @@ export function itemPoolRef(item, origin = null) {
 export function dropMode({ sameActor, type, hasSource, ownsSource }) {
   if (sameActor) return "sort";
   return type === "job" && hasSource && ownsSource ? "move" : "copy";
+}
+
+/**
+ * What a "copy" drop of a non-GM user turns into: a Job from someone else's sheet is refused, and an Asset goes
+ * through the same Plot Point cost as "+ ADD". The Fixer copies freely.
+ * @param {object} p
+ * @param {boolean} p.isGM
+ * @param {string} p.type Item type.
+ * @param {boolean} p.hasSource The item belongs to another actor.
+ * @returns {"copy"|"buyAsset"|"denyJob"}
+ */
+export function copyPolicy({ isGM, type, hasSource }) {
+  if (isGM) return "copy";
+  if (type === "job" && hasSource) return "denyJob";
+  return type === "asset" ? "buyAsset" : "copy";
 }
 
 /**
@@ -146,8 +162,12 @@ export async function dropItem(actor, event, data) {
     hasSource: Boolean(source),
     ownsSource: Boolean(source?.isOwner && item.isOwner)
   });
-  if (mode === "sort") await sortBefore(actor, item, event.target);
-  else await copyItem(actor, item, mode === "move");
+  if (mode === "sort") return sortBefore(actor, item, event.target);
+  if (mode === "move") return copyItem(actor, item, true);
+  const policy = copyPolicy({ isGM: game.user.isGM, type: item.type, hasSource: Boolean(source) });
+  if (policy === "denyJob") ui.notifications.warn(game.i18n.localize("LEVERAGE.Warn.jobCopyForbidden"));
+  else if (policy === "buyAsset") await buyAsset(actor, copyData(actor, item));
+  else await copyItem(actor, item, false);
 }
 
 /* ---------------------------------------------------------------- hotbar */

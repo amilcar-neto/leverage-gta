@@ -3,7 +3,7 @@
  * Pure helpers (costs, die suggestion, which Jobs to spend) are exported for unit tests; the rest is sheet glue.
  */
 import { LEVERAGE } from "../../../config.mjs";
-import { readSetting } from "../../../data/fields.mjs";
+import { getTrainingCosts } from "../../../world-state.mjs";
 import { deleteWithConfirm } from "../../components/confirm-delete.mjs";
 import { escapeHtml } from "../../components/die.mjs";
 import { t } from "../../components/i18n.mjs";
@@ -28,19 +28,6 @@ export function suggestAssetDie(duration, assets) {
   const { first, next } = LEVERAGE.signatureAssetDice;
   if (duration !== "signature") return LEVERAGE.defaultDie;
   return assets.some((a) => a.system.duration === "signature") ? next : first;
-}
-
-/**
- * Training Up costs: the `trainingCosts` setting over the defaults; bad values fall back to the default.
- * @param {object} [stored] Setting value.
- * @returns {Record<string, number>}
- */
-export function resolveTrainingCosts(stored = {}) {
-  const defaults = LEVERAGE.defaultTrainingCosts;
-  return Object.fromEntries(Object.entries(defaults).map(([key, base]) => {
-    const value = Number(stored?.[key]);
-    return [key, Number.isInteger(value) && value >= 0 ? value : base];
-  }));
 }
 
 /**
@@ -105,19 +92,37 @@ function say(sheet, key, data) {
 /**
  * Creates an Asset after taking its Plot Point cost; the cost goes back if the Asset could not be created.
  * @param {Actor} actor
- * @param {{name: string, duration: string, die: number}} choice
+ * @param {object} data Item creation data (`type: "asset"`).
  * @param {number} cost Plot Points to pay (0 for a Signature Asset).
  */
-async function createAssetPaying(actor, choice, cost) {
+async function createAssetPaying(actor, data, cost) {
   if (cost) await actor.addPlotPoints(-cost);
   let created = [];
   try {
-    created = await actor.createEmbeddedDocuments("Item", [{
-      name: choice.name, type: "asset", system: { duration: choice.duration, die: choice.die }
-    }]);
+    created = await actor.createEmbeddedDocuments("Item", [data]);
   } finally {
     if (cost && !created.length) await actor.addPlotPoints(cost);
   }
+}
+
+/**
+ * The one way a sheet adds an Asset ("+ ADD" and drops alike): the Plot Point cost is checked and paid, and a
+ * player never picks the die (the suggested one is always used; only the Fixer may set another).
+ * @param {Actor} actor
+ * @param {object} data Item creation data (`type: "asset"`, `system.duration`; `system.die` honoured for the Fixer only).
+ * @returns {Promise<boolean>} true when the Asset was created
+ */
+export async function buyAsset(actor, data) {
+  const duration = data.system?.duration;
+  const die = game.user.isGM && data.system?.die ? data.system.die : suggestAssetDie(duration, actor.itemTypes.asset);
+  const cost = assetCostOf(duration);
+  const have = actor.system.plotPoints?.value ?? 0;
+  if (cost > have) {
+    ui.notifications.warn(t("LEVERAGE.Warn.notEnoughPlotPoints", { cost, have }));
+    return false;
+  }
+  await createAssetPaying(actor, { ...data, type: "asset", system: { ...data.system, die } }, cost);
+  return true;
 }
 
 /* ---------------------------------------------------------------- actions */
@@ -131,16 +136,18 @@ export const actions = {
     const assets = actor.itemTypes.asset;
     const choice = await promptCreateAsset({
       plotPoints: actor.system.plotPoints?.value ?? 0,
-      suggestDie: (duration) => suggestAssetDie(duration, assets)
+      suggestDie: (duration) => suggestAssetDie(duration, assets),
+      chooseDie: game.user.isGM
     });
     if (!choice) return;
-    const cost = assetCostOf(choice.duration);
-    const have = actor.system.plotPoints?.value ?? 0;
-    if (cost > have) {
-      ui.notifications.warn(t("LEVERAGE.Warn.notEnoughPlotPoints", { cost, have }));
-      return;
-    }
-    await createAssetPaying(actor, choice, cost);
+    await buyAsset(actor, {
+      name: choice.name, type: "asset", system: { duration: choice.duration, die: choice.die }
+    });
+  },
+
+  /** Opens an Asset (the button; a double click on the row does the same). */
+  openAsset(_event, target) {
+    openItem(itemOf(this, target));
   },
 
   /** Deletes an Asset (asks first only for a Signature Asset). */
@@ -180,7 +187,7 @@ export const actions = {
       ui.notifications.warn(t("LEVERAGE.Warn.noUnspentJobs"));
       return;
     }
-    const costs = resolveTrainingCosts(readSetting("trainingCosts", {}));
+    const costs = getTrainingCosts();
     const pick = await promptTrainUp({ unspent, costs });
     if (!pick) return;
     const ids = pickJobsToSpend(jobs, pick.cost);

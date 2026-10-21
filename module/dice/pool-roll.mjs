@@ -66,33 +66,3 @@ export function evaluatePool(results, extraKept = 0, keep = LEVERAGE.keepDefault
     total: keptRes.reduce((sum, r) => sum + r.value, 0)
   };
 }
-
-/**
- * Whether a Plot Point can buy another kept die: some die is neither kept nor a 1.
- * @param {PoolOutcome} outcome
- * @returns {boolean}
- */
-export function canKeepExtra(outcome) {
-  return outcome.rest.length > 0;
-}
-
-/**
- * Plot Points needed to keep `extra` more dice (1 PP each), capped by the dice that could be kept.
- * @param {PoolOutcome} outcome
- * @param {number} extra
- * @returns {number}
- */
-export function extraKeepCost(outcome, extra) {
-  return Math.min(Math.max(0, extra), outcome.rest.length);
-}
-
-/**
- * Convenience: roll and evaluate in one call.
- * @param {number[]} sizes
- * @param {() => number} [rng]
- * @returns {{results: DieResult[], outcome: PoolOutcome}}
- */
-export function rollAndEvaluate(sizes, rng = Math.random) {
-  const results = rollPool(sizes, rng);
-  return { results, outcome: evaluatePool(results) };
-}

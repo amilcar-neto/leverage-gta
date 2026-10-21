@@ -92,7 +92,7 @@ export async function openPayDialog(actor) {
     }
   });
   if (!pick) return null;
-  const paid = await payPrice(actor, pick.dice, pick.id === CUSTOM ? pick.label : t(pick.label));
+  const paid = await payPrice(actor, pick.dice, pick.id === CUSTOM ? pick.label : t(pick.label), pick.id);
   if (!paid.ok) ui.notifications.warn(t("LEVERAGE.Money.Pay.short", { n: paid.shortBy }));
   return paid;
 }

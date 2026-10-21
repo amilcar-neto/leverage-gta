@@ -12,7 +12,7 @@ const VITALS = Object.freeze(["life", "vest"]);
 const openState = new WeakMap();
 
 /** Hook fired by the house-rule settings. */
-const HOUSE_RULES_HOOK = "leverage.houseRulesChanged";
+const HOUSE_RULES_HOOK = LEVERAGE.hooks.houseRulesChanged;
 
 /**
  * Keeps a vital value inside 0..max (whole numbers only).
@@ -120,11 +120,19 @@ export const actions = {
     return setVital(this, key, this.actor.system[key].value + Number(target.dataset.delta));
   },
 
-  /** A vest kind button in the Vest popover. */
+  /** A vest kind button in the Vest popover. The Fixer sets it for free; a player buys it with Money. */
   async setVestKind(event, target) {
     if (!this.isEditable) return;
-    const data = vestKindUpdate(target.dataset.kind);
-    if (data && target.dataset.kind !== this.actor.system.vest.kind) await this.actor.update(data);
+    const kind = target.dataset.kind;
+    const vest = this.actor.system.vest;
+    if (game.user.isGM) {
+      const data = vestKindUpdate(kind);
+      if (data && kind !== vest.kind) await this.actor.update(data);
+      return;
+    }
+    if (!vestKindUpdate(kind) || (kind === vest.kind && vest.value >= vest.max)) return;
+    const paid = await this.actor.buyVest(kind);
+    if (!paid.ok) ui.notifications.warn(game.i18n.format("LEVERAGE.Money.Pay.short", { n: paid.shortBy }));
   }
 };
 

@@ -13,16 +13,14 @@ import { priceToSteps, stepsToDice } from "../../rules/money.mjs";
 import { bailAllowed, poolText } from "../../rules/stars.mjs";
 import { readWanted } from "../../world-state.mjs";
 import { evaluateDice } from "../../dice/roll-core.mjs";
-import { escapeHtml } from "../components/die.mjs";
+import { escapeHtml, requireGM, resolveActor, rollOf } from "../components/common.mjs";
 import { t, tn } from "../components/i18n.mjs";
-import { requireGM } from "../gm/job-actions.mjs";
 import { raise } from "../gm/stars-actions.mjs";
 import { damageLines, damageSummary, isPoliceSource, downCardContext, weaponOptions } from "./damage-lines.mjs";
 
 /** Template of the WASTED / BUSTED card. */
 export const DOWN_CARD_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/down-card.hbs`;
 
-const rollOf = (message) => message?.getFlag(SYSTEM_ID, "roll") ?? null;
 const dieText = (steps) => poolText(stepsToDice(steps));
 
 /** The three house-rule switches. */
@@ -41,11 +39,10 @@ function allowed() {
   return false;
 }
 
-/** Resolves an Actor, a UUID or an id to a Crew or NPC actor that has Life. */
+/** Resolves an Actor, a UUID, an id or a Token to an actor that has Life (Crew or NPC). */
 function targetOf(target) {
-  const doc = typeof target === "string" ? (fromUuidSync(target) ?? game.actors.get(target)) : target;
-  const actor = doc?.documentName === "Token" ? doc.actor : doc;
-  return actor?.documentName === "Actor" && actor.system?.life ? actor : null;
+  const actor = resolveActor(target);
+  return actor?.system?.life ? actor : null;
 }
 
 /* ------------------------------------------------------------ the card button */
@@ -248,9 +245,9 @@ async function postDownCard(info, uuid) {
 
 /**
  * Life reached 0 (docs/02 "Quando a Vida zera"). Crew: Life back to full, +1 Plot Point, scene weapon Assets lost
- * (the Fixer is asked), Wasted pays the hospital, Busted pays bail where the city allows it. Money that is missing
- * is shown on the card as a debt (paid with what the character has, nothing is tracked). A Busted character that
- * could not buy his way out waits for a rescue: the card has a "Rescued" button for the Fixer, and the stars rise
+ * (the Fixer is asked), Wasted pays the hospital, Busted pays bail where the city allows it. Only the hospital takes
+ * a partial payment: what is missing is shown on the card as a debt (nothing is tracked). Bail is all or nothing. A
+ * Busted character that could not buy his way out waits for a rescue: the card has a "Rescued" button for the Fixer, and the stars rise
  * then (`rescued`), not at the arrest. NPCs just fall (Life stays 0). Posts the WASTED / BUSTED card. Fixer only.
  * @param {Actor|string} target
  * @param {object} [options]

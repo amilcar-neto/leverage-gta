@@ -3,6 +3,7 @@
  * The context builder is pure (testable in node); only the hook registration at the bottom touches Foundry globals.
  */
 import { LEVERAGE, SYSTEM_ID, hasRealPortrait } from "../../config.mjs";
+import { resolveActor, rollOf } from "../components/common.mjs";
 import { renderDie } from "../components/die.mjs";
 import { unresolvedOnes } from "../../dice/card-actions.mjs";
 import { cardHandlers, isCharacterOwner, latestRollOf, registerCardSocket } from "./card-handlers.mjs";
@@ -90,8 +91,6 @@ export function rollCardContext(data, { t, isOwner = false, isLatest = true, isG
 
 /* ------------------------------------------------------------ Foundry half */
 
-const rollOf = (message) => message?.getFlag(SYSTEM_ID, "roll") ?? null;
-
 let compiled = null;
 
 /** Loads (once) the compiled card template. */
@@ -103,7 +102,7 @@ async function ensureTemplate() {
 /** Draws the card into one rendered message element. Nothing is drawn for a message the viewer may not read. */
 function paint(message, html, data, template) {
   if (!message.isContentVisible) return;
-  const actor = data.actorUuid ? fromUuidSync(data.actorUuid) : null;
+  const actor = resolveActor(data.actorUuid);
   const context = rollCardContext(data, {
     t: (key, args) => game.i18n.format(key, args), lang: game.i18n.lang,
     isOwner: isCharacterOwner(actor, game.user), isLatest: latestRollOf(data.actorUuid)?.id === message.id,

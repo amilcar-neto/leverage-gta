@@ -61,7 +61,8 @@ Alvo visual do card: `reference/mockups/png/roll-chat-card.png`. Bandeja: rodap�
   e atualiza Vida/Colete. Se a Vida zerar: mensagem **WASTED** ou **BUSTED** (NPC com `police`) estilizada como no
   GTA, com os passos da regra (pagar d4 / fiança d6 ou resgate, +1 PP, perder Assets de arma de cena — com
   confirmação).
-- **Ganging Up:** o card do jogador que vence contra uma gangue mostra "−1 thug" (−2 com +5) e atualiza o NPC.
+- **Ganging Up:** quem vence contra uma gangue derruba um capanga (dois com +5); o mestre diminui o tamanho da gangue
+  na ficha do NPC (`gang.size`). O sistema não automatiza isso: o card do jogador não mostra "−1 thug".
 
 ## Integrações
 

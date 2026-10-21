@@ -31,6 +31,35 @@ export function isTraitType(type) {
   return LEVERAGE.traitItemTypes.includes(type);
 }
 
+/** Value of `path` in a changes object, flat (`"system.die"`) or nested (`{system: {die}}`); `undefined` when absent. */
+function changeAt(changes, path) {
+  if (path in changes) return { value: changes[path] };
+  let node = changes;
+  for (const key of path.split(".")) {
+    if (node === null || typeof node !== "object" || !(key in node)) return undefined;
+    node = node[key];
+  }
+  return { value: node };
+}
+
+/**
+ * Protected Item fields (`LEVERAGE.protectedItemFields`) a non-GM update tries to change. The one exception is
+ * `system.spent` going false to true (Training Up spends Jobs from the player's own sheet).
+ * @param {{type: string, system?: object}} item Item being updated (its current data).
+ * @param {object} changes Update data, flat or expanded.
+ * @param {User} [user]
+ * @returns {string[]} the offending paths (empty when the update is allowed)
+ */
+export function protectedFieldsChanged(item, changes, user = game.user) {
+  if (user?.isGM) return [];
+  return (LEVERAGE.protectedItemFields[item.type] ?? []).filter((path) => {
+    const change = changeAt(changes ?? {}, path);
+    if (!change) return false;
+    if (path === "system.spent" && change.value === true && !item.system?.spent) return false;
+    return true;
+  });
+}
+
 /**
  * Checks a batch of Items about to be created on `actor` against the lock and the Distinction cap.
  * The GM bypasses everything. Counts the whole batch plus the Distinctions already owned.

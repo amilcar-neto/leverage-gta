@@ -70,9 +70,16 @@
   --lv-window-radius: 8px;
   --lv-window-title-h: 32px;
   --lv-window-title-size: 17px;
-  --lv-shadow-panel: 5px 5px 0 rgba(0, 0, 0, 0.45);
+  --lv-shadow-panel: 5px 5px 0 var(--lv-shade-45);
   --lv-col-gap: 12px;
   --lv-gap: 16px;
   --lv-gutter: 8px;
   --lv-scrollbar: 8px;
+  --lv-shade-45: rgba(0, 0, 0, 0.45);
+  --lv-wash-05: rgba(255, 255, 255, 0.05);
+  --lv-wash-06: rgba(255, 255, 255, 0.06);
+  --lv-wash-07: rgba(255, 255, 255, 0.07);
+  --lv-wash-08: rgba(255, 255, 255, 0.08);
+  --lv-wash-25: rgba(255, 255, 255, 0.25);
+  --lv-ink-35: rgba(233, 240, 237, 0.35);
 }

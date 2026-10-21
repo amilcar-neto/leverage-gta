@@ -27,6 +27,17 @@ test("setLevel validates 0..5 and refuses no-ops", () => {
   assert.equal(plan("setLevel", { level: 1 }, state("liberty", 1)).error, "unchanged");
 });
 
+test("setCity zeroes the stars, names the new city and refuses unknown or same cities", () => {
+  const moved = plan("setCity", { city: "carcer" }, state("liberty", 3));
+  assert.deepEqual([moved.ok, moved.from, moved.to, moved.city, moved.reason.key], [true, 3, 0, "carcer", "changeCity"]);
+  assert.equal(plan("setCity", { city: "carcer" }, state("liberty", 0)).to, 0);
+  assert.equal(plan("setCity", { city: "nowhere" }, state("liberty", 3)).error, "unknownCity");
+  assert.equal(plan("setCity", { city: "liberty" }, state("liberty", 3)).error, "sameCity");
+  assert.equal(plan("setCity", { city: "carcer" }, state("liberty", 3, { rulesOn: false })).error, "disabled");
+  assert.equal(mayStart("setCity", { isGM: true }), true);
+  assert.equal(mayStart("setCity", { isGM: false }), false);
+});
+
 test("waiting follows the city scale", () => {
   assert.equal(plan("wait", { scenes: 2 }, state("carcer", 4)).to, 2);
   assert.equal(plan("wait", { scenes: 1 }, state("venturas", 3)).error, "notEnough");

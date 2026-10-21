@@ -16,8 +16,9 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 /** Die size in the lists and in the Money cell. */
 const DIE_SIZE = LEVERAGE.dieGeometry.uses.tracker;
 
-/** Settings that decide which cells the Crew rows show. */
-const RULES_HOOK = "leverage.houseRulesChanged";
+/** Hooks that refresh the tracker: the active Job changed, the house rules (which cells the Crew rows show) changed. */
+const JOB_HOOK = LEVERAGE.hooks.activeJobChanged;
+const RULES_HOOK = LEVERAGE.hooks.houseRulesChanged;
 
 /** Template data of one Complication / scene Trait row. */
 const entryRow = (list) => (e) => ({
@@ -71,7 +72,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     const refresh = () => this.rendered && this.render();
     const onActor = (actor) => actor?.type === "crew" && refresh();
     this.#hooks = [
-      ["leverage.activeJobChanged", Hooks.on("leverage.activeJobChanged", refresh)],
+      [JOB_HOOK, Hooks.on(JOB_HOOK, refresh)],
       [RULES_HOOK, Hooks.on(RULES_HOOK, refresh)],
       ["updateActor", Hooks.on("updateActor", onActor)],
       ["createActor", Hooks.on("createActor", onActor)],

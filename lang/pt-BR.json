@@ -492,7 +492,8 @@
           "signature": "Permanente. Vai com o personagem em todo Job.",
           "job": "Dura este Job.",
           "scene": "Dura esta cena."
-        }
+        },
+        "open": "Abrir Asset"
       },
       "Jobs": {
         "summary": "{jobs} JOBS · {unspent} SEM GASTAR",
@@ -582,7 +583,9 @@
       "maxDistinctions": "Um personagem pode ter no máximo {max} Distinctions.",
       "notEnoughPlotPoints": "Plot Points insuficientes: custa {cost} e você tem {have}.",
       "noUnspentJobs": "Nenhum Job sem gastar para gastar.",
-      "apiNotReady": "A API ainda está carregando; tente de novo."
+      "apiNotReady": "A API ainda está carregando; tente de novo.",
+      "jobCopyForbidden": "Você não pode copiar um Job da ficha de outro personagem.",
+      "fixerOnlyField": "Só o mestre pode alterar este campo."
     },
     "ItemSheet": {
       "role": "Role",
@@ -671,9 +674,11 @@
       },
       "Warn": {
         "gmOnly": "Só o mestre pode fazer isso.",
-        "soon": "Em breve.",
         "noCrew": "Não há personagens na Equipe.",
-        "jobNameRequired": "Dê um nome ao Job."
+        "jobNameRequired": "Dê um nome ao Job.",
+        "sharesExceedTotal": "As partes somam {sum}, mais que o total de {total}.",
+        "shareDidNotFit": "A Grana de {name} está cheia: {lost} degrau(s) da parte se perderam.",
+        "openFailed": "Não foi possível abrir a janela. Veja o console."
       },
       "Chat": {
         "speaker": "Mestre",
@@ -781,6 +786,7 @@
       "notOwner": "Você não é dono de {name}.",
       "invalidAmount": "A quantidade deve ser um número inteiro, zero ou mais.",
       "invalidPrice": "Um preço é um número inteiro de degraus ou uma lista de dados como [12, 6].",
+      "moneyOff": "A regra da casa Grana está desligada.",
       "Pool": {
         "empty": "Informe pelo menos uma referência da Pool.",
         "unknownRef": "Referência de Pool desconhecida ou indisponível: {ref}.",
@@ -954,7 +960,8 @@
         "lastResortSilence": "{name} comprou silêncio como última saída ({dice})",
         "lastResortBoth": "{name} mudou de cara e comprou silêncio como última saída ({dice})",
         "lastResortBothFree": "{name} mudou de cara como última saída (sem precisar de silêncio)",
-        "lastResortScapegoat": "Última saída: um bode expiatório foi entregue (mini-golpe)"
+        "lastResortScapegoat": "Última saída: um bode expiatório foi entregue (mini-golpe)",
+        "changeCity": "A Equipe saiu para {city}"
       },
       "Error": {
         "disabled": "A regra da casa Estrelas está desligada.",
@@ -973,7 +980,9 @@
         "noSilence": "Comprar silêncio não funciona nesta cidade.",
         "short": "Grana insuficiente (faltam {shortBy} degrau(s)).",
         "needsConfirm": "Confirme que a Equipe fez o que a última saída pede.",
-        "invalidWay": "Saída desconhecida."
+        "invalidWay": "Saída desconhecida.",
+        "unknownCity": "Cidade desconhecida: {city}.",
+        "sameCity": "A Equipe já está nessa cidade."
       },
       "Dialog": {
         "title": "Nível de procurado",

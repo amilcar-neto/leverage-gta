@@ -20,7 +20,7 @@ const RENDER_DEBOUNCE_MS = 50;
 
 /** Hooks that keep the HUD current (`leverage.` ones are the system's own). */
 const REFRESH_HOOKS = Object.freeze([
-  "controlToken", "canvasReady", "leverage.starsChanged", "leverage.hudChanged", "leverage.houseRulesChanged"
+  "controlToken", "canvasReady", LEVERAGE.hooks.starsChanged, LEVERAGE.hooks.hudChanged, LEVERAGE.hooks.houseRulesChanged
 ]);
 
 /** Size of the Money dice. */
@@ -152,6 +152,12 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
   /** @override */
   async _onFirstRender() {
     this.element.addEventListener("contextmenu", (event) => this.#onContextMenu(event));
+    this.element.addEventListener("keydown", (event) => {
+      const value = event.target.closest?.(".lv-hud-pp-value[role='button']");
+      if (!value || !["Enter", " "].includes(event.key)) return;
+      event.preventDefault();
+      value.click();
+    });
     this.#watchSidebar();
     this.#watchWorld();
   }

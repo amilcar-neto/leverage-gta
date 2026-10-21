@@ -11,17 +11,28 @@ import { getPriceDice } from "../world-state.mjs";
 import { canEditTraits, checkItemBatch, warnBatchFailure, warnUser } from "./guards.mjs";
 
 /** Hook fired by the house-rule settings (the sheet header uses the same one). */
-const HOUSE_RULES_HOOK = "leverage.houseRulesChanged";
+const HOUSE_RULES_HOOK = LEVERAGE.hooks.houseRulesChanged;
 
 /** True when the Life/Vest house rule is on (safe before settings are ready). */
 const lifeRuleOn = () => Boolean(readSetting("houseRules.life", true));
+
+/**
+ * Whether Foundry itself would show the bars of `token` (display mode and who may see them). Computed again here
+ * so the bars come back when the rule is switched on: the core only sets the flag during its own refresh.
+ */
+function barsShown(token) {
+  const mode = token.document?.displayBars;
+  if (mode === CONST.TOKEN_DISPLAY_MODES.NONE) return false;
+  return token._canViewMode?.(mode) ?? true;
+}
 
 /**
  * Token bars follow `houseRules.life`: with the rule off the Life and Vest bars are hidden (data is kept).
  * Registered once at load; tokens are asked to redraw their bars when the rule changes.
  */
 globalThis.Hooks?.on("refreshToken", (token) => {
-  if (token.actor?.system?.life && token.bars) token.bars.visible &&= lifeRuleOn();
+  if (!token.actor?.system?.life || !token.bars) return;
+  token.bars.visible = lifeRuleOn() && barsShown(token);
 });
 globalThis.Hooks?.on(HOUSE_RULES_HOOK, () => {
   for (const token of globalThis.canvas?.tokens?.placeables ?? []) token.renderFlags?.set({ refreshBars: true });

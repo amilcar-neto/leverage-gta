@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  maxLife, contestResult, baseDamage, applyDamage, restScene, resolveDown, giveIn, thugsDown,
+  maxLife, baseDamage, applyDamage, restScene, resolveDown,
   oppositionWins, lostBy, damageRound, planDown, linkedRollIndex
 } from "../../module/rules/combat.mjs";
 
@@ -11,13 +11,6 @@ test("max life is 10 + Vitality die", () => {
   assert.equal(maxLife(12), 22);
   assert.equal(maxLife(8, 12), 20);
   assert.throws(() => maxLife(7), RangeError);
-});
-
-test("ties are losses; 5+ is extraordinary", () => {
-  assert.deepEqual(contestResult(9, 9), { margin: 0, passed: false, extraordinary: false });
-  assert.equal(contestResult(10, 5).extraordinary, true);
-  assert.equal(contestResult(9, 5).extraordinary, false);
-  assert.equal(contestResult(5, 9).margin, -4);
 });
 
 test("damage is margin lost plus weapon roll", () => {
@@ -79,21 +72,6 @@ test("Busted for police; bail not allowed in Liberty City", () => {
   assert.equal(resolveDown({ byPolice: true, max: 16, hospitalSteps: 1, bailSteps: 2, bailAllowed: false }).bailCostSteps, null);
 });
 
-test("give in", () => {
-  assert.deepEqual(giveIn(), { complicationDie: 6, plotPoints: 1 });
-});
-
-test("ganging up takedowns", () => {
-  assert.equal(thugsDown(0, 4), 0);
-  assert.equal(thugsDown(-3, 4), 0);
-  assert.equal(thugsDown(2, 4), 1);
-  assert.equal(thugsDown(5, 4), 2);
-  assert.equal(thugsDown(7, 1), 1);
-  assert.equal(thugsDown(4, 1), 0);
-  assert.equal(thugsDown(9, 2), 2);
-  assert.equal(thugsDown(9, 0), 0);
-});
-
 test("opposition wins ties; margin is never negative", () => {
   assert.equal(oppositionWins(9, 9), true);
   assert.equal(oppositionWins(10, 9), false);
@@ -124,9 +102,16 @@ test("planDown: Wasted pays the hospital, +1 PP, loses weapon Assets", () => {
   assert.deepEqual([plan.restoreLife, plan.plotPoints, plan.loseWeaponAssets, plan.rescuable], [18, 1, true, false]);
 });
 
-test("planDown: short on Money pays what there is", () => {
-  const plan = planDown({ ...down, byPolice: true, isCrew: true, moneySteps: 1 });
-  assert.deepEqual([plan.priceKind, plan.dueSteps, plan.paidSteps, plan.shortBy, plan.rescuable], ["bail", 2, 1, 1, true]);
+test("planDown: the hospital takes a partial payment and leaves a debt", () => {
+  const plan = planDown({ ...down, hospitalSteps: 2, byPolice: false, isCrew: true, moneySteps: 1 });
+  assert.deepEqual([plan.priceKind, plan.dueSteps, plan.paidSteps, plan.shortBy, plan.rescuable], ["hospital", 2, 1, 1, false]);
+});
+
+test("planDown: bail is all or nothing; short on Money pays nothing and waits for a rescue", () => {
+  const short = planDown({ ...down, byPolice: true, isCrew: true, moneySteps: 1 });
+  assert.deepEqual([short.priceKind, short.dueSteps, short.paidSteps, short.rescuable], ["bail", 2, 0, true]);
+  const enough = planDown({ ...down, byPolice: true, isCrew: true, moneySteps: 2 });
+  assert.deepEqual([enough.paidSteps, enough.shortBy, enough.rescuable], [2, 0, false]);
 });
 
 test("planDown: Busted without bail waits for rescue (the Fixer raises the star)", () => {

@@ -4,13 +4,13 @@
  * `button: true` acts on click, `toggle: true` flips `active` (docs/research/foundry-v14-essentials.md 2.6).
  * The actions themselves live in `job-actions.mjs` and the setters below, which the API (T-505) re-exports.
  */
-import { SYSTEM_ID } from "../../config.mjs";
-import { readSetting } from "../../data/fields.mjs";
+import { LOCK_HOOK, SYSTEM_ID } from "../../config.mjs";
+import { logger } from "../../logger.mjs";
 import { clampStars } from "../../rules/stars.mjs";
 import { readWanted } from "../../world-state.mjs";
 import { t } from "../components/i18n.mjs";
 import * as actions from "./job-actions.mjs";
-import { setLevel } from "./stars-actions.mjs";
+import { setCity, setLevel } from "./stars-actions.mjs";
 
 /** Control group name. */
 export const CONTROL_NAME = "leverage";
@@ -31,20 +31,17 @@ export async function setTraitsLocked(locked) {
 }
 
 /**
- * Sets the wanted city and level. The level goes through `setLevel` (the one way the stars change), so it is
- * announced in chat; the city is only written here.
+ * Sets the wanted city and level. Both are stars actions in the serial queue, each with its chat line: leaving for
+ * another city (`setCity`) zeroes the level (docs/02), then the level is set in the new city.
  * @param {number} level 0..5
  * @param {string} [city] City id; keeps the current city when omitted.
  * @returns {Promise<boolean>} false when the user is not the GM or the change was refused
  */
 export async function setWanted(level, city) {
   if (!actions.requireGM()) return false;
-  const current = readWanted();
-  if (city && city !== current.city) {
-    await game.settings.set(SYSTEM_ID, "wanted", { ...readSetting("wanted", {}), city, level: current.level });
-  }
+  if (city && city !== readWanted().city && !(await setCity(city)).ok) return false;
   const target = clampStars(level);
-  if (target === current.level) return true;
+  if (target === readWanted().level) return true;
   return (await setLevel(target)).ok;
 }
 
@@ -55,24 +52,26 @@ export async function openWantedDialog() {
   return mod.openWantedDialog();
 }
 
-/** Opens the opposition roller (T-504), or warns when it is not installed yet. */
-export async function openOpposition() {
-  if (!actions.requireGM()) return;
+/** Runs a window opener; a real error is logged and shown to the Fixer, never swallowed. */
+async function openWindow(open) {
   try {
-    const mod = await import("../../dice/opposition.mjs");
-    if (typeof mod.openOppositionRoller === "function") return mod.openOppositionRoller();
-  } catch { /* module missing: fall through to the warning */ }
-  ui.notifications.warn(t("LEVERAGE.GM.Warn.soon"));
+    return await open();
+  } catch (err) {
+    logger.error("Could not open a Fixer window", err);
+    ui.notifications.error(t("LEVERAGE.GM.Warn.openFailed"));
+  }
 }
 
-/** Opens the Job Tracker (T-703), or warns when it is not installed yet. */
+/** Opens the opposition roller (loaded on demand). */
+export async function openOpposition() {
+  if (!actions.requireGM()) return;
+  return openWindow(async () => (await import("../../dice/opposition.mjs")).openOppositionRoller());
+}
+
+/** Opens the Job Tracker (loaded on demand). */
 export async function openTracker() {
   if (!actions.requireGM()) return;
-  try {
-    const mod = await import("./job-tracker.mjs");
-    if (mod.JobTracker) return new mod.JobTracker().render({ force: true });
-  } catch { /* module missing: fall through to the warning */ }
-  ui.notifications.warn(t("LEVERAGE.GM.Warn.soon"));
+  return openWindow(async () => new (await import("./job-tracker.mjs")).JobTracker().render({ force: true }));
 }
 
 /** Builds a button tool. */
@@ -111,5 +110,5 @@ export function registerSceneControls() {
   Hooks.on("getSceneControlButtons", (controls) => {
     if (game.user.isGM) controls[CONTROL_NAME] = buildControl();
   });
-  Hooks.on("leverage.traitsLockedChanged", () => { if (game.user.isGM) ui.controls?.render(); });
+  Hooks.on(LOCK_HOOK, () => { if (game.user.isGM) ui.controls?.render(); });
 }

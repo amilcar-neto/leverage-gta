@@ -26,14 +26,16 @@ function dieOptions(selected) {
 }
 
 /** Builds the dialog body. */
-function buildContent({ plotPoints, duration, die }) {
+function buildContent({ plotPoints, duration, die, chooseDie }) {
+  const dieField = chooseDie ? `
+    <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.die")}</span>
+      <select name="die">${dieOptions(die)}</select></label>` : "";
   return `<div class="lv-dlg">
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.name")}</span>
       <input type="text" name="name" required autofocus maxlength="80" placeholder="${escapeHtml(t("LEVERAGE.Dialog.Asset.namePlaceholder"))}"></label>
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.duration")}</span>
       <select name="duration">${durationOptions(duration)}</select></label>
-    <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.die")}</span>
-      <select name="die">${dieOptions(die)}</select></label>
+    ${dieField}
     <p class="lv-dlg-hint">${t("LEVERAGE.Dialog.Asset.plotPoints", { value: plotPoints })}</p>
   </div>`;
 }
@@ -43,9 +45,10 @@ function buildContent({ plotPoints, duration, die }) {
  * @param {object} options
  * @param {number} options.plotPoints Plot Points the actor has now (shown as information).
  * @param {(duration: string) => number} options.suggestDie Die suggested for a duration.
+ * @param {boolean} [options.chooseDie] Show the die selector (Fixer only); otherwise the suggested die is used.
  * @returns {Promise<{name: string, duration: string, die: number}|null>} the choices, or null when cancelled
  */
-export async function promptCreateAsset({ plotPoints, suggestDie }) {
+export async function promptCreateAsset({ plotPoints, suggestDie, chooseDie = false }) {
   const duration = "scene";
   const { DialogV2 } = foundry.applications.api;
   return DialogV2.prompt({
@@ -53,11 +56,11 @@ export async function promptCreateAsset({ plotPoints, suggestDie }) {
     window: { title: t("LEVERAGE.Dialog.Asset.title") },
     position: { width: 380 },
     rejectClose: false,
-    content: buildContent({ plotPoints, duration, die: suggestDie(duration) }),
+    content: buildContent({ plotPoints, duration, die: suggestDie(duration), chooseDie }),
     render: (_event, dialog) => {
       const form = dialog.element.querySelector("form");
       form.elements.duration.addEventListener("change", () => {
-        form.elements.die.value = String(suggestDie(form.elements.duration.value));
+        if (form.elements.die) form.elements.die.value = String(suggestDie(form.elements.duration.value));
       });
     },
     ok: {
@@ -66,7 +69,8 @@ export async function promptCreateAsset({ plotPoints, suggestDie }) {
         const { name, duration: chosen, die } = new foundry.applications.ux.FormDataExtended(button.form).object;
         const trimmed = String(name ?? "").trim();
         if (!trimmed) return null;
-        return { name: trimmed, duration: chosen, die: Number(die) };
+        const picked = chooseDie ? Number(die) : suggestDie(chosen);
+        return { name: trimmed, duration: chosen, die: picked };
       }
     }
   });

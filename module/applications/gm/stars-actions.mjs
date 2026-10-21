@@ -18,13 +18,14 @@ import {
 } from "../../rules/stars.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
 import { createSerialQueue } from "../../socket.mjs";
+import { resolveActor } from "../components/common.mjs";
 import { t } from "../components/i18n.mjs";
 
 /** Template of the chat line. */
 export const STARS_LINE_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/stars-line.hbs`;
 
 /** All action names. */
-export const STARS_ACTIONS = Object.freeze(["raise", "setLevel", "wait", "disguise", "buySilence", "lastResort"]);
+export const STARS_ACTIONS = Object.freeze(["raise", "setLevel", "setCity", "wait", "disguise", "buySilence", "lastResort"]);
 
 /** Disguise kinds. `both` is changing car and clothes. */
 export const DISGUISE_KINDS = Object.freeze(["simple", "both"]);
@@ -50,6 +51,7 @@ export const LAST_RESORT_WAYS = Object.freeze(["disguise", "silence", "wait"]);
  * @property {object} [data] Values for the error message.
  * @property {number} [from] Stars before.
  * @property {number} [to] Stars after.
+ * @property {string} [city] New city id (only the `setCity` action changes the city).
  * @property {number[]} [cost] Money dice to pay.
  * @property {{key: string, data?: object}} [reason] Key under `LEVERAGE.Stars.Reason`.
  */
@@ -86,6 +88,14 @@ function planSetLevel(state, { level }) {
   }
   const from = clampStars(state.level);
   return from === n ? refuse("unchanged") : done(from, n, { key: "setLevel" });
+}
+
+/** The Crew goes to another city: the stars are zeroed (docs/02 "Zeram quando a Equipe sai da cidade"). */
+function planSetCity(state, { city }) {
+  const scale = state.scales.find((s) => s.id === city);
+  if (!scale) return refuse("unknownCity", { city: String(city) });
+  if (city === state.city) return refuse("sameCity");
+  return { ...done(clampStars(state.level), LEVERAGE.stars.min, { key: "changeCity", data: { city: scale.name } }), city };
 }
 
 /** Waiting out of sight: `scenes` scenes, or the break between sessions where the city only allows that. */
@@ -178,7 +188,7 @@ function planLastResort(state, { way = "disguise", confirmed = false, name = "" 
   return kind === "any" ? lastResortAny(state, from, way, name) : lastResortBoth(state, from, name);
 }
 
-const PLANNERS = { raise: planRaise, setLevel: planSetLevel, wait: planWait, disguise: planDisguise, buySilence: planBribe, lastResort: planLastResort };
+const PLANNERS = { raise: planRaise, setLevel: planSetLevel, setCity: planSetCity, wait: planWait, disguise: planDisguise, buySilence: planBribe, lastResort: planLastResort };
 
 /**
  * Plans an action without touching anything.
@@ -235,8 +245,8 @@ async function postLine(plan, actor) {
 
 /** Resolves the actor of a request to a Crew actor. */
 function crewFrom(ref) {
-  const doc = typeof ref === "string" ? (fromUuidSync(ref) ?? game.actors.get(ref)) : ref;
-  return doc?.documentName === "Actor" && doc.type === "crew" ? doc : null;
+  const actor = resolveActor(ref);
+  return actor?.type === "crew" ? actor : null;
 }
 
 /** Whether an action must name a character: it pays Money (the last resort only where it asks for dice). */
@@ -265,7 +275,7 @@ async function apply(plan, actor) {
     if (!paid.ok) return refuse("short", { shortBy: paid.shortBy });
   }
   const wanted = readWanted();
-  await game.settings.set(SYSTEM_ID, "wanted", { ...readSetting("wanted", {}), city: wanted.city, level: plan.to });
+  await game.settings.set(SYSTEM_ID, "wanted", { ...readSetting("wanted", {}), city: plan.city ?? wanted.city, level: plan.to });
   await postLine(plan, actor);
   return plan;
 }
@@ -300,6 +310,13 @@ export const raise = (n = 1, reason = "") => performStarsAction("raise", { n, re
  * @returns {Promise<StarsPlan>}
  */
 export const setLevel = (level) => performStarsAction("setLevel", { level });
+
+/**
+ * Moves the Crew to another city: the level goes to 0 with a chat line (the one way the city changes). Fixer only.
+ * @param {string} city City id of the scales in use.
+ * @returns {Promise<StarsPlan>}
+ */
+export const setCity = (city) => performStarsAction("setCity", { city });
 
 /**
  * Waiting out of sight (free). `scenes` counts toward the city's scenes-per-star; in cities that only allow

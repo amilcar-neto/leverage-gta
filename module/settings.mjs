@@ -3,6 +3,7 @@
  * Text lives in lang files under `LEVERAGE.Settings.<key>.Name/Hint`; defaults come from `LEVERAGE` (config.mjs).
  */
 import { LEVERAGE, SYSTEM_ID } from "./config.mjs";
+import { emptyJob } from "./applications/gm/job-actions.mjs";
 import { CityScalesConfig } from "./applications/gm/city-scales-config.mjs";
 import { PriceListConfig } from "./applications/gm/price-list-config.mjs";
 import { TrainingCostsConfig } from "./applications/gm/training-costs-config.mjs";
@@ -56,7 +57,7 @@ function menu(key, type, icon) {
 }
 
 /** Re-renders interested UI when a setting changes. */
-const notify = (name) => () => Hooks.callAll(`leverage.${name}`);
+const notify = (name) => () => Hooks.callAll(LEVERAGE.hooks[name] ?? `leverage.${name}`);
 
 function registerWorldSettings() {
   worldBoolean("houseRules.stars", true, notify("houseRulesChanged"));
@@ -74,7 +75,7 @@ function registerWorldSettings() {
     foundry.utils.deepClone(LEVERAGE.defaultPrices), notify("pricesChanged"));
   hiddenWorld("trainingCosts", new (fields().ObjectField)(), { ...LEVERAGE.defaultTrainingCosts },
     notify("trainingCostsChanged"));
-  hiddenWorld("activeJob", new (fields().ObjectField)(), { name: "", complications: [] }, notify("activeJobChanged"));
+  hiddenWorld("activeJob", new (fields().ObjectField)(), emptyJob(), notify("activeJobChanged"));
   game.settings.register(SYSTEM_ID, "systemMigrationVersion", {
     scope: "world", config: false, type: String, default: ""
   });

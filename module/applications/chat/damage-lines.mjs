@@ -81,7 +81,7 @@ export function downLines({ plan, name, isCrew, max, price, debt = "", lostAsset
   const lines = [t(busted ? "LEVERAGE.Damage.Down.arrested" : "LEVERAGE.Damage.Down.hospital", { name })];
   if (plan.priceKind === "hospital") lines.push(t("LEVERAGE.Damage.Down.payHospital", { price, steps: plan.paidSteps }));
   if (plan.priceKind === "bail") lines.push(t("LEVERAGE.Damage.Down.payBail", { price, steps: plan.paidSteps }));
-  if (plan.shortBy > 0) lines.push(t("LEVERAGE.Damage.Down.short", { steps: plan.shortBy, debt }));
+  if (plan.shortBy > 0 && plan.priceKind === "hospital") lines.push(t("LEVERAGE.Damage.Down.short", { steps: plan.shortBy, debt }));
   if (plan.rescuable) lines.push(t(plan.rescue ? "LEVERAGE.Damage.Down.rescue" : "LEVERAGE.Damage.Down.rescueUnpaid", { name }));
   lines.push(t("LEVERAGE.Damage.Down.fullLife", { max }));
   if (plan.plotPoints) lines.push(tn("LEVERAGE.Damage.Down.plotPoint", plan.plotPoints));

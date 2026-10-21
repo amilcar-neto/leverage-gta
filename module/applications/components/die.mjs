@@ -4,17 +4,10 @@
  * `{{lvDie}}` Handlebars helper. Colors and states live in styles/die.css; shapes and geometry in module/config.mjs.
  */
 import { LEVERAGE } from "../../config.mjs";
+import { escapeHtml } from "./common.mjs";
 
-const ESCAPES = Object.freeze({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" });
-
-/**
- * Escapes a value for use in HTML text or a quoted attribute.
- * @param {*} value
- * @returns {string}
- */
-export function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (c) => ESCAPES[c]);
-}
+/** Kept here for the sheets that import it from the die component; the implementation is in `common.mjs`. */
+export { escapeHtml };
 
 /** Number displayed inside the die: finite numbers become integers, other values are escaped text. */
 function displayValue(value) {

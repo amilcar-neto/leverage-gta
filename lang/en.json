@@ -492,7 +492,8 @@
           "signature": "Permanent. Comes with her to every Job.",
           "job": "Lasts for this Job.",
           "scene": "Lasts for this Scene."
-        }
+        },
+        "open": "Open Asset"
       },
       "Jobs": {
         "summary": "{jobs} JOBS · {unspent} UNSPENT",
@@ -582,7 +583,9 @@
       "maxDistinctions": "A character can have at most {max} Distinctions.",
       "notEnoughPlotPoints": "Not enough Plot Points: it costs {cost} and you have {have}.",
       "noUnspentJobs": "No unspent Jobs to spend.",
-      "apiNotReady": "The system API is still loading; try again."
+      "apiNotReady": "The system API is still loading; try again.",
+      "jobCopyForbidden": "You can't copy a Job from another character's sheet.",
+      "fixerOnlyField": "Only the GM can change this field."
     },
     "ItemSheet": {
       "role": "Role",
@@ -671,9 +674,11 @@
       },
       "Warn": {
         "gmOnly": "Only the GM can do this.",
-        "soon": "Coming soon.",
         "noCrew": "There are no Crew characters.",
-        "jobNameRequired": "Give the Job a name."
+        "jobNameRequired": "Give the Job a name.",
+        "sharesExceedTotal": "The shares add up to {sum}, more than the total {total}.",
+        "shareDidNotFit": "{name}'s Money is full: {lost} step(s) of the share were lost.",
+        "openFailed": "Could not open the window. See the console."
       },
       "Chat": {
         "speaker": "GM",
@@ -781,6 +786,7 @@
       "notOwner": "You do not own {name}.",
       "invalidAmount": "The amount must be a whole number, zero or more.",
       "invalidPrice": "A price is a whole number of steps or a list of dice such as [12, 6].",
+      "moneyOff": "The Money house rule is off.",
       "Pool": {
         "empty": "Give at least one Pool reference.",
         "unknownRef": "Unknown or unavailable Pool reference: {ref}.",
@@ -954,7 +960,8 @@
         "lastResortSilence": "{name} bought silence as a last resort ({dice})",
         "lastResortBoth": "{name} changed looks and bought silence as a last resort ({dice})",
         "lastResortBothFree": "{name} changed looks as a last resort (no silence needed)",
-        "lastResortScapegoat": "Last resort: a scapegoat was handed over (mini-heist)"
+        "lastResortScapegoat": "Last resort: a scapegoat was handed over (mini-heist)",
+        "changeCity": "The Crew left for {city}"
       },
       "Error": {
         "disabled": "The Stars house rule is off.",
@@ -973,7 +980,9 @@
         "noSilence": "Buying silence does not work in this city.",
         "short": "Not enough Money (short by {shortBy} step(s)).",
         "needsConfirm": "Confirm that the Crew did what the last resort asks.",
-        "invalidWay": "Unknown way out."
+        "invalidWay": "Unknown way out.",
+        "unknownCity": "Unknown city: {city}.",
+        "sameCity": "The Crew is already in that city."
       },
       "Dialog": {
         "title": "Wanted level",

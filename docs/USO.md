@@ -35,9 +35,9 @@ ainda não foi testada com o módulo ativo.)
 
 1. Em **Worlds**, crie um mundo escolhendo o sistema *Leverage: Liberty City* e entre nele.
 2. Em **Actors**, crie um ator do tipo **Crew** (a Equipe, os personagens dos jogadores). Os outros tipos são **NPC**
-   (Extra, Foil, Mark, Agent) e **Location** (Local, com Traços e uma cidade). A cidade do Local só
-   vale para o atalho *Polícia* do Rolador de oposição quando o Local está na cena; as estrelas do HUD seguem a cidade
-   do Nível de procurado.
+   (Extra, Foil, Mark, Agent) e **Location** (Local, com Traços e uma cidade). A cidade do Local é só
+   informativa. A cidade atual da mesa é uma só (a do Nível de procurado): ela vale para as estrelas do HUD e para o
+   atalho *Polícia* do Rolador de oposição.
 3. Dê a cada jogador a posse (**Owner**) do seu personagem e, em **Configure Players**, escolha o personagem de cada
    usuário. O HUD usa esse personagem.
 4. Atalho: importe a **Rosa Delgado** do compêndio (seção 12) e use como modelo.
@@ -103,6 +103,7 @@ sucesso extraordinário. O sistema mostra os totais, mas quem decide o resultado
 As estrelas (0 a 5) medem o quanto a polícia está atrás da Equipe **numa cidade**. São do grupo e **só o mestre
 mexe**: clique nas estrelas do HUD (a estrela N define o nível N; clicar na do nível atual baixa um) ou use
 **Nível de procurado** nas ferramentas do mestre, que também escolhe a cidade. Cada mudança é anunciada no chat.
+Trocar de cidade zera as estrelas (a Equipe saiu de lá) e também aparece no chat.
   As estrelas são ações só do mestre: o sistema recusa qualquer outro usuário e não há socket para elas.
 
 - **Sobem** (1 por vez): ser visto cometendo crime, tiro em público, ferir ou matar policial, ataque grande ou fuga de
@@ -112,7 +113,8 @@ mexe**: clique nas estrelas do HUD (a estrela N define o nível N; clicar na do 
 - **Cidades:** Carcer City, Las Venturas e Liberty City, cada uma com a sua Pool por estrela e as suas regras para
   baixar o nível (esperar fora de vista, mudar de cara, comprar silêncio, última saída). Tudo editável em
   **Escalas das cidades** (seção 13). Em Liberty City, por exemplo, comprar silêncio não funciona.
-- As estrelas **não zeram sozinhas**: ao sair da cidade, o mestre zera.
+- As estrelas **não zeram sozinhas**, mas trocar a cidade atual na janela **Nível de procurado** (ou com
+  `stars.set(nivel, cidade)`) zera o nível e posta uma linha de ESTRELAS no chat.
 - A janela **Nível de procurado** tem os botões de ação, todos seguindo as regras da cidade atual: **subir**
   (com motivo), **esperar** (por cena ou entre sessões), **disfarce** (só roupa ou carro e roupa), **silêncio**
   (paga dados de Grana do personagem escolhido) e **última saída** (pede confirmação). Os mesmos atalhos existem na API
@@ -123,17 +125,18 @@ mexe**: clique nas estrelas do HUD (a estrela N define o nível N; clicar na do 
 - **Vida máxima = 10 + o dado de Vitality** (d8 dá 18). O número base é configurável.
 - **Colete:** pontos que absorvem dano antes da Vida (Leve 4, Comum 6, Pesado 10). Com 0, acabou.
 - **Inimigos não têm barra: são dados.** Cada capanga é um dado (4 capangas d8 = 4d8, soma dos dois maiores).
-- **Rodada de tiroteio:** o jogador rola contra os dados da gangue. Se passa, derruba um capanga (dois se passar por 5
-  ou mais). Se perde ou empata, leva dano = **quanto perdeu por + o dado da arma** do inimigo.
+- **Rodada de tiroteio:** o jogador rola contra os dados da gangue. Se passa, o mestre derruba um capanga (dois se
+  passar por 5 ou mais) diminuindo o tamanho da gangue na ficha do NPC: o sistema não faz isso sozinho. Se perde ou
+  empata, leva dano = **quanto perdeu por + o dado da arma** do inimigo.
 - **Aplicar dano:** no card de oposição do mestre, o botão **APLICAR DANO** escolhe o alvo, rola o dado da arma, pergunta
   pela **cobertura** (divide o dano pela metade, arredondando para baixo), tira primeiro do **Colete** e depois da
   **Vida**. Está em `docs/02-regras-da-casa.md` e vale só em luta de verdade; discussões e golpes seguem o livro.
 - **Desistir** antes de rolar (Give In): a pessoa sai com uma Complication leve (*Bloodied d6*) e ganha 1 PP. É
   manual: o mestre cria a Complication no Rastreador e usa **Dar Plot Point**.
 - **Recuperar:** cena de descanso devolve metade da Vida máxima, um dia entre golpes devolve tudo, tratamento médico
-  custa d4 de Grana e devolve tudo. O sistema tem essas operações no código do personagem (`restScene()`, `restDay()`,
-  `medicalTreatment()`, `buyVest(tipo)`), mas ainda **não há botões**: use macro ou ajuste a Vida e o Colete direto na
-  ficha ou no Rastreador.
+  custa d4 de Grana e devolve tudo. No diálogo **Pagar**, **Hospital** paga e devolve toda a Vida, e os itens de
+  **colete** pagam e colocam o colete novo, cheio. Cena de descanso e dia entre golpes (`restScene()`, `restDay()` no
+  personagem) não têm botão no diálogo: use macro ou ajuste a Vida e o Colete direto na ficha ou no Rastreador.
 - A Vida é a barra principal do token e o Colete é a secundária.
 
 ## 7. Grana

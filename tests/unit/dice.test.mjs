@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { isValidDie, assertDie, stepUp, stepDown, largestDie } from "../../module/dice/die.mjs";
 import {
-  rollDie, rollPool, evaluatePool, canKeepExtra, extraKeepCost, rollAndEvaluate
+  rollDie, rollPool, evaluatePool
 } from "../../module/dice/pool-roll.mjs";
 
 /** rng that replays the given faces for the given sizes. */
@@ -37,7 +37,6 @@ test("keeps the two highest", () => {
   assert.deepEqual(out.kept, [1, 2]);
   assert.equal(out.total, 14);
   assert.deepEqual(out.rest, [0]);
-  assert.ok(canKeepExtra(out));
 });
 
 test("ones never count", () => {
@@ -45,7 +44,6 @@ test("ones never count", () => {
   assert.deepEqual(out.kept, [2]);
   assert.deepEqual(out.ones, [0, 1]);
   assert.equal(out.total, 4);
-  assert.ok(!canKeepExtra(out));
 });
 
 test("all ones gives total 0; empty pool too", () => {
@@ -65,12 +63,4 @@ test("extra kept dice from Plot Points", () => {
   assert.deepEqual(evaluatePool(results, 1).rest, []);
   assert.equal(evaluatePool(results, 5).total, 18);
   assert.equal(evaluatePool(results, -3).total, 13);
-  assert.equal(extraKeepCost(evaluatePool(results), 3), 1);
-  assert.equal(extraKeepCost(evaluatePool(results), -1), 0);
-});
-
-test("rollAndEvaluate uses the injected rng", () => {
-  const { results, outcome } = rollAndEvaluate([4, 12], () => 0.999);
-  assert.deepEqual(results.map((r) => r.value), [4, 12]);
-  assert.equal(outcome.total, 16);
 });

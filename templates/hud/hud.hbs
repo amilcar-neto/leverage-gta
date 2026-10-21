@@ -41,7 +41,7 @@
     </button>
     {{/if}}
     <svg class="lv-hud-chip" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
-    <span class="lv-hud-text lv-hud-pp-value{{#if plotPoints.pulse}} is-pulse{{/if}}"{{#if plotPoints.canGain}} data-action="gainPlotPoint"{{/if}}>{{plotPoints.value}}</span>
+    <span class="lv-hud-text lv-hud-pp-value{{#if plotPoints.pulse}} is-pulse{{/if}}"{{#if plotPoints.canGain}} data-action="gainPlotPoint" role="button" tabindex="0" aria-label="{{plotPoints.gainLabel}}"{{/if}}>{{plotPoints.value}}</span>
   </div>
   {{/if}}
 </div>

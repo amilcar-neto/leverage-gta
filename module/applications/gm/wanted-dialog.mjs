@@ -10,7 +10,6 @@ import { bailAllowed, getCityScale, lastResortKind, mainDie, policePool, poolTex
 import { getCityScales, readWanted } from "../../world-state.mjs";
 import { escapeHtml } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
-import { setWanted } from "./controls.mjs";
 import * as starsActions from "./stars-actions.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -126,9 +125,10 @@ export class WantedDialog extends HandlebarsApplicationMixin(ApplicationV2) {
     return this.element.querySelector(`[name="${name}"]`);
   }
 
-  /** Changes the city, keeping the level. */
-  #onCity(city) {
-    return setWanted(readWanted().level, city);
+  /** Changes the city: the Crew left, so the stars go to 0 (a stars action with its chat line). */
+  async #onCity(city) {
+    const result = await starsActions.setCity(city);
+    if (!result.ok) this.render();
   }
 
   /* ------------------------------------------------------------ actions */

@@ -21,7 +21,7 @@ const TEMPLATES = `systems/${LEVERAGE.systemId}/templates/actor/npc`;
 const part = (name, extra = {}) => ({ template: `${TEMPLATES}/${name}.hbs`, ...extra });
 
 /** Hook fired when a house-rule setting changes (Life/Vest on or off). */
-const HOUSE_RULES_HOOK = "leverage.houseRulesChanged";
+const HOUSE_RULES_HOOK = LEVERAGE.hooks.houseRulesChanged;
 
 /** Which parts live in which body column, top to bottom (`#groupColumns` wraps them; Foundry v14 has no PART containers). */
 const COLUMNS = Object.freeze({

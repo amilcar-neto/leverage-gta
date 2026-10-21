@@ -116,7 +116,7 @@
   width: 100%;
   margin: 0;
   padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--lv-wash-05);
   border: 2px solid rgba(0, 0, 0, 0.7);
   border-radius: 4px;
   box-shadow: none;
@@ -183,7 +183,7 @@
   min-width: 0;
   margin: 0;
   padding: 0 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--lv-wash-05);
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -247,7 +247,7 @@
   height: 28px;
   margin: 0 4px 0 0;
   padding: 0 10px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--lv-wash-05);
   border: 2px solid rgba(0, 0, 0, 0.7);
   border-radius: 4px;
   box-shadow: none;
@@ -300,7 +300,7 @@
   flex: 1 1 0;
   min-height: 0;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--lv-wash-05);
   border: 2px solid rgba(0, 0, 0, 0.7);
   border-radius: 4px;
   color: var(--lv-ink);
@@ -322,7 +322,7 @@
   overflow-y: auto;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: var(--lv-scroll-thumb) rgba(255, 255, 255, 0.07);
+  scrollbar-color: var(--lv-scroll-thumb) var(--lv-wash-07);
   color: var(--lv-ink);
 }
 

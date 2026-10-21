@@ -37,6 +37,13 @@
 
 .leverage-gta .lv-asset .lv-row-note { min-width: 0; font-size: 13px; }
 
+/* "Open" button next to the delete X: same box, neutral hover */
+.leverage-gta .lv-xbtn.lv-xbtn--open:hover,
+.leverage-gta .lv-xbtn.lv-xbtn--open:focus-visible {
+  color: var(--lv-select);
+  background: color-mix(in srgb, var(--lv-select) 14%, transparent);
+}
+
 /* Die as a plain button around the die component */
 .leverage-gta .lv-die-btn {
   display: inline-flex;

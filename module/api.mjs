@@ -26,6 +26,7 @@ import { executeAsGM, registerSocketAction } from "./socket.mjs";
 import { onTransferRequest, transferNow } from "./money-actions.mjs";
 import { openLendDialog } from "./applications/dialogs/lend-dialog.mjs";
 import { openPayDialog } from "./applications/dialogs/pay-dialog.mjs";
+import { requireGM, resolveActor } from "./applications/components/common.mjs";
 import { addToSheetPool } from "./applications/actor/parts/tray.mjs";
 import * as controls from "./applications/gm/controls.mjs";
 import * as damage from "./applications/chat/damage.mjs";
@@ -142,8 +143,8 @@ function warn(check) {
 
 /** Resolves an Actor, a UUID or an id to a Crew actor. Warns and returns null otherwise. */
 function crewOf(actor) {
-  const doc = typeof actor === "string" ? (fromUuidSync(actor) ?? game.actors.get(actor)) : actor;
-  if (doc?.documentName === "Actor" && doc.type === "crew") return doc;
+  const doc = resolveActor(actor);
+  if (doc?.type === "crew") return doc;
   ui.notifications.warn(t("noCrew"));
   return null;
 }
@@ -158,7 +159,19 @@ function ownedCrew(actor) {
 }
 
 /** Whether the caller is the Fixer; warns otherwise. */
-const fixerOnly = () => jobActions.requireGM();
+const fixerOnly = requireGM;
+
+/** Whether the Money house rule is on. */
+const moneyRuleOn = () => Boolean(game.settings.get(SYSTEM_ID, "houseRules.money"));
+
+/** Crew actor the caller may change for a Money flow (pay, lend); null, with a warning, when the Money rule is off. */
+function moneyCrew(actor) {
+  const doc = ownedCrew(actor);
+  if (!doc) return null;
+  if (moneyRuleOn()) return doc;
+  ui.notifications.warn(t("moneyOff"));
+  return null;
+}
 
 /** City scales in use (world setting, falling back to the built-in ones). */
 const cityScales = () => getCityScales();
@@ -179,7 +192,7 @@ const cityScales = () => getCityScales();
 async function rollPool({ actor, refs, flavor } = {}) {
   const doc = ownedCrew(actor);
   if (!doc) return null;
-  const moneyEnabled = Boolean(game.settings.get(SYSTEM_ID, "houseRules.money"));
+  const moneyEnabled = moneyRuleOn();
   const sceneTraits = jobActions.readJob().sceneTraits;
   const check = checkPoolRefs(refs, (ref) => resolvePoolRef(doc, ref, { moneyEnabled, sceneTraits }));
   if (!check.ok) return warn(check) ?? null;
@@ -241,13 +254,14 @@ const money = {
    */
   add: (actor, steps) => withMoney(actor, steps, (doc, n) => doc.money.add(n)),
   /**
-   * Pays a price in steps or as a list of dice (`[12, 6]`). Nothing is spent when short.
+   * Pays a price in steps or as a list of dice (`[12, 6]`). Nothing is spent when short. Refused (with a warning)
+   * when the Money house rule is off; so are `payDialog` and `lendDialog`.
    * @param {Actor|string} actor
    * @param {number|number[]} price
    * @returns {Promise<{ok: boolean, steps: number, shortBy: number}|null>}
    */
   async pay(actor, price) {
-    const doc = ownedCrew(actor);
+    const doc = moneyCrew(actor);
     if (!doc) return null;
     const check = checkPrice(price);
     return check.ok ? doc.money.pay(check.steps) : warn(check) ?? null;
@@ -268,7 +282,7 @@ const money = {
    * @returns {Promise<number|null>} steps moved, or null when the Fixer was asked / the call was refused
    */
   async transfer(from, to, steps) {
-    const source = ownedCrew(from);
+    const source = moneyCrew(from);
     const target = crewOf(to);
     const check = checkAmount(steps);
     if (!source || !target) return null;
@@ -283,7 +297,7 @@ const money = {
    * @returns {Promise<{ok: boolean, cost: number}|null>} null when cancelled or not allowed
    */
   payDialog(actor) {
-    const doc = ownedCrew(actor);
+    const doc = moneyCrew(actor);
     return doc ? openPayDialog(doc) : Promise.resolve(null);
   },
   /**
@@ -292,7 +306,7 @@ const money = {
    * @returns {Promise<{to: string, amount: number}|null>} null when cancelled or not allowed
    */
   lendDialog(actor) {
-    const doc = ownedCrew(actor);
+    const doc = moneyCrew(actor);
     return doc ? openLendDialog(doc) : Promise.resolve(null);
   }
 };

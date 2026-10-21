@@ -57,7 +57,7 @@
   height: 28px;
   padding: 0 10px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--lv-wash-06);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
   color: var(--lv-ink);
@@ -83,8 +83,8 @@
   height: 28px;
   min-width: 0;
   padding: 0 6px;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: var(--lv-shade-45);
+  border: 1px solid var(--lv-wash-25);
   border-radius: 3px;
   color: var(--lv-ink);
   font-family: var(--lv-font-ui);
@@ -108,7 +108,7 @@
   cursor: pointer;
 }
 
-.leverage-gta .lv-opp-check:hover { background: rgba(255, 255, 255, 0.08); }
+.leverage-gta .lv-opp-check:hover { background: var(--lv-wash-08); }
 .leverage-gta .lv-opp-check.is-on { background: color-mix(in srgb, var(--lv-header) 16%, transparent); }
 .leverage-gta .lv-opp-check input { flex: none; margin: 0; }
 .leverage-gta .lv-opp-check-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -140,7 +140,7 @@
   gap: 2px;
   min-width: 0;
   padding: 4px 0;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--lv-wash-06);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 4px;
   color: var(--lv-ink);

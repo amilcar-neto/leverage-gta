@@ -3,9 +3,9 @@
    variant only sets the custom properties below. Never restyle a button in a component file. */
 
 .leverage-gta :is(.lv-add-btn, .lv-trk-btn, .lv-opp-step, .lv-roll-btn, .lv-config-btn, .lv-paper-btn, .lv-item-delete, .lv-opp-roll, .lv-opp-clear) {
-  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-bg: var(--lv-wash-06);
   --btn-ink: var(--lv-ink);
-  --btn-line: rgba(255, 255, 255, 0.25);
+  --btn-line: var(--lv-wash-25);
   --btn-h: 28px;
   box-sizing: border-box;
   display: inline-flex;
@@ -131,9 +131,9 @@
 
 /* Dialog footer buttons (DialogV2): same shape as the system buttons; the default one is primary */
 .leverage-gta.lv-dialog .form-footer button {
-  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-bg: var(--lv-wash-06);
   --btn-ink: var(--lv-ink);
-  --btn-line: rgba(255, 255, 255, 0.25);
+  --btn-line: var(--lv-wash-25);
   box-sizing: border-box;
   height: 30px;
   padding: 0 14px;

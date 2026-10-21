@@ -21,8 +21,22 @@ export function hasRealPortrait(img) {
   return Boolean(img) && !String(img).includes(DEFAULT_PORTRAIT);
 }
 
+/**
+ * Names of the hooks the system fires itself (`Hooks.callAll`, by the world settings' `onChange` in module/settings.mjs,
+ * and by the roll tray). One list: listeners read the name here instead of repeating the string.
+ */
+const HOOKS = Object.freeze({
+  houseRulesChanged: "leverage.houseRulesChanged",
+  traitsLockedChanged: "leverage.traitsLockedChanged",
+  activeJobChanged: "leverage.activeJobChanged",
+  starsChanged: "leverage.starsChanged",
+  hudChanged: "leverage.hudChanged",
+  rollRequested: "leverage.rollRequested",
+  ready: "leverage.ready"
+});
+
 /** Hook fired (by the `traitsLocked` world setting, see module/settings.mjs) whenever the Trait lock changes. */
-export const LOCK_HOOK = "leverage.traitsLockedChanged";
+export const LOCK_HOOK = HOOKS.traitsLockedChanged;
 
 /** Allowed die sizes, smallest first. There is no d20. */
 const DICE = Object.freeze([4, 6, 8, 10, 12]);
@@ -191,6 +205,7 @@ export const LEVERAGE = Object.freeze({
   maxDistinctions: 3,
   /** Opposition fallback when the GM has no dice (docs/02: 2d6). The only place that says "2d6". */
   defaultOppositionDice: Object.freeze([6, 6]),
+  hooks: HOOKS,
   /** Item fields that only the Fixer changes once the Item exists (docs/05): an Asset's die and duration, a Job's payout share and spent flag. */
   protectedItemFields: Object.freeze({
     asset: Object.freeze(["system.die", "system.duration"]),
@@ -239,12 +254,6 @@ export const LEVERAGE = Object.freeze({
   assetPlotPointCost: Object.freeze({ job: 2, scene: 1 }),
   /** Signature Asset dice: the first is d8, further ones d6; Job/Scene Assets are d6. */
   signatureAssetDice: Object.freeze({ first: 8, next: 6 }),
-  /** Die used when the character lacks a trait for the roll (d4 floor is not applied; docs/01). */
-  missingTraitDie: 6,
-  /** Reference Job payouts in money steps: small, medium, big (docs/02). */
-  jobPayoutReference: Object.freeze([4, 8, 12]),
-  /** Steps earned by a quick side job in the city (docs/02). */
-  sideJobBonusSteps: 1,
   /** House-rule weapon damage dice (docs/02). */
   weaponDice: Object.freeze({ pistol: 6, shotgun: 8, rifle: 8 }),
   defaultCityScales: DEFAULT_CITY_SCALES,

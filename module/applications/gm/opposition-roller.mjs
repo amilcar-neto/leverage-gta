@@ -92,7 +92,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
 
   /* ---------------------------------------------------------- state -> data */
 
-  /** Stars and scales from the settings; the city is the one of the Location in play when it names one (docs/06). */
+  /** Stars and scales from the settings; the city is `wanted.city`, the one source (a Location's `city` is informative only). */
   #wanted() {
     const wanted = readWanted();
     const scales = getCityScales();

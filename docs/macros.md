@@ -141,7 +141,9 @@ await game.leverage.money.transfer(from, to, 1);
 ## Estrelas de procurado (Mestre)
 
 `stars.set(nivel, cidade)` grava a configuração `wanted`. O nível é um inteiro de 0 a 5 e a cidade precisa existir
-em `stars.cities()`. Sem cidade, mantém a atual. Todo mundo pode ler.
+em `stars.cities()`. Sem cidade, mantém a atual. Trocar de cidade é uma ação de estrelas própria: zera o nível (a
+Equipe saiu da cidade, `docs/02`) e posta a linha no chat; depois o nível pedido é aplicado na cidade nova. Todo mundo
+pode ler.
 
 <!-- teste: gm id=stars -->
 ```js
@@ -194,7 +196,9 @@ await game.leverage.combat.down(actor, { byPolice: true, confirm: false });
 ## Diálogos de Grana
 
 `money.payDialog(actor)` abre o diálogo de pagamento (tabela de preços ou preço livre em dados) e `money.lendDialog(actor)`
-o de empréstimo. Servem para botões de macro; quem decide a quantia é a pessoa na janela.
+o de empréstimo. Servem para botões de macro; quem decide a quantia é a pessoa na janela. Com a regra da casa
+**Grana em escada** desligada, `money.pay`, `money.transfer`, `money.payDialog` e `money.lendDialog` avisam e não fazem
+nada. No diálogo, **Hospital** devolve toda a Vida e os itens de colete colocam o colete novo.
 
 ## Plot Points
 
@@ -242,7 +246,9 @@ console.log(traits.isLocked());   // false
 ## Job, cena e sessão (Mestre)
 
 `job.new(nome)` abre o Job (cada personagem recebe os Plot Points iniciais). `job.end({ name, total, shares })` paga a
-Equipe: `shares` é um objeto id da personagem para degraus, e sem ele o total é dividido por igual. `job.endScene()`
+Equipe: `shares` é um objeto id da personagem para degraus, e sem ele o total é dividido por igual. Sem nome, ou com
+partes que somam mais que o total, avisa e não muda nada; uma parte que não cabe na escada de Grana também é avisada.
+`job.endScene()`
 remove os Assets de cena (passe `{ confirm: true }` para perguntar antes). `job.newSession()` devolve o Callback dos
 Jobs. `jobTracker.open()` abre o Rastreador.
 

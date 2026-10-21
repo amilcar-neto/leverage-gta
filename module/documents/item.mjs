@@ -4,7 +4,7 @@
  * `_pre*` methods cancels the operation (Foundry v14 contract). The GM always passes.
  */
 import { LEVERAGE } from "../config.mjs";
-import { canEditTraits, checkItemBatch, isTraitType, warnBatchFailure, warnUser } from "./guards.mjs";
+import { canEditTraits, checkItemBatch, isTraitType, protectedFieldsChanged, warnBatchFailure, warnUser } from "./guards.mjs";
 
 export class LeverageItem extends Item {
   /** @override */
@@ -28,6 +28,10 @@ export class LeverageItem extends Item {
     if (allowed === false) return false;
     if (this.#lockedFor(user)) {
       warnUser(user, "LEVERAGE.Warn.traitsLocked");
+      return false;
+    }
+    if (protectedFieldsChanged(this, changes, user).length) {
+      warnUser(user, "LEVERAGE.Warn.fixerOnlyField");
       return false;
     }
   }

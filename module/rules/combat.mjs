@@ -16,17 +16,6 @@ export function maxLife(vitalityDie, base = LEVERAGE.lifeBase) {
 }
 
 /**
- * Contest result from the player's view: margin > 0 passed; a tie is a loss (the GM wins ties).
- * @param {number} playerTotal
- * @param {number} opposedTotal
- * @returns {{margin: number, passed: boolean, extraordinary: boolean}}
- */
-export function contestResult(playerTotal, opposedTotal) {
-  const margin = playerTotal - opposedTotal;
-  return { margin, passed: margin > 0, extraordinary: margin >= LEVERAGE.extraordinaryMargin };
-}
-
-/**
  * Damage taken when the player loses or ties: how much they lost by + the rolled weapon die.
  * @param {number} lostBy points lost by (0 on a tie; negatives treated as 0)
  * @param {number} [weaponRoll=0] value rolled on the enemy weapon die (0 if unarmed)
@@ -100,28 +89,6 @@ export function resolveDown({ byPolice, max, hospitalSteps, bailSteps, bailAllow
 }
 
 /**
- * Give In before rolling: leaves with a light Bloodied d6 Complication and +1 Plot Point.
- * @returns {{complicationDie: number, plotPoints: number}}
- */
-export function giveIn() {
-  return { complicationDie: LEVERAGE.complicationDie, plotPoints: LEVERAGE.policeBustPlotPoints };
-}
-
-/**
- * Enemies knocked out when the player passes (Ganging Up): 1, or 2 with Extraordinary Success.
- * Against a single remaining enemy, only an Extraordinary Success takes them down (all of it).
- * @param {number} margin player's margin (> 0 passed)
- * @param {number} remaining enemies still standing
- * @returns {number}
- */
-export function thugsDown(margin, remaining) {
-  if (margin <= 0 || remaining <= 0) return 0;
-  const extraordinary = margin >= LEVERAGE.extraordinaryMargin;
-  if (remaining === 1) return extraordinary ? 1 : 0;
-  return Math.min(remaining, extraordinary ? 2 : 1);
-}
-
-/**
  * Whether the opposition took the round: it wins when it makes at least as much as the player (ties are the Fixer's).
  * @param {number} playerTotal
  * @param {number} oppositionTotal
@@ -159,11 +126,12 @@ export function damageRound({ margin, weaponRoll = 0, life, vest, cover = false 
 /**
  * Everything that follows Life reaching 0, with the house rules and the character's means applied
  * (docs/02 "Quando a Vida zera"). Pure: the caller performs the writes.
- * - Wasted: the hospital is paid now, with what the character has; what is missing is a debt (`shortBy`), shown on
- *   the card and not tracked: the Fixer settles it at the next payout.
- * - Busted with bail (the city allows it): bail is paid now (the book says "end of the scene"; this is a
- *   simplification). Without bail (Liberty City), or with bail the character could not pay in full, the character
- *   waits for a rescue (`rescuable`); the stars rise 1 when the Fixer marks the rescue, not when the arrest happens.
+ * - Wasted: the hospital is the only price that accepts a partial payment: it is paid now, with what the character
+ *   has; what is missing is a debt (`shortBy`), shown on the card and not tracked: the Fixer settles it at the next payout.
+ * - Busted with bail (the city allows it): bail is all or nothing, paid now (the book says "end of the scene"; this is
+ *   a simplification). A character who cannot pay it all pays nothing (`paidSteps` 0) and stays in jail. Without bail
+ *   (Liberty City), or with bail not paid, the character waits for a rescue (`rescuable`); the stars rise 1 when the
+ *   Fixer marks the rescue, not when the arrest happens.
  * - NPCs only fall: no Plot Point, money or full Life.
  * @param {object} p
  * @param {boolean} p.byPolice
@@ -184,7 +152,8 @@ export function planDown({ byPolice, isCrew, max, hospitalSteps, bailSteps, bail
   const rescue = busted && down.bailCostSteps === null;
   const priceKind = !isCrew || !rules.money ? null : (busted ? (rescue ? null : "bail") : "hospital");
   const dueSteps = priceKind === "bail" ? down.bailCostSteps : (priceKind === "hospital" ? down.costSteps : 0);
-  const paidSteps = Math.min(dueSteps, Math.max(0, moneySteps));
+  const have = Math.max(0, moneySteps);
+  const paidSteps = priceKind === "bail" ? (have >= dueSteps ? dueSteps : 0) : Math.min(dueSteps, have);
   const shortBy = dueSteps - paidSteps;
   return {
     kind: down.kind,
@@ -193,7 +162,7 @@ export function planDown({ byPolice, isCrew, max, hospitalSteps, bailSteps, bail
     loseWeaponAssets: isCrew && down.loseWeaponAssets,
     priceKind, dueSteps, paidSteps, shortBy,
     rescue,
-    rescuable: isCrew && busted && (rescue || shortBy > 0)
+    rescuable: isCrew && busted && (rescue || (priceKind === "bail" && shortBy > 0))
   };
 }
 

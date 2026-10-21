@@ -18,10 +18,10 @@ import { t } from "../../components/i18n.mjs";
 const INTERACTIVE = "button, input, textarea, select, a, prose-mirror, [contenteditable], [role='button'], [role='menu']";
 
 /** Hook announcing a Pool the player wants to roll. Payload: `{ actor, sheet, refs, entries }`. */
-export const ROLL_REQUESTED_HOOK = "leverage.rollRequested";
+export const ROLL_REQUESTED_HOOK = LEVERAGE.hooks.rollRequested;
 
 /** Hook fired when the active Job changes (its Scene Traits feed the "+ DIE" menu). */
-const ACTIVE_JOB_HOOK = "leverage.activeJobChanged";
+const ACTIVE_JOB_HOOK = LEVERAGE.hooks.activeJobChanged;
 
 /** Pool of each open sheet. */
 const pools = new WeakMap();

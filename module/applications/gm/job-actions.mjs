@@ -5,7 +5,7 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
-import { escapeHtml } from "../components/die.mjs";
+import { escapeHtml, requireGM, resolveActor } from "../components/common.mjs";
 import { t, tn } from "../components/i18n.mjs";
 import { normalizeJob } from "./job-tracker-logic.mjs";
 
@@ -106,12 +106,7 @@ export function isPlayedCrew(actor, users) {
 /** The Crew characters that bulk Fixer actions reach: those a player owns or plays (see `isPlayedCrew`). */
 export const crewActors = () => game.actors.filter((a) => a.type === "crew" && isPlayedCrew(a, game.users.contents));
 
-/** Whether the current user may use the Fixer tools; warns otherwise. */
-export function requireGM() {
-  if (game.user.isGM) return true;
-  ui.notifications.warn(t("LEVERAGE.GM.Warn.gmOnly"));
-  return false;
-}
+export { requireGM };
 
 /** Posts a plain public chat line. */
 function say(html) {
@@ -126,7 +121,7 @@ const moneyRuleOn = () => Boolean(readSetting("houseRules.money", true));
 
 /** Resolves actor ids / documents to Crew documents. */
 function resolveCrew(actors) {
-  return [...actors].map((a) => (typeof a === "string" ? game.actors.get(a) : a)).filter((a) => a?.type === "crew");
+  return [...actors].map(resolveActor).filter((a) => a?.type === "crew");
 }
 
 /* -------------------------------------------- */
@@ -271,18 +266,41 @@ export async function newJobDialog() {
 }
 
 /**
+ * Checks the result of a Job before anything is changed: a name, and shares that do not add up to more than the total.
+ * @param {{name: string, total: number, shares: Record<string, number>}} result
+ * @param {string[]} ids Crew actor ids that get a share.
+ * @returns {{ok: boolean, error?: "jobNameRequired"|"sharesExceedTotal", data?: object}} `error` is a key under `LEVERAGE.GM.Warn`.
+ */
+export function checkJobResult({ name, total, shares }, ids) {
+  if (!String(name ?? "").trim()) return { ok: false, error: "jobNameRequired" };
+  const sum = ids.reduce((s, id) => s + toSteps(shares?.[id]), 0);
+  return sum > toSteps(total) ? { ok: false, error: "sharesExceedTotal", data: { sum, total: toSteps(total) } } : { ok: true };
+}
+
+/**
  * Ends the Job: creates a `job` Item with the payout on each character, adds the share to their Money, deletes
- * their `job` Assets and clears the active Job.
+ * their `job` Assets and clears the active Job. Nothing changes when the name is empty or the shares add up to more
+ * than the total. A share that does not fit in a character's Money ladder is reported in a warning.
  * @param {{name: string, total: number, shares: Record<string, number>}} result `shares` by Crew actor id.
- * @returns {Promise<number>} characters paid
+ * @returns {Promise<number>} characters paid (0 when refused)
  */
 export async function endJob({ name, total, shares }) {
   if (!requireGM()) return 0;
+  const crew = crewActors();
+  const check = checkJobResult({ name, total, shares }, crew.map((a) => a.id));
+  if (!check.ok) {
+    ui.notifications.warn(t(`LEVERAGE.GM.Warn.${check.error}`, check.data));
+    return 0;
+  }
+  name = name.trim();
   let paid = 0;
-  for (const actor of crewActors()) {
+  for (const actor of crew) {
     const share = toSteps(shares?.[actor.id]);
     await actor.createEmbeddedDocuments("Item", [jobItemData(name, total, share)]);
-    if (share && moneyRuleOn()) await actor.money.add(share);
+    if (share && moneyRuleOn()) {
+      const added = await actor.money.add(share);
+      if (added < share) ui.notifications.warn(t("LEVERAGE.GM.Warn.shareDidNotFit", { name: actor.name, lost: share - added }));
+    }
     const ids = assetIdsOf(actor.items, "job");
     if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
     paid += 1;

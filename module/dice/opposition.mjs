@@ -73,8 +73,9 @@ export function policeDice(cityId, stars, label, scales) {
 }
 
 /**
- * City whose scale gives the police Pool (docs/02, docs/06): the first Location that names a city the scales know
- * (the Location is where the Crew is, and each city has its own police), else the city of the wanted state.
+ * City whose scale gives the police Pool (docs/02): the current city of the table (`wanted.city`, the one source),
+ * else, if that id is unknown to the scales, the first Location that names a city they know. The `city` field of a
+ * Location is informative only.
  * @param {string} wantedCity City id of the `wanted` setting.
  * @param {{system?: {city?: string}}[]} locations Locations in play (selected one first).
  * @param {{id: string}[]} scales City scales in use.
@@ -82,6 +83,7 @@ export function policeDice(cityId, stars, label, scales) {
  */
 export function policeCity(wantedCity, locations, scales) {
   const known = new Set(scales.map((scale) => scale.id));
+  if (wantedCity && known.has(wantedCity)) return wantedCity;
   return locations.map((location) => location?.system?.city).find((city) => city && known.has(city)) ?? wantedCity;
 }
 
@@ -150,7 +152,8 @@ export function pickedDice(groups, picked) {
 
 /**
  * Normalises what `rollOpposition` receives: die sizes or `{die, label}` objects. Invalid dice are dropped; an empty
- * result is "no opposition" (2d6).
+ * result is "no opposition" (2d6) and a single die is completed with one more d6 (docs/01: the Fixer rolls at least
+ * two dice, a missing Trait counts as d6; the size is `LEVERAGE.defaultOppositionDice[0]`).
  * @param {(number|{die: number, label?: string, ref?: string})[]} [dice]
  * @param {string} defaultLabel Chip name for plain sizes.
  * @returns {{dice: OppositionDie[], fallback: boolean}} `fallback` is true when 2d6 replaced an empty list
@@ -158,6 +161,8 @@ export function pickedDice(groups, picked) {
 export function normalizeDice(dice, defaultLabel) {
   const given = (dice ?? []).map((d) => (typeof d === "object" && d ? d : { die: d })).filter((d) => isValidDie(Number(d.die)));
   const list = given.length ? given : NO_OPPOSITION_POOL.map((die) => ({ die }));
+  if (list.length === 1) list.push({ die: NO_OPPOSITION_POOL[0] });
+  if (list.length === 1) list.push({ die: NO_OPPOSITION_POOL[0] });
   return {
     dice: list.map((d, i) => entry(d.ref || `opp.${i}`, d.label || defaultLabel, Number(d.die))),
     fallback: !given.length

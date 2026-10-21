@@ -79,15 +79,6 @@ export function pay(steps, price) {
 }
 
 /**
- * Cheap things (taxi, snack, ammo) are free as long as the character has any money.
- * @param {number} steps
- * @returns {boolean}
- */
-export function cheapIsFree(steps) {
-  return clampSteps(steps) > 0;
-}
-
-/**
  * Adds steps (job payout, odd job +1), capped at the maximum.
  * @param {number} steps
  * @param {number} amount

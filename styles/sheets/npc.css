@@ -104,7 +104,7 @@
   font-family: var(--lv-font-paper);
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--lv-shade-45);
 }
 
 .leverage-gta.npc-sheet .lv-npc-identity {
@@ -134,7 +134,7 @@
   text-transform: inherit;
 }
 
-.leverage-gta.npc-sheet .lv-inline:hover { border-bottom-color: rgba(233, 240, 237, 0.35); }
+.leverage-gta.npc-sheet .lv-inline:hover { border-bottom-color: var(--lv-ink-35); }
 .leverage-gta.npc-sheet .lv-inline:focus { border-bottom-color: var(--lv-header); outline: none; }
 .leverage-gta.npc-sheet .lv-inline::placeholder { color: var(--lv-muted); opacity: 0.6; }
 
@@ -211,7 +211,7 @@
 
 .leverage-gta.npc-sheet .lv-npc-vital--life .lv-npc-num { color: var(--lv-life-ink); }
 .leverage-gta.npc-sheet .lv-npc-vital--vest .lv-npc-num { color: var(--lv-vest-ink); }
-.leverage-gta.npc-sheet input.lv-npc-num:hover { border-bottom-color: rgba(233, 240, 237, 0.35); }
+.leverage-gta.npc-sheet input.lv-npc-num:hover { border-bottom-color: var(--lv-ink-35); }
 .leverage-gta.npc-sheet input.lv-npc-num:focus { border-bottom-color: var(--lv-header); outline: none; }
 .leverage-gta.npc-sheet .lv-npc-num::-webkit-inner-spin-button,
 .leverage-gta.npc-sheet .lv-npc-num::-webkit-outer-spin-button { display: none; }
@@ -384,7 +384,7 @@
   min-height: 0;
   box-sizing: border-box;
   margin: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--lv-wash-05);
   border: 2px solid rgba(0, 0, 0, 0.7);
   border-radius: 4px;
   color: var(--lv-ink);
@@ -402,7 +402,7 @@
   overflow-y: auto;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: var(--lv-scroll-thumb) rgba(255, 255, 255, 0.07);
+  scrollbar-color: var(--lv-scroll-thumb) var(--lv-wash-07);
   color: var(--lv-ink);
 }
 
