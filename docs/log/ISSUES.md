@@ -50,3 +50,8 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 ## Visual da Grana no HUD (decisão do dono pendente)
 - O dono acha feio (cifrão + dados de formatos diferentes). Não mexer até o dono rever o sistema pronto.
 - Opção A: só o dado mais alto, grande, com `$` pequeno e indicador de degraus. Opção B: todos os dados menores, sem `$` e sem contorno preto.
+
+## Licença do sistema não definida
+- **Gravidade:** menor · **Situação:** aberto
+- **Detalhe:** não existe `LICENSE` nem decisão de licença nos logs. O release deixou de listar `LICENSE` e `README-SYSTEM.md` (não existem). O `system.json` pode precisar de um campo `license` quando houver uma.
+- **O que o dono precisa fazer:** escolher uma licença (ex.: MIT) e adicionar `LICENSE` na raiz e em `SHIP` de `tools/release.mjs`.

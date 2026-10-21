@@ -619,7 +619,7 @@
       "descriptionPlaceholder": "Nothing written yet.",
       "effectPlaceholder": "Nothing written yet.",
       "notesPlaceholder": "No notes yet.",
-      "protectedHint": "Only the Fixer changes this."
+      "protectedHint": "Only the GM changes this."
     },
     "Roll": {
       "defaultFlavor": "rolls the Pool",
@@ -629,8 +629,8 @@
       "total": "Total",
       "explain": "{count} highest kept",
       "noneKept": "No die kept",
-      "onesWarningOne": "One die came up 1. The Fixer may add a Complication and hand you a Plot Point.",
-      "onesWarningMany": "{count} dice came up 1. The Fixer may add a Complication and hand you a Plot Point.",
+      "onesWarningOne": "One die came up 1. The GM may add a Complication and hand you a Plot Point.",
+      "onesWarningMany": "{count} dice came up 1. The GM may add a Complication and hand you a Plot Point.",
       "distinctionPP": "Distinction d4: +{count} Plot Point",
       "moneyDrop": "Money die used: Money drops one step",
       "keepButton": "+1 PP · Keep {n} die",
@@ -648,8 +648,11 @@
         "other": "{n}th"
       }
     },
+    "Migration": {
+      "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing."
+    },
     "Socket": {
-      "noGM": "No Fixer is connected to process this action."
+      "noGM": "No GM is connected to process this action."
     },
     "GM": {
       "Controls": {
@@ -667,16 +670,19 @@
         "givePlotPoint": "Give Plot Point"
       },
       "Warn": {
-        "gmOnly": "Only the Fixer can do this.",
+        "gmOnly": "Only the GM can do this.",
         "soon": "Coming soon.",
         "noCrew": "There are no Crew characters.",
         "jobNameRequired": "Give the Job a name."
       },
       "Chat": {
-        "speaker": "Fixer",
-        "traitsLocked": "The Fixer locked the Traits.",
-        "traitsUnlocked": "The Fixer unlocked the Traits.",
-        "plotPoints": "{names} receive {count} Plot Point(s).",
+        "speaker": "GM",
+        "traitsLocked": "The GM locked the Traits.",
+        "traitsUnlocked": "The GM unlocked the Traits.",
+        "plotPoints": {
+          "one": "{names} receives {count} Plot Point(s).",
+          "other": "{names} receive {count} Plot Point(s)."
+        },
         "newSession": "New session. Callbacks reset on {count} Job(s).",
         "endScene": "Scene over. Scene Assets removed: {count}.",
         "newJob": "New Job: {name}. Each character gets {count} Plot Point(s).",
@@ -719,7 +725,7 @@
     "Opposition": {
       "title": "Opposition roller",
       "fixer": "FIXER",
-      "gmOnly": "Only the Fixer can roll opposition.",
+      "gmOnly": "Only the GM can roll opposition.",
       "dieLabel": "Opposition",
       "defaultFlavor": "Opposition",
       "noneLabel": "No opposition",
@@ -869,10 +875,10 @@
       }
     },
     "Damage": {
-      "speaker": "Fixer",
+      "speaker": "GM",
       "flavor": "Damage to {name}",
       "button": "APPLY DAMAGE",
-      "buttonTip": "Fixer: apply the damage of this opposition to a character",
+      "buttonTip": "GM: apply the damage of this opposition to a character",
       "ruleOff": "The Life and Vest house rule is off.",
       "noTarget": "Pick a character with Life to take the damage.",
       "applied": "Damage applied to {name}: {damage} (Life {life}/{max}).",
@@ -917,7 +923,7 @@
         "rescue": "No bail in this city: the crew must break {name} out in a scene. When they do, click Rescued (the stars rise by 1).",
         "fullLife": "Back with full Life ({max}).",
         "assetsLost": "Weapon Assets of the scene lost: {names}.",
-        "assetsKept": "The Fixer kept the weapon Assets.",
+        "assetsKept": "The GM kept the weapon Assets.",
         "plotPoint": {
           "one": "+{count} Plot Point.",
           "other": "+{count} Plot Points."
@@ -937,7 +943,7 @@
       "Reason": {
         "raise": "The heat is up",
         "custom": "{text}",
-        "setLevel": "Set by the Fixer",
+        "setLevel": "Set by the GM",
         "waitScenes": "Out of sight for {scenes} scene(s)",
         "waitSession": "Out of sight between sessions",
         "disguise": "Changed looks",
@@ -952,7 +958,7 @@
       },
       "Error": {
         "disabled": "The Stars house rule is off.",
-        "notAllowed": "Only the Fixer moves the stars.",
+        "notAllowed": "Only the GM moves the stars.",
         "noActor": "Pick a Crew character.",
         "unknownAction": "Unknown stars action.",
         "invalidAmount": "The amount must be a whole number, 1 or more.",

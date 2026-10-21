@@ -9,8 +9,7 @@ import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync, readFileS
 import { deflateRawSync, crc32 } from "node:zlib";
 import { spawnSync } from "node:child_process";
 
-const SHIP = ["system.json", "leverage-gta.mjs", "module", "templates", "styles", "lang", "fonts", "assets", "packs",
-  "LICENSE", "README-SYSTEM.md", "CHANGELOG.md"];
+const SHIP = ["system.json", "leverage-gta.mjs", "module", "templates", "styles", "lang", "fonts", "assets", "packs", "CHANGELOG.md"];
 const OUT = "dist/leverage-gta";
 
 // Compile the compendium sources first so packs/<name>/ is current (packs/_source never ships).
@@ -23,7 +22,11 @@ for (const entry of SHIP) {
   if (!existsSync(entry)) continue;
   cpSync(entry, `${OUT}/${entry}`, {
     recursive: true,
-    filter: (src) => !src.endsWith(".gitkeep") && !src.includes("_source") && !src.split(/[/\\]/).pop().startsWith(".env")
+    filter: (src) => {
+      const name = src.split(/[/\\]/).pop();
+      return !src.endsWith(".gitkeep") && !src.includes("_source") && !name.startsWith(".env")
+        && !/^(LOCK|LOG|LOG\.old.*)$/.test(name);
+    }
   });
 }
 console.log(`Built ${OUT}`);

@@ -648,6 +648,9 @@
         "other": "{n}º"
       }
     },
+    "Migration": {
+      "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar."
+    },
     "Socket": {
       "noGM": "Nenhum mestre conectado para processar esta ação."
     },
@@ -676,7 +679,10 @@
         "speaker": "Mestre",
         "traitsLocked": "O mestre travou os Traços.",
         "traitsUnlocked": "O mestre destravou os Traços.",
-        "plotPoints": "{names} recebem {count} Plot Point(s).",
+        "plotPoints": {
+          "one": "{names} recebe {count} Plot Point(s).",
+          "other": "{names} recebem {count} Plot Point(s)."
+        },
         "newSession": "Nova sessão. Callbacks zerados em {count} Job(s).",
         "endScene": "Cena encerrada. Assets de cena removidos: {count}.",
         "newJob": "Novo Job: {name}. Cada personagem recebe {count} Plot Point(s).",

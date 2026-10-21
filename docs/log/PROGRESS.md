@@ -34,3 +34,4 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - Onda A (JS/regras) da correção de R-F4/R-F5 e R-F6..R-F8 fechada: 214 testes verdes, lint limpo.
 - Em andamento: onda B (CSS/UI) de R-F4..R-F8, depois T-902, T-901, T-903, T-904, R-F9, R-FINAL.
 - R-F4..R-F8 e T-902 concluídas (revisadas em 3 rodadas). Em andamento: T-901, T-903, T-904.
+- T-901 e T-903 concluídas (revisadas). Em andamento: T-904.

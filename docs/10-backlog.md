@@ -124,10 +124,10 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 ## Fase 9 — Acabamento
 
-- [ ] **T-901 i18n completo** (`scribe`): nenhuma string fixa; pt-BR revisado. *Dep:* tudo acima.
+- [x] **T-901 i18n completo** (`scribe`): nenhuma string fixa; pt-BR revisado. *Dep:* tudo acima.
 - [x] **T-902 Compêndio de exemplo** com a Rosa Delgado do mockup, NPCs (gangue de rua, polícia de choque), um Local,
   Talents e Assets de exemplo **próprios** (não copiados do livro). *Dep:* T-401, T-801.
-- [ ] **T-903 Migração e versão 0.1.0**, `CHANGELOG.md`, `tools/release.mjs` gera `dist/leverage-gta.zip` sem
+- [x] **T-903 Migração e versão 0.1.0**, `CHANGELOG.md`, `tools/release.mjs` gera `dist/leverage-gta.zip` sem
   `docs/`, `reference/`, `tests/`, `scripts/`, `.claude/`. *Dep:* tudo acima.
 - [ ] **T-904 Documentação de uso** `docs/USO.md` em pt-BR para o mestre e os jogadores (com prints). *Dep:* T-903.
 - [ ] **R-F9 Revisão de fase.**

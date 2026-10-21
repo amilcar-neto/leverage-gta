@@ -123,3 +123,19 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - Contexto: o dono trocou o hexágono amarelo pelo logo do sistema (três arcos com bolinhas).
 - Escolha: o logo oficial mantém as cores originais (branco e vermelho), não herda o amarelo da title bar. Cores nos tokens `--lv-logo-white` e `--lv-logo-red` (`styles/tokens.css`). Na title bar usamos duas máscaras SVG (`assets/sheet/window-icon.svg` e `window-icon-accent.svg`) com traço mais grosso para ler em 16px. Versão fiel (traço 52) em `assets/logo.svg`, usada como ícone do sistema em `system.json` (`media`). Fundo da title bar é escuro, então o branco tem contraste e não precisou de contorno.
 - Descartado: `currentColor` (amarelo) e PNG.
+
+## "Fixer" vira "GM" nos textos em inglês da interface
+
+- Contexto: a revisão de T-901/T-903 achou "Fixer" em vários textos de `lang/en.json`; o termo do livro é para o papel, mas na interface o jogador procura "GM".
+- Escolha: `lang/en.json` usa "GM" em todo texto de interface (o pt-BR já usa "mestre"). "Fixer" fica só no glossário e no CHANGELOG.
+- Descartado: manter "Fixer" na interface.
+
+## Migração de mundo nunca derruba o `ready`
+
+- Contexto: `await migrateWorld()` rodava antes do socket e do HUD, sem tratamento de erro.
+- Escolha: `migrateWorld` captura o erro, loga, avisa o mestre (`LEVERAGE.Migration.failed`) e não grava a versão nova. Grava `systemMigrationVersion` depois de cada passo. Em downgrade (versão gravada maior que a instalada) não mexe em nada, só avisa no console.
+- Descartado: deixar o erro subir (quebraria o HUD e o socket).
+
+## Mensagem de Plot Points do mestre usa plural
+
+- Escolha: `LEVERAGE.GM.Chat.plotPoints` virou `one`/`other` (concordância de "recebe/recebem" pelo número de personagens), via `tn`.

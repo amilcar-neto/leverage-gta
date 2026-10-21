@@ -3,6 +3,7 @@
  * 0.1.0 is the first release, so the list is empty: the runner only records the system version.
  */
 import { SYSTEM_ID } from "./config.mjs";
+import { logger } from "./logger.mjs";
 
 /**
  * Ordered migrations. Add `{ version: "0.2.0", run: async () => {...} }` to upgrade data from an older world.
@@ -45,7 +46,9 @@ export function pendingMigrations(stored, current, list = MIGRATIONS) {
 
 /**
  * Runs pending data migrations (GM only, once per version) and stores `systemMigrationVersion`.
- * Call from the `ready` hook: `await migrateWorld();`.
+ * Call from the `ready` hook: `await migrateWorld();`. Never throws: on failure it logs, notifies the GM and
+ * leaves the stored version at the last step that succeeded, so the next load retries the failed step.
+ * A downgrade (stored version newer than the installed one) keeps the newer stored version untouched.
  * Requires the world setting `systemMigrationVersion` (String, config: false, default "").
  * @returns {Promise<boolean>} true when the stored version changed.
  */
@@ -55,11 +58,25 @@ export async function migrateWorld() {
   let stored = "";
   try {
     stored = game.settings.get(SYSTEM_ID, "systemMigrationVersion") ?? "";
-  } catch {
+  } catch (err) {
+    logger.warn("Could not read systemMigrationVersion; skipping migration.", err);
     return false;
   }
   if (stored === current) return false;
-  for (const migration of pendingMigrations(stored, current)) await migration.run();
-  await game.settings.set(SYSTEM_ID, "systemMigrationVersion", current);
-  return true;
+  if (stored && compareVersions(stored, current) > 0) {
+    logger.warn(`World was last migrated by a newer system version (${stored} > ${current}); leaving it as is.`);
+    return false;
+  }
+  try {
+    for (const migration of pendingMigrations(stored, current)) {
+      await migration.run();
+      await game.settings.set(SYSTEM_ID, "systemMigrationVersion", migration.version);
+    }
+    await game.settings.set(SYSTEM_ID, "systemMigrationVersion", current);
+    return true;
+  } catch (err) {
+    logger.error("World migration failed", err);
+    ui.notifications.error(game.i18n.localize("LEVERAGE.Migration.failed"), { permanent: true });
+    return false;
+  }
 }

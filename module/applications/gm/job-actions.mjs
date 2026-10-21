@@ -6,7 +6,7 @@
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
 import { escapeHtml } from "../components/die.mjs";
-import { t } from "../components/i18n.mjs";
+import { t, tn } from "../components/i18n.mjs";
 import { normalizeJob } from "./job-tracker-logic.mjs";
 
 /* -------------------------------------------- */
@@ -144,7 +144,7 @@ export async function givePlotPoint(actors, n = 1) {
   const crew = resolveCrew(actors);
   if (!crew.length) return [];
   await Promise.all(crew.map((a) => a.addPlotPoints(n)));
-  await say(t("LEVERAGE.GM.Chat.plotPoints", { names: crew.map((a) => escapeHtml(a.name)).join(", "), count: n }));
+  await say(tn("LEVERAGE.GM.Chat.plotPoints", crew.length, { names: crew.map((a) => escapeHtml(a.name)).join(", "), count: n }));
   return crew;
 }
 
