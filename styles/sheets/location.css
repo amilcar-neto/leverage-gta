@@ -3,6 +3,7 @@
 
 /* ---- Window size (frame and title bar: styles/window.css) ---- */
 .leverage-gta.location-sheet {
+  --loc-accent: var(--lv-d8);
   min-width: 520px;
   min-height: 480px;
 }
@@ -35,72 +36,92 @@
   z-index: 5;
   flex: none;
   box-sizing: border-box;
-  padding: 14px 20px;
-  background: var(--lv-bg-a);
-  border-bottom: 4px solid var(--lv-outline);
+  border-bottom: 4px solid var(--loc-accent);
 }
 
 .leverage-gta.location-sheet [data-application-part="traits"] { flex: 0 1 auto; min-height: 120px; display: flex; flex-direction: column; margin: 14px 20px 0; }
+.leverage-gta.location-sheet [data-application-part="people"] { flex: 0 1 auto; min-height: 96px; display: flex; flex-direction: column; margin: var(--lv-col-gap) 20px 0; }
+.leverage-gta.location-sheet [data-application-part="people"]:has(> .is-empty) { display: none; }
+.leverage-gta.location-sheet .is-empty { display: none; }
 .leverage-gta.location-sheet [data-application-part="notes"] { flex: 1 1 140px; min-height: 120px; display: flex; flex-direction: column; margin: var(--lv-col-gap) 20px 14px; }
 .leverage-gta.location-sheet [data-application-part] > .lv-panel { flex: 1 1 auto; }
 
-/* ---- Header ---- */
+/* ---- Header: a banner of the place, name and city over its lower edge ---- */
 .leverage-gta.location-sheet .lv-loc-header {
-  display: flex;
-  align-items: stretch;
-  gap: 18px;
-}
-
-.leverage-gta.location-sheet .lv-loc-img {
   position: relative;
-  flex: none;
-  box-sizing: border-box;
-  width: 200px;
-  height: 140px;
-  margin: 0;
-  padding: 0;
-  background: rgba(0, 0, 0, 0.35);
-  border: 4px solid var(--lv-outline);
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
-  color: inherit;
+  height: 190px;
   overflow: hidden;
+  background: var(--lv-bg-b);
 }
 
-.leverage-gta.location-sheet button.lv-loc-img { cursor: pointer; }
+.leverage-gta.location-sheet .lv-loc-img { position: absolute; inset: 0; }
 
-.leverage-gta.location-sheet button.lv-loc-img:hover,
-.leverage-gta.location-sheet button.lv-loc-img:focus-visible {
-  outline: 3px solid var(--lv-header);
-  outline-offset: 2px;
+/* No image: a map-grid wall with a big pin icon */
+.leverage-gta.location-sheet .lv-loc-img:not(.has-image) {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 28px 28px,
+    var(--lv-bg-a);
 }
 
-.leverage-gta.location-sheet .lv-loc-img img {
+.leverage-gta.location-sheet .lv-loc-img img { width: 100%; height: 100%; border: 0; object-fit: cover; }
+
+.leverage-gta.location-sheet .lv-loc-img-icon {
+  position: absolute;
+  inset-block-start: 22px;
+  inset-inline-end: 34px;
+  color: var(--loc-accent);
+  font-size: 64px;
+  opacity: 0.35;
+}
+
+.leverage-gta.location-sheet .lv-loc-shade {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  object-fit: cover;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.5) 42%, rgba(0, 0, 0, 0.12) 100%);
+  pointer-events: none;
 }
 
-.leverage-gta.location-sheet .lv-loc-img-empty {
+.leverage-gta.location-sheet .lv-loc-kind {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--lv-font-paper);
-  font-size: 13px;
+  inset: 12px auto auto 20px;
+  padding: 2px 8px;
+  background: var(--loc-accent);
+  border: 2px solid var(--lv-outline);
+  color: var(--lv-die-ink);
+  font-size: 12px;
+  font-weight: 800;
   letter-spacing: 0.1em;
-  color: var(--lv-muted);
+  text-transform: uppercase;
 }
+
+.leverage-gta.location-sheet .lv-loc-pick {
+  position: absolute;
+  inset: 10px 20px auto auto;
+  height: 26px;
+  margin: 0;
+  padding: 0 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid var(--lv-muted);
+  border-radius: 3px;
+  color: var(--lv-ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta.location-sheet .lv-loc-pick:hover,
+.leverage-gta.location-sheet .lv-loc-pick:focus-visible { border-color: var(--lv-header); color: var(--lv-header); }
 
 .leverage-gta.location-sheet .lv-loc-identity {
+  position: absolute;
+  inset: auto 20px 12px;
   display: flex;
-  flex: 1;
   flex-direction: column;
-  justify-content: center;
-  gap: 10px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -138,24 +159,14 @@
   min-width: 0;
 }
 
-.leverage-gta.location-sheet .lv-loc-city-label {
-  flex: none;
-  padding: 2px 8px;
-  background: var(--lv-header);
-  border: 2px solid var(--lv-outline);
-  color: var(--lv-die-ink);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
+.leverage-gta.location-sheet .lv-loc-city-icon { flex: none; color: var(--loc-accent); font-size: 16px; }
 
 .leverage-gta.location-sheet .lv-loc-city-select {
   flex: 0 1 240px;
   min-width: 0;
   height: 28px;
   padding: 0 8px;
-  background: var(--lv-shade-45);
+  background: rgba(0, 0, 0, 0.55);
   border: 1px solid var(--lv-muted-2);
   border-radius: 3px;
   color: var(--lv-ink);
@@ -233,3 +244,50 @@
 /* Long names step the size down so they fit before an ellipsis is needed. */
 .leverage-gta.location-sheet .lv-loc-name.is-long { font-size: 34px; }
 .leverage-gta.location-sheet .lv-loc-name.is-longer { font-size: 26px; }
+
+/* ---- People (linked NPCs; GM only) ---- */
+.leverage-gta.location-sheet .lv-loc-drop { border: 2px dashed transparent; }
+.leverage-gta.location-sheet .lv-loc-drop.is-over { border-color: var(--loc-accent); background: var(--lv-wash-05); }
+.leverage-gta.location-sheet .lv-loc-person { min-height: 40px; }
+
+.leverage-gta.location-sheet .lv-loc-person-open {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.leverage-gta.location-sheet .lv-loc-person-open:hover .lv-loc-person-name,
+.leverage-gta.location-sheet .lv-loc-person-open:focus-visible .lv-loc-person-name { color: var(--lv-header); }
+
+.leverage-gta.location-sheet .lv-loc-person-img {
+  display: flex;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--lv-outline);
+  overflow: hidden;
+}
+
+.leverage-gta.location-sheet .lv-loc-person-img img { width: 100%; height: 100%; border: 0; object-fit: cover; }
+
+.leverage-gta.location-sheet .lv-loc-person-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.leverage-gta.location-sheet .lv-loc-empty i { margin-inline-end: 6px; }

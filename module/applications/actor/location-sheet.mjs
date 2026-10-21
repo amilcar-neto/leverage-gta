@@ -17,13 +17,15 @@ export class LocationSheet extends LeverageActorSheet {
   /** @override */
   static DEFAULT_OPTIONS = {
     classes: ["location-sheet"],
-    position: { width: 640, height: 640 },
+    position: { width: 640, height: 720 },
     window: { icon: "fa-solid fa-location-dot" },
     actions: {
       pickImage: LocationSheet.#pickImage,
       addTrait: LocationSheet.#addTrait,
       deleteTrait: LocationSheet.#deleteTrait,
-      setTraitDie: LocationSheet.#setTraitDie
+      setTraitDie: LocationSheet.#setTraitDie,
+      openNpc: LocationSheet.#openNpc,
+      unlinkNpc: LocationSheet.#unlinkNpc
     }
   };
 
@@ -31,6 +33,7 @@ export class LocationSheet extends LeverageActorSheet {
   static PARTS = {
     header: part("header"),
     traits: part("traits"),
+    people: part("people"),
     notes: part("notes")
   };
 
@@ -69,9 +72,22 @@ export class LocationSheet extends LeverageActorSheet {
       nameSize: nameSizeClass(actor.name),
       noCitySelected: !current,
       traits: traitRows(system.traits),
+      people: this.#people(),
       notesField: system.schema.fields.notes,
       notesHtml: await TextEditor.enrichHTML(system.notes, { relativeTo: actor, secrets: actor.isOwner })
     });
+  }
+
+  /** The linked NPCs that still exist, as rows for the template. */
+  #people() {
+    return (this.actor.system.npcs ?? []).map((uuid) => {
+      const npc = fromUuidSync(uuid);
+      if (!npc || npc.type !== "npc") return null;
+      return {
+        uuid, name: npc.name, img: npc.img, police: npc.system.police,
+        tierLabel: LEVERAGE.npcTiers[npc.system.tier]?.label ?? LEVERAGE.npcTiers.extra.label
+      };
+    }).filter(Boolean);
   }
 
   /** @override */
@@ -86,6 +102,9 @@ export class LocationSheet extends LeverageActorSheet {
     el.addEventListener("dragleave", () => this.#clearMarks(), { signal });
     el.addEventListener("dragend", () => this.#clearMarks(), { signal });
     el.addEventListener("drop", (event) => this.#onDropRow(event), { signal });
+    el.addEventListener("dragover", (event) => this.#onDragOverPeople(event), { signal });
+    el.addEventListener("dragleave", (event) => event.target.closest?.(".lv-loc-drop")?.classList.remove("is-over"), { signal });
+    el.addEventListener("drop", (event) => this.#onDropNpc(event), { signal });
   }
 
   /** @override */
@@ -156,6 +175,41 @@ export class LocationSheet extends LeverageActorSheet {
     event.preventDefault();
     const to = Number(row.dataset.index);
     if (from !== to) return this.#writeTraits(moveEntry(this.#traits(), from, to));
+  }
+
+  /** Highlights the People panel while an Actor is dragged over it. */
+  #onDragOverPeople(event) {
+    const zone = event.target.closest?.(".lv-loc-drop");
+    if (!zone || !this.canManage || this.#dragIndex !== null) return;
+    event.preventDefault();
+    zone.classList.add("is-over");
+  }
+
+  /** Dropping an NPC from the sidebar links it to this place (no duplicates). */
+  async #onDropNpc(event) {
+    const zone = event.target.closest?.(".lv-loc-drop");
+    if (!zone || !this.canManage) return;
+    zone.classList.remove("is-over");
+    event.preventDefault();
+    const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+    const npc = data?.type === "Actor" ? await fromUuid(data.uuid) : null;
+    if (npc?.type !== "npc") return;
+    const linked = this.actor.system.npcs;
+    if (!linked.includes(npc.uuid)) return this.actor.update({ "system.npcs": [...linked, npc.uuid] });
+  }
+
+  /** A linked NPC row: opens its sheet. */
+  static async #openNpc(event, target) {
+    const uuid = target.closest("[data-uuid]")?.dataset.uuid;
+    const npc = uuid ? await fromUuid(uuid) : null;
+    return npc?.sheet.render(true);
+  }
+
+  /** X on a linked NPC row: unlinks it (the NPC itself is untouched). */
+  static #unlinkNpc(event, target) {
+    if (!this.canManage) return;
+    const uuid = target.closest("[data-uuid]")?.dataset.uuid;
+    return this.actor.update({ "system.npcs": this.actor.system.npcs.filter((u) => u !== uuid) });
   }
 
   /** Image click: Foundry FilePicker. */

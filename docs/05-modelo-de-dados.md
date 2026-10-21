@@ -31,8 +31,8 @@ Itens permitidos: `distinction` (máx. 3), `talent`, `specialty`, `asset`, `job`
 | `tier` | String | `extra` · `foil` · `mark` · `agent` |
 | `traits` | Array de `{ name: String, die: DieField }` | Extras usam só isto |
 | `attributes`, `roles` | iguais ao `crew`, todos nullable | Foils/Agents podem ter ficha completa |
-| `gang.size` | Integer ≥ 0 | Capangas extras (Ganging Up): cada um soma um dado |
-| `gang.die` | DieField nullable | Tamanho de cada capanga |
+| `gang.size` | Integer ≥ 0 | **Capangas** (na ficha: "Capangas" / "Henchmen"; Ganging Up do livro): cada um soma um dado. O campo continua `gang` |
+| `gang.die` | DieField nullable | Tamanho do dado de cada capanga |
 | `life.value`, `life.max` | Integer ≥ 0 | `life.max` deriva da Vitality quando o NPC tem uma; senão vale o salvo (mestre define) |
 | `vest.kind`, `vest.value`, `vest.max` | String · Integer | iguais ao `crew`; `vest.max` vem do tipo |
 | `weapon.die` | DieField nullable | Dado de dano da arma (regra da casa: d6 pistola, d8 escopeta/rifle) |
@@ -45,6 +45,7 @@ Itens permitidos: `distinction` (máx. 3), `talent`, `specialty`, `asset`, `job`
 | --- | --- | --- |
 | `traits` | Array de `{ name, die }` | DARK CORNERS d8, ON FIRE d8… |
 | `city` | String | id de cidade das escalas de estrelas (opcional) |
+| `npcs` | Array de String | UUIDs de NPCs ligados ao local (só o mestre vê; arrastar da barra lateral para a ficha) |
 | `notes` | HTML | |
 
 ## Items

@@ -249,10 +249,10 @@
       "FIELDS": {
         "gang": {
           "die": {
-            "label": "Dado da gangue"
+            "label": "Dado do capanga"
           },
           "size": {
-            "label": "Tamanho da gangue"
+            "label": "Capangas"
           }
         },
         "notes": {
@@ -445,12 +445,11 @@
       "Add": "+ Adicionar",
       "Seal": {
         "locked": "Travada",
-        "lockedHint": "Ficha travada. Clique para destravar e editar Attributes, Roles, Distinctions, Talents e Specialties.",
+        "lockedHint": "Travada. Clique para destravar.",
         "unlocked": "Edição ligada",
-        "unlockedHint": "Ficha destravada. Clique para travar de novo.",
-        "forcedHint": "O mestre desligou o destravamento: todas as fichas estão travadas agora.",
-        "lockedGmHint": "Travada para os jogadores (eles mesmos podem destravar, a menos que você desligue isso). Como mestre você edita tudo; clique para mudar a trava.",
-        "unlockedGmHint": "Destravada. Como mestre você edita tudo; clique para travar esta ficha para o jogador."
+        "unlockedHint": "Destravada. Clique para travar.",
+        "lockedGmHint": "Travada para o jogador. Clique para destravar.",
+        "unlockedGmHint": "Destravada. Clique para travar."
       },
       "Header": {
         "noPhoto": "Sem foto",
@@ -808,12 +807,12 @@
       "police": "Polícia",
       "policeStars": "Polícia ({stars} ★)",
       "policeNone": "Sem estrelas: a polícia não está atrás de você",
-      "gang": "Gangue",
-      "gangSize": "Tamanho da gangue",
-      "gangDie": "Dado da gangue",
+      "gang": "Capangas",
+      "gangSize": "Capangas",
+      "gangDie": "Dado do capanga",
       "npc": "NPC",
       "npcEmpty": "Este NPC não tem dados.",
-      "useGang": "Gangue: {size} × d{die}",
+      "useGang": "Capangas: {size} × d{die}",
       "location": "Local",
       "complications": "Complications",
       "traitFallback": "Traço",
@@ -877,7 +876,6 @@
     "NpcSheet": {
       "tier": "Tier",
       "police": "Polícia",
-      "policeHint": "Marcar este NPC como polícia",
       "lifeMax": "Vida máxima",
       "vestKind": "Colete",
       "traits": "Traços",
@@ -886,31 +884,30 @@
       "traitPlaceholder": "Traço",
       "smaller": "Dado menor",
       "bigger": "Dado maior",
-      "toRoller": "Pôr este dado no rolador de oposição",
-      "emptyTraits": "Nenhum Traço ainda.",
-      "gang": "Gangue",
+      "toRoller": "Escolher este dado para a rolagem",
+      "emptyTraits": "Nenhum Traço",
+      "gang": "Capangas",
       "weapon": "Arma",
       "dieLabel": "{what}: d{die}",
       "notes": "Notas",
-      "emptyNotes": "Sem notas.",
-      "roll": "Rolar como oposição",
-      "rollHint": "Abre o rolador de oposição com os dados deste NPC"
+      "emptyNotes": "Sem notas",
+      "roll": "Rolar como oposição"
     },
     "LocationSheet": {
       "label": "Ficha de Local",
+      "kind": "Local",
       "name": "Nome",
       "namePlaceholder": "Nome do lugar",
-      "pickImage": "Escolher imagem",
-      "noImage": "Sem imagem",
+      "pickImage": "Trocar imagem",
       "city": "Cidade",
-      "cityHint": "Cidade cujas estrelas e polícia valem aqui",
       "noCity": "Sem cidade",
       "traits": "Traços",
-      "traitsHint": "Dados para a rolagem de oposição. Arraste para reordenar.",
-      "addTrait": "Adicionar um Traço a este local",
+      "addTrait": "Adicionar um Traço",
       "traitName": "Nome do Traço",
       "traitPlaceholder": "Traço (ex.: BECOS ESCUROS)",
-      "emptyTraits": "Nenhum Traço ainda. Adicione com + ADICIONAR.",
+      "emptyTraits": "Nenhum Traço",
+      "people": "NPCs",
+      "emptyPeople": "Nenhum NPC",
       "notes": "Notas"
     },
     "Money": {

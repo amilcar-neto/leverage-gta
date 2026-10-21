@@ -1,5 +1,5 @@
 <section class="lv-panel lv-loc-traits">
-  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.LocationSheet.traits"}}</span><span class="lv-head-tools">{{#if canManage}}<span class="lv-panel-hint">{{localize "LEVERAGE.LocationSheet.traitsHint"}}</span><button type="button" class="lv-add-btn" data-action="addTrait" title="{{localize 'LEVERAGE.LocationSheet.addTrait'}}">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}</span></h2>
+  <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.LocationSheet.traits"}}</span><span class="lv-head-tools">{{#if canManage}}<button type="button" class="lv-add-btn" data-action="addTrait">{{localize "LEVERAGE.Sheet.Add"}}</button>{{/if}}</span></h2>
   <div class="lv-panel-body lv-scroll lv-loc-list">
     {{#each traits}}
     <div class="lv-row lv-loc-trait" data-index="{{index}}"{{#if @root.canManage}} draggable="true"{{/if}}>

@@ -249,10 +249,10 @@
       "FIELDS": {
         "gang": {
           "die": {
-            "label": "Gang die"
+            "label": "Henchman die"
           },
           "size": {
-            "label": "Gang size"
+            "label": "Henchmen"
           }
         },
         "notes": {
@@ -445,12 +445,11 @@
       "Add": "+ Add",
       "Seal": {
         "locked": "Locked",
-        "lockedHint": "Sheet locked. Click to unlock and edit Attributes, Roles, Distinctions, Talents and Specialties.",
+        "lockedHint": "Locked. Click to unlock.",
         "unlocked": "Editing on",
-        "unlockedHint": "Sheet unlocked. Click to lock it again.",
-        "forcedHint": "The GM turned off unlocking: every sheet is locked right now.",
-        "lockedGmHint": "Locked for players (they can unlock it themselves unless you turn that off). As GM you can edit everything; click to change the lock.",
-        "unlockedGmHint": "Unlocked. As GM you can edit everything; click to lock this sheet for its player."
+        "unlockedHint": "Unlocked. Click to lock.",
+        "lockedGmHint": "Locked for the player. Click to unlock.",
+        "unlockedGmHint": "Unlocked. Click to lock."
       },
       "Header": {
         "noPhoto": "No photo",
@@ -808,12 +807,12 @@
       "police": "Police",
       "policeStars": "Police ({stars} ★)",
       "policeNone": "No stars: the police are not after you",
-      "gang": "Gang",
-      "gangSize": "Gang size",
-      "gangDie": "Gang die",
+      "gang": "Henchmen",
+      "gangSize": "Henchmen",
+      "gangDie": "Henchman die",
       "npc": "NPC",
       "npcEmpty": "This NPC has no dice.",
-      "useGang": "Gang: {size} × d{die}",
+      "useGang": "Henchmen: {size} × d{die}",
       "location": "Location",
       "complications": "Complications",
       "traitFallback": "Trait",
@@ -877,7 +876,6 @@
     "NpcSheet": {
       "tier": "Tier",
       "police": "Police",
-      "policeHint": "Mark this NPC as police",
       "lifeMax": "Maximum Life",
       "vestKind": "Vest",
       "traits": "Traits",
@@ -886,31 +884,30 @@
       "traitPlaceholder": "Trait",
       "smaller": "Smaller die",
       "bigger": "Bigger die",
-      "toRoller": "Put this die in the opposition roller",
-      "emptyTraits": "No Traits yet.",
-      "gang": "Gang",
+      "toRoller": "Pick this die for the roll",
+      "emptyTraits": "No Traits",
+      "gang": "Henchmen",
       "weapon": "Weapon",
       "dieLabel": "{what}: d{die}",
       "notes": "Notes",
-      "emptyNotes": "No notes.",
-      "roll": "Roll as opposition",
-      "rollHint": "Open the opposition roller with this NPC's dice"
+      "emptyNotes": "No notes",
+      "roll": "Roll as opposition"
     },
     "LocationSheet": {
       "label": "Location sheet",
+      "kind": "Location",
       "name": "Name",
       "namePlaceholder": "Name of the place",
-      "pickImage": "Choose image",
-      "noImage": "No image",
+      "pickImage": "Change image",
       "city": "City",
-      "cityHint": "City whose stars and police apply here",
       "noCity": "No city",
       "traits": "Traits",
-      "traitsHint": "Dice for the opposition roll. Drag to reorder.",
-      "addTrait": "Add a Trait to this location",
+      "addTrait": "Add a Trait",
       "traitName": "Trait name",
       "traitPlaceholder": "Trait (e.g. DARK CORNERS)",
-      "emptyTraits": "No Traits yet. Add one with + ADD.",
+      "emptyTraits": "No Traits",
+      "people": "NPCs",
+      "emptyPeople": "No NPCs",
       "notes": "Notes"
     },
     "Money": {

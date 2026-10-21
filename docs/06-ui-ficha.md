@@ -53,7 +53,11 @@ navegador e use o inspetor para medir). As decisões estão em `docs/03-decisoes
 ## Fichas de NPC e Local
 
 Mesma linguagem visual, mais simples (não há mockup; siga a ficha da Equipe):
-- **NPC:** cabeçalho (retrato, nome, tier como etiqueta, "POLICE" se for polícia), lista de Traços (nome + dado,
-  "+ ADD"), Attributes/Roles opcionais (Foil/Agent), gangue (tamanho × dado), arma, notas. Botão **ROLL AS
-  OPPOSITION** que abre o rolador de oposição já preenchido.
-- **Local:** nome, imagem, lista de Traços, cidade (para as estrelas), notas.
+- **NPC:** identidade própria, sem mugshot (a parede de mugshot é só da Crew). Cabeçalho com **crachá** (foto, ou
+  silhueta do tier quando não há foto; faixa com o tier ou POLICE), nome, tier, POLICE (escudo), Vida e Colete
+  rotulados. Faixa de cor do tier (extra cinza, foil laranja, mark vermelho, agent roxo; polícia azul). Logo abaixo
+  do cabeçalho, a barra com **ROLAR COMO OPOSIÇÃO** e o tamanho da Pool. Corpo: Traços, Arma, **Capangas**
+  (tamanho × dado), Notas; Attributes/Roles só para Foil/Agent. Sem textos de ajuda: só rótulos, ícones e controles.
+- **Local:** **banner** da imagem do lugar (ou parede de grade de mapa com ícone), etiqueta LOCAL, nome sobre o
+  banner e cidade (ícone + seleção). Corpo: Traços, **NPCs** ligados (só o mestre; arrastar da barra lateral, clicar
+  abre a ficha, X desliga) e Notas.

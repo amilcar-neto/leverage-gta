@@ -6,16 +6,22 @@
 /* ---- Window size (frame and title bar: styles/window.css) ---- */
 .leverage-gta.npc-sheet {
   --npc-police: var(--lv-d10);
+  --npc-accent: var(--lv-muted);
   min-width: 700px;
   min-height: 760px;
 }
+
+.leverage-gta.npc-sheet[data-tier="foil"] { --npc-accent: var(--lv-d6); }
+.leverage-gta.npc-sheet[data-tier="mark"] { --npc-accent: var(--lv-d4); }
+.leverage-gta.npc-sheet[data-tier="agent"] { --npc-accent: var(--lv-d12); }
+.leverage-gta.npc-sheet.is-police { --npc-accent: var(--npc-police); }
 
 /* ---- Window body: header / two columns / footer ---- */
 .leverage-gta.npc-sheet .window-content {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
   min-height: 0;
   padding: 0;
   overflow: hidden;
@@ -41,7 +47,7 @@
   min-width: 0;
   min-height: 0;
   padding: 14px 0 12px;
-  grid-row: 2;
+  grid-row: 3;
 }
 
 .leverage-gta.npc-sheet .lv-npc-col--main { grid-column: 1; padding-inline-start: 20px; }
@@ -64,47 +70,83 @@
   padding: 14px 20px;
   background: var(--lv-bg-a);
   border-bottom: 4px solid var(--lv-outline);
+  box-shadow: inset 8px 0 0 var(--npc-accent);
+  padding-inline-start: 28px;
 }
 
-.leverage-gta.npc-sheet .lv-mugshot {
+/* Badge: an ID card with a lanyard slot, a photo (or a tier silhouette) and a band with the tier. NPCs only; the
+   mugshot wall belongs to the crew. */
+.leverage-gta.npc-sheet .lv-badge {
   position: relative;
+  display: flex;
   flex: none;
-  width: 88px;
-  height: 110px;
-  padding: 0;
-  background: var(--lv-paper-photo) url("../../assets/sheet/mugshot-wall.svg") center / 100% 100% no-repeat;
-  border: 4px solid var(--lv-outline);
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  width: 112px;
+  height: auto;
+  min-height: 0;
+  line-height: 1;
+  margin: 0;
+  padding: 0 0 0;
+  background: var(--lv-bg-b);
+  border: 4px solid var(--npc-accent);
+  border-radius: 8px;
   box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
   color: inherit;
   overflow: hidden;
 }
 
-.leverage-gta.npc-sheet button.lv-mugshot { cursor: pointer; }
+.leverage-gta.npc-sheet button.lv-badge { cursor: pointer; }
 
-.leverage-gta.npc-sheet button.lv-mugshot:hover,
-.leverage-gta.npc-sheet button.lv-mugshot:focus-visible {
+.leverage-gta.npc-sheet button.lv-badge:hover,
+.leverage-gta.npc-sheet button.lv-badge:focus-visible {
   outline: 3px solid var(--lv-header);
   outline-offset: 2px;
 }
 
-.leverage-gta.npc-sheet .lv-mugshot-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  object-fit: contain;
-  object-position: bottom;
+.leverage-gta.npc-sheet .lv-badge-slot {
+  flex: none;
+  width: 30px;
+  height: 7px;
+  margin: 6px 0 5px;
+  background: var(--lv-outline);
+  border-radius: 4px;
 }
 
-.leverage-gta.npc-sheet .lv-mugshot-empty {
-  position: absolute;
-  inset: auto 0 6px;
-  text-align: center;
-  font-family: var(--lv-font-paper);
-  font-size: 11px;
+.leverage-gta.npc-sheet .lv-badge-photo {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 88px;
+  height: 88px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 3px solid var(--lv-outline);
+  overflow: hidden;
+}
+
+.leverage-gta.npc-sheet .lv-badge-img { width: 100%; height: 100%; border: 0; object-fit: cover; }
+.leverage-gta.npc-sheet .lv-badge-silhouette { color: var(--npc-accent); font-size: 52px; opacity: 0.85; }
+
+.leverage-gta.npc-sheet .lv-badge-band {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 7px;
+  padding: 3px 4px;
+  overflow: hidden;
+  background: var(--npc-accent);
+  color: var(--lv-die-ink);
+  font-family: var(--lv-font-display);
+  font-size: 15px;
   letter-spacing: 0.1em;
-  color: var(--lv-shade-45);
+  line-height: 1.2;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .leverage-gta.npc-sheet .lv-npc-identity {
@@ -160,13 +202,14 @@
   width: auto;
   height: 20px;
   padding: 0 4px;
-  background-color: var(--lv-header);
+  background-color: var(--npc-accent);
   color: var(--lv-die-ink);
   cursor: pointer;
 }
 
 .leverage-gta.npc-sheet select.lv-tag-select option { background: var(--lv-bg-b); color: var(--lv-ink); text-transform: uppercase; }
 
+.leverage-gta.npc-sheet .lv-tag--role { background: var(--npc-accent); color: var(--lv-die-ink); }
 .leverage-gta.npc-sheet .lv-tag--police,
 .leverage-gta.npc-sheet .lv-tag-toggle.is-on { background: var(--npc-police); color: var(--lv-die-ink); }
 
@@ -183,6 +226,14 @@
 .leverage-gta.npc-sheet .lv-tag-toggle:focus-visible { filter: brightness(1.15); }
 
 /* Life / Vest */
+.leverage-gta.npc-sheet .lv-npc-cap {
+  color: var(--lv-muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .leverage-gta.npc-sheet .lv-npc-vitals { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px; }
 .leverage-gta.npc-sheet .lv-npc-vital { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .leverage-gta.npc-sheet .lv-npc-vital-icon { flex: none; }
@@ -415,18 +466,18 @@
 .leverage-gta.npc-sheet .lv-npc-prose p { margin: 0 0 6px; }
 .leverage-gta.npc-sheet .lv-npc-prose .lv-empty { padding: 0; }
 
-/* ---- Footer: ROLL AS OPPOSITION ---- */
+/* ---- Action bar under the header: ROLL AS OPPOSITION ---- */
 .leverage-gta.npc-sheet .lv-npc-foot {
   position: relative;
   z-index: 5;
   grid-column: 1 / -1;
-  grid-row: 3;
+  grid-row: 2;
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 10px 20px 12px;
-  background: var(--lv-bg-a);
-  border-top: 4px solid var(--lv-outline);
+  padding: 10px 20px;
+  background: var(--lv-bg-b);
+  border-bottom: 4px solid var(--lv-outline);
 }
 
 .leverage-gta.npc-sheet .lv-npc-roll {
