@@ -36,3 +36,7 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - R-F4..R-F8 e T-902 concluídas (revisadas em 3 rodadas). Em andamento: T-901, T-903, T-904.
 - T-901 e T-903 concluídas (revisadas). Em andamento: T-904.
 - T-904 concluída (docs/USO.md + prints). Em andamento: R-F9, depois R-FINAL.
+
+## 2026-10-21 03:58 — retomada após reset
+- Corrigindo achados da R-F9 (builder em andamento), depois R-FINAL.
+- R-F9 concluída; logo nos controles do mestre. Em andamento: ajuste do T-702, depois R-FINAL.

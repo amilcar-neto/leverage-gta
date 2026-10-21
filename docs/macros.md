@@ -16,11 +16,11 @@ no servidor de testes (o VPS, veja `docs/13-ambiente-de-teste.md`): se você mud
 - Erros de uso (Pool inválida, valor fora da faixa, cidade que não existe) **não lançam exceção**: mostram um aviso na
   tela, como a bandeja da ficha, e a função devolve `null` ou `false`.
 - O **Mestre** pode tudo. Um **jogador** pode rolar, ganhar/gastar Grana e Plot Points **das personagens que ele
-  possui**. Estrelas, trava de Traços, Jobs, oposição e personagens de outros jogadores são só do Mestre (aviso e
+  possui**; só o Mestre dá Plot Points (`plotPoints.add` positivo e `plotPoints.give`). Estrelas, trava de Traços, Jobs, oposição e personagens de outros jogadores são só do Mestre (aviso e
   `false`). `money.transfer` entre personagens de donos diferentes passa pelo Mestre via socket.
 - Onde a função pede uma personagem (`actor`) vale o documento, o UUID ou o id.
-- `plotPoints.add` e `money.set` são livres para o dono da personagem: o dono já pode editar os próprios valores na
-  ficha, então a API não cria uma barreira que a ficha não tem (decisão registrada em `docs/log/DECISIONS.md`).
+- `money.set` é livre para o dono da personagem (a ficha já deixa); `plotPoints.add` com número positivo é só do Mestre,
+  e o dono só pode tirar (número negativo) ou gastar com `spend`.
 - O hook `leverage.ready` dispara quando a API está pronta, recebendo o próprio objeto.
 
 | Grupo | Funções |
@@ -28,7 +28,7 @@ no servidor de testes (o VPS, veja `docs/13-ambiente-de-teste.md`): se você mud
 | Rolagem | `rollPool({ actor, refs, flavor })`, `pool.add(actor, ref)` |
 | Oposição (Mestre) | `opposition({ dice, label })`, `openOppositionRoller()` |
 | Grana | `money.get/add/pay/set/transfer`, `money.payDialog(actor)`, `money.lendDialog(actor)` |
-| Estrelas | leitura: `stars.get/city/cities/state`. Alterar é só do Mestre: `stars.set/raise/lower/clear`, `stars.wait/disguise`. Dono ou Mestre: `stars.buySilence(actor)`, `stars.giveIn(actor)` |
+| Estrelas | leitura: `stars.get/city/cities/state`. Alterar é só do Mestre: `stars.set/raise/lower/clear`, `stars.wait/disguise`, `stars.buySilence(actor)` e `stars.lastResort(actor, { way, confirmed })`. Não há socket para estrelas |
 | Plot Points | `plotPoints.get/add/spend/give` |
 | Trava de Traços (Mestre) | `traits.lock/unlock/isLocked` |
 | Job (Mestre) | `job.get/new/end/newSession/endScene`, `jobTracker.open()` |
@@ -100,7 +100,7 @@ await game.leverage.rollPool({ actor, refs: ["attributes.alertness", "roles.grif
 
 ## Oposição (Mestre)
 
-`opposition` rola a Pool do Mestre e cria o card "FIXER". Sem dados (`dice` vazio), rola os dados de "sem oposição" (2d6, `LEVERAGE.defaultOppositionDice`).
+`opposition` rola a Pool do Mestre e cria o card "GM". Sem dados (`dice` vazio), rola os dados de "sem oposição" (2d6, `LEVERAGE.defaultOppositionDice`).
 `openOppositionRoller()` abre o montador visual.
 
 <!-- teste: gm id=opposition -->
@@ -170,12 +170,13 @@ const actor = game.actors.getName("Nome da Personagem");
 await stars.set(3, "liberty");
 await stars.wait(1);                   // esperar fora de vista (grátis)
 await stars.disguise("simple");        // disfarce que deu certo; "both" = carro e roupa
-await stars.buySilence(actor);         // paga dados de Grana da personagem (dono ou Mestre)
-await stars.giveIn(actor);             // última saída: estrelas vão a 0 (dono ou Mestre)
+await stars.buySilence(actor);         // paga dados de Grana da personagem
+await stars.lastResort(actor, { way: "disguise", confirmed: true }); // última saída: estrelas vão a 0
 ```
 
-Um jogador que chama `buySilence` ou `giveIn` para a própria personagem passa pelo Mestre via socket; o Mestre
-confere, pelo id do usuário que o servidor garante, que ele é dono da personagem.
+As ações de estrelas são só do Mestre: `stars-actions` recusa (`mayStart`) qualquer outro usuário e não existe socket
+para elas. `way` da última saída (`disguise`, `silence`, `wait`) só vale onde a regra da cidade pede uma escolha;
+`confirmed: true` é a confirmação que o diálogo do mestre daria.
 
 ## Combate (Mestre)
 
@@ -197,16 +198,27 @@ o de empréstimo. Servem para botões de macro; quem decide a quantia é a pesso
 
 ## Plot Points
 
-`add` e `spend` valem para o Mestre (qualquer personagem) e para o jogador (as suas). `give` é a ferramenta do Mestre
+`add` e `spend` valem para o Mestre (qualquer personagem); o jogador só gasta (`spend`) ou tira (`add` negativo) dos seus. `give` é a ferramenta do Mestre
 que também avisa no chat (sem lista, dá a todos da Equipe).
 
-<!-- teste: ambos id=plot-points -->
+<!-- teste: gm id=plot-points -->
 ```js
 const actor = game.actors.getName("Nome da Personagem");
 const { plotPoints } = game.leverage;
 await plotPoints.add(actor, 2);
 const have = plotPoints.get(actor);
 const spent = await plotPoints.spend(actor, 1);   // false (com aviso) se não houver Plot Points
+console.log(have, spent, plotPoints.get(actor));
+```
+
+O dono da personagem só gasta (nunca cria) Plot Points:
+
+<!-- teste: jogador id=plot-points-player -->
+```js
+const actor = game.actors.getName("Nome da Personagem");
+const { plotPoints } = game.leverage;
+const have = plotPoints.get(actor);
+const spent = await plotPoints.spend(actor, 1);
 console.log(have, spent, plotPoints.get(actor));
 ```
 

@@ -26,7 +26,8 @@ O sistema ainda não tem endereço de manifesto publicado. Instale pelo zip:
 Quando houver um endereço de manifesto, vale o caminho normal: **Game Systems → Install System → Manifest URL**.
 
 Requisitos: Foundry **v14**. O sistema vem em inglês e português do Brasil (o Foundry usa o idioma de cada usuário).
-O módulo *Dice So Nice*, se estiver ativo, ganha dados nas cores do sistema; sem ele, nada muda.
+O módulo *Dice So Nice*, se estiver ativo, ganha dados nas cores do sistema; sem ele, nada muda. (A integração
+ainda não foi testada com o módulo ativo.)
 
 ## 2. Começando: o mundo e a Equipe
 
@@ -34,7 +35,9 @@ O módulo *Dice So Nice*, se estiver ativo, ganha dados nas cores do sistema; se
 
 1. Em **Worlds**, crie um mundo escolhendo o sistema *Leverage: Liberty City* e entre nele.
 2. Em **Actors**, crie um ator do tipo **Crew** (a Equipe, os personagens dos jogadores). Os outros tipos são **NPC**
-   (Extra, Foil, Mark, Agent) e **Location** (Local, com Traços e a cidade que vale para as estrelas).
+   (Extra, Foil, Mark, Agent) e **Location** (Local, com Traços e uma cidade). A cidade do Local só
+   vale para o atalho *Polícia* do Rolador de oposição quando o Local está na cena; as estrelas do HUD seguem a cidade
+   do Nível de procurado.
 3. Dê a cada jogador a posse (**Owner**) do seu personagem e, em **Configure Players**, escolha o personagem de cada
    usuário. O HUD usa esse personagem.
 4. Atalho: importe a **Rosa Delgado** do compêndio (seção 12) e use como modelo.
@@ -61,7 +64,7 @@ A bandeja **POOL** fica no rodapé da ficha.
    botão ROLAR fica desligado.
 2. Se quiser, some: uma **Distinction** (no máximo uma; o d8 ajuda, o d4 atrapalha e dá +1 Plot Point), uma
    **Specialty** (+d6, vale com a Role dela), **Assets** e **Talents** com dado, a **Grana** (botão `$`, se a regra
-   estiver ligada) e dados avulsos pelo **+ DADO** (inclusive Traços de cena e Complications do Job ativo).
+   estiver ligada) e dados avulsos pelo **+ DADO** (d4 a d12, a Grana e os Traços de cena do Job ativo).
 3. Clique em um chip para tirá-lo da Pool. **ROLAR** (ou Enter, com a ficha em foco) rola tudo.
 
 **Regra:** rola todos os dados e soma os **dois maiores**. Dado que tirou **1** não conta; se todos tirarem 1, o total
@@ -70,7 +73,8 @@ A bandeja **POOL** fica no rodapé da ficha.
 ![Card de rolagem](img/card-rolagem.png)
 
 - Dados **mantidos** têm borda acesa; os **1** aparecem em vermelho (*1 · Fora*); os demais ficam apagados.
-- **+1 PP · Manter o 3º dado** (só o dono, com Plot Points): gasta 1 PP e soma o próximo maior dado. Dá para repetir.
+- **+1 PP · Manter o 3º dado** (só o dono, nunca o mestre): gasta 1 PP e soma o próximo maior dado. Dá para repetir.
+  Só aparece no card **mais recente** do personagem e enquanto sobra dado; sem Plot Points o botão fica apagado.
 - **Mestre · Complication** (só o mestre, quando há um 1): cria ou sobe uma Complication no Job ativo e **dá 1 Plot
   Point** ao jogador. É escolha do mestre, não é automático.
 - Dado de **Grana** na Pool faz a Grana descer 1 degrau, e Distinction d4 dá +1 PP; o card avisa de ambos.
@@ -84,12 +88,14 @@ sucesso extraordinário. O sistema mostra os totais, mas quem decide o resultado
 
 ## 4. Plot Points
 
-- Cada jogador começa um Job com **1 PP** (a quantidade é configurável).
-- **Ganha:** Distinction d4 na rolagem; Complication criada pelo mestre a partir de um 1 seu; ao desistir (Give In);
+- Cada jogador começa um Job com **1 PP** (configurável): **Novo Job** leva cada um a *pelo menos* esse número. Quem
+  tem mais Plot Points guarda os seus; nada é somado por cima.
+- **Ganha:** Distinction d4 na rolagem; Complication criada pelo mestre a partir de um 1 seu; ao desistir (Give In, manual: o mestre cria a Complication
+  e usa **Dar Plot Point**);
   ao ser Wasted ou Busted; PP dados pelo mestre (**Dar Plot Point**).
 - **Gasta:** manter mais um dado depois da rolagem (botão do card); criar um **Asset de cena** (1 PP) ou de **Job**
   (2 PP) pelo botão **+ Adicionar** da lista de Assets, que mostra o custo e pede confirmação; ativar Talents que
-  custam 1 PP.
+  custam 1 PP (o sistema não desconta sozinho: tire o PP à mão pelo − do HUD).
 - No HUD, o − gasta 1 PP manualmente e o clique direito no número também. Só o mestre soma pelo HUD.
 
 ## 5. Estrelas de procurado
@@ -97,6 +103,7 @@ sucesso extraordinário. O sistema mostra os totais, mas quem decide o resultado
 As estrelas (0 a 5) medem o quanto a polícia está atrás da Equipe **numa cidade**. São do grupo e **só o mestre
 mexe**: clique nas estrelas do HUD (a estrela N define o nível N; clicar na do nível atual baixa um) ou use
 **Nível de procurado** nas ferramentas do mestre, que também escolhe a cidade. Cada mudança é anunciada no chat.
+  As estrelas são ações só do mestre: o sistema recusa qualquer outro usuário e não há socket para elas.
 
 - **Sobem** (1 por vez): ser visto cometendo crime, tiro em público, ferir ou matar policial, ataque grande ou fuga de
   prisão. Falhar numa fuga não sobe estrela.
@@ -106,8 +113,10 @@ mexe**: clique nas estrelas do HUD (a estrela N define o nível N; clicar na do 
   baixar o nível (esperar fora de vista, mudar de cara, comprar silêncio, última saída). Tudo editável em
   **Escalas das cidades** (seção 13). Em Liberty City, por exemplo, comprar silêncio não funciona.
 - As estrelas **não zeram sozinhas**: ao sair da cidade, o mestre zera.
-- Os atalhos para esperar, mudar de cara, comprar silêncio e a última saída existem na API (seção 14, `stars.wait`,
-  `stars.disguise`, `stars.buySilence`, `stars.giveIn`) e seguem as regras da cidade atual.
+- A janela **Nível de procurado** tem os botões de ação, todos seguindo as regras da cidade atual: **subir**
+  (com motivo), **esperar** (por cena ou entre sessões), **disfarce** (só roupa ou carro e roupa), **silêncio**
+  (paga dados de Grana do personagem escolhido) e **última saída** (pede confirmação). Os mesmos atalhos existem na API
+  (seção 14: `stars.wait`, `stars.disguise`, `stars.buySilence`, `stars.lastResort`).
 
 ## 6. Vida e Colete
 
@@ -119,7 +128,8 @@ mexe**: clique nas estrelas do HUD (a estrela N define o nível N; clicar na do 
 - **Aplicar dano:** no card de oposição do mestre, o botão **APLICAR DANO** escolhe o alvo, rola o dado da arma, pergunta
   pela **cobertura** (divide o dano pela metade, arredondando para baixo), tira primeiro do **Colete** e depois da
   **Vida**. Está em `docs/02-regras-da-casa.md` e vale só em luta de verdade; discussões e golpes seguem o livro.
-- **Desistir** antes de rolar (Give In): a pessoa sai com uma Complication leve (*Bloodied d6*) e ganha 1 PP.
+- **Desistir** antes de rolar (Give In): a pessoa sai com uma Complication leve (*Bloodied d6*) e ganha 1 PP. É
+  manual: o mestre cria a Complication no Rastreador e usa **Dar Plot Point**.
 - **Recuperar:** cena de descanso devolve metade da Vida máxima, um dia entre golpes devolve tudo, tratamento médico
   custa d4 de Grana e devolve tudo. O sistema tem essas operações no código do personagem (`restScene()`, `restDay()`,
   `medicalTreatment()`, `buyVest(tipo)`), mas ainda **não há botões**: use macro ou ajuste a Vida e o Colete direto na
@@ -145,7 +155,9 @@ d12 = 5. Um d12 cheio vale 5 degraus e o maior dado fica à direita (7 degraus =
 
 ## 8. Wasted e Busted
 
-Quando a **Vida chega a 0**, o sistema posta um card no chat com os passos (o mestre confirma no diálogo):
+Quando o **dano leva a Vida a 0**, o sistema posta um card no chat com os passos (o mestre confirma no diálogo). O card
+sai pelo **APLICAR DANO** ou por `combat.applyDamage`/`combat.down`; baixar a Vida à mão com o − da ficha não
+dispara nada:
 
 ![WASTED](img/wasted.png)
 
@@ -176,7 +188,8 @@ Um **Job** é um golpe completo.
   ficha, soma a Grana e apaga os Assets de Job.
 - **Nova sessão:** devolve o **Callback** de todos os Jobs.
 - **Aba JOBS da ficha:** lista cada Job concluído com a parte do personagem. Marque o **Callback** para citar um Job
-  (vale como um Plot Point gasto na rolagem, uma vez por Job por sessão). **Train up** gasta Jobs sem uso para ganhar
+  (só marca e anuncia no chat; vale como um Plot Point gasto na rolagem, uma vez por Job por sessão, e a mesa aplica
+  o efeito). **Train up** gasta Jobs sem uso para ganhar
   Signature Asset, Specialty, Talent (1 Job cada) ou um degrau de Attribute ou Role (2 Jobs cada); os custos são
   editáveis. Job gasto continua no histórico, mas não serve mais para Callback. **+ Registrar** cria um Job à mão.
 
@@ -190,7 +203,8 @@ Fica no canto superior direito, ao lado da barra lateral.
 - **Grana:** o `$` e os dados verdes. Clique para pagar; clique direito para emprestar.
 - **Plot Points:** a ficha amarela com o número, mais o − (e o + para o mestre).
 - Mostra o personagem do usuário. O mestre vê a Grana e os PP do token selecionado; sem personagem, aparecem apagados.
-- **Shift + clique** no `$` minimiza o HUD (só as estrelas). Cada jogador pode esconder estrelas, Grana ou Plot Points
+- **Shift + clique** no `$` minimiza o HUD (só as estrelas); para restaurar, passe o mouse sobre o HUD minimizado e
+  clique no botão que aparece. Cada jogador pode esconder estrelas, Grana ou Plot Points
   nas configurações de cliente. Estrelas e Grana somem quando a regra da casa está desligada.
 - Na imagem acima, o mestre está sem token selecionado: aparecem só as estrelas.
 
@@ -202,7 +216,7 @@ Na barra de controles à esquerda, o grupo **Leverage** (só o mestre vê):
 | --- | --- |
 | Trava de Traços | Liga e desliga a trava e avisa no chat |
 | Nível de procurado | Define estrelas e cidade |
-| Rolador de oposição | Rolagens do Fixer (seção 3) |
+| Rolador de oposição | Rolagens do mestre (seção 3) |
 | Rastreador do Job | A janela da seção 9 |
 | Encerrar cena | Apaga Assets de cena (confirma) |
 | Novo Job | Inicia um Job |
@@ -217,8 +231,8 @@ Em **Compendium Packs** há quatro pacotes: **Equipe de exemplo**, **NPCs**, **L
 - A **Rosa Delgado** (Equipe) é uma personagem completa para olhar e copiar: Thief d10 como Role primária, três
   Distinctions, três Talents, Specialties, cinco Assets, nove Jobs (três já gastos), Background e Booking Card.
   Importe com o botão direito ou arrastando para a lista de atores.
-- Os cinco NPCs (gangue de rua, esquadrão de choque, tenente Ines Calder, Silas Kane e Victor Brandt), o Local e os Talents e Assets são exemplos próprios para copiar e
-  editar. O conteúdo do livro não vem no sistema.
+- Os cinco NPCs (gangue de rua, esquadrão de choque, tenente Ines Calder, Silas Kane e Victor Brandt), o Local e os
+  Talents e Assets são exemplos próprios para copiar e editar. O conteúdo do livro não vem no sistema.
 
 ## 13. Configurações
 
@@ -256,7 +270,8 @@ ficha para a barra de atalhos cria uma macro que põe aquele Traço na Pool.
 - **O jogador não consegue mudar os Traços.** É a **Trava de Traços**. O mestre destrava nas ferramentas ou nas
   configurações.
 - **ROLAR está desligado.** Falta um Attribute ou uma Role, ou a Role escolhida está em branco.
-- **O botão +1 PP não aparece.** O jogador não tem Plot Points, ou não resta dado para manter (os 1 não valem).
+- **O botão +1 PP não aparece (ou está apagado).** Sem Plot Points ele fica apagado; some se não resta dado para manter
+  (os 1 não valem), se o card não é o mais recente do personagem ou se quem olha é o mestre.
 - **Grana insuficiente.** Faltam degraus; o diálogo informa quantos. Empreste de outro personagem ou ajuste a Grana.
 - **Não consigo mexer nas estrelas.** Só o mestre. Se estiverem escondidas, a regra Estrelas está desligada.
 - **Mudei o `system.json` ou instalei uma versão nova e nada mudou.** Volte à tela de configuração e lance o mundo de

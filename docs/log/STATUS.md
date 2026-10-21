@@ -1,1 +1,1 @@
-IN PROGRESS: R-F9 (revisão da fase 9), depois R-FINAL
+IN PROGRESS: ajuste do teste T-702, depois R-FINAL

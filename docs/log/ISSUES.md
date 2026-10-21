@@ -9,26 +9,25 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
   sistema distribuído. Usando Anton (OFL) na variável `--lv-font-display`.
 - **Dono:** se quiser a Pricedown, confira a licença em typodermicfonts.com e coloque o arquivo em `fonts/`.
 
-## I-002 — Custos de evolução ilegíveis no OCR
-- **Gravidade:** importante · **Situação:** aberto
-- **Detalhe:** a tabela "Training Up" do livro saiu ilegível no texto extraído (leverage.txt, linhas ~2500–2512).
-- **Ação do agente:** abrir o PDF em `reference/books/` e copiar os custos; se não conseguir, usar valores
-  configuráveis e manter esta pendência aberta.
+## I-002 — Custos de evolução (Train up) ilegíveis no OCR (inclui o antigo I-005)
+- **Gravidade:** média · **Situação:** aberto (provisório)
+- **Detalhe:** a tabela "Training Up" do livro saiu ilegível no texto extraído (leverage.txt, linhas ~2500–2512). Só o
+  custo do Signature Asset está confirmado. Por isso o diálogo TRAIN UP lê `trainingCosts` (padrão em
+  `LEVERAGE.defaultTrainingCosts`: Signature Asset 1, Specialty 1, Talent 1, Attribute 2, Role 2) e o menu **Custos de
+  treinamento** deixa o mestre ajustar. O diálogo só gasta os Jobs (marca `spent`, os mais antigos primeiro) e avisa no
+  chat; o item novo (Specialty, Talent...) é criado depois na ficha, destravada. Attribute/Role: ajustar o dado à mão.
+- **Dono:** conferir a tabela no PDF e ajustar o menu de custos.
 
 ## I-003 — API da v14 não verificada no design
-- **Gravidade:** importante · **Situação:** aberto
-- **Detalhe:** os documentos citam caminhos de API da v13. Confirmar tudo na v14 (tarefa T-002) antes de codar.
+- **Gravidade:** importante · **Situação:** fechado
+- **Detalhe:** a verificação da API da v14 foi feita na T-002 (`docs/research/`) e os caminhos usados no código foram
+  testados no Foundry real em cada tarefa.
 
 ## 2026-10-16 — Smoke test: usuário Gamemaster ocupado (resolvido: dono deslogou; smoke passou)
 - Deploy via `npm run deploy` funciona (OpenSSH do Windows + chown foundry).
 - O login do Playwright falha porque a opção `Gamemaster` fica desabilitada enquanto o dono está logado nele.
 - Dono precisa: criar um usuário `Claude` (Mestre do Jogo, sem senha) no mundo e avisar; depois trocar `FOUNDRY_USER=Claude` no `.env`.
 - Até lá: seguir com testes de unidade e revisão de código; repetir o smoke ao fim de cada fase.
-
-## I-005 - Custos de Training Up sao provisorios (T-305)
-- **Gravidade:** media - **Situacao:** aberto (ligado a I-002)
-- **Detalhe:** o dialogo TRAIN UP le `trainingCosts` (padrao em `LEVERAGE.defaultTrainingCosts`: Signature Asset 1, Specialty 1, Talent 1, Attribute 2, Role 2). So o Signature Asset esta confirmado no livro. O dialogo so gasta os Jobs (marca `spent`, os mais antigos primeiro) e avisa no chat; o item novo (Specialty, Talent...) e criado depois na ficha, destravada. Attribute/Role: ajustar o dado a mao.
-- **Dono:** conferir a tabela no PDF e ajustar o menu de custos.
 
 ## 2026-10-17 - Campos protegidos dos Items so na ficha (R-F4/R-F5)
 - Gravidade baixa. `die`/`duration` do Asset e `payout.share`/`spent` do Job so sao protegidos nas fichas (acoes e formulario). Um jogador que chame `item.update` pelo console ainda consegue mudar esses campos. Correcao possivel: guarda em `preUpdateItem` usando `LEVERAGE.protectedItemFields`. Nao resolvido (arquivo `documents/item.mjs` fora do escopo desta parte).
@@ -40,7 +39,7 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - Nao feito: esconder o card ate a animacao acabar via `linkedTo`. Nao e preciso: o card ja leva `rolls`, e o Dice So Nice o esconde sozinho.
 
 ## T-902 - Pontos visuais vistos na ficha da Rosa (para o builder de UI)
-- Gravidade baixa. No print `T-902-rosa.png`: (1) o aviso do navegador "sem aceleração de hardware" cobre o cabeçalho (é do ambiente de teste, não do sistema); (2) títulos de seção em inglês (ATTRIBUTES, DISTINCTIONS...) misturados com textos em pt-BR ("ADICIONAR", "clique para abrir", "Edição ligada") quando o Foundry está em pt-BR: conferir se é intencional; (3) o texto do Background mostra rótulos como "RAISED:" em inglês, que é o conteúdo de exemplo. Não alterado (CSS/templates fora do escopo).
+- Gravidade baixa. No print `T-902-rosa.png`: (1) o aviso do navegador "sem aceleração de hardware" cobre o cabeçalho (é do ambiente de teste, não do sistema); (2) títulos de seção em inglês (ATTRIBUTES, DISTINCTIONS...) misturados com textos em pt-BR: **resolvido**, é intencional (nomes do livro ficam em inglês, como diz o guia de uso); (3) o texto do Background mostra rótulos como "RAISED:" em inglês, que é o conteúdo de exemplo. Não alterado (CSS/templates fora do escopo).
 
 ## Onda B (CSS/UI) de R-F4..R-F8: conferência no Foundry real
 - Conferido com screenshots no Foundry do VPS (ficha da Equipe, NPC, Local, itens Talent/Asset, cards de rolagem com Grana e 7 dados, Rastreador, Rolador de oposição). Sem erros no console.

@@ -62,7 +62,7 @@
         "hint": "Price of each item in dice. Click a die to remove it; click a faded die to add one."
       },
       "Training": {
-        "hint": "How many unspent Jobs each Train Up option costs."
+        "hint": "How many unspent Jobs each Train up option costs."
       },
       "Error": {
         "noCities": "Add at least one city.",
@@ -337,7 +337,7 @@
         }
       },
       "jobStartPlotPoints": {
-        "Hint": "Plot Points each character gets when a new Job starts.",
+        "Hint": "Plot Points each character has at least when a new Job starts (those who have more keep them).",
         "Name": "Plot Points per Job"
       },
       "lifeBase": {
@@ -582,7 +582,7 @@
       "maxDistinctions": "A character can have at most {max} Distinctions.",
       "notEnoughPlotPoints": "Not enough Plot Points: it costs {cost} and you have {have}.",
       "noUnspentJobs": "No unspent Jobs to spend.",
-      "apiNotReady": "The system API is not ready yet: rolling from a macro arrives in a later version."
+      "apiNotReady": "The system API is still loading; try again."
     },
     "ItemSheet": {
       "role": "Role",
@@ -685,7 +685,7 @@
         },
         "newSession": "New session. Callbacks reset on {count} Job(s).",
         "endScene": "Scene over. Scene Assets removed: {count}.",
-        "newJob": "New Job: {name}. Each character gets {count} Plot Point(s).",
+        "newJob": "New Job: {name}. Each character has at least {count} Plot Point(s).",
         "endJob": "Job over: {name}. Payout: {total} steps."
       },
       "Dialog": {
@@ -724,7 +724,7 @@
     },
     "Opposition": {
       "title": "Opposition roller",
-      "fixer": "FIXER",
+      "fixer": "GM",
       "gmOnly": "Only the GM can roll opposition.",
       "dieLabel": "Opposition",
       "defaultFlavor": "Opposition",

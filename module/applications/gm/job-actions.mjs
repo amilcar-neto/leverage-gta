@@ -227,7 +227,8 @@ export async function endScene({ confirm = true } = {}) {
 }
 
 /**
- * Starts a Job: sets the active Job (no old Complications) and gives each character `jobStartPlotPoints`.
+ * Starts a Job: sets the active Job (no old Complications) and raises each character to at least `jobStartPlotPoints`
+ * Plot Points (the book: everybody has 1 to start the Job; Plot Points left over are kept, never added on top).
  * @param {string} name
  * @returns {Promise<boolean>} false when the name is empty or the user is not the GM
  */
@@ -237,7 +238,7 @@ export async function newJob(name) {
   if (!job.name) return false;
   await game.settings.set(SYSTEM_ID, "activeJob", job);
   const each = toSteps(readSetting("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints));
-  if (each) await Promise.all(crewActors().map((a) => a.addPlotPoints(each)));
+  if (each) await Promise.all(crewActors().map((a) => a.addPlotPoints(Math.max(0, each - (a.system.plotPoints?.value ?? 0)))));
   await say(t("LEVERAGE.GM.Chat.newJob", { name: escapeHtml(job.name), count: each }));
   return true;
 }

@@ -39,7 +39,7 @@ Um grupo próprio "Leverage" (ícone de estrela/distintivo) nos controles de cen
 | **Rolador de oposição** | botão | Abre o rolador (`docs/08`) |
 | **Rastreador do Job** | botão | App com: nome do Job, Complications (nome + dado, subir/descer/remover), Traços de cena, visão da Equipe (Vida, Colete, Grana, PP de cada um, com +/−) |
 | **Encerrar cena** | botão | Apaga Assets `scene` de todos os personagens (com confirmação e resumo no chat) e limpa Traços de cena |
-| **Novo Job** | botão | Define o Job ativo, dá `jobStartPlotPoints` a cada um, limpa Complications antigas |
+| **Novo Job** | botão | Define o Job ativo, leva cada um a pelo menos `jobStartPlotPoints` PP (quem tem mais mantém; o livro dá 1 a todos no início), limpa Complications antigas |
 | **Encerrar Job** | botão | Diálogo: nome, rendimento total em degraus, divisão por personagem → cria item `job` em cada ficha, soma Grana, apaga Assets `job` |
 | **Nova sessão** | botão | Zera `callbackUsed` de todos os Jobs |
 | **Dar Plot Point** | botão | Escolhe personagem(ns) e dá 1 PP |

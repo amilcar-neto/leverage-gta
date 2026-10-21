@@ -159,3 +159,29 @@
 .leverage-gta .lv-wanted-check { display: flex; flex: 1; align-items: center; gap: 4px; min-width: 0; font-size: 13px; }
 .leverage-gta .lv-wanted-check-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .leverage-gta .lv-wanted-off { margin: 0; color: var(--lv-muted); }
+
+/* Scene controls: the "Leverage" group button wears the logo (white body + red accent masks, tokens from tokens.css).
+   Tokens are scoped to .leverage-gta, so the same values are given as fallbacks here. Thick-stroke symbol from assets/sheet so it stays legible at 22px. The button keeps core size, border and states. */
+#scene-controls .lv-control-logo { position: relative; }
+
+#scene-controls .lv-control-logo::before,
+#scene-controls .lv-control-logo::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+}
+
+#scene-controls .lv-control-logo::before {
+  background: var(--lv-logo-white, #ffffff);
+  -webkit-mask: url("../assets/sheet/window-icon.svg") center / contain no-repeat;
+  mask: url("../assets/sheet/window-icon.svg") center / contain no-repeat;
+}
+
+#scene-controls .lv-control-logo::after {
+  background: var(--lv-logo-red, #ff1a4b);
+  -webkit-mask: url("../assets/sheet/window-icon-accent.svg") center / contain no-repeat;
+  mask: url("../assets/sheet/window-icon-accent.svg") center / contain no-repeat;
+}

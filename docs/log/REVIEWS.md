@@ -38,3 +38,18 @@ Um resumo por revisão: tarefa ou fase, veredito, defeitos encontrados, o que fo
 ## Correções de R-F4..R-F8 + T-902 — rodadas 2 e 3 (Opus)
 - 2ª rodada: sem bloqueios (colunas de 5+ dados e chaves de i18n dos pacotes resolvidos e medidos no Foundry real). 5 itens menores: cor do BUSTED, moldura/botões dos diálogos, flavor duplicado no chat, docs/07 desatualizado, fins de linha. Todos corrigidos.
 - Ficaram para o dono: visual da Grana no HUD (ISSUES.md); HUD só testado sobre cena escura.
+
+## T-901 + T-903 — i18n, versão 0.1.0, changelog e release zip (Opus)
+- Veredito: precisa de pequenas correções. Achou "Fixer" misturado nos textos de interface em inglês, migração de mundo que podia derrubar o `ready`, Mensagem de Plot Points sem plural e itens do release.
+- Corrigido: textos em inglês usam "GM" (DECISIONS.md), `migrateWorld` captura erro e só grava a versão ao fim de cada passo, plural em `LEVERAGE.GM.Chat.plotPoints`, lista do release.
+- Ficou para depois: licença do sistema (ISSUES.md).
+
+## T-904 — Guia de uso (docs/USO.md e prints) (Opus)
+- Veredito: precisa de correções (R-F9). Ver a entrada abaixo.
+
+## R-F9 — Fase 9 (documentação, release) — revisão de conjunto (Opus)
+- Veredito: precisa de correções. 2 bloqueios, ~10 "deveria", alguns nits.
+- Bloqueios: (1) `docs/USO.md` e `docs/macros.md` citavam `stars.giveIn`, que virou `stars.lastResort(actor, { way, confirmed })`, e diziam que o dono podia chamar estrelas por socket (estrelas são só do mestre); o teste T-505 não falhava com a função inexistente. (2) Os prints de `docs/img` eram de uma cópia velha do sistema ("CENA/LIVRE/COMPLICAÇÕES").
+- Deveria: Complications fora do + DADO; janela Nível de procurado descrita como "só API"; card WASTED/BUSTED só sai por APLICAR DANO ou pela API; Give In é manual (`giveIn()` de `rules/combat.mjs` é código morto); botão +1 PP apagado sem PP e só no card mais recente; cidade do Local; Novo Job somava PP em vez de seguir o livro; CHANGELOG com termos fora do livro e itens faltando; "FIXER" na interface em inglês; texto de `apiNotReady`; logs.
+- Corrigido: todos acima (decisão sobre PP do Novo Job em DECISIONS.md), T-505 agora confere cada função documentada e o erro do exemplo, prints refeitos num Foundry com o sistema atual. Nits: HUD minimizado, Dice So Nice não testado, Talents de 1 PP descontados à mão, Callback só marca, "Train up" igual em todo texto, README aponta para o guia.
+

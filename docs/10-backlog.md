@@ -130,7 +130,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 - [x] **T-903 Migração e versão 0.1.0**, `CHANGELOG.md`, `tools/release.mjs` gera `dist/leverage-gta.zip` sem
   `docs/`, `reference/`, `tests/`, `scripts/`, `.claude/`. *Dep:* tudo acima.
 - [x] **T-904 Documentação de uso** `docs/USO.md` em pt-BR para o mestre e os jogadores (com prints). *Dep:* T-903.
-- [ ] **R-F9 Revisão de fase.**
+- [x] **R-F9 Revisão de fase.**
 
 ## Revisão final
 

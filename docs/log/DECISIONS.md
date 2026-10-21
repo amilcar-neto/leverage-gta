@@ -139,3 +139,10 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 ## Mensagem de Plot Points do mestre usa plural
 
 - Escolha: `LEVERAGE.GM.Chat.plotPoints` virou `one`/`other` (concordância de "recebe/recebem" pelo número de personagens), via `tn`.
+
+## Novo Job leva cada um a *pelo menos* `jobStartPlotPoints` (R-F9)
+
+- Contexto: `newJob` somava `jobStartPlotPoints` ao que o personagem já tinha. O livro diz "everybody gets 1 Plot Point to start the Job" e "you only start the Job with one of them", e `docs/09` falava em "dar".
+- Escolha: no início do Job cada personagem fica com pelo menos o valor da configuração (padrão 1). Quem tem mais guarda os seus; ninguém perde PP nem ganha por cima. Código (`job-actions.mjs`), textos (`Chat.newJob`, hint da configuração), `docs/09` e `docs/USO.md` alinhados.
+- Descartado: somar (quem sobrou de um Job anterior acumularia sem fim) e definir o valor exato (tiraria PP ganho no fim do Job anterior).
+

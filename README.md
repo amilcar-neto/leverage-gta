@@ -1,8 +1,15 @@
-# Leverage: Liberty City — projeto do sistema para Foundry VTT v14
+# Leverage: Liberty City — sistema para Foundry VTT v14
 
-Este pacote é o ponto de partida para o Claude Code construir o sistema **sozinho**: documentação completa (regras,
-regras da casa, design, arquitetura, backlog), mockups, os livros, um esqueleto instalável e os scripts que mantêm o
-trabalho rodando até acabar, inclusive passando pelos limites de uso.
+Sistema de jogo para o *Leverage RPG* com regras da casa inspiradas no GTA da era 3D (estrelas, Vida e Colete, Grana em
+escada).
+
+- **Para jogar:** leia [docs/USO.md](docs/USO.md) (instalação, ficha, rolagens, HUD, ferramentas do mestre) e
+  [docs/macros.md](docs/macros.md).
+- **Instalação pelo zip:** `npm run release` cria `dist/leverage-gta.zip`. Extraia-o dentro de
+  `Data/systems/leverage-gta/` (o `system.json` fica direto nessa pasta) e reinicie o Foundry. Detalhes na seção 1 do
+  guia de uso.
+
+O restante deste arquivo descreve como o projeto foi construído sozinho pelo Claude Code.
 
 ## O que tem aqui
 

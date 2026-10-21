@@ -62,7 +62,7 @@
         "hint": "Preço de cada item em dados. Clique num dado para remover; clique num dado apagado para adicionar."
       },
       "Training": {
-        "hint": "Quantos Jobs sem uso cada opção de Train Up custa."
+        "hint": "Quantos Jobs sem uso cada opção de Train up custa."
       },
       "Error": {
         "noCities": "Adicione pelo menos uma cidade.",
@@ -337,7 +337,7 @@
         }
       },
       "jobStartPlotPoints": {
-        "Hint": "Plot Points que cada personagem ganha quando um novo Job começa.",
+        "Hint": "Plot Points que cada personagem tem no mínimo quando um novo Job começa (quem tem mais, mantém).",
         "Name": "Plot Points por Job"
       },
       "lifeBase": {
@@ -582,7 +582,7 @@
       "maxDistinctions": "Um personagem pode ter no máximo {max} Distinctions.",
       "notEnoughPlotPoints": "Plot Points insuficientes: custa {cost} e você tem {have}.",
       "noUnspentJobs": "Nenhum Job sem gastar para gastar.",
-      "apiNotReady": "A API do sistema ainda não está pronta: rolar por macro chega numa versão futura."
+      "apiNotReady": "A API ainda está carregando; tente de novo."
     },
     "ItemSheet": {
       "role": "Role",
@@ -685,7 +685,7 @@
         },
         "newSession": "Nova sessão. Callbacks zerados em {count} Job(s).",
         "endScene": "Cena encerrada. Assets de cena removidos: {count}.",
-        "newJob": "Novo Job: {name}. Cada personagem recebe {count} Plot Point(s).",
+        "newJob": "Novo Job: {name}. Cada personagem fica com pelo menos {count} Plot Point(s).",
         "endJob": "Job encerrado: {name}. Rendimento: {total} degraus."
       },
       "Dialog": {

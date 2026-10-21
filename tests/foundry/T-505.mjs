@@ -204,7 +204,7 @@ try {
 
   out = await gm("stars");
   record("[gm] stars: 3 -> lower 2 -> raise 2 = 4 in Liberty City, then cleared",
-    out.logs[0] === '[4,"liberty",{"city":"liberty","level":4,"pool":[12,12]}]' && (await page.evaluate(() => game.leverage.stars.get())) === 0, out);
+    out.logs.at(-1) === '[4,"liberty",{"city":"liberty","level":4,"pool":[12,12]}]' && (await page.evaluate(() => game.leverage.stars.get())) === 0, out);
   const bad = await page.evaluate(async () => {
     const warns = [];
     const real = ui.notifications.warn;
@@ -219,7 +219,14 @@ try {
   known = await messageIds();
   out = await gm("stars-actions");
   const starLines = (await newRolls(known)).length;
-  record("[gm] stars-actions: chat lines were posted (at least the first wait/disguise/giveIn that applies)", starLines >= 1, { out, starLines });
+  record("[gm] stars-actions: chat lines were posted (at least the first wait/disguise/lastResort that applies)", starLines >= 1, { out, starLines });
+  // Every function the docs name must exist and the example must end without any error (a TypeError fails here).
+  const documented = [...blocks["stars-actions"].code.matchAll(/stars\.(\w+)\(/g)].map((m) => m[1]);
+  const missing = await page.evaluate((names) => names.filter((n) => typeof game.leverage.stars[n] !== "function"), documented);
+  record("[gm] stars-actions: every documented stars.* function exists", documented.length >= 5 && missing.length === 0, { documented, missing });
+  record("[gm] stars-actions: example ended without error", out.error === null, out);
+  record("[gm] stars-actions: giveIn is gone from docs/macros.md and docs/USO.md",
+    !/stars\.giveIn/.test(doc) && !/stars\.giveIn/.test(readFileSync("docs/USO.md", "utf8")), {});
   await reset(6, 1);
   known = await messageIds();
   await gm("combat");
@@ -256,7 +263,7 @@ try {
 
   await gm("job-new");
   const jobName = await page.evaluate(() => game.leverage.job.get().name);
-  record("[gm] job-new: active Job set and the Crew got the starting Plot Points", jobName === "Assalto ao banco" && (await peek()).pp > 3, { jobName, peek: await peek() });
+  record("[gm] job-new: active Job set; the Crew is raised to at least the starting Plot Points (3 kept, none added)", jobName === "Assalto ao banco" && (await peek()).pp === 3, { jobName, peek: await peek() });
   await gm("job-end");
   const ended = await page.evaluate(() => ({
     name: game.leverage.job.get().name,
@@ -338,8 +345,8 @@ try {
   record("[player] money: ends at 0", await eventually(async () => (await peek()).steps === 0), await peek());
 
   await reset(1);
-  await player("plot-points");
-  record("[player] plot-points: 1 + 2 - 1 = 2", await eventually(async () => (await peek()).pp === 2), await peek());
+  await player("plot-points-player");
+  record("[player] plot-points-player: 1 - 1 = 0 (spends, never creates)", await eventually(async () => (await peek()).pp === 0), await peek());
 
   await reset(3, 1, 0);
   await player("money-transfer");

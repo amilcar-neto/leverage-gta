@@ -101,7 +101,7 @@ export function buildControl() {
     button("givePlotPoint", "fa-solid fa-circle-plus", 9, actions.giveEachPlotPointDialog)
   ];
   return {
-    name: CONTROL_NAME, title: "LEVERAGE.GM.Controls.title", icon: "fa-solid fa-shield-halved", order: 100,
+    name: CONTROL_NAME, title: "LEVERAGE.GM.Controls.title", icon: "lv-control-logo", order: 100,
     visible: game.user.isGM, activeTool: null, tools: Object.fromEntries(tools.map((tool) => [tool.name, tool]))
   };
 }
