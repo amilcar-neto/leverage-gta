@@ -4,7 +4,7 @@
   position: fixed;
   top: 14px;
   right: calc(var(--lv-sidebar-w, 0px) + 16px);
-  z-index: 500; /* above sheet windows (z-index 100+) so Money and PP stay clickable; core menus and tooltips sit higher */
+  z-index: var(--lv-hud-z, 500); /* above sheet windows so Money and PP stay clickable (leverage-hud.mjs raises it past the core's window counter); core menus and tooltips sit higher */
   display: flex;
   flex-direction: column;
   align-items: flex-end;

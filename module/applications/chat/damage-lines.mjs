@@ -59,6 +59,14 @@ export function damageSummary(r, t) {
 /** A plural formatter over `t` that splits like English (`<key>.one` for 1, `<key>.other` otherwise). */
 const englishPlural = (t) => (key, count, data = {}) => t(`${key}.${count === 1 ? "one" : "other"}`, { count, ...data });
 
+/** The "Hospital: d4 (1 step paid)" / "Bail: d6 (not paid)" line. */
+function priceLine(plan, price, t, tn) {
+  const kind = plan.priceKind === "bail" ? "Bail" : "Hospital";
+  return plan.paidSteps > 0
+    ? tn(`LEVERAGE.Damage.Down.pay${kind}`, plan.paidSteps, { price })
+    : t(`LEVERAGE.Damage.Down.pay${kind}None`, { price });
+}
+
 /**
  * Lines of the WASTED / BUSTED card, from what `planDown` decided and what was actually done.
  * @param {object} info
@@ -79,9 +87,8 @@ export function downLines({ plan, name, isCrew, max, price, debt = "", lostAsset
   if (!isCrew) return [t("LEVERAGE.Damage.Down.npc", { name })];
   const busted = plan.kind === "busted";
   const lines = [t(busted ? "LEVERAGE.Damage.Down.arrested" : "LEVERAGE.Damage.Down.hospital", { name })];
-  if (plan.priceKind === "hospital") lines.push(t("LEVERAGE.Damage.Down.payHospital", { price, steps: plan.paidSteps }));
-  if (plan.priceKind === "bail") lines.push(t("LEVERAGE.Damage.Down.payBail", { price, steps: plan.paidSteps }));
-  if (plan.shortBy > 0 && plan.priceKind === "hospital") lines.push(t("LEVERAGE.Damage.Down.short", { steps: plan.shortBy, debt }));
+  if (plan.priceKind) lines.push(priceLine(plan, price, t, tn));
+  if (plan.shortBy > 0 && plan.priceKind === "hospital") lines.push(tn("LEVERAGE.Damage.Down.short", plan.shortBy, { debt }));
   if (plan.rescuable) lines.push(t(plan.rescue ? "LEVERAGE.Damage.Down.rescue" : "LEVERAGE.Damage.Down.rescueUnpaid", { name }));
   lines.push(t("LEVERAGE.Damage.Down.fullLife", { max }));
   if (plan.plotPoints) lines.push(tn("LEVERAGE.Damage.Down.plotPoint", plan.plotPoints));

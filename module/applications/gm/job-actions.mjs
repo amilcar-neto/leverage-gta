@@ -139,7 +139,7 @@ export async function givePlotPoint(actors, n = 1) {
   const crew = resolveCrew(actors);
   if (!crew.length) return [];
   await Promise.all(crew.map((a) => a.addPlotPoints(n)));
-  await say(tn("LEVERAGE.GM.Chat.plotPoints", crew.length, { names: crew.map((a) => escapeHtml(a.name)).join(", "), count: n }));
+  await say(tn("LEVERAGE.GM.Chat.plotPoints", crew.length, { names: crew.map((a) => escapeHtml(a.name)).join(", "), pp: tn("LEVERAGE.GM.Chat.plotPointCount", n) }));
   return crew;
 }
 
@@ -188,7 +188,7 @@ export async function newSession() {
     await actor.updateEmbeddedDocuments("Item", ids.map((_id) => ({ _id, "system.callbackUsed": false })));
     count += ids.length;
   }
-  await say(t("LEVERAGE.GM.Chat.newSession", { count }));
+  await say(t("LEVERAGE.GM.Chat.newSession", { jobs: tn("LEVERAGE.GM.Chat.jobCount", count) }));
   return count;
 }
 
@@ -234,7 +234,7 @@ export async function newJob(name) {
   await game.settings.set(SYSTEM_ID, "activeJob", job);
   const each = toSteps(readSetting("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints));
   if (each) await Promise.all(crewActors().map((a) => a.addPlotPoints(Math.max(0, each - (a.system.plotPoints?.value ?? 0)))));
-  await say(t("LEVERAGE.GM.Chat.newJob", { name: escapeHtml(job.name), count: each }));
+  await say(t("LEVERAGE.GM.Chat.newJob", { name: escapeHtml(job.name), pp: tn("LEVERAGE.GM.Chat.plotPointCount", each) }));
   return true;
 }
 
@@ -299,7 +299,7 @@ export async function endJob({ name, total, shares }) {
     await actor.createEmbeddedDocuments("Item", [jobItemData(name, total, share)]);
     if (share && moneyRuleOn()) {
       const added = await actor.money.add(share);
-      if (added < share) ui.notifications.warn(t("LEVERAGE.GM.Warn.shareDidNotFit", { name: actor.name, lost: share - added }));
+      if (added < share) ui.notifications.warn(tn("LEVERAGE.GM.Warn.shareDidNotFit", share - added, { name: actor.name }));
     }
     const ids = assetIdsOf(actor.items, "job");
     if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);

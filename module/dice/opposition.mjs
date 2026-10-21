@@ -162,7 +162,6 @@ export function normalizeDice(dice, defaultLabel) {
   const given = (dice ?? []).map((d) => (typeof d === "object" && d ? d : { die: d })).filter((d) => isValidDie(Number(d.die)));
   const list = given.length ? given : NO_OPPOSITION_POOL.map((die) => ({ die }));
   if (list.length === 1) list.push({ die: NO_OPPOSITION_POOL[0] });
-  if (list.length === 1) list.push({ die: NO_OPPOSITION_POOL[0] });
   return {
     dice: list.map((d, i) => entry(d.ref || `opp.${i}`, d.label || defaultLabel, Number(d.die))),
     fallback: !given.length

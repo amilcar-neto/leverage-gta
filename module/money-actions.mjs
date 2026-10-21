@@ -23,15 +23,31 @@ const PRICE_EFFECTS = Object.freeze({
 });
 
 /**
+ * Whether the effect of a price-list entry would change nothing: treatment with full Life, or the vest the character
+ * already wears, full. Such a purchase is refused instead of charged (docs/02).
+ * @param {Actor} actor
+ * @param {string} [id] Id of the price-list entry.
+ * @returns {boolean}
+ */
+export function effectIsUseless(actor, id) {
+  const { life, vest } = actor.system;
+  if (id === "hospital") return Boolean(life) && life.value >= life.max;
+  const kind = Object.keys(LEVERAGE.vestKinds).find((k) => LEVERAGE.vestKinds[k].priceId === id);
+  return Boolean(kind) && vest?.kind === kind && vest.value >= vest.max;
+}
+
+/**
  * Pays a price in dice from a character's Money and posts the chat line. Nothing is spent when short. A price-list
  * `id` with an effect (hospital, vests) runs that effect instead of a plain payment: Life back to full, or the vest on.
  * @param {Actor} actor Crew actor the caller may change.
  * @param {number[]} dice Price dice.
  * @param {string} item What is being bought (translated).
  * @param {string} [id] Id of the price-list entry (`hospital`, `vestLight`...).
- * @returns {Promise<{ok: boolean, error?: string, cost: number, shortBy: number}>}
+ * @returns {Promise<{ok: boolean, error?: string, cost: number, shortBy: number}>} `error` is `"full"` (nothing to
+ *   restore, nothing charged) or `"short"`.
  */
 export async function payPrice(actor, dice, item, id) {
+  if (effectIsUseless(actor, id)) return { ok: false, error: "full", cost: 0, shortBy: 0 };
   const price = describeCost(dice);
   const check = checkPayment(actor.system.money.steps, price.dice);
   if (!check.ok) return check;

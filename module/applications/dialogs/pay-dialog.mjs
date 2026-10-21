@@ -10,7 +10,7 @@ import { poolText } from "../../rules/stars.mjs";
 import { getPrices } from "../../world-state.mjs";
 import { block } from "../chat/money-lines.mjs";
 import { escapeHtml } from "../components/die.mjs";
-import { t } from "../components/i18n.mjs";
+import { t, tn } from "../components/i18n.mjs";
 
 const CUSTOM = "__custom";
 
@@ -63,7 +63,7 @@ function wire(dialog, actor, prices) {
       + block(t("LEVERAGE.Money.have"), stepsToDice(actor.system.money.steps)) + block(t("LEVERAGE.Money.left"), stepsToDice(check.after));
     const warn = form.querySelector("[data-warn]");
     warn.hidden = check.ok || check.error !== "short";
-    warn.textContent = warn.hidden ? "" : t("LEVERAGE.Money.Pay.short", { n: check.shortBy });
+    warn.textContent = warn.hidden ? "" : tn("LEVERAGE.Money.Pay.short", check.shortBy);
     ok.disabled = !check.ok;
   };
   form.addEventListener("input", refresh);
@@ -93,6 +93,7 @@ export async function openPayDialog(actor) {
   });
   if (!pick) return null;
   const paid = await payPrice(actor, pick.dice, pick.id === CUSTOM ? pick.label : t(pick.label), pick.id);
-  if (!paid.ok) ui.notifications.warn(t("LEVERAGE.Money.Pay.short", { n: paid.shortBy }));
+  if (paid.error === "full") ui.notifications.warn(t("LEVERAGE.Money.Pay.full"));
+  else if (!paid.ok) ui.notifications.warn(tn("LEVERAGE.Money.Pay.short", paid.shortBy));
   return paid;
 }

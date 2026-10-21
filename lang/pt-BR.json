@@ -389,7 +389,8 @@
           "one": "Você tem {count} Plot Point.",
           "other": "Você tem {count} Plot Points."
         },
-        "confirm": "Criar"
+        "confirm": "Criar",
+        "dieNote": "O novo Asset recebe um {die}."
       },
       "Delete": {
         "title": "Excluir",
@@ -503,7 +504,7 @@
         "trainUp": "Train up",
         "trainUpHint": "Gaste os Jobs não gastos em uma nova Specialty, Talent, Signature Asset ou um degrau de evolução",
         "log": "+ Job",
-        "logHint": "Registra um Job concluído: nome, rendimento e a divisão",
+        "logHint": "Registra um Job concluído: nome e rendimento (a divisão é do mestre)",
         "newJob": "Novo Job",
         "colJob": "Job",
         "colShareHint": "Degraus de Grana que o personagem recebeu deste Job",
@@ -680,7 +681,10 @@
         "noCrew": "Não há personagens na Equipe.",
         "jobNameRequired": "Dê um nome ao Job.",
         "sharesExceedTotal": "As partes somam {sum}, mais que o total de {total}.",
-        "shareDidNotFit": "A Grana de {name} está cheia: {lost} degrau(s) da parte se perderam.",
+        "shareDidNotFit": {
+          "one": "A Grana de {name} está cheia: {count} degrau da parte se perdeu.",
+          "other": "A Grana de {name} está cheia: {count} degraus da parte se perderam."
+        },
         "openFailed": "Não foi possível abrir a janela. Veja o console."
       },
       "Chat": {
@@ -688,13 +692,21 @@
         "traitsLocked": "O mestre travou os Traços.",
         "traitsUnlocked": "O mestre destravou os Traços.",
         "plotPoints": {
-          "one": "{names} recebe {count} Plot Point(s).",
-          "other": "{names} recebem {count} Plot Point(s)."
+          "one": "{names} recebe {pp}.",
+          "other": "{names} recebem {pp}."
         },
-        "newSession": "Nova sessão. Callbacks zerados em {count} Job(s).",
+        "newSession": "Nova sessão. Callbacks zerados em {jobs}.",
         "endScene": "Cena encerrada. Assets de cena removidos: {count}.",
-        "newJob": "Novo Job: {name}. Cada personagem fica com pelo menos {count} Plot Point(s).",
-        "endJob": "Job encerrado: {name}. Rendimento: {total} degraus."
+        "newJob": "Novo Job: {name}. Cada personagem fica com pelo menos {pp}.",
+        "endJob": "Job encerrado: {name}. Rendimento: {total} degraus.",
+        "plotPointCount": {
+          "one": "{count} Plot Point",
+          "other": "{count} Plot Points"
+        },
+        "jobCount": {
+          "one": "{count} Job",
+          "other": "{count} Jobs"
+        }
       },
       "Dialog": {
         "PlotPoint": {
@@ -851,7 +863,7 @@
       "addTrait": "Adicionar um Traço a este local",
       "traitName": "Nome do Traço",
       "traitPlaceholder": "Traço (ex.: BECOS ESCUROS)",
-      "emptyTraits": "Nenhum Traço ainda. Adicione com + ADD.",
+      "emptyTraits": "Nenhum Traço ainda. Adicione com + ADICIONAR.",
       "notes": "Notas"
     },
     "Money": {
@@ -869,8 +881,12 @@
         "customItem": "Preço livre...",
         "customName": "uma compra",
         "customHint": "Quantos dados de cada tamanho custa?",
-        "short": "Grana insuficiente: faltam {n} degraus.",
-        "confirm": "Pagar"
+        "short": {
+          "one": "Grana insuficiente: falta {count} degrau.",
+          "other": "Grana insuficiente: faltam {count} degraus."
+        },
+        "confirm": "Pagar",
+        "full": "Nada a restaurar: nenhuma Grana foi gasta."
       },
       "Lend": {
         "title": "Emprestar Grana: {name}",
@@ -932,9 +948,18 @@
         "npc": "{name} caiu.",
         "hospital": "{name} acorda no hospital.",
         "arrested": "{name} é preso e fica fora até ser solto.",
-        "payHospital": "Hospital: {price} ({steps} degrau(s) de Grana pago(s)).",
-        "payBail": "Fiança: {price} ({steps} degrau(s) de Grana pago(s)).",
-        "short": "Dívida: {debt} ({steps} degrau(s) sem pagar).",
+        "payHospital": {
+          "one": "Hospital: {price} ({count} degrau de Grana pago).",
+          "other": "Hospital: {price} ({count} degraus de Grana pagos)."
+        },
+        "payBail": {
+          "one": "Fiança: {price} ({count} degrau de Grana pago).",
+          "other": "Fiança: {price} ({count} degraus de Grana pagos)."
+        },
+        "short": {
+          "one": "Dívida: {debt} ({count} degrau sem pagar).",
+          "other": "Dívida: {debt} ({count} degraus sem pagar)."
+        },
         "rescue": "Sem fiança nesta cidade: a Equipe precisa tirar {name} de lá numa cena. Quando conseguir, clique em Resgatado (as estrelas sobem 1).",
         "fullLife": "Volta com a Vida cheia ({max}).",
         "assetsLost": "Assets de arma da cena perdidos: {names}.",
@@ -947,7 +972,9 @@
         "rescuedButton": "Resgatado",
         "rescuedTip": "A Equipe tirou o personagem da prisão: sobe 1 estrela (fuga de prisão).",
         "rescuedDone": "Resgatado: fuga de prisão feita.",
-        "rescueReason": "Fuga de prisão: {name} foi resgatado"
+        "rescueReason": "Fuga de prisão: {name} foi resgatado",
+        "payHospitalNone": "Hospital: {price} (não pago).",
+        "payBailNone": "Fiança: {price} (não paga)."
       }
     },
     "Stars": {
@@ -959,7 +986,10 @@
         "raise": "A polícia apertou o cerco",
         "custom": "{text}",
         "setLevel": "Definido pelo mestre",
-        "waitScenes": "Fora de vista por {scenes} cena(s)",
+        "waitScenes": {
+          "one": "Fora de vista por {count} cena",
+          "other": "Fora de vista por {count} cenas"
+        },
         "waitSession": "Fora de vista entre sessões",
         "disguise": "Mudou de cara",
         "disguiseBoth": "Mudou de carro e de roupa",
@@ -984,10 +1014,16 @@
         "noStars": "Não há estrelas para baixar.",
         "unchanged": "As estrelas já estão nesse nível.",
         "waitBetweenSessions": "Nesta cidade as estrelas só baixam entre sessões.",
-        "notEnough": "Pouco tempo fora de vista (uma estrela a cada {scenes} cena(s)).",
+        "notEnough": {
+          "one": "Pouco tempo fora de vista (uma estrela a cada {count} cena).",
+          "other": "Pouco tempo fora de vista (uma estrela a cada {count} cenas)."
+        },
         "sketched": "Há retrato falado: mudar de cara não adianta aqui.",
         "noSilence": "Comprar silêncio não funciona nesta cidade.",
-        "short": "Grana insuficiente (faltam {shortBy} degrau(s)).",
+        "short": {
+          "one": "Grana insuficiente (falta {count} degrau).",
+          "other": "Grana insuficiente (faltam {count} degraus)."
+        },
         "needsConfirm": "Confirme que a Equipe fez o que a última saída pede.",
         "invalidWay": "Saída desconhecida.",
         "unknownCity": "Cidade desconhecida: {city}.",
@@ -1008,13 +1044,16 @@
         "wait": "Esperar fora de vista",
         "scenes": "Cenas",
         "betweenSessions": "Entre sessões",
-        "waitTipScene": "Grátis. Baixa 1 estrela a cada {scenes} cena(s) fora de vista.",
+        "waitTipScene": {
+          "one": "Grátis. Baixa 1 estrela a cada {count} cena fora de vista.",
+          "other": "Grátis. Baixa 1 estrela a cada {count} cenas fora de vista."
+        },
         "waitTipSession": "Grátis. Baixa 1 estrela só entre sessões.",
         "disguise": "Mudar de cara",
         "disguiseBoth": "Carro e roupa",
         "sketched": "Há retrato falado",
         "disguiseTipClear": "Jogada rápida contra a Pool da polícia. Sucesso zera as estrelas.",
-        "disguiseTipLower": "Jogada rápida contra a Pool da polícia. Sucesso: -{one} estrela(s); -{both} trocando carro e roupa.",
+        "disguiseTipLower": "Jogada rápida contra a Pool da polícia. Sucesso: baixa o nível em {one}; em {both} trocando carro e roupa.",
         "disguiseTipSketch": " Bloqueado enquanto houver retrato falado.",
         "silence": "Comprar silêncio",
         "silenceTip": "Jogada rápida contra a Pool da polícia. Se passar, aplique aqui: paga um {die} de Grana por -{stars} estrelas.",

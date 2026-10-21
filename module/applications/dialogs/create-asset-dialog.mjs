@@ -25,11 +25,15 @@ function dieOptions(selected) {
   return LEVERAGE.dice.map((d) => `<option value="${d}"${d === selected ? " selected" : ""}>d${d}</option>`).join("");
 }
 
+/** Line that tells a player (who cannot pick) which die the new Asset gets. */
+const dieNote = (die) => t("LEVERAGE.Dialog.Asset.dieNote", { die: `d${die}` });
+
 /** Builds the dialog body. */
 function buildContent({ plotPoints, duration, die, chooseDie }) {
   const dieField = chooseDie ? `
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.die")}</span>
-      <select name="die">${dieOptions(die)}</select></label>` : "";
+      <select name="die">${dieOptions(die)}</select></label>`
+    : `<p class="lv-dlg-hint" data-die-note>${dieNote(die)}</p>`;
   return `<div class="lv-dlg">
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.name")}</span>
       <input type="text" name="name" required autofocus maxlength="80" placeholder="${escapeHtml(t("LEVERAGE.Dialog.Asset.namePlaceholder"))}"></label>
@@ -60,7 +64,10 @@ export async function promptCreateAsset({ plotPoints, suggestDie, chooseDie = fa
     render: (_event, dialog) => {
       const form = dialog.element.querySelector("form");
       form.elements.duration.addEventListener("change", () => {
-        if (form.elements.die) form.elements.die.value = String(suggestDie(form.elements.duration.value));
+        const suggested = suggestDie(form.elements.duration.value);
+        if (form.elements.die) form.elements.die.value = String(suggested);
+        const note = form.querySelector("[data-die-note]");
+        if (note) note.textContent = dieNote(suggested);
       });
     },
     ok: {

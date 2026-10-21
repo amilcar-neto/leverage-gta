@@ -61,6 +61,30 @@ try {
   const zDialog = await pp.evaluate(() => getComputedStyle(document.querySelector("#leverage-hud")).zIndex);
   record("HUD goes under a dialog", Number(zDialog) < Number(z), { z, zDialog });
   await pp.evaluate(() => document.getElementById("lv-test-dialog")?.remove());
+  // A long session: the core's window counter passes the HUD's base z-index. The sheet comes to the front (core counter +1) and a pointerdown reaches the page.
+  await pp.evaluate(async () => {
+    // The core skips the bump for the window already in front, so another window takes the front first.
+    const mine = game.actors.contents.find((x) => x.name === "[TEST] Hud Layer");
+    const other = game.settings.sheet;
+    await other.render(true);
+    await new Promise((r) => setTimeout(r, 800));
+    foundry.applications.api.ApplicationV2._maxZ = 2000;
+    mine.sheet.bringToFront();
+    document.querySelector(".application.crew-sheet").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    await other.close();
+  });
+  await pp.waitForTimeout(300);
+  const zLong = await pp.evaluate(() => ({
+    hud: Number(getComputedStyle(document.querySelector("#leverage-hud")).zIndex),
+    sheet: Number(getComputedStyle(document.querySelector(".application.crew-sheet")).zIndex)
+  }));
+  record("HUD stays above the sheet after the core counter passes 500", zLong.sheet > 2000 && zLong.hud > zLong.sheet, zLong);
+  record("HUD button clickable above the sheet (long session)", (await hit("#leverage-hud button")) === "hud", await hit("#leverage-hud button"));
+  await pp.evaluate(() => document.body.insertAdjacentHTML("beforeend", `<div class="application dialog" id="lv-test-dialog"></div>`));
+  await pp.waitForTimeout(300);
+  const zDialogLong = await pp.evaluate(() => Number(getComputedStyle(document.querySelector("#leverage-hud")).zIndex));
+  record("HUD still goes under a dialog (long session)", zDialogLong < zLong.sheet, { zDialogLong, sheet: zLong.sheet });
+  await pp.evaluate(() => document.getElementById("lv-test-dialog")?.remove());
 } catch (error) {
   record("script ran without exceptions", false, String(error?.stack ?? error));
 } finally {

@@ -9,7 +9,7 @@ import { readSetting } from "../../data/fields.mjs";
 import { bailAllowed, getCityScale, lastResortKind, mainDie, policePool, poolText } from "../../rules/stars.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
 import { escapeHtml } from "../components/die.mjs";
-import { t } from "../components/i18n.mjs";
+import { t, tn } from "../components/i18n.mjs";
 import * as starsActions from "./stars-actions.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -23,7 +23,7 @@ const WATCHED_SETTINGS = new Set(["wanted", "cityScales", "houseRules.stars"].ma
  */
 export function cityRuleTips(scale) {
   const perScene = Boolean(scale.wait);
-  const wait = perScene ? t("LEVERAGE.Stars.Dialog.waitTipScene", { scenes: scale.wait }) : t("LEVERAGE.Stars.Dialog.waitTipSession");
+  const wait = perScene ? tn("LEVERAGE.Stars.Dialog.waitTipScene", scale.wait) : t("LEVERAGE.Stars.Dialog.waitTipSession");
   const sketch = Boolean(scale.sketchBlocksDisguise);
   const disguise = scale.disguise === "clear"
     ? t("LEVERAGE.Stars.Dialog.disguiseTipClear")

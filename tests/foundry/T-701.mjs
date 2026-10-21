@@ -76,7 +76,7 @@ try {
   record("Money shows 2 dice for 7 steps", st?.dice === 2, st?.dice);
   record("Plot Points show 3", st?.pp === "3", st?.pp);
   record("gap to the sidebar is 16px", Math.abs(st?.gap - 16) <= 1, st);
-  record("below application windows", Number(st?.z) < 100, st?.z);
+  record("above sheet windows (z follows the core counter, min 500)", Number(st?.z) >= 500, st?.z);
   const overlap = await page.evaluate(() => {
     const h = document.getElementById("leverage-hud").getBoundingClientRect();
     const hit = (sel) => [...document.querySelectorAll(sel)].some((e) => {

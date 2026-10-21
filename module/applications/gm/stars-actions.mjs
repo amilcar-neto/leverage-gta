@@ -19,7 +19,7 @@ import {
 import { getCityScales, readWanted } from "../../world-state.mjs";
 import { createSerialQueue } from "../../socket.mjs";
 import { resolveActor } from "../components/common.mjs";
-import { t } from "../components/i18n.mjs";
+import { t, tn } from "../components/i18n.mjs";
 
 /** Template of the chat line. */
 export const STARS_LINE_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/stars-line.hbs`;
@@ -119,7 +119,7 @@ function planDisguise(state, { kind = "simple", sketched = false }) {
   const scale = getCityScale(state.city, state.scales);
   if (sketched && scale.sketchBlocksDisguise) return refuse("sketched");
   const to = starsAfterDisguise(state.city, from, { carAndClothes: kind === "both", sketched }, state.scales);
-  return to === from ? refuse("notEnough") : done(from, to, { key: kind === "both" ? "disguiseBoth" : "disguise" });
+  return to === from ? refuse("unchanged") : done(from, to, { key: kind === "both" ? "disguiseBoth" : "disguise" });
 }
 
 /** Dice and stars of buying silence in a city: one die of the smallest listed size per purchase. */
@@ -225,15 +225,25 @@ function readState(actor) {
   };
 }
 
+/** Messages of `LEVERAGE.Stars` that change with a number: key -> the data field holding it. */
+const PLURAL_FIELDS = { notEnough: "scenes", short: "shortBy", waitScenes: "scenes" };
+
+/** Localizes `LEVERAGE.Stars.<group>.<key>`, picking the singular/plural form for the keys in `PLURAL_FIELDS`. */
+function starsText(group, key, data) {
+  const field = PLURAL_FIELDS[key];
+  const path = `LEVERAGE.Stars.${group}.${key}`;
+  return field && Number.isFinite(data?.[field]) ? tn(path, data[field], data) : t(path, data);
+}
+
 /** Shows the warning of a refused plan to the person who asked. */
 function warn(plan) {
-  ui.notifications.warn(t(`LEVERAGE.Stars.Error.${plan.error}`, plan.data));
+  ui.notifications.warn(starsText("Error", plan.error, plan.data));
 }
 
 /** Posts the chat line of a change. */
 async function postLine(plan, actor) {
   const { key, data } = plan.reason;
-  const reasonText = t(`LEVERAGE.Stars.Reason.${key}`, data);
+  const reasonText = starsText("Reason", key, data);
   const content = await foundry.applications.handlebars.renderTemplate(STARS_LINE_TEMPLATE, {
     ...starsLineContext({ from: plan.from, to: plan.to, reasonText }),
     label: t("LEVERAGE.Stars.Chat.label"),
@@ -276,7 +286,7 @@ async function apply(plan, actor) {
   }
   const wanted = readWanted();
   await game.settings.set(SYSTEM_ID, "wanted", { ...readSetting("wanted", {}), city: plan.city ?? wanted.city, level: plan.to });
-  await postLine(plan, actor);
+  if (plan.from !== plan.to) await postLine(plan, actor); // a city change with no stars to clear has nothing to announce
   return plan;
 }
 

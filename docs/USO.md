@@ -96,6 +96,9 @@ sucesso extraordinário. O sistema mostra os totais, mas quem decide o resultado
 - **Gasta:** manter mais um dado depois da rolagem (botão do card); criar um **Asset de cena** (1 PP) ou de **Job**
   (2 PP) pelo botão **+ Adicionar** da lista de Assets, que mostra o custo e pede confirmação; ativar Talents que
   custam 1 PP (o sistema não desconta sozinho: tire o PP à mão pelo − do HUD).
+- **Atenção, mestre:** o jogador cria um **Signature Asset** (d8 o primeiro, d6 os seguintes) pelo **+ Adicionar** **sem
+  custo de PP**; o preço dele são Jobs gastos no Train up, e isso não é cobrado nesse botão (decisão registrada).
+  Se a mesa quiser cobrar, vigie ou apague o Asset. O jogador nunca escolhe o dado: o diálogo só mostra o que ele recebe.
 - No HUD, o − gasta 1 PP manualmente e o clique direito no número também. Só o mestre soma pelo HUD.
 
 ## 5. Estrelas de procurado
@@ -104,6 +107,7 @@ As estrelas (0 a 5) medem o quanto a polícia está atrás da Equipe **numa cida
 mexe**: clique nas estrelas do HUD (a estrela N define o nível N; clicar na do nível atual baixa um) ou use
 **Nível de procurado** nas ferramentas do mestre, que também escolhe a cidade. Cada mudança é anunciada no chat.
 Trocar de cidade zera as estrelas (a Equipe saiu de lá) e também aparece no chat.
+**Não há confirmação:** um clique errado na cidade apaga o nível; para voltar, ponha o nível de novo na mesma janela.
   As estrelas são ações só do mestre: o sistema recusa qualquer outro usuário e não há socket para elas.
 
 - **Sobem** (1 por vez): ser visto cometendo crime, tiro em público, ferir ou matar policial, ataque grande ou fuga de
@@ -114,7 +118,7 @@ Trocar de cidade zera as estrelas (a Equipe saiu de lá) e também aparece no ch
   baixar o nível (esperar fora de vista, mudar de cara, comprar silêncio, última saída). Tudo editável em
   **Escalas das cidades** (seção 13). Em Liberty City, por exemplo, comprar silêncio não funciona.
 - As estrelas **não zeram sozinhas**, mas trocar a cidade atual na janela **Nível de procurado** (ou com
-  `stars.set(nivel, cidade)`) zera o nível e posta uma linha de ESTRELAS no chat.
+  `stars.set(nivel, cidade)`) zera o nível e posta uma linha de ESTRELAS no chat (se já havia estrelas).
 - A janela **Nível de procurado** tem os botões de ação, todos seguindo as regras da cidade atual: **subir**
   (com motivo), **esperar** (por cena ou entre sessões), **disfarce** (só roupa ou carro e roupa), **silêncio**
   (paga dados de Grana do personagem escolhido) e **última saída** (pede confirmação). Os mesmos atalhos existem na API

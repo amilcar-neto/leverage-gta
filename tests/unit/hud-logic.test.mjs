@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { hudPermissions, moneyView, nextStarLevel, pickFocusActor, starsView } from "../../module/applications/hud/hud-logic.mjs";
+import { HUD_BASE_Z, hudPermissions, hudZIndex, moneyView, nextStarLevel, pickFocusActor, starsView } from "../../module/applications/hud/hud-logic.mjs";
 import { poolText } from "../../module/rules/stars.mjs";
 
 test("focus actor: player prefers his character, the Fixer the selected token", () => {
@@ -40,4 +40,12 @@ test("permissions: Fixer everything, owner his own, others look only", () => {
   assert.deepEqual(hudPermissions({ isGM: false, isOwner: true, hasActor: true }), { money: true, spendPlotPoints: true, gainPlotPoints: false, stars: false });
   assert.deepEqual(hudPermissions({ isGM: false, isOwner: false, hasActor: true }), { money: false, spendPlotPoints: false, gainPlotPoints: false, stars: false });
   assert.deepEqual(hudPermissions({ isGM: false, isOwner: true, hasActor: false }), { money: false, spendPlotPoints: false, gainPlotPoints: false, stars: false });
+});
+
+test("HUD z-index: the base value until the core windows pass it, then one above them", () => {
+  assert.equal(hudZIndex(105), HUD_BASE_Z);
+  assert.equal(hudZIndex(HUD_BASE_Z - 1), HUD_BASE_Z);
+  assert.equal(hudZIndex(HUD_BASE_Z), HUD_BASE_Z + 1);
+  assert.equal(hudZIndex(2000), 2001);
+  assert.equal(hudZIndex(undefined), HUD_BASE_Z);
 });

@@ -389,7 +389,8 @@
           "one": "You have {count} Plot Point.",
           "other": "You have {count} Plot Points."
         },
-        "confirm": "Create"
+        "confirm": "Create",
+        "dieNote": "The new Asset gets a {die}."
       },
       "Delete": {
         "title": "Delete",
@@ -503,7 +504,7 @@
         "trainUp": "Train up",
         "trainUpHint": "Spend unspent Jobs on a new Specialty, Talent, Signature Asset, or a step up",
         "log": "+ Log",
-        "logHint": "Log a finished Job: name, payout and the split",
+        "logHint": "Log a finished Job: name and payout (the GM sets the split)",
         "newJob": "New Job",
         "colJob": "Job",
         "colShareHint": "Money steps she got from this Job",
@@ -680,7 +681,10 @@
         "noCrew": "There are no Crew characters.",
         "jobNameRequired": "Give the Job a name.",
         "sharesExceedTotal": "The shares add up to {sum}, more than the total {total}.",
-        "shareDidNotFit": "{name}'s Money is full: {lost} step(s) of the share were lost.",
+        "shareDidNotFit": {
+          "one": "{name}'s Money is full: {count} step of the share was lost.",
+          "other": "{name}'s Money is full: {count} steps of the share were lost."
+        },
         "openFailed": "Could not open the window. See the console."
       },
       "Chat": {
@@ -688,13 +692,21 @@
         "traitsLocked": "The GM locked the Traits.",
         "traitsUnlocked": "The GM unlocked the Traits.",
         "plotPoints": {
-          "one": "{names} receives {count} Plot Point(s).",
-          "other": "{names} receive {count} Plot Point(s)."
+          "one": "{names} receives {pp}.",
+          "other": "{names} receive {pp}."
         },
-        "newSession": "New session. Callbacks reset on {count} Job(s).",
+        "newSession": "New session. Callbacks reset on {jobs}.",
         "endScene": "Scene over. Scene Assets removed: {count}.",
-        "newJob": "New Job: {name}. Each character has at least {count} Plot Point(s).",
-        "endJob": "Job over: {name}. Payout: {total} steps."
+        "newJob": "New Job: {name}. Each character has at least {pp}.",
+        "endJob": "Job over: {name}. Payout: {total} steps.",
+        "plotPointCount": {
+          "one": "{count} Plot Point",
+          "other": "{count} Plot Points"
+        },
+        "jobCount": {
+          "one": "{count} Job",
+          "other": "{count} Jobs"
+        }
       },
       "Dialog": {
         "PlotPoint": {
@@ -869,8 +881,12 @@
         "customItem": "Custom price...",
         "customName": "a purchase",
         "customHint": "How many dice of each size does it cost?",
-        "short": "Not enough Money: short by {n} steps.",
-        "confirm": "Pay"
+        "short": {
+          "one": "Not enough Money: short by {count} step.",
+          "other": "Not enough Money: short by {count} steps."
+        },
+        "confirm": "Pay",
+        "full": "Nothing to restore: no Money was spent."
       },
       "Lend": {
         "title": "Lend Money: {name}",
@@ -932,9 +948,18 @@
         "npc": "{name} is down.",
         "hospital": "{name} wakes up in the hospital.",
         "arrested": "{name} is arrested and stays out until released.",
-        "payHospital": "Hospital: {price} ({steps} Money step(s) paid).",
-        "payBail": "Bail: {price} ({steps} Money step(s) paid).",
-        "short": "Debt: {debt} ({steps} step(s) unpaid).",
+        "payHospital": {
+          "one": "Hospital: {price} ({count} Money step paid).",
+          "other": "Hospital: {price} ({count} Money steps paid)."
+        },
+        "payBail": {
+          "one": "Bail: {price} ({count} Money step paid).",
+          "other": "Bail: {price} ({count} Money steps paid)."
+        },
+        "short": {
+          "one": "Debt: {debt} ({count} step unpaid).",
+          "other": "Debt: {debt} ({count} steps unpaid)."
+        },
         "rescue": "No bail in this city: the crew must break {name} out in a scene. When they do, click Rescued (the stars rise by 1).",
         "fullLife": "Back with full Life ({max}).",
         "assetsLost": "Weapon Assets of the scene lost: {names}.",
@@ -947,7 +972,9 @@
         "rescuedButton": "Rescued",
         "rescuedTip": "The crew broke the character out: raises the stars by 1 (jailbreak).",
         "rescuedDone": "Rescued: jailbreak done.",
-        "rescueReason": "Jailbreak: {name} was broken out"
+        "rescueReason": "Jailbreak: {name} was broken out",
+        "payHospitalNone": "Hospital: {price} (not paid).",
+        "payBailNone": "Bail: {price} (not paid)."
       }
     },
     "Stars": {
@@ -959,7 +986,10 @@
         "raise": "The heat is up",
         "custom": "{text}",
         "setLevel": "Set by the GM",
-        "waitScenes": "Out of sight for {scenes} scene(s)",
+        "waitScenes": {
+          "one": "Out of sight for {count} scene",
+          "other": "Out of sight for {count} scenes"
+        },
         "waitSession": "Out of sight between sessions",
         "disguise": "Changed looks",
         "disguiseBoth": "Changed car and clothes",
@@ -984,10 +1014,16 @@
         "noStars": "There are no stars to lower.",
         "unchanged": "The stars are already there.",
         "waitBetweenSessions": "In this city the stars only go down between sessions.",
-        "notEnough": "Not enough time out of sight (one star per {scenes} scene(s)).",
+        "notEnough": {
+          "one": "Not enough time out of sight (one star per {count} scene).",
+          "other": "Not enough time out of sight (one star per {count} scenes)."
+        },
         "sketched": "A composite sketch is out: disguising does nothing here.",
         "noSilence": "Buying silence does not work in this city.",
-        "short": "Not enough Money (short by {shortBy} step(s)).",
+        "short": {
+          "one": "Not enough Money (short by {count} step).",
+          "other": "Not enough Money (short by {count} steps)."
+        },
         "needsConfirm": "Confirm that the Crew did what the last resort asks.",
         "invalidWay": "Unknown way out.",
         "unknownCity": "Unknown city: {city}.",
@@ -1008,13 +1044,16 @@
         "wait": "Wait out of sight",
         "scenes": "Scenes",
         "betweenSessions": "Between sessions",
-        "waitTipScene": "Free. Lowers 1 star per {scenes} scene(s) out of sight.",
+        "waitTipScene": {
+          "one": "Free. Lowers 1 star per {count} scene out of sight.",
+          "other": "Free. Lowers 1 star per {count} scenes out of sight."
+        },
         "waitTipSession": "Free. Lowers 1 star only between sessions.",
         "disguise": "Change looks",
         "disguiseBoth": "Car and clothes",
         "sketched": "Composite sketch is out",
         "disguiseTipClear": "Quick roll against the police Pool. Success clears all stars.",
-        "disguiseTipLower": "Quick roll against the police Pool. Success: -{one} star(s); -{both} changing car and clothes.",
+        "disguiseTipLower": "Quick roll against the police Pool. Success: lowers the level by {one}; by {both} changing car and clothes.",
         "disguiseTipSketch": " Blocked while a composite sketch exists.",
         "silence": "Buy silence",
         "silenceTip": "Quick roll against the police Pool. If it passes, apply it here: pays one {die} of Money for -{stars} stars.",

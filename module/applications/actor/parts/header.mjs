@@ -4,6 +4,7 @@
  */
 import { LEVERAGE } from "../../../config.mjs";
 import { readSetting } from "../../../data/fields.mjs";
+import { tn } from "../../components/i18n.mjs";
 
 /** Vitals that have a popover. */
 const VITALS = Object.freeze(["life", "vest"]);
@@ -75,7 +76,7 @@ async function setVital(sheet, key, wanted) {
   if (route === "none") return refresh(sheet);
   if (route === "update") return sheet.actor.update({ [`system.${key}.value`]: next });
   const paid = await sheet.actor.restoreVest();
-  if (!paid.ok) ui.notifications.warn(game.i18n.format("LEVERAGE.Money.Pay.short", { n: paid.shortBy }));
+  if (!paid.ok) ui.notifications.warn(tn("LEVERAGE.Money.Pay.short", paid.shortBy));
   refresh(sheet);
 }
 
@@ -150,7 +151,7 @@ export const actions = {
     }
     if (!vestKindUpdate(kind) || (kind === vest.kind && vest.value >= vest.max)) return;
     const paid = await this.actor.buyVest(kind);
-    if (!paid.ok) ui.notifications.warn(game.i18n.format("LEVERAGE.Money.Pay.short", { n: paid.shortBy }));
+    if (!paid.ok) ui.notifications.warn(tn("LEVERAGE.Money.Pay.short", paid.shortBy));
   }
 };
 

@@ -10,6 +10,7 @@ import { jobItemData } from "../../module/applications/gm/job-actions.mjs";
 // The chat-line builders only need game.i18n at call time.
 globalThis.game = { i18n: { localize: (k) => k, format: (k, d) => `${k}:${JSON.stringify(d)}` } };
 const { payLineHtml, lendLineHtml } = await import("../../module/applications/chat/money-lines.mjs");
+const { effectIsUseless } = await import("../../module/money-actions.mjs");
 
 test("diceFromCounts builds an ascending dice list and ignores junk", () => {
   assert.deepEqual(diceFromCounts({ 12: 1, 6: 1 }), [6, 12]);
@@ -90,4 +91,14 @@ test("chat lines escape names and show the cost dice", () => {
   assert.ok(pay.includes("lv-die--d6") && pay.includes("lv-die--money"));
   const lend = lendLineHtml({ from: "A", to: "B", moved: 3 });
   assert.ok(lend.includes("lv-money-line--lend") && lend.includes("lv-die--d8"));
+});
+
+test("effectIsUseless: hospital with full Life and the same full vest are not charged", () => {
+  const crew = (life, vest) => ({ system: { life, vest } });
+  assert.equal(effectIsUseless(crew({ value: 18, max: 18 }, { kind: "light", value: 2, max: 2 }), "hospital"), true);
+  assert.equal(effectIsUseless(crew({ value: 10, max: 18 }, { kind: "light", value: 2, max: 2 }), "hospital"), false);
+  assert.equal(effectIsUseless(crew({ value: 10, max: 18 }, { kind: "light", value: 2, max: 2 }), "vestLight"), true);
+  assert.equal(effectIsUseless(crew({ value: 10, max: 18 }, { kind: "light", value: 1, max: 2 }), "vestLight"), false);
+  assert.equal(effectIsUseless(crew({ value: 10, max: 18 }, { kind: "light", value: 2, max: 2 }), "vestHeavy"), false);
+  assert.equal(effectIsUseless(crew({ value: 10, max: 18 }, { kind: "light", value: 2, max: 2 }), "bread"), false);
 });
