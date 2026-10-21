@@ -125,12 +125,28 @@
 .leverage-gta.crew-sheet .lv-folder-page .lv-empty { color: color-mix(in srgb, var(--lv-paper-ink) 60%, transparent); }
 
 /* ---- BACKGROUND ---- */
-.leverage-gta .lv-bg-bar {
-  display: flex;
+.leverage-gta .lv-folder-tools { display: flex; align-self: center; gap: 2px; margin-left: auto; padding-right: 10px; }
+
+.leverage-gta .lv-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: none;
-  justify-content: flex-end;
-  padding-right: 10px;
+  width: 24px;
+  height: 22px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--lv-muted);
+  cursor: pointer;
 }
+
+.leverage-gta .lv-icon-btn:hover,
+.leverage-gta .lv-icon-btn:focus-visible { color: var(--lv-ink); background: var(--lv-wash-08); }
+.leverage-gta .lv-icon-btn--ok { color: var(--lv-roll); }
 
 .leverage-gta .lv-bg-text {
   padding: 4px 4px 10px 4px;
@@ -145,14 +161,35 @@
 
 .leverage-gta .lv-bg-text p { margin: 0 0 6px; }
 
+/* In-place editor: same box as the text, paper look; the toolbar is hidden (shortcuts and Markdown-style typing work) */
 .leverage-gta .lv-bg-editor {
   flex: 1 1 0;
   min-height: 0;
-  background: var(--lv-white);
+  margin-right: 10px;
+  background: color-mix(in srgb, var(--lv-white) 55%, transparent);
   color: var(--lv-paper-ink);
-  border: 1px solid color-mix(in srgb, var(--lv-paper-ink) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lv-paper-ink) 35%, transparent);
+  border-radius: 2px;
   overflow: hidden;
 }
+
+.leverage-gta .lv-bg-editor :is(.menu-container, .editor-menu) { display: none; }
+.leverage-gta .lv-bg-editor { display: flex; flex-direction: column; }
+.leverage-gta .lv-bg-editor .editor-container { flex: 1 1 0; min-height: 0; height: auto; }
+.leverage-gta .lv-bg-editor .editor-content p { margin: 0 0 6px; }
+.leverage-gta .lv-bg-editor .editor-content {
+  height: 100%;
+  padding: 4px 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+  font-family: var(--lv-font-paper);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--lv-paper-ink);
+}
+
+.leverage-gta .lv-bg-text.is-editable { cursor: text; }
 
 /* ---- JOBS ---- */
 .leverage-gta .lv-jobs-bar {

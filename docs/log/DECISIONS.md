@@ -217,3 +217,16 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   posse explícita de um jogador (não conta posse padrão). Dados de 28 px (tamanho mínimo permitido em `DIE_GEOMETRY`).
 - Testes antigos em `tests/foundry/` que ainda gravam `traitsLocked` (phase1, T-30x, T-401, T-505, T-702...) ficam
   desatualizados; o novo `tests/foundry/sheet-lock-party.mjs` cobre o comportamento atual.
+
+## Janela "Montar Pool" e Background editável no lugar (feedback do dono)
+
+- **Contexto:** o "+ dado" abria uma lista reta; o Background tinha botão grande e editor com "Salvar" enorme.
+- **Escolha (Pool):** o "+ Dado" abre uma janela própria (`module/applications/dialogs/pool-builder.mjs`) com busca, abas por tipo
+  (Tudo + os grupos de `poolMenuGroups`), chips com dado e nome, itens já na Pool marcados (verde, com check) e prévia da Pool
+  com Limpar / Pronto / Rolar. `poolMenuGroups` ganhou `includePooled` (devolve também o que já está na Pool, com `pooled: true`);
+  o menu antigo não existe mais. Regras de rolagem intocadas. O módulo da janela é carregado sob demanda (precisa das classes do Foundry).
+- **Escolha (texto):** por ordem do dono, nada de textos de ajuda ou tooltips explicativos: só rótulos curtos (nome do dado, aba, botões).
+- **Escolha (Background):** lápis pequeno na faixa das abas, à direita (não toma espaço da página). Editar troca o lápis por check (salvar) e X
+  (cancelar). Edição no lugar com ProseMirror sem barra de ferramentas (atalhos e digitação estilo Markdown funcionam). Salva ao sair do campo
+  ou com Ctrl+Enter; Escape cancela; duplo clique no texto começa a editar. A altura da página não muda.
+- **Descartado:** textarea simples (o campo é HTML); manter barra do ProseMirror (clique na barra tira o foco e salvaria cedo).

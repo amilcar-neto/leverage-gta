@@ -2,6 +2,16 @@
   <div class="lv-folder-tabs" role="tablist">
     <button type="button" class="lv-folder-tab{{#if tabBackground}} is-active{{/if}}" role="tab" aria-selected="{{#if tabBackground}}true{{else}}false{{/if}}" data-action="folderTab" data-tab="background">{{localize "LEVERAGE.Sheet.Folder.background"}}</button>
     <button type="button" class="lv-folder-tab{{#if tabJobs}} is-active{{/if}}" role="tab" aria-selected="{{#if tabJobs}}true{{else}}false{{/if}}" data-action="folderTab" data-tab="jobs">{{localize "LEVERAGE.Sheet.Folder.jobs"}}</button>
+    {{#if tabBackground}}{{#if canEdit}}
+    <span class="lv-folder-tools">
+      {{#if bgEditing}}
+      <button type="button" class="lv-icon-btn lv-icon-btn--ok" data-action="saveBackground" aria-label="{{localize 'LEVERAGE.Sheet.Folder.save'}}" title="{{localize 'LEVERAGE.Sheet.Folder.save'}}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></button>
+      <button type="button" class="lv-icon-btn" data-action="cancelBackground" aria-label="{{localize 'LEVERAGE.Sheet.Folder.cancel'}}" title="{{localize 'LEVERAGE.Sheet.Folder.cancel'}}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      {{else}}
+      <button type="button" class="lv-icon-btn" data-action="editBackground" aria-label="{{localize 'LEVERAGE.Sheet.Folder.edit'}}" title="{{localize 'LEVERAGE.Sheet.Folder.edit'}}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-5L16 4l4 4L9 19zM14 6l4 4"/></svg></button>
+      {{/if}}
+    </span>
+    {{/if}}{{/if}}
   </div>
   <div class="lv-folder-page lv-paper">
     {{#if tabJobs}}
@@ -34,13 +44,10 @@
       {{/each}}
     </div>
     {{else}}
-    {{#if canEdit}}
-    <div class="lv-bg-bar"><button type="button" class="lv-paper-btn" data-action="editBackground">{{#if bgEditing}}{{localize "LEVERAGE.Sheet.Folder.save"}}{{else}}{{localize "LEVERAGE.Sheet.Folder.edit"}}{{/if}}</button></div>
-    {{/if}}
     {{#if bgEditing}}
-    <prose-mirror class="lv-bg-editor" value="{{bgRaw}}"></prose-mirror>
+    <prose-mirror class="lv-bg-editor" name="background" value="{{bgRaw}}"></prose-mirror>
     {{else}}
-    <div class="lv-folder-text lv-scroll lv-bg-text">
+    <div class="lv-folder-text lv-scroll lv-bg-text{{#if canEdit}} is-editable{{/if}}">
       {{#if background}}{{{background}}}{{else}}<p class="lv-empty">{{localize "LEVERAGE.Sheet.Empty.background"}}</p>{{/if}}
     </div>
     {{/if}}

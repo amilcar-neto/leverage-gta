@@ -59,6 +59,36 @@ function captureDraft(sheet) {
   if (field) drafts.set(sheet, field.value);
 }
 
+/** Starts editing the BACKGROUND in place (the editor takes the focus after the render). */
+async function startBackgroundEdit(sheet) {
+  if (!sheet.isEditable || drafts.has(sheet)) return;
+  drafts.set(sheet, sheet.actor.system.background);
+  await sheet.render({ parts: ["folder"] });
+}
+
+/** Saves the typed BACKGROUND text (once, even when blur and a click both ask) and shows it again. */
+async function saveBackground(sheet) {
+  if (!drafts.has(sheet) || saving.has(sheet)) return;
+  saving.add(sheet);
+  try {
+    captureDraft(sheet);
+    const text = drafts.get(sheet);
+    drafts.delete(sheet);
+    if (text !== sheet.actor.system.background) await sheet.actor.update({ "system.background": text });
+    await sheet.render({ parts: ["folder"] });
+  } finally {
+    saving.delete(sheet);
+  }
+}
+
+/** Forgets the typed text and shows the saved one. */
+function cancelBackground(sheet) {
+  if (!drafts.delete(sheet)) return;
+  return sheet.render({ parts: ["folder"] });
+}
+
+const saving = new WeakSet();
+
 const tabKey = (sheet) => `${LEVERAGE.systemId}.folderTab.${game.user.id}.${sheet.actor.id}`;
 
 /** Remembered folder tab of this actor and user; localStorage may be unavailable. */
@@ -165,17 +195,19 @@ export const actions = {
     return this.render({ parts: ["folder"] });
   },
 
-  /** EDIT / SAVE of the BACKGROUND text. */
-  async editBackground() {
-    if (!this.isEditable) return;
-    if (drafts.has(this)) {
-      captureDraft(this);
-      await this.actor.update({ "system.background": drafts.get(this) });
-      drafts.delete(this);
-    } else {
-      drafts.set(this, this.actor.system.background);
-    }
-    return this.render({ parts: ["folder"] });
+  /** Pencil: edits the BACKGROUND text in place. */
+  editBackground() {
+    return startBackgroundEdit(this);
+  },
+
+  /** Check icon: saves the BACKGROUND text. */
+  saveBackground() {
+    return saveBackground(this);
+  },
+
+  /** X icon: drops what was typed. */
+  cancelBackground() {
+    return cancelBackground(this);
   },
 
   /** Opens Train Up and marks the Jobs it costs as spent. */
@@ -276,6 +308,40 @@ export async function prepare(context, sheet) {
 
 /* ---------------------------------------------------------------- listeners */
 
+/** Editing in place: leaving the editor or Ctrl+Enter saves, Escape cancels, a double click on the text starts. */
+function attachBackgroundEditor(sheet, signal) {
+  const el = sheet.element;
+  el.addEventListener("focusout", (event) => {
+    const field = event.target.closest?.(EDITOR);
+    if (!field || field.contains(event.relatedTarget)) return;
+    setTimeout(() => { if (!field.contains(document.activeElement)) saveBackground(sheet); }, 0);
+  }, { signal });
+  el.addEventListener("keydown", (event) => {
+    if (!event.target.closest?.(EDITOR)) return;
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) saveBackground(sheet);
+    else if (event.key === "Escape") cancelBackground(sheet);
+    else return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, { signal });
+  el.addEventListener("dblclick", (event) => {
+    if (event.target.closest(".lv-bg-text")) startBackgroundEdit(sheet);
+  }, { signal });
+  // Icon buttons must not take the focus from the editor, or the blur would save before the click lands.
+  el.addEventListener("mousedown", (event) => {
+    if (event.target.closest(".lv-folder-tools .lv-icon-btn")) event.preventDefault();
+  }, { signal });
+}
+
+/** After every render: puts the cursor in the BACKGROUND editor when it has just opened. */
+export function afterRender(sheet) {
+  if (!drafts.has(sheet)) return;
+  const field = sheet.element.querySelector(EDITOR);
+  if (!field || field.dataset.focused) return;
+  field.dataset.focused = "1";
+  requestAnimationFrame(() => (field.querySelector(".ProseMirror") ?? field).focus());
+}
+
 /**
  * Listeners of the part, registered once per sheet: a double click on an Asset row opens the Asset
  * (`data-action` only reacts to single clicks). The draft is forgotten when the sheet closes.
@@ -287,5 +353,6 @@ export function attach(sheet, signal) {
     const row = event.target.closest(".lv-asset[data-item-id]");
     if (row) openItem(sheet.actor.items.get(row.dataset.itemId));
   }, { signal });
+  attachBackgroundEditor(sheet, signal);
   signal.addEventListener("abort", () => drafts.delete(sheet));
 }

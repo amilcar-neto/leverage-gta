@@ -10,7 +10,6 @@ import { LEVERAGE } from "../../../config.mjs";
 import { DicePool, poolMenuGroups, resolvePoolRef } from "../../../dice/pool.mjs";
 import { readSceneTraits } from "../../gm/scene-traits.mjs";
 import { readSetting } from "../../../data/fields.mjs";
-import { closePoolBuilder, openPoolBuilder, refreshPoolBuilder } from "../../dialogs/pool-builder.mjs";
 import { t } from "../../components/i18n.mjs";
 
 /** Elements where Enter keeps its own meaning (so it does not roll the Pool). */
@@ -21,6 +20,9 @@ export const ROLL_REQUESTED_HOOK = LEVERAGE.hooks.rollRequested;
 
 /** Hook fired when the active Job changes (its Scene Traits feed the Pool builder window). */
 const ACTIVE_JOB_HOOK = LEVERAGE.hooks.activeJobChanged;
+
+/** The Pool builder module, loaded on first use (it needs the Foundry application classes, so unit tests never import it). */
+let builder = null;
 
 /** Pool of each open sheet. */
 const pools = new WeakMap();
@@ -125,7 +127,7 @@ export function syncRows(root, pool) {
 /** Re-renders the tray only (and the Pool builder window, if open) and updates the rows right away. */
 function refresh(sheet) {
   syncRows(sheet.element, poolOf(sheet));
-  refreshPoolBuilder(sheet);
+  builder?.refreshPoolBuilder(sheet);
   return sheet.render({ parts: ["tray"] });
 }
 
@@ -149,7 +151,7 @@ export function attach(sheet, signal) {
   });
   signal.addEventListener("abort", () => {
     Hooks.off(ACTIVE_JOB_HOOK, hookId);
-    closePoolBuilder(sheet);
+    builder?.closePoolBuilder(sheet);
     pools.delete(sheet);
   });
 }
@@ -210,9 +212,10 @@ export const actions = {
   },
 
   /** "+ DIE": opens the Pool builder window (everything the actor can roll). */
-  addDie() {
+  async addDie() {
     if (!this.actor.isOwner) return;
-    return openPoolBuilder(this, builderSource(this));
+    builder ??= await import("../../dialogs/pool-builder.mjs");
+    return builder.openPoolBuilder(this, builderSource(this));
   },
 
   /** Empties the Pool. */

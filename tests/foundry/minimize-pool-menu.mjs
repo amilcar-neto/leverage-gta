@@ -64,29 +64,16 @@ try {
   await page.evaluate((id) => game.actors.get(id).sheet.maximize(), ids.crew);
   await page.waitForTimeout(1500);
 
-  // "+ DIE" menu.
+  // "+ DIE" window (details: pool-builder.mjs).
   await page.locator(".crew-sheet [data-action=addDie]").click();
-  await page.locator(".lv-pool-menu").waitFor({ timeout: 5000 });
-  const menu = await page.evaluate(() => {
-    const m = document.querySelector(".lv-pool-menu");
-    return {
-      headers: [...m.querySelectorAll(".lv-pool-menu-header")].map((h) => h.textContent),
-      names: [...m.querySelectorAll(".lv-pool-menu-name")].map((n) => n.textContent),
-      overflowX: m.scrollWidth > m.clientWidth + 1
-    };
-  });
+  await page.locator(".lv-pool-builder .lv-pb-chip").first().waitFor({ timeout: 5000 });
+  const names = await page.evaluate(() => [...document.querySelectorAll(".lv-pool-builder .lv-pb-chip-name")].map((n) => n.textContent));
   await page.screenshot({ path: `${SHOTS}/POOLMENU.png` });
-  record("menu has the group headers", menu.headers.length >= 7, menu.headers);
-  for (const name of ["[TEST] Crowbar", "[TEST] Lockpicks", "[TEST] Ex-con", "[TEST] Ghost"]) record(`menu offers ${name}`, menu.names.includes(name), menu.names);
-  record("menu skips a Talent without a die", !menu.names.includes("[TEST] Plain talent"));
-  record("menu does not scroll sideways", !menu.overflowX);
-  const pick = page.locator(".lv-pool-menu-item", { hasText: "[TEST] Crowbar" });
-  await pick.click();
+  for (const name of ["[TEST] Crowbar", "[TEST] Lockpicks", "[TEST] Ex-con", "[TEST] Ghost"]) record(`builder offers ${name}`, names.includes(name), names);
+  record("builder skips a Talent without a die", !names.includes("[TEST] Plain talent"));
+  await page.locator(".lv-pb-chip", { hasText: "[TEST] Crowbar" }).click();
   await page.waitForTimeout(600);
-  await page.locator(".crew-sheet [data-action=addDie]").click();
-  await page.locator(".lv-pool-menu").waitFor({ timeout: 5000 });
-  const again = await page.evaluate(() => [...document.querySelectorAll(".lv-pool-menu-name")].map((n) => n.textContent));
-  record("an item already in the Pool is not offered again", !again.includes("[TEST] Crowbar") && again.includes("[TEST] Ghost"), again);
+  record("an item in the Pool stays listed, marked", await page.locator(".lv-pb-chip.is-on", { hasText: "[TEST] Crowbar" }).count() === 1);
   record("the picked item became a chip", await page.locator(".lv-tray [data-pool-ref]", { hasText: "[TEST] Crowbar" }).count() > 0);
 } catch (error) {
   record("script ran without exceptions", false, String(error?.stack ?? error));

@@ -39,7 +39,7 @@ export function optionOf(entry) {
   const name = entry.kind === "die" ? t("LEVERAGE.Sheet.Tray.kind.die") : entry.labelKey ? t(entry.label) : entry.label;
   return {
     ref: entry.ref, name, die: entry.die, kind: entry.kind, pooled: Boolean(entry.pooled), money: entry.kind === "money",
-    search: name.toLocaleLowerCase(), title: `${name} (d${entry.die})\n${hint}`
+    search: name.toLocaleLowerCase(), title: `${name} (d${entry.die})`
   };
 }
 
