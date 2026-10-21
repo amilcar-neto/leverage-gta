@@ -1,0 +1,206 @@
+/* "Build Pool" window (opened by "+ DIE"). Frame and title bar: styles/window.css; base of the body: config-apps.css. */
+
+.leverage-gta.lv-pool-builder .window-content { min-height: 0; }
+
+.leverage-gta .lv-pb {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.leverage-gta .lv-pb-top {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 8px;
+}
+
+.leverage-gta .lv-pb-search {
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  background: var(--lv-wash-06);
+  border: 1px solid var(--lv-wash-25);
+  border-radius: 3px;
+  color: var(--lv-ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.leverage-gta .lv-pb-search:focus-visible { outline: 2px solid var(--lv-header); outline-offset: 1px; }
+
+.leverage-gta .lv-pb-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.leverage-gta .lv-pb-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  height: 26px;
+  padding: 0 9px;
+  background: transparent;
+  border: 1px solid var(--lv-wash-25);
+  border-radius: 999px;
+  color: var(--lv-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-pb-tab:hover,
+.leverage-gta .lv-pb-tab:focus-visible { color: var(--lv-ink); border-color: var(--lv-ink); }
+
+.leverage-gta .lv-pb-tab.is-active { background: var(--lv-header); border-color: var(--lv-header); color: var(--lv-die-ink); }
+
+.leverage-gta .lv-pb-tab-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leverage-gta .lv-pb-tab-count { flex: none; font-size: 12px; opacity: 0.75; }
+
+/* The only scroll area of the body: gutter reserved by .lv-scroll */
+.leverage-gta .lv-pb-body {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 6px 12px 14px;
+}
+
+.leverage-gta .lv-pb-section[hidden],
+.leverage-gta .lv-pb-chip[hidden],
+.leverage-gta .lv-pb-none[hidden] { display: none; }
+
+.leverage-gta .lv-pb-heading {
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+  color: var(--lv-muted);
+  font-family: var(--lv-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.leverage-gta .lv-pb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(172px, 1fr));
+  gap: 6px;
+}
+
+.leverage-gta .lv-pb-chip {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 40px;
+  margin: 0;
+  padding: 0 10px 0 6px;
+  background: var(--lv-wash-06);
+  border: 2px solid var(--lv-wash-25);
+  border-radius: 999px;
+  color: var(--lv-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-pb-chip:hover,
+.leverage-gta .lv-pb-chip:focus-visible { border-color: var(--lv-ink); }
+
+.leverage-gta .lv-pb-chip.is-on {
+  border-color: var(--lv-select);
+  background: var(--lv-wash-08);
+  box-shadow: inset 0 0 0 1px var(--lv-select);
+}
+
+.leverage-gta .lv-pb-chip > .lv-die { flex: none; }
+
+.leverage-gta .lv-pb-chip-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-pb-check { flex: none; color: var(--lv-roll); }
+
+/* Preview of the Pool + buttons */
+.leverage-gta .lv-pb-preview {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--lv-outline);
+  border-top: 4px solid var(--lv-header);
+}
+
+.leverage-gta .lv-pb-preview-title { display: flex; flex: none; flex-direction: column; gap: 2px; }
+
+.leverage-gta .lv-pb-preview-label {
+  font-family: var(--lv-font-display);
+  font-size: 20px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--lv-white);
+}
+
+.leverage-gta .lv-pb-preview-count { color: var(--lv-muted); font-size: 12px; white-space: nowrap; }
+
+.leverage-gta .lv-pb-preview-chips {
+  display: flex;
+  flex: 1 1 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-height: 72px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+.leverage-gta .lv-pb-pchip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 170px;
+  height: 34px;
+  margin: 0;
+  padding: 0 4px 0 10px;
+  background: var(--lv-wash-08);
+  border: 2px solid var(--lv-select);
+  border-radius: 999px;
+  color: var(--lv-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-pb-pchip:hover,
+.leverage-gta .lv-pb-pchip:focus-visible { border-color: var(--lv-stamp-hover); }
+
+.leverage-gta .lv-pb-pchip-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-pb-actions { display: flex; flex: none; align-items: center; gap: 8px; }

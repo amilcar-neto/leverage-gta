@@ -8,7 +8,7 @@ import { logger } from "../../logger.mjs";
 import { executeAsGM, registerSocketAction } from "../../socket.mjs";
 import { applyComplication, keepNextDie, resolveNextOne } from "../../dice/card-actions.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
-import { readJob } from "../gm/job-actions.mjs";
+import { readJob, writeJob } from "../gm/job-actions.mjs";
 import { promptComplication } from "./complication-dialog.mjs";
 import { damageFromCard } from "./damage.mjs";
 
@@ -130,7 +130,7 @@ async function writeComplication(message, choice) {
   const job = readJob();
   const result = resolved && applyComplication(job, choice, foundry.utils.randomID);
   if (!result) return;
-  await game.settings.set(SYSTEM_ID, "activeJob", result.job);
+  await writeJob(result.job);
   await actorOf(data)?.addPlotPoints(1);
   await message.setFlag(SYSTEM_ID, "roll", resolved);
 }

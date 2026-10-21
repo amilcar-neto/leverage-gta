@@ -1,0 +1,48 @@
+<div class="lv-pb">
+  <div class="lv-pb-top">
+    <input type="search" class="lv-pb-search" value="{{query}}" placeholder="{{localize 'LEVERAGE.Sheet.Tray.builder.search'}}" aria-label="{{localize 'LEVERAGE.Sheet.Tray.builder.search'}}" autocomplete="off">
+    <div class="lv-pb-tabs" role="tablist">
+      {{#each tabs}}
+      <button type="button" class="lv-pb-tab{{#if active}} is-active{{/if}}" role="tab" aria-selected="{{#if active}}true{{else}}false{{/if}}" data-action="setTab" data-tab="{{key}}"><span class="lv-pb-tab-name">{{label}}</span><span class="lv-pb-tab-count">{{#if inPool}}{{inPool}}/{{/if}}{{count}}</span></button>
+      {{/each}}
+    </div>
+  </div>
+  <div class="lv-pb-body lv-scroll">
+    {{#each sections}}
+    <section class="lv-pb-section" data-label="{{label}}">
+      <h3 class="lv-pb-heading">{{label}}</h3>
+      <div class="lv-pb-grid">
+        {{#each options}}
+        <button type="button" class="lv-pb-chip{{#if pooled}} is-on{{/if}}" data-action="pick" data-ref="{{ref}}" data-kind="{{kind}}" data-search="{{search}}" aria-pressed="{{#if pooled}}true{{else}}false{{/if}}" title="{{title}}">
+          {{lvDie die die=die size=@root.chipDie money=money}}
+          <span class="lv-pb-chip-name">{{name}}</span>
+          {{#if pooled}}<svg class="lv-pb-check" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>{{/if}}
+        </button>
+        {{/each}}
+      </div>
+    </section>
+    {{/each}}
+    <p class="lv-pb-none lv-empty" hidden>{{localize "LEVERAGE.Sheet.Tray.builder.none"}}</p>
+  </div>
+  <div class="lv-pb-preview">
+    <div class="lv-pb-preview-title">
+      <span class="lv-pb-preview-label">{{localize "LEVERAGE.Sheet.Tray.pool"}}</span>
+      <span class="lv-pb-preview-count">{{countText}}</span>
+    </div>
+    <div class="lv-pb-preview-chips">
+      {{#each preview}}
+      <button type="button" class="lv-pb-pchip" data-action="unpick" data-ref="{{ref}}" data-kind="{{kind}}" title="{{name}}">
+        <span class="lv-pb-pchip-name">{{name}}</span>
+        {{#if die}}{{lvDie die die=die size=@root.previewDie money=money}}{{/if}}
+      </button>
+      {{else}}
+      <span class="lv-empty">&mdash;</span>
+      {{/each}}
+    </div>
+    <div class="lv-pb-actions">
+      <button type="button" class="lv-config-btn lv-config-btn--link" data-action="clear"{{#unless preview.length}} disabled{{/unless}}>{{localize "LEVERAGE.Sheet.Tray.clear"}}</button>
+      <button type="button" class="lv-config-btn" data-action="done">{{localize "LEVERAGE.Sheet.Tray.builder.done"}}</button>
+      <button type="button" class="lv-config-btn lv-config-btn--primary" data-action="roll"{{#unless canRoll}} disabled{{/unless}}>{{localize "LEVERAGE.Sheet.Tray.roll"}}</button>
+    </div>
+  </div>
+</div>

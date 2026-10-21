@@ -2,16 +2,30 @@
  * Shared guard helpers for the Trait lock and the Distinction cap (docs/04 "Trava", docs/03).
  * Used by LeverageActor and LeverageItem. The GM always passes.
  */
-import { LEVERAGE } from "../config.mjs";
+import { LEVERAGE, SHEET_UNLOCK_FLAG } from "../config.mjs";
 import { readSetting } from "../data/fields.mjs";
+import { isSheetLocked } from "../rules/sheet-lock.mjs";
 
 /**
- * Whether `user` may create/remove/change Traits (GM always; others only when `traitsLocked` is off).
- * @param {User} [user]
+ * Whether the sheet of `actor` is locked (its own flag plus the GM's `playersCanUnlock` policy).
+ * @param {Actor} [actor]
  * @returns {boolean}
  */
-export function canEditTraits(user = game.user) {
-  return Boolean(user?.isGM) || !readSetting("traitsLocked", false);
+export function isActorLocked(actor) {
+  return isSheetLocked({
+    playersCanUnlock: Boolean(readSetting("playersCanUnlock", true)),
+    unlocked: Boolean(actor?.getFlag?.(LEVERAGE.systemId, SHEET_UNLOCK_FLAG))
+  });
+}
+
+/**
+ * Whether `user` may create/remove/change the Traits of `actor` (GM always; others only when the sheet is unlocked).
+ * @param {User} user
+ * @param {Actor} actor The Actor that owns the Traits.
+ * @returns {boolean}
+ */
+export function canEditTraits(user, actor) {
+  return Boolean(user?.isGM) || !isActorLocked(actor);
 }
 
 /**
@@ -26,7 +40,7 @@ export function warnUser(user, key, data) {
   ui.notifications?.warn(data ? i18n.format(key, data) : i18n.localize(key));
 }
 
-/** Whether an item type is a Trait (locked by `traitsLocked`). */
+/** Whether an item type is a Trait (locked by the sheet lock). */
 export function isTraitType(type) {
   return LEVERAGE.traitItemTypes.includes(type);
 }
@@ -70,7 +84,7 @@ export function protectedFieldsChanged(item, changes, user = game.user) {
  */
 export function checkItemBatch(actor, dataList, user = game.user) {
   if (user?.isGM) return { ok: true };
-  if (dataList.some((d) => isTraitType(d.type)) && !canEditTraits(user)) return { ok: false, reason: "locked" };
+  if (dataList.some((d) => isTraitType(d.type)) && !canEditTraits(user, actor)) return { ok: false, reason: "locked" };
   const incoming = dataList.filter((d) => d.type === "distinction").length;
   const existing = actor.items.filter((i) => i.type === "distinction").length;
   if (incoming && existing + incoming > LEVERAGE.maxDistinctions) return { ok: false, reason: "maxDistinctions" };

@@ -48,7 +48,7 @@ export class LeverageItem extends Item {
 
   /** Whether this owned Trait item is locked against `user`. */
   #lockedFor(user) {
-    return this.parent instanceof Actor && isTraitType(this.type) && !canEditTraits(user);
+    return this.parent instanceof Actor && isTraitType(this.type) && !canEditTraits(user, this.parent);
   }
 
   /**

@@ -25,9 +25,12 @@ const HOUSE_RULES_HOOK = LEVERAGE.hooks.houseRulesChanged;
 
 /** Which parts live in which body column, top to bottom (`#groupColumns` wraps them; Foundry v14 has no PART containers). */
 const COLUMNS = Object.freeze({
-  main: ["traits", "gang", "weapon", "notes"],
+  main: ["traits", "weapon", "gang", "notes"],
   side: ["ladders"]
 });
+
+/** Silhouette icon of each tier (Font Awesome), shown on the badge when the NPC has no photo. */
+const TIER_ICONS = Object.freeze({ extra: "fa-user", foil: "fa-user-tie", mark: "fa-bullseye", agent: "fa-user-secret" });
 
 /** Panels of the Attributes / Roles part, in order: `[group, title key]`. */
 const LADDER_GROUPS = Object.freeze([["attributes", "LEVERAGE.Sheet.Panel.attributes"], ["roles", "LEVERAGE.Sheet.Panel.roles"]]);
@@ -104,6 +107,8 @@ export class NpcSheet extends LeverageActorSheet {
   async _onRender(context, options) {
     await super._onRender(context, options);
     this.#groupColumns();
+    this.element.dataset.tier = this.actor.system.tier;
+    this.element.classList.toggle("is-police", this.actor.system.police);
   }
 
   /** Wraps the body parts in their two column elements (idempotent; runs after every render). */
@@ -134,6 +139,7 @@ export class NpcSheet extends LeverageActorSheet {
     Object.assign(context, {
       hasPhoto,
       tiers: Object.fromEntries(Object.entries(LEVERAGE.npcTiers).map(([key, def]) => [key, def.label])),
+      tierIcon: TIER_ICONS[system.tier] ?? TIER_ICONS.extra,
       tierLabel: LEVERAGE.npcTiers[system.tier]?.label,
       showVitals: vitalsEnabled(),
       lifeMaxEditable: canEdit && !system.attributes?.vitality?.die,

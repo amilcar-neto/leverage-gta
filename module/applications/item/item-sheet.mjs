@@ -23,7 +23,7 @@ export const ITEM_TEMPLATES = `systems/${LEVERAGE.systemId}/templates/item`;
  * @returns {boolean}
  */
 export function passesTraitLock(item, user = game.user) {
-  return !(item.parent && isTraitType(item.type)) || canEditTraits(user);
+  return !(item.parent && isTraitType(item.type)) || canEditTraits(user, item.parent);
 }
 
 /** Enriches an HTML field for display. */
@@ -61,7 +61,7 @@ export class LeverageItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   static RICH_FIELDS = [];
 
   /** Seal in the title bar (mounted only for owned Traits); the lock hook re-renders the fields. */
-  #seal = new LockSeal(() => {
+  #seal = new LockSeal(() => this.document.parent, () => {
     if (this.rendered) this.render();
   });
 

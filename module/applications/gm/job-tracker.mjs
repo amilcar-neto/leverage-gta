@@ -8,7 +8,7 @@ import { readSetting } from "../../data/fields.mjs";
 import { clampSteps } from "../../rules/money.mjs";
 import { renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
-import { crewActors, readJob } from "./job-actions.mjs";
+import { crewActors, readJob, writeJob } from "./job-actions.mjs";
 import { addEntry, clampedAdd, removeEntry, renameJob, setJobGoal, stepEntry } from "./job-tracker-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -106,7 +106,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
   /** Writes the Job (GM only). */
   async #save(job) {
     if (!game.user.isGM) return ui.notifications.warn(t("LEVERAGE.GM.Warn.gmOnly"));
-    await game.settings.set(SYSTEM_ID, "activeJob", job);
+    await writeJob(job);
   }
 
   /** Adds the entry typed in the input of `list`. */

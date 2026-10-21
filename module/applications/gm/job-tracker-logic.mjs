@@ -10,15 +10,23 @@ import { isValidDie, stepDown, stepUp } from "../../dice/die.mjs";
 export const LISTS = Object.freeze({ complications: LEVERAGE.complicationDie, sceneTraits: LEVERAGE.defaultDie });
 
 /**
- * Normalises a stored Job so every list exists and every entry is valid.
+ * Keeps the valid entries of a die list (an id and a legal die) with a string name and a numeric die.
+ * @param {*} list
+ * @returns {{id: string, name: string, die: number}[]}
+ */
+export function cleanEntries(list) {
+  return (Array.isArray(list) ? list : [])
+    .filter((e) => e && e.id && isValidDie(Number(e.die)))
+    .map((e) => ({ ...e, name: String(e.name ?? ""), die: Number(e.die) }));
+}
+
+/**
+ * Normalises a Job so every list exists and every entry is valid.
  * @param {object} [job]
  * @returns {{name: string, complications: object[], sceneTraits: object[]}}
  */
 export function normalizeJob(job) {
-  const clean = (list) => (Array.isArray(list) ? list : [])
-    .filter((e) => e && e.id && isValidDie(Number(e.die)))
-    .map((e) => ({ ...e, name: String(e.name ?? ""), die: Number(e.die) }));
-  return { ...job, name: String(job?.name ?? ""), goal: String(job?.goal ?? ""), complications: clean(job?.complications), sceneTraits: clean(job?.sceneTraits) };
+  return { ...job, name: String(job?.name ?? ""), goal: String(job?.goal ?? ""), complications: cleanEntries(job?.complications), sceneTraits: cleanEntries(job?.sceneTraits) };
 }
 
 /**

@@ -73,7 +73,7 @@ function resolveItem(actor, { id, size }) {
  * Turns a reference into a die for `actor` (duck-typed: `system.attributes|roles|money` and `items.get`).
  * @param {object} actor
  * @param {string} ref
- * @param {{moneyEnabled?: boolean, sceneTraits?: {id: string, name: string, die: number}[]}} [options]
+ * @param {{moneyEnabled?: boolean, sceneTraits?: {id: string, name: string, die: number}[], includePooled?: boolean}} [options]
  *   `moneyEnabled` is the house rule switch (default on); `sceneTraits` are the Scene Traits of the active Job.
  * @returns {ResolvedTrait|null} null when the reference means nothing (deleted item, no money, bad shape).
  */
@@ -274,27 +274,30 @@ export class DicePool {
  * @property {string} label Literal name (`dN`, Item or Scene Trait name) or, with `labelKey`, an i18n key.
  * @property {boolean} [labelKey] `label` is an i18n key.
  * @property {string} kind Resolved kind (`die`, `money`, `scene`, `asset`...).
+ * @property {boolean} [pooled] Already in the Pool (only offered with `includePooled`).
  */
 
 /** Rollable Items of one type, as menu entries (Talents only with a die; Distinctions offered as d8, the helping die). */
-function itemMenuEntries(actor, type, inPool) {
+function itemMenuEntries(actor, type, inPool, includePooled) {
   const out = [];
   for (const item of actor.items ?? []) {
     if (item.type !== type) continue;
     const ref = `item:${item.id}`;
-    const resolved = inPool(ref) ? null : resolvePoolRef(actor, ref);
-    if (resolved) out.push({ ref, die: resolved.die, label: resolved.name, kind: resolved.kind });
+    const pooled = inPool(ref);
+    const resolved = pooled && !includePooled ? null : resolvePoolRef(actor, ref);
+    if (resolved) out.push({ ref, die: resolved.die, label: resolved.name, kind: resolved.kind, pooled });
   }
   return out;
 }
 
 /** Attributes or Roles of the actor that have a die and are not in the Pool yet. */
-function traitMenuEntries(actor, group, inPool) {
+function traitMenuEntries(actor, group, inPool, includePooled) {
   const out = [];
   for (const key of Object.keys(LEVERAGE[`${group}s`])) {
     const ref = `${group}s.${key}`;
-    const resolved = inPool(ref) ? null : resolvePoolRef(actor, ref);
-    if (resolved?.die) out.push({ ref, die: resolved.die, label: resolved.nameKey, labelKey: true, kind: resolved.kind });
+    const pooled = inPool(ref);
+    const resolved = pooled && !includePooled ? null : resolvePoolRef(actor, ref);
+    if (resolved?.die) out.push({ ref, die: resolved.die, label: resolved.nameKey, labelKey: true, kind: resolved.kind, pooled });
   }
   return out;
 }
@@ -303,21 +306,22 @@ function traitMenuEntries(actor, group, inPool) {
  * Everything the "+ DIE" button can add, grouped by kind in `LEVERAGE.poolMenuGroups` order, empty groups left out:
  * loose dice (always, they may repeat), Money (rule on, wallet not empty), Scene Traits of the active Job, then the
  * actor's Assets, Specialties, Distinctions, Talents that carry a die, Attributes and Roles. What is already in the
- * Pool is not offered again.
+ * Pool is not offered again, unless `includePooled` is set (the Pool builder window shows them marked `pooled`).
  * @param {object} actor Duck-typed (`system`, `items` iterable).
  * @param {(ref: string) => boolean} inPool Whether a reference is in the Pool (`DicePool#has`).
  * @param {{moneyEnabled?: boolean, sceneTraits?: {id: string, name: string, die: number}[]}} [options]
  * @returns {{key: string, entries: PoolMenuEntry[]}[]}
  */
-export function poolMenuGroups(actor, inPool, { moneyEnabled = true, sceneTraits = [] } = {}) {
-  const money = moneyEnabled && !inPool("money") ? resolvePoolRef(actor, "money") : null;
+export function poolMenuGroups(actor, inPool, { moneyEnabled = true, sceneTraits = [], includePooled = false } = {}) {
+  const money = moneyEnabled && (includePooled || !inPool("money")) ? resolvePoolRef(actor, "money") : null;
   const byGroup = {
     die: LEVERAGE.dice.map((die) => ({ ref: `d${die}`, die, label: `d${die}`, kind: "die" })),
-    money: money ? [{ ref: "money", die: money.die, label: money.nameKey, labelKey: true, kind: "money" }] : [],
-    scene: sceneTraits.filter((x) => !inPool(`scene:${x.id}`)).map((x) => ({ ref: `scene:${x.id}`, die: x.die, label: x.name, kind: "scene" })),
-    attribute: traitMenuEntries(actor, "attribute", inPool),
-    role: traitMenuEntries(actor, "role", inPool)
+    money: money ? [{ ref: "money", die: money.die, label: money.nameKey, labelKey: true, kind: "money", pooled: inPool("money") }] : [],
+    scene: sceneTraits.filter((x) => includePooled || !inPool(`scene:${x.id}`))
+      .map((x) => ({ ref: `scene:${x.id}`, die: x.die, label: x.name, kind: "scene", pooled: inPool(`scene:${x.id}`) })),
+    attribute: traitMenuEntries(actor, "attribute", inPool, includePooled),
+    role: traitMenuEntries(actor, "role", inPool, includePooled)
   };
-  for (const type of ["asset", "specialty", "distinction", "talent"]) byGroup[type] = itemMenuEntries(actor, type, inPool);
+  for (const type of ["asset", "specialty", "distinction", "talent"]) byGroup[type] = itemMenuEntries(actor, type, inPool, includePooled);
   return LEVERAGE.poolMenuGroups.map((key) => ({ key, entries: byGroup[key] })).filter((g) => g.entries.length);
 }

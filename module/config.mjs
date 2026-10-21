@@ -31,13 +31,15 @@ const HOOKS = Object.freeze({
   activeJobChanged: "leverage.activeJobChanged",
   starsChanged: "leverage.starsChanged",
   hudChanged: "leverage.hudChanged",
-  scenePanelChanged: "leverage.scenePanelChanged",
   rollRequested: "leverage.rollRequested",
   ready: "leverage.ready"
 });
 
-/** Hook fired (by the `traitsLocked` world setting, see module/settings.mjs) whenever the Trait lock changes. */
+/** Hook fired (by the `playersCanUnlock` world setting, see module/settings.mjs) whenever the lock policy changes. */
 export const LOCK_HOOK = HOOKS.traitsLockedChanged;
+
+/** Actor flag (scope = system id) that holds `true` while the owner has unlocked the sheet. Absent = locked. */
+export const SHEET_UNLOCK_FLAG = "sheetUnlocked";
 
 /** Allowed die sizes, smallest first. There is no d20. */
 const DICE = Object.freeze([4, 6, 8, 10, 12]);
@@ -81,7 +83,7 @@ const DIE_GEOMETRY = Object.freeze({
   defaultSize: 32,
   /** Size used by each surface that shows dice outside the sheets (always one of `sizes`). */
   uses: Object.freeze({
-    rollCard: 50, moneyLine: 28, hud: 38, tracker: 28, ladder: 28, oppositionCounter: 36, oppositionPreview: 28, npc: 28, npcTrait: 32, location: 28, scenePanel: 28
+    rollCard: 50, moneyLine: 28, hud: 38, tracker: 28, ladder: 28, oppositionCounter: 36, oppositionPreview: 28, npc: 28, npcTrait: 32, location: 28, scenePanel: 28, poolBuilderChip: 28, poolBuilderPreview: 28
   }),
   perDie: Object.freeze({
     4: geo(4, 0.44, 0.4),
@@ -214,8 +216,10 @@ export const LEVERAGE = Object.freeze({
   }),
   /** Largest gang an NPC (or the opposition roller) can bring. */
   gangMax: 12,
-  /** Scene Panel: the Actor types whose Traits it lists, and the gap under the HUD (px). */
-  scenePanel: Object.freeze({ actorTypes: Object.freeze(["npc", "location"]), gapPx: 8 }),
+  /** Flag (on the Scene, under the system id) holding the Scene Traits of that Scene. */
+  sceneTraitsFlag: "sceneTraits",
+  /** Scene strip (Scene Traits + Complications under the Foundry scene navigation): gap under it (px). */
+  scenePanel: Object.freeze({ gapPx: 6 }),
   /** Most loose dice of one size in the opposition roller. */
   looseDiceMax: 12,
   /** Money ladder (docs/02): a full d12 is 5 steps; the leftmost die holds the remainder. */

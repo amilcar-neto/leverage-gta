@@ -8,7 +8,7 @@ import { readSetting } from "../data/fields.mjs";
 import { maxLife, restScene } from "../rules/combat.mjs";
 import * as money from "../rules/money.mjs";
 import { getPriceDice } from "../world-state.mjs";
-import { canEditTraits, checkItemBatch, warnBatchFailure, warnUser } from "./guards.mjs";
+import { canEditTraits, checkItemBatch, isActorLocked, warnBatchFailure, warnUser } from "./guards.mjs";
 
 /** Hook fired by the house-rule settings (the sheet header uses the same one). */
 const HOUSE_RULES_HOOK = LEVERAGE.hooks.houseRulesChanged;
@@ -39,18 +39,18 @@ globalThis.Hooks?.on(HOUSE_RULES_HOOK, () => {
 });
 
 export class LeverageActor extends Actor {
-  /** Whether the world setting currently locks Traits. */
-  static get traitsLocked() {
-    return Boolean(readSetting("traitsLocked", false));
+  /** Whether this sheet is locked (its own flag plus the GM policy `playersCanUnlock`). */
+  get sheetLocked() {
+    return isActorLocked(this);
   }
 
   /**
-   * Whether `user` may create/remove/change Traits (GM always; others only when unlocked).
+   * Whether `user` may create/remove/change this Actor's Traits (GM always; others only when unlocked).
    * @param {User} [user]
    * @returns {boolean}
    */
-  static canEditTraits(user = game.user) {
-    return canEditTraits(user);
+  canEditTraits(user = game.user) {
+    return canEditTraits(user, this);
   }
 
   /** @override */
@@ -195,7 +195,7 @@ export class LeverageActor extends Actor {
     const allowed = await super._preUpdate(changes, options, user);
     if (allowed === false) return false;
     const touchesTraits = LEVERAGE.traitSystemKeys.some((key) => foundry.utils.hasProperty(changes, `system.${key}`));
-    if (touchesTraits && !canEditTraits(user)) {
+    if (touchesTraits && !canEditTraits(user, this)) {
       warnUser(user, "LEVERAGE.Warn.traitsLocked");
       return false;
     }

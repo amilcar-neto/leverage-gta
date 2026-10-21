@@ -8,10 +8,9 @@
  */
 import { LEVERAGE } from "../../../config.mjs";
 import { DicePool, poolMenuGroups, resolvePoolRef } from "../../../dice/pool.mjs";
-import { isValidDie } from "../../../dice/die.mjs";
+import { readSceneTraits } from "../../gm/scene-traits.mjs";
 import { readSetting } from "../../../data/fields.mjs";
-import { renderDie, escapeHtml } from "../../components/die.mjs";
-import { closeFloatMenu, openFloatMenu } from "../../components/float-menu.mjs";
+import { closePoolBuilder, openPoolBuilder, refreshPoolBuilder } from "../../dialogs/pool-builder.mjs";
 import { t } from "../../components/i18n.mjs";
 
 /** Elements where Enter keeps its own meaning (so it does not roll the Pool). */
@@ -20,7 +19,7 @@ const INTERACTIVE = "button, input, textarea, select, a, prose-mirror, [contente
 /** Hook announcing a Pool the player wants to roll. Payload: `{ actor, sheet, refs, entries }`. */
 export const ROLL_REQUESTED_HOOK = LEVERAGE.hooks.rollRequested;
 
-/** Hook fired when the active Job changes (its Scene Traits feed the "+ DIE" menu). */
+/** Hook fired when the active Job changes (its Scene Traits feed the Pool builder window). */
 const ACTIVE_JOB_HOOK = LEVERAGE.hooks.activeJobChanged;
 
 /** Pool of each open sheet. */
@@ -29,11 +28,8 @@ const pools = new WeakMap();
 /** Whether the Money house rule is on (safe before settings are ready). */
 const moneyEnabled = () => Boolean(readSetting("houseRules.money", true));
 
-/** Scene Traits of the active Job (`{id, name, die}`), empty when there is no Job. */
-const sceneTraits = () => {
-  const list = readSetting("activeJob", null)?.sceneTraits;
-  return Array.isArray(list) ? list.filter((x) => x?.id && isValidDie(x.die)) : [];
-};
+/** Scene Traits of the active Scene (`{id, name, die}`), empty when there is none. */
+const sceneTraits = readSceneTraits;
 
 /**
  * The Pool of a sheet, created on first use. Other tasks (roll, macros) read it through this.
@@ -126,9 +122,10 @@ export function syncRows(root, pool) {
   }
 }
 
-/** Re-renders the tray only and updates the rows right away. */
+/** Re-renders the tray only (and the Pool builder window, if open) and updates the rows right away. */
 function refresh(sheet) {
   syncRows(sheet.element, poolOf(sheet));
+  refreshPoolBuilder(sheet);
   return sheet.render({ parts: ["tray"] });
 }
 
@@ -148,11 +145,11 @@ function onEnter(sheet, event) {
 export function attach(sheet, signal) {
   sheet.element.addEventListener("keydown", (event) => onEnter(sheet, event), { signal });
   const hookId = Hooks.on(ACTIVE_JOB_HOOK, () => {
-    closeFloatMenu(sheet);
     if (sheet.rendered) refresh(sheet);
   });
   signal.addEventListener("abort", () => {
     Hooks.off(ACTIVE_JOB_HOOK, hookId);
+    closePoolBuilder(sheet);
     pools.delete(sheet);
   });
 }
@@ -177,27 +174,19 @@ export async function addToSheetPool(actor, ref) {
   return added;
 }
 
-/* -------------------------------------------------------------- + DIE menu */
+/* ------------------------------------------------------- + DIE (Pool builder) */
 
-/** Opens the "+ DIE" menu above `anchor`: everything the actor can roll, grouped by kind. */
-function openDieMenu(sheet, anchor) {
+/** What the Pool builder window asks of this sheet's Pool (see `dialogs/pool-builder.mjs`). */
+function builderSource(sheet) {
   const pool = poolOf(sheet);
-  const groups = poolMenuGroups(sheet.actor, (ref) => pool.has(ref), { moneyEnabled: moneyEnabled(), sceneTraits: sceneTraits() });
-  const items = groups.flatMap(({ key, entries }) => [
-    { header: t(`LEVERAGE.Sheet.Tray.menuGroup.${key}`) },
-    ...entries.map((entry) => {
-      const label = entry.labelKey ? t(entry.label) : entry.label;
-      return {
-        title: label,
-        html: `${renderDie({ die: entry.die, size: 28, money: entry.kind === "money" })}<span class="lv-pool-menu-name">${escapeHtml(label)}</span>`,
-        onSelect: () => {
-          pool.add(entry.ref);
-          refresh(sheet);
-        }
-      };
-    })
-  ]);
-  openFloatMenu(sheet, { anchor, className: "lv-pool-menu", itemClass: "lv-pool-menu-item", headerClass: "lv-pool-menu-header", placement: "above", items });
+  return {
+    groups: () => poolMenuGroups(sheet.actor, (ref) => pool.has(ref), { moneyEnabled: moneyEnabled(), sceneTraits: sceneTraits(), includePooled: true }),
+    tray: () => trayContext(pool, t),
+    pick: (ref) => { pool.toggle(ref); refresh(sheet); },
+    remove: (ref) => { pool.cycle(ref); refresh(sheet); },
+    clear: () => { pool.clear(); refresh(sheet); },
+    roll: () => actions.roll.call(sheet)
+  };
 }
 
 /* ----------------------------------------------------------------- actions */
@@ -220,10 +209,10 @@ export const actions = {
     refresh(this);
   },
 
-  /** "+ DIE": opens the menu of loose dice (and Money). */
-  addDie(_event, target) {
+  /** "+ DIE": opens the Pool builder window (everything the actor can roll). */
+  addDie() {
     if (!this.actor.isOwner) return;
-    openDieMenu(this, target);
+    return openPoolBuilder(this, builderSource(this));
   },
 
   /** Empties the Pool. */

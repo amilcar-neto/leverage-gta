@@ -312,6 +312,10 @@
         "Name": "Debug log"
       },
       "hud": {
+        "showPartyMoney": {
+          "Hint": "GM only. Shows a compact list with the Grana of every player character under your own Grana in the HUD.",
+          "Name": "Show players' Grana"
+        },
         "showMoney": {
           "Hint": "Show the money ladder on the HUD.",
           "Name": "Show money"
@@ -367,9 +371,9 @@
         "Label": "Edit training costs",
         "Name": "Training costs"
       },
-      "traitsLocked": {
-        "Hint": "Players cannot add, remove or change Traits. The GM still can.",
-        "Name": "Lock Traits"
+      "playersCanUnlock": {
+        "Hint": "On: each player locks and unlocks their own sheet with the seal in its title bar. Off: every sheet is forced locked and players cannot unlock it. The GM always edits.",
+        "Name": "Players can unlock their sheets"
       },
       "wanted": {
         "Hint": "Current wanted level (hidden; changed by the HUD or the GM control).",
@@ -377,12 +381,8 @@
       },
       "scenePanel": {
         "show": {
-          "Hint": "Show the panel with the Scene Traits, Complications and NPC Traits under the HUD.",
+          "Hint": "Show the Scene Traits and Complications strip under the scene navigation.",
           "Name": "Show scene panel"
-        },
-        "showActorTraits": {
-          "Hint": "Players see the Traits of the NPCs and places on the scene (hidden tokens are never shown to them).",
-          "Name": "Show NPC Traits to players"
         }
       }
     },
@@ -444,11 +444,13 @@
       "delete": "Delete",
       "Add": "+ Add",
       "Seal": {
-        "locked": "Traits locked",
-        "lockedHint": "The GM locked traits. Attributes, Roles, Distinctions, Talents and Specialties cannot change right now.",
+        "locked": "Locked",
+        "lockedHint": "Sheet locked. Click to unlock and edit Attributes, Roles, Distinctions, Talents and Specialties.",
         "unlocked": "Editing on",
-        "unlockedHint": "The GM allowed edits. Traits can be added, removed and re-rated.",
-        "lockedGmHint": "Traits are locked for players. As GM you can still edit everything."
+        "unlockedHint": "Sheet unlocked. Click to lock it again.",
+        "forcedHint": "The GM turned off unlocking: every sheet is locked right now.",
+        "lockedGmHint": "Locked for players (they can unlock it themselves unless you turn that off). As GM you can edit everything; click to change the lock.",
+        "unlockedGmHint": "Unlocked. As GM you can edit everything; click to lock this sheet for its player."
       },
       "Header": {
         "noPhoto": "No photo",
@@ -555,7 +557,8 @@
         "background": "Background",
         "jobs": "Jobs",
         "edit": "Edit",
-        "save": "Save"
+        "save": "Save",
+        "cancel": "Cancel"
       },
       "Tray": {
         "pool": "Pool",
@@ -566,6 +569,13 @@
         "clear": "Clear",
         "remove": "Click to take it out of the Pool",
         "cycleDistinction": "Click to switch to d4, again to take it out",
+        "builder": {
+          "title": "Build Pool",
+          "search": "Search",
+          "all": "All",
+          "none": "Nothing matches your search.",
+          "done": "Done"
+        },
         "moneyName": "Money",
         "menuGroup": {
           "die": "Loose dice",
@@ -609,7 +619,7 @@
       "standard": "Standard"
     },
     "Warn": {
-      "traitsLocked": "Traits are locked by the GM.",
+      "traitsLocked": "This sheet is locked. Unlock it with the seal in the title bar (unless the GM forbade it).",
       "maxDistinctions": "A character can have at most {max} Distinctions.",
       "notEnoughPlotPoints": "Not enough Plot Points: it costs {cost} and you have {have}.",
       "noUnspentJobs": "No unspent Jobs to spend.",
@@ -699,7 +709,7 @@
         "title": "Leverage"
       },
       "Tool": {
-        "traitsLock": "Trait lock",
+        "traitsLock": "Players can unlock sheets",
         "wanted": "Wanted level",
         "opposition": "Opposition roller",
         "tracker": "Job Tracker",
@@ -722,8 +732,8 @@
       },
       "Chat": {
         "speaker": "GM",
-        "traitsLocked": "The GM locked the Traits.",
-        "traitsUnlocked": "The GM unlocked the Traits.",
+        "traitsLocked": "The GM forced every sheet locked.",
+        "traitsUnlocked": "The GM let players unlock their own sheets again.",
         "plotPoints": {
           "one": "{names} receives {pp}.",
           "other": "{names} receive {pp}."
@@ -1131,6 +1141,12 @@
       "moneyTipReadOnly": "Grana · {steps} steps",
       "plotPointsTip": "Plot Points · {value}",
       "noCharacter": "No character assigned",
+      "party": "Party Grana",
+      "partyShow": "Show players' Grana",
+      "partyHide": "Hide players' Grana",
+      "partyCollapse": "Fold the list",
+      "partyExpand": "Unfold the list",
+      "partyEmpty": "No player characters yet",
       "spendPlotPoint": "Spend a Plot Point",
       "gainPlotPoint": "Gain a Plot Point",
       "starTip": {
@@ -1146,14 +1162,11 @@
     },
     "ScenePanel": {
       "title": "Scene",
-      "expand": "Show the scene panel",
-      "collapse": "Collapse the scene panel",
+      "expand": "Show the scene strip",
+      "collapse": "Collapse the scene strip",
       "edit": "Edit in the Job Tracker",
-      "empty": "No Scene Traits or Complications",
       "sceneTraits": "Scene Traits",
       "complications": "Complications",
-      "actors": "On the scene",
-      "hiddenToPlayers": "Hidden from players",
       "traitsCount": {
         "one": "{count} Trait",
         "other": "{count} Traits"
@@ -1161,10 +1174,6 @@
       "complicationsCount": {
         "one": "{count} Complication",
         "other": "{count} Complications"
-      },
-      "actorsCount": {
-        "one": "{count} NPC",
-        "other": "{count} NPCs"
       },
       "goal": "Goal"
     }

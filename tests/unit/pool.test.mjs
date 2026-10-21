@@ -208,6 +208,16 @@ const menuSuite = () => {
     assert.ok(keys(groups).includes("die"));
   });
 
+  test("includePooled keeps what is in the Pool and marks it", () => {
+    const inPool = (ref) => ["item:a1", "money", "roles.thief"].includes(ref);
+    const groups = poolMenuGroups(actor, inPool, { includePooled: true });
+    const get = (key) => groups.find((g) => g.key === key).entries;
+    assert.equal(get("asset")[0].pooled, true);
+    assert.equal(get("money")[0].pooled, true);
+    assert.equal(get("role")[0].pooled, true);
+    assert.equal(get("attribute")[0].pooled, false);
+  });
+
   test("lists Scene Traits of the active Job", () => {
     const groups = poolMenuGroups(actor, () => false, { sceneTraits: [{ id: "x", name: "Rain", die: 6 }] });
     assert.equal(groups.find((g) => g.key === "scene").entries[0].ref, "scene:x");

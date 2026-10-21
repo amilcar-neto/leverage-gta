@@ -1,19 +1,11 @@
 import "./helpers/foundry-stub.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { checkJobResult, emptyJob, freshJob, jobAfterScene, evenSplit, toSteps, jobItemData, assetIdsOf, usedCallbackIds } from "../../module/applications/gm/job-actions.mjs";
+import { checkJobResult, freshJob, evenSplit, toSteps, jobItemData, assetIdsOf, usedCallbackIds } from "../../module/applications/gm/job-actions.mjs";
 
 test("freshJob drops Complications and scene Traits and trims the name", () => {
   assert.deepEqual(freshJob("  Bank  "), { name: "Bank", goal: "", complications: [], sceneTraits: [] });
   assert.equal(freshJob(null).name, "");
-});
-
-test("jobAfterScene clears scene Traits only when the field exists", () => {
-  const job = { name: "A", complications: [{ id: "1", name: "x", die: 6 }], sceneTraits: [{ name: "Dark" }] };
-  assert.deepEqual(jobAfterScene(job).sceneTraits, []);
-  assert.equal(jobAfterScene(job).complications.length, 1);
-  assert.equal("sceneTraits" in jobAfterScene({ name: "B", complications: [] }), false);
-  assert.deepEqual(jobAfterScene(undefined), emptyJob());
 });
 
 test("checkJobResult: a name is required and the shares cannot exceed the total", () => {

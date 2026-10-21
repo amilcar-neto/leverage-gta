@@ -312,6 +312,10 @@
         "Name": "Log de depuração"
       },
       "hud": {
+        "showPartyMoney": {
+          "Hint": "Só para o mestre. Mostra no HUD, abaixo da sua Grana, uma lista compacta com a Grana de cada personagem de jogador.",
+          "Name": "Mostrar Grana dos jogadores"
+        },
         "showMoney": {
           "Hint": "Mostra a escada de Grana no HUD.",
           "Name": "Mostrar Grana"
@@ -367,9 +371,9 @@
         "Label": "Editar custos de treinamento",
         "Name": "Custos de treinamento"
       },
-      "traitsLocked": {
-        "Hint": "Os jogadores não podem adicionar, remover ou alterar Traços. O mestre ainda pode.",
-        "Name": "Trava de Traços"
+      "playersCanUnlock": {
+        "Hint": "Ligado: cada jogador trava e destrava a própria ficha pelo selo na barra de título. Desligado: todas as fichas ficam travadas à força e os jogadores não conseguem destravar. O mestre sempre edita.",
+        "Name": "Jogadores podem destravar suas fichas"
       },
       "wanted": {
         "Hint": "Nível atual de procurado (escondido; mudado pelo HUD ou pelo controle do mestre).",
@@ -377,12 +381,8 @@
       },
       "scenePanel": {
         "show": {
-          "Hint": "Mostra, abaixo do HUD, o painel com Traços de cena, Complications e Traços dos NPCs.",
+          "Hint": "Mostra, abaixo do seletor de cenas, a faixa com os Traços da cena e as Complications.",
           "Name": "Mostrar painel da cena"
-        },
-        "showActorTraits": {
-          "Hint": "Os jogadores veem os Traços dos NPCs e lugares na cena (tokens escondidos nunca aparecem).",
-          "Name": "Mostrar Traços de NPCs aos jogadores"
         }
       }
     },
@@ -444,11 +444,13 @@
       "delete": "Excluir",
       "Add": "+ Adicionar",
       "Seal": {
-        "locked": "Traços travados",
-        "lockedHint": "O mestre travou os Traços. Attributes, Roles, Distinctions, Talents e Specialties não podem mudar agora.",
+        "locked": "Travada",
+        "lockedHint": "Ficha travada. Clique para destravar e editar Attributes, Roles, Distinctions, Talents e Specialties.",
         "unlocked": "Edição ligada",
-        "unlockedHint": "O mestre liberou a edição. Os Traços podem ser adicionados, removidos e reclassificados.",
-        "lockedGmHint": "Traços travados para os jogadores. Como Mestre, você continua editando tudo."
+        "unlockedHint": "Ficha destravada. Clique para travar de novo.",
+        "forcedHint": "O mestre desligou o destravamento: todas as fichas estão travadas agora.",
+        "lockedGmHint": "Travada para os jogadores (eles mesmos podem destravar, a menos que você desligue isso). Como mestre você edita tudo; clique para mudar a trava.",
+        "unlockedGmHint": "Destravada. Como mestre você edita tudo; clique para travar esta ficha para o jogador."
       },
       "Header": {
         "noPhoto": "Sem foto",
@@ -555,7 +557,8 @@
         "background": "Background",
         "jobs": "Jobs",
         "edit": "Editar",
-        "save": "Salvar"
+        "save": "Salvar",
+        "cancel": "Cancelar"
       },
       "Tray": {
         "pool": "Pool",
@@ -566,6 +569,13 @@
         "clear": "Limpar",
         "remove": "Clique para tirar da Pool",
         "cycleDistinction": "Clique para virar d4, de novo para tirar da Pool",
+        "builder": {
+          "title": "Montar Pool",
+          "search": "Buscar",
+          "all": "Tudo",
+          "none": "Nada combina com a busca.",
+          "done": "Pronto"
+        },
         "moneyName": "Grana",
         "menuGroup": {
           "die": "Dados avulsos",
@@ -609,7 +619,7 @@
       "standard": "Comum"
     },
     "Warn": {
-      "traitsLocked": "Os Traços estão travados pelo mestre.",
+      "traitsLocked": "Esta ficha está travada. Destrave pelo selo na barra de título (a menos que o mestre tenha proibido).",
       "maxDistinctions": "Um personagem pode ter no máximo {max} Distinctions.",
       "notEnoughPlotPoints": "Plot Points insuficientes: custa {cost} e você tem {have}.",
       "noUnspentJobs": "Nenhum Job sem gastar para gastar.",
@@ -699,7 +709,7 @@
         "title": "Leverage"
       },
       "Tool": {
-        "traitsLock": "Trava de Traços",
+        "traitsLock": "Jogadores podem destravar fichas",
         "wanted": "Nível de procurado",
         "opposition": "Rolador de oposição",
         "tracker": "Rastreador do Job",
@@ -722,8 +732,8 @@
       },
       "Chat": {
         "speaker": "Mestre",
-        "traitsLocked": "O mestre travou os Traços.",
-        "traitsUnlocked": "O mestre destravou os Traços.",
+        "traitsLocked": "O mestre travou todas as fichas à força.",
+        "traitsUnlocked": "O mestre devolveu aos jogadores o direito de destravar suas fichas.",
         "plotPoints": {
           "one": "{names} recebe {pp}.",
           "other": "{names} recebem {pp}."
@@ -1127,6 +1137,12 @@
       "expand": "Mostrar tudo",
       "minimize": "Mostrar só as estrelas",
       "stars": "Nível de procurado",
+      "party": "Grana do grupo",
+      "partyShow": "Mostrar Grana dos jogadores",
+      "partyHide": "Esconder Grana dos jogadores",
+      "partyCollapse": "Recolher a lista",
+      "partyExpand": "Expandir a lista",
+      "partyEmpty": "Nenhum personagem de jogador ainda",
       "moneyTip": "Grana · {steps} degraus · clique para pagar, botão direito para emprestar",
       "moneyTipReadOnly": "Grana · {steps} degraus",
       "plotPointsTip": "Plot Points · {value}",
@@ -1146,14 +1162,11 @@
     },
     "ScenePanel": {
       "title": "Cena",
-      "expand": "Mostrar o painel da cena",
-      "collapse": "Recolher o painel da cena",
+      "expand": "Mostrar a faixa da cena",
+      "collapse": "Recolher a faixa da cena",
       "edit": "Editar no Rastreador do Job",
-      "empty": "Sem Traços de cena ou Complications",
       "sceneTraits": "Traços de cena",
       "complications": "Complications",
-      "actors": "Na cena",
-      "hiddenToPlayers": "Escondido dos jogadores",
       "traitsCount": {
         "one": "{count} Traço",
         "other": "{count} Traços"
@@ -1161,10 +1174,6 @@
       "complicationsCount": {
         "one": "{count} Complication",
         "other": "{count} Complications"
-      },
-      "actorsCount": {
-        "one": "{count} NPC",
-        "other": "{count} NPCs"
       },
       "goal": "Objetivo"
     }

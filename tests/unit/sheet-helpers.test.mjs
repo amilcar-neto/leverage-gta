@@ -2,7 +2,6 @@ import "./helpers/foundry-stub.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mergeActions } from "../../module/applications/actor/parts/merge-actions.mjs";
-import { sealState } from "../../module/applications/components/lock-seal.mjs";
 import { needsDeleteConfirm } from "../../module/applications/components/confirm-delete.mjs";
 import { menuPosition } from "../../module/applications/components/float-menu.mjs";
 import { chipOf, trayContext } from "../../module/applications/actor/parts/tray.mjs";
@@ -21,13 +20,7 @@ test("the real crew sheet parts share no action name", async () => {
   assert.ok(Object.keys(partActions).includes("setDie"));
 });
 
-test("seal mirrors the setting; the GM gets a different hint when locked", () => {
-  assert.equal(sealState(true, false).hint, "LEVERAGE.Sheet.Seal.lockedHint");
-  assert.equal(sealState(true, true).hint, "LEVERAGE.Sheet.Seal.lockedGmHint");
-  assert.equal(sealState(false, true).hint, "LEVERAGE.Sheet.Seal.unlockedHint");
-  assert.equal(sealState(false, false).icon, "fa-lock-open");
-  assert.equal(sealState(true, true).icon, "fa-lock");
-  assert.equal(sealState(true, true).label, "LEVERAGE.Sheet.Seal.locked");
+test("the lock hook name is stable", () => {
   assert.equal(LOCK_HOOK, "leverage.traitsLockedChanged");
 });
 

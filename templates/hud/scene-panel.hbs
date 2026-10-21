@@ -1,62 +1,26 @@
 {{#if show}}
 <div class="lv-sp{{#if collapsed}} is-collapsed{{/if}}{{#if empty}} is-empty{{/if}}">
-  <header class="lv-sp-head">
-    <button type="button" class="lv-sp-toggle" data-action="toggleCollapsed" aria-expanded="{{#if collapsed}}false{{else}}true{{/if}}"
-      aria-label="{{toggleLabel}}" data-tooltip="{{toggleLabel}}">
-      <i class="fa-solid {{#if collapsed}}fa-chevron-down{{else}}fa-chevron-up{{/if}}" aria-hidden="true"></i>
-      <span class="lv-sp-title">{{localize "LEVERAGE.ScenePanel.title"}}</span>
-    </button>
-    {{#if collapsed}}<span class="lv-sp-summary" data-tooltip="{{#if empty}}{{emptyText}}{{else}}{{summary}}{{/if}}">{{#if empty}}{{emptyText}}{{else}}{{summary}}{{/if}}</span>{{/if}}
-    {{#if isGM}}<button type="button" class="lv-sp-edit" data-action="openTracker" aria-label="{{localize "LEVERAGE.ScenePanel.edit"}}" data-tooltip="{{localize "LEVERAGE.ScenePanel.edit"}}"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>{{/if}}
-  </header>
+  <button type="button" class="lv-sp-toggle" data-action="toggleCollapsed" aria-expanded="{{#if collapsed}}false{{else}}true{{/if}}"
+    aria-label="{{toggleLabel}}" data-tooltip="{{toggleLabel}}">
+    <i class="fa-solid {{#if collapsed}}fa-chevron-right{{else}}fa-chevron-left{{/if}}" aria-hidden="true"></i>
+    {{#if collapsed}}<span class="lv-sp-summary">{{summary}}</span>{{/if}}
+  </button>
 
   {{#unless collapsed}}
   <div class="lv-sp-body">
-    {{#if empty}}<p class="lv-sp-empty">{{emptyText}}</p>{{/if}}
-
     {{#if goal}}
-    <section class="lv-sp-sec lv-sp-sec--goal" aria-label="{{localize "LEVERAGE.ScenePanel.goal"}}">
-      <h3 class="lv-sp-sec-title">{{localize "LEVERAGE.ScenePanel.goal"}}</h3>
-      <p class="lv-sp-goal" data-tooltip="{{goal}}">{{goal}}</p>
-    </section>
+    <span class="lv-sp-chip lv-sp-chip--goal" data-tooltip="{{goal}}"><i class="fa-solid fa-bullseye" aria-hidden="true"></i><span class="lv-sp-name">{{goal}}</span></span>
     {{/if}}
 
-    {{#if sceneTraits.length}}
-    <section class="lv-sp-sec" aria-label="{{localize "LEVERAGE.ScenePanel.sceneTraits"}}">
-      <h3 class="lv-sp-sec-title">{{localize "LEVERAGE.ScenePanel.sceneTraits"}}</h3>
-      <ul class="lv-sp-list">
-        {{#each sceneTraits}}<li class="lv-sp-row">{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name" data-tooltip="{{name}}">{{name}}</span></li>{{/each}}
-      </ul>
-    </section>
-    {{/if}}
+    {{#each sceneTraits}}
+    <{{@root.chipTag}} class="lv-sp-chip lv-sp-chip--trait" {{#if @root.isGM}}type="button" data-action="openTracker" {{/if}}data-tooltip="{{name}}">{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name">{{name}}</span></{{@root.chipTag}}>
+    {{/each}}
 
-    {{#if complications.length}}
-    <section class="lv-sp-sec lv-sp-sec--complications" aria-label="{{localize "LEVERAGE.ScenePanel.complications"}}">
-      <h3 class="lv-sp-sec-title">{{localize "LEVERAGE.ScenePanel.complications"}}</h3>
-      <ul class="lv-sp-list">
-        {{#each complications}}<li class="lv-sp-row">{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name" data-tooltip="{{name}}">{{name}}</span></li>{{/each}}
-      </ul>
-    </section>
-    {{/if}}
+    {{#each complications}}
+    <{{@root.chipTag}} class="lv-sp-chip lv-sp-chip--complication" {{#if @root.isGM}}type="button" data-action="openTracker" {{/if}}data-tooltip="{{name}}">{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name">{{name}}</span></{{@root.chipTag}}>
+    {{/each}}
 
-    {{#if actors.length}}
-    <section class="lv-sp-sec" aria-label="{{localize "LEVERAGE.ScenePanel.actors"}}">
-      <h3 class="lv-sp-sec-title">{{localize "LEVERAGE.ScenePanel.actors"}}</h3>
-      {{#each actors}}
-      <div class="lv-sp-actor{{#if hidden}} is-hidden{{/if}}">
-        <div class="lv-sp-actor-name" data-tooltip="{{name}}{{#if hiddenTip}} · {{hiddenTip}}{{/if}}">
-          <i class="fa-solid {{icon}}" aria-hidden="true"></i>
-          <span class="lv-sp-name">{{name}}</span>
-          {{#if multiple}}<span class="lv-sp-count">&times;{{count}}</span>{{/if}}
-          {{#if hidden}}<i class="fa-solid fa-eye-slash" aria-hidden="true"></i>{{/if}}
-        </div>
-        <ul class="lv-sp-list">
-          {{#each traits}}<li class="lv-sp-row">{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name" data-tooltip="{{name}}">{{name}}</span></li>{{/each}}
-        </ul>
-      </div>
-      {{/each}}
-    </section>
-    {{/if}}
+    {{#if isGM}}<button type="button" class="lv-sp-edit" data-action="openTracker" aria-label="{{localize "LEVERAGE.ScenePanel.edit"}}" data-tooltip="{{localize "LEVERAGE.ScenePanel.edit"}}"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>{{/if}}
   </div>
   {{/unless}}
 </div>

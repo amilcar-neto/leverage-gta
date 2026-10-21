@@ -1,37 +1,25 @@
-/* Scene Panel: Scene Traits, Complications and the Traits of the NPCs/places on the scene. Sits under the HUD
-   (top written by scene-panel.mjs), 16px from the sidebar, at the HUD's z-index (over the scene, under windows). */
+/* Scene strip: Scene Traits of the active scene + shared Complications, one compact wrapping band under Foundry's scene
+   navigation (corner written by scene-panel.mjs), at the HUD's z-index (over the scene, under windows). */
 #leverage-scene-panel {
   position: fixed;
-  top: var(--lv-scene-panel-top, 130px);
-  right: calc(var(--lv-sidebar-w, 0px) + 16px);
+  top: var(--lv-scene-panel-top, 60px);
+  left: var(--lv-scene-panel-left, 16px);
   z-index: 30;
-  width: 264px;
-  max-height: calc(100vh - var(--lv-scene-panel-top, 130px) - 90px);
-  display: flex;
-  flex-direction: column;
+  width: max-content;
+  max-width: min(640px, calc(100vw - var(--lv-sidebar-w, 0px) - var(--lv-scene-panel-left, 16px) - 32px));
   pointer-events: none;
-  transition: right 0.2s ease;
 }
 
 #leverage-scene-panel .lv-sp {
   display: flex;
-  flex-direction: column;
-  min-height: 0;
-  background: var(--lv-panel);
-  border: 1px solid var(--lv-line);
-  border-radius: 4px;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
   color: var(--lv-ink);
   font-family: var(--lv-font-ui);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.2;
-  pointer-events: auto;
 }
-
-/* Discreet when there is nothing to show */
-#leverage-scene-panel .lv-sp.is-empty { background: rgba(10, 16, 18, 0.6); }
-#leverage-scene-panel .lv-sp.is-empty .lv-sp-head { opacity: 0.75; }
-
-#leverage-scene-panel .lv-sp-head { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 4px 8px; }
 
 #leverage-scene-panel button {
   min-height: 0;
@@ -45,65 +33,54 @@
   line-height: 1;
 }
 
-#leverage-scene-panel .lv-sp-toggle { display: flex; flex: none; align-items: center; gap: 6px; height: 24px; }
-#leverage-scene-panel .lv-sp-toggle i { width: 12px; color: var(--lv-muted); font-size: 11px; }
-#leverage-scene-panel .lv-sp-title {
-  color: var(--lv-header);
-  font-family: var(--lv-font-display);
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-#leverage-scene-panel .lv-sp-summary {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  color: var(--lv-muted);
-  font-size: 14px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-#leverage-scene-panel .lv-sp-edit { flex: none; margin-inline-start: auto; width: 24px; height: 24px; color: var(--lv-muted); font-size: 12px; }
-#leverage-scene-panel .lv-sp-edit:hover,
-#leverage-scene-panel .lv-sp-toggle:hover i { color: var(--lv-ink); }
-
-/* Body: scrolls on its own, the scrollbar gutter is reserved so it never covers a name */
-#leverage-scene-panel .lv-sp-body {
+/* Collapse tab: always the same 24px square (plus the summary when collapsed) */
+#leverage-scene-panel .lv-sp-toggle {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 0;
-  padding: 2px 8px 8px;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-}
-
-#leverage-scene-panel .lv-sp-empty { margin: 0; color: var(--lv-muted); font-style: italic; }
-
-#leverage-scene-panel .lv-sp-sec { display: flex; flex-direction: column; gap: 4px; }
-#leverage-scene-panel .lv-sp-sec-title {
-  margin: 0;
-  padding: 0;
-  border: 0;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  height: 28px;
+  padding: 0 8px;
+  background: var(--lv-panel);
+  border: 1px solid var(--lv-line);
+  border-radius: 4px;
   color: var(--lv-muted);
-  font-family: var(--lv-font-display);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  pointer-events: auto;
 }
+#leverage-scene-panel .lv-sp-toggle i { width: 10px; font-size: 11px; }
+#leverage-scene-panel .lv-sp-toggle:hover { color: var(--lv-ink); }
+#leverage-scene-panel .lv-sp-summary { min-width: 0; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Complications read as threats: red title */
-#leverage-scene-panel .lv-sp-sec--complications .lv-sp-sec-title { color: var(--lv-danger); }
+#leverage-scene-panel .lv-sp-body { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
 
-#leverage-scene-panel .lv-sp-list { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
-#leverage-scene-panel .lv-sp-row { display: flex; align-items: center; gap: 8px; min-height: 30px; margin: 0; }
-#leverage-scene-panel .lv-sp-row .lv-die { flex: none; }
+/* Discreet when there is nothing to show: only the small tab */
+#leverage-scene-panel .lv-sp.is-empty .lv-sp-toggle { opacity: 0.6; }
+
+#leverage-scene-panel .lv-sp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 220px;
+  height: 32px;
+  padding: 0 8px 0 4px;
+  background: var(--lv-panel);
+  border: 1px solid var(--lv-line);
+  border-radius: 4px;
+  color: var(--lv-ink);
+  font-size: 14px;
+  pointer-events: auto;
+}
+#leverage-scene-panel button.lv-sp-chip:hover { border-color: var(--lv-muted); }
+#leverage-scene-panel .lv-sp-chip .lv-die { flex: none; }
+#leverage-scene-panel .lv-sp-chip--trait { border-left: 3px solid var(--lv-teal-ink); }
+/* Complications read as threats: red edge */
+#leverage-scene-panel .lv-sp-chip--complication { border-left: 3px solid var(--lv-danger); }
+#leverage-scene-panel .lv-sp-chip--goal { padding-inline-start: 8px; color: var(--lv-muted); }
+#leverage-scene-panel .lv-sp-chip--goal i { flex: none; font-size: 12px; }
 
 #leverage-scene-panel .lv-sp-name {
-  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   font-weight: 700;
@@ -111,21 +88,15 @@
   white-space: nowrap;
 }
 
-#leverage-scene-panel .lv-sp-row .lv-sp-name { flex: 1; }
-
-#leverage-scene-panel .lv-sp-actor { display: flex; flex-direction: column; gap: 2px; }
-#leverage-scene-panel .lv-sp-actor-name { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--lv-teal-ink); font-size: 14px; }
-#leverage-scene-panel .lv-sp-actor-name i { flex: none; font-size: 11px; }
-#leverage-scene-panel .lv-sp-count { flex: none; color: var(--lv-muted); }
-#leverage-scene-panel .lv-sp-actor.is-hidden { opacity: 0.6; }
-
-#leverage-scene-panel .lv-sp-goal {
-  display: -webkit-box;
-  margin: 0;
-  overflow: hidden;
-  font-weight: 700;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow-wrap: anywhere;
+#leverage-scene-panel .lv-sp-edit {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  background: var(--lv-panel);
+  border: 1px solid var(--lv-line);
+  border-radius: 4px;
+  color: var(--lv-muted);
+  font-size: 12px;
+  pointer-events: auto;
 }
+#leverage-scene-panel .lv-sp-edit:hover { color: var(--lv-ink); }

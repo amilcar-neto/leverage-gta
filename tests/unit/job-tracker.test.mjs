@@ -56,3 +56,9 @@ test("setJobGoal trims, keeps the rest and normalizeJob always has a goal", asyn
   assert.equal(job.goal, "Ledger");
   assert.equal(job.name, "A");
 });
+
+test("cleanEntries keeps only entries with an id and a legal die", async () => {
+  const { cleanEntries } = await import("../../module/applications/gm/job-tracker-logic.mjs");
+  assert.deepEqual(cleanEntries([{ id: "a", name: "x", die: "8" }, { name: "no id", die: 6 }, { id: "b", die: 7 }, null]), [{ id: "a", name: "x", die: 8 }]);
+  assert.deepEqual(cleanEntries(undefined), []);
+});

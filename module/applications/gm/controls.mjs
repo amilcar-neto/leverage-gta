@@ -16,19 +16,28 @@ import { setCity, setLevel } from "./stars-actions.mjs";
 export const CONTROL_NAME = "leverage";
 
 /**
- * Locks or unlocks the Traits for players and tells the table in chat.
- * @param {boolean} locked
+ * Sets whether players may unlock their own sheets (`playersCanUnlock`) and tells the table in chat. Off = every
+ * sheet is forced locked; on = each owner decides for their sheet (the seal in the window title).
+ * @param {boolean} allowed
  * @returns {Promise<boolean>} false when the user is not the GM
  */
-export async function setTraitsLocked(locked) {
+export async function setPlayersCanUnlock(allowed) {
   if (!actions.requireGM()) return false;
-  await game.settings.set(SYSTEM_ID, "traitsLocked", Boolean(locked));
+  const locked = !allowed;
+  await game.settings.set(SYSTEM_ID, "playersCanUnlock", Boolean(allowed));
   await ChatMessage.create({
     content: `<p class="lv-gm-note">${t(locked ? "LEVERAGE.GM.Chat.traitsLocked" : "LEVERAGE.GM.Chat.traitsUnlocked")}</p>`,
     speaker: { alias: t("LEVERAGE.GM.Chat.speaker") }
   });
   return true;
 }
+
+/**
+ * Forces every sheet locked (`true`) or gives the freedom back to the players (`false`). Kept for the API.
+ * @param {boolean} locked
+ * @returns {Promise<boolean>} false when the user is not the GM
+ */
+export const setTraitsLocked = (locked) => setPlayersCanUnlock(!locked);
 
 /**
  * Sets the wanted city and level. Both are stars actions in the serial queue, each with its chat line: leaving for
@@ -86,9 +95,9 @@ const button = (name, icon, order, onChange) => ({
 export function buildControl() {
   const tools = [
     {
-      name: "traitsLock", title: "LEVERAGE.GM.Tool.traitsLock", icon: "fa-solid fa-lock", order: 1, toggle: true,
-      visible: game.user.isGM, active: Boolean(game.settings.get(SYSTEM_ID, "traitsLocked")),
-      onChange: (_event, active) => setTraitsLocked(active)
+      name: "traitsLock", title: "LEVERAGE.GM.Tool.traitsLock", icon: "fa-solid fa-lock-open", order: 1, toggle: true,
+      visible: game.user.isGM, active: Boolean(game.settings.get(SYSTEM_ID, "playersCanUnlock")),
+      onChange: (_event, active) => setPlayersCanUnlock(active)
     },
     button("wanted", "fa-solid fa-star", 2, openWantedDialog),
     button("opposition", "fa-solid fa-dice", 3, openOpposition),

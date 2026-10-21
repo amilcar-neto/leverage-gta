@@ -10,7 +10,7 @@ import { readSetting } from "../../data/fields.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
 import { setLevel } from "../gm/stars-actions.mjs";
 import { t, tn } from "../components/i18n.mjs";
-import { hudPermissions, moneyView, nextStarLevel, pickFocusActor, starsView } from "./hud-logic.mjs";
+import { hudPermissions, moneyView, nextStarLevel, partyRows, pickFocusActor, showParty, starsView } from "./hud-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -44,7 +44,9 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
       payMoney: LeverageHud.#onPay,
       spendPlotPoint: LeverageHud.#onSpendPlotPoint,
       gainPlotPoint: LeverageHud.#onGainPlotPoint,
-      toggleMinimized: LeverageHud.#onToggleMinimized
+      toggleMinimized: LeverageHud.#onToggleMinimized,
+      toggleParty: LeverageHud.#onToggleParty,
+      collapseParty: LeverageHud.#onCollapseParty
     }
   };
 
@@ -106,6 +108,7 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
       stars: this.#starsContext(can.stars),
       money: this.#moneyContext(actor, can, minimized, isGM),
       plotPoints: this.#plotPointsContext(actor, can, minimized, isGM),
+      party: this.#partyContext(minimized, isGM),
       minimizeLabel: t(minimized ? "LEVERAGE.HUD.expand" : "LEVERAGE.HUD.minimize")
     };
   }
@@ -126,6 +129,32 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
       ? t(can.money ? "LEVERAGE.HUD.moneyTip" : "LEVERAGE.HUD.moneyTipReadOnly", { steps })
       : t("LEVERAGE.HUD.noCharacter");
     return { show, ...moneyView(steps), interactive: can.money, hasActor: Boolean(actor), tip };
+  }
+
+  /** Player characters of the table: each player's assigned character plus Crew actors a player owns explicitly. */
+  #partyActors() {
+    const players = game.users.filter((u) => !u.isGM);
+    const found = new Map();
+    for (const user of players) if (user.character?.type === "crew") found.set(user.character.id, user.character);
+    for (const actor of game.actors) {
+      if (actor.type === "crew" && players.some((u) => actor.ownership?.[u.id] === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)) found.set(actor.id, actor);
+    }
+    return [...found.values()];
+  }
+
+  /** The Fixer's optional list of every player's Money (docs/07 "Grana dos jogadores"). */
+  #partyContext(minimized, isGM) {
+    const enabled = Boolean(readSetting("hud.showPartyMoney", false));
+    const show = showParty({ isGM, enabled, minimized, moneyRule: Boolean(readSetting("houseRules.money", true)) });
+    const collapsed = Boolean(readSetting("hud.partyCollapsed", false));
+    const rows = show ? partyRows(this.#partyActors()) : [];
+    const toggleLabel = t(enabled ? "LEVERAGE.HUD.partyHide" : "LEVERAGE.HUD.partyShow");
+    return {
+      show, collapsed, rows, count: rows.length, dieSize: LEVERAGE.dieGeometry.uses.moneyLine,
+      canToggle: isGM && !minimized, toggleLabel, enabled,
+      title: t("LEVERAGE.HUD.party"), collapseLabel: t(collapsed ? "LEVERAGE.HUD.partyExpand" : "LEVERAGE.HUD.partyCollapse"),
+      empty: t("LEVERAGE.HUD.partyEmpty")
+    };
   }
 
   #plotPointsContext(actor, can, minimized, isGM) {
@@ -220,7 +249,10 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** Re-renders when the focused character, the controlled token, the user's character or a setting changes. */
   #watchWorld() {
-    const ifFocus = (actor) => { if (actor?.id && actor.id === this.focusActor?.id) this.refresh(); };
+    const ifFocus = (actor) => {
+      const party = game.user.isGM && actor?.type === "crew" && readSetting("hud.showPartyMoney", false);
+      if (party || (actor?.id && actor.id === this.focusActor?.id)) this.refresh();
+    };
     const onUser = (user, changes) => { if (user.id === game.user.id && "character" in changes) this.refresh(); };
     this.#hooks.push(
       ["updateActor", Hooks.on("updateActor", ifFocus)],
@@ -267,6 +299,16 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
   static async #onGainPlotPoint() {
     const actor = this.focusActor;
     if (actor && game.user.isGM) await game.leverage.plotPoints.add(actor, 1);
+  }
+
+  /** Fixer: shows or hides the party Money list. */
+  static async #onToggleParty() {
+    if (game.user.isGM) await game.settings.set(SYSTEM_ID, "hud.showPartyMoney", !readSetting("hud.showPartyMoney", false));
+  }
+
+  /** Fixer: folds or unfolds the party Money list. */
+  static async #onCollapseParty() {
+    await game.settings.set(SYSTEM_ID, "hud.partyCollapsed", !readSetting("hud.partyCollapsed", false));
   }
 
   static async #onToggleMinimized() {

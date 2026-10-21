@@ -62,6 +62,11 @@
 #leverage-hud .lv-hud-body:hover .lv-hud-min,
 #leverage-hud .lv-hud-min:focus-visible { opacity: 0.85; }
 
+/* Party button (Fixer): stacked under the minimize button, same discreet hover behaviour. */
+#leverage-hud .lv-hud-party-btn { top: 26px; }
+#leverage-hud .lv-hud-party-btn[aria-pressed="true"] { color: var(--lv-money); }
+#leverage-hud .lv-hud-body:hover .lv-hud-party-btn[aria-pressed="true"] { opacity: 0.85; }
+
 /* Stars */
 #leverage-hud .lv-hud-stars { display: flex; gap: 1px; }
 
@@ -102,6 +107,54 @@
 #leverage-hud .lv-hud-money .lv-die { flex: none; --die-stroke: var(--die-fill); filter: var(--lv-hud-soft-glow); }
 #leverage-hud .lv-hud-money .lv-die--empty { --die-stroke: var(--lv-money-die); }
 #leverage-hud .lv-hud-money:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 2px; }
+
+/* Party Money (Fixer, optional): compact lines under his own Money. Rows scroll after a few, with the gutter reserved. */
+#leverage-hud .lv-hud-party {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  min-width: 200px;
+  max-width: 280px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+#leverage-hud .lv-hud-party-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--lv-font-display);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-muted);
+}
+#leverage-hud .lv-hud-party-head i { font-size: 9px; }
+#leverage-hud .lv-hud-party-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  pointer-events: auto;
+}
+#leverage-hud .lv-hud-party-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 30px; }
+#leverage-hud .lv-hud-party-name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--lv-ink);
+}
+#leverage-hud .lv-hud-party-dice { display: flex; flex: none; gap: 2px; }
+#leverage-hud .lv-hud-party-dice .lv-die { flex: none; --die-stroke: var(--die-fill); }
+#leverage-hud .lv-hud-party-dice .lv-die--empty { --die-stroke: var(--lv-money-die); }
+#leverage-hud .lv-hud-party-none { padding: 4px 0; font-size: 12px; color: var(--lv-muted); }
 
 /* Plot Points */
 #leverage-hud .lv-hud-pp { display: flex; align-items: center; gap: 6px; }

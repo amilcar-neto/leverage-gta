@@ -437,12 +437,12 @@ const plotPoints = {
 /* ------------------------------------------------------------------ traits lock, jobs */
 
 const traits = {
-  /** Locks the Traits for players (Fixer only). @returns {Promise<boolean>} */
+  /** Forces every sheet locked: players can no longer unlock theirs (Fixer only). @returns {Promise<boolean>} */
   lock: () => controls.setTraitsLocked(true),
-  /** Unlocks the Traits for players (Fixer only). @returns {Promise<boolean>} */
+  /** Lets each player lock/unlock their own sheet again (Fixer only). @returns {Promise<boolean>} */
   unlock: () => controls.setTraitsLocked(false),
-  /** @returns {boolean} Whether the Traits are locked. */
-  isLocked: () => Boolean(game.settings.get(SYSTEM_ID, "traitsLocked"))
+  /** @returns {boolean} Whether sheets are forced locked (players cannot unlock them). */
+  isLocked: () => !game.settings.get(SYSTEM_ID, "playersCanUnlock")
 };
 
 const job = {

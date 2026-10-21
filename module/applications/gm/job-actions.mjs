@@ -9,12 +9,13 @@ import { escapeHtml, requireGM, resolveActor } from "../components/common.mjs";
 import { t, tn } from "../components/i18n.mjs";
 import { isAnswer, requireTextField } from "../components/dialog-guard.mjs";
 import { normalizeJob } from "./job-tracker-logic.mjs";
+import { readSceneTraits, writeSceneTraits } from "./scene-traits.mjs";
 
 /* -------------------------------------------- */
 /*  Pure helpers                                */
 /* -------------------------------------------- */
 
-/** An empty active Job (no name, no Complications, no scene Traits). */
+/** An empty active Job (no name, no Complications, no scene Traits). Scene Traits are never stored in the setting. */
 export const emptyJob = () => ({ name: "", goal: "", complications: [], sceneTraits: [] });
 
 /**
@@ -25,17 +26,6 @@ export const emptyJob = () => ({ name: "", goal: "", complications: [], sceneTra
  */
 export function freshJob(name, goal = "") {
   return { ...emptyJob(), name: String(name ?? "").trim(), goal: String(goal ?? "").trim() };
-}
-
-/**
- * Active Job after a scene ends: scene Traits are cleared when the field exists; the rest is kept.
- * @param {object} job `activeJob` setting value
- * @returns {object}
- */
-export function jobAfterScene(job) {
-  const next = { ...(job ?? emptyJob()) };
-  if (Array.isArray(next.sceneTraits)) next.sceneTraits = [];
-  return next;
 }
 
 /**
@@ -116,8 +106,23 @@ function say(html) {
   return ChatMessage.create({ content: `<p class="lv-gm-note">${html}</p>`, speaker: { alias: t("LEVERAGE.GM.Chat.speaker") } });
 }
 
-/** Reads the active Job (a normalised copy: every list exists, every entry is valid). */
-export const readJob = () => normalizeJob(foundry.utils.deepClone(readSetting("activeJob", emptyJob())));
+/**
+ * Reads the active Job (a normalised copy: every list exists, every entry is valid). Complications come from the
+ * world setting (shared by every scene); `sceneTraits` come from the active Scene.
+ */
+export const readJob = () => ({ ...normalizeJob(foundry.utils.deepClone(readSetting("activeJob", emptyJob()))), sceneTraits: readSceneTraits() });
+
+/**
+ * Saves a Job the way `readJob` reads it: the Job (name, goal, Complications) to the world setting and
+ * `sceneTraits` to the active Scene. GM only; the setting never keeps scene Traits.
+ * @param {object} job
+ * @returns {Promise<void>}
+ */
+export async function writeJob(job) {
+  const { sceneTraits, ...stored } = job;
+  await game.settings.set(SYSTEM_ID, "activeJob", stored);
+  if (Array.isArray(sceneTraits)) await writeSceneTraits(sceneTraits);
+}
 
 /** Whether the Money house rule is on. */
 const moneyRuleOn = () => Boolean(readSetting("houseRules.money", true));
@@ -215,10 +220,7 @@ export async function endScene({ confirm = true } = {}) {
     if (!yes) return null;
   }
   for (const { actor, ids } of targets) if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
-  const job = readJob();
-  if (job.sceneTraits.length) {
-    await game.settings.set(SYSTEM_ID, "activeJob", jobAfterScene(job));
-  }
+  await writeSceneTraits([]);
   const detail = targets.filter((x) => x.ids.length).map((x) => `${escapeHtml(x.actor.name)} (${x.ids.length})`).join(", ");
   await say(t("LEVERAGE.GM.Chat.endScene", { count: total }) + (detail ? ` ${detail}` : ""));
   return total;
@@ -235,7 +237,7 @@ export async function newJob(name, goal = "") {
   if (!requireGM()) return false;
   const job = freshJob(name, goal);
   if (!job.name) return false;
-  await game.settings.set(SYSTEM_ID, "activeJob", job);
+  await writeJob(job);
   const each = toSteps(readSetting("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints));
   if (each) await Promise.all(crewActors().map((a) => a.addPlotPoints(Math.max(0, each - (a.system.plotPoints?.value ?? 0)))));
   await say(t("LEVERAGE.GM.Chat.newJob", { name: escapeHtml(job.name), pp: tn("LEVERAGE.GM.Chat.plotPointCount", each) }));
@@ -312,7 +314,7 @@ export async function endJob({ name, total, shares }) {
     if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
     paid += 1;
   }
-  await game.settings.set(SYSTEM_ID, "activeJob", emptyJob());
+  await writeJob(emptyJob());
   await say(t("LEVERAGE.GM.Chat.endJob", { name: escapeHtml(name), total: toSteps(total) }));
   return paid;
 }

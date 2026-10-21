@@ -1,33 +1,24 @@
 /**
- * Scene Panel: a persistent strip under the HUD that always shows the Scene Traits, the active Complications and the
- * Traits of the NPCs and places whose tokens are on the viewed scene. Everyone sees it (players never see hidden
- * tokens, and the Fixer may hide the actor Traits from players with a world setting). Collapsible per client.
- * A frameless `ApplicationV2` appended to `#interface`, like the HUD; it follows the HUD's position.
+ * Scene strip: a compact public band right under Foundry's scene navigation. It lists the Scene Traits of the ACTIVE
+ * Scene (a flag on the Scene) and the Complications of the Job (shared by every scene), plus the Job goal. Everyone
+ * sees it; chips open the Job Tracker for the Fixer. Collapsible per client. A frameless `ApplicationV2` appended to
+ * `#interface` at the HUD's z-index (over the scene, under windows).
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
+import { readSceneTraits } from "../gm/scene-traits.mjs";
 import { t, tn } from "../components/i18n.mjs";
 import { buildScenePanel } from "./scene-panel-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const RENDER_DEBOUNCE_MS = 50;
+/** Foundry's scene navigation, which the strip hangs under. */
+const NAV_ID = "scene-navigation";
 const DIE_SIZE = LEVERAGE.dieGeometry.uses.scenePanel;
 
 /** Hooks that keep the panel current. */
-const REFRESH_HOOKS = Object.freeze([
-  LEVERAGE.hooks.activeJobChanged, LEVERAGE.hooks.hudChanged, LEVERAGE.hooks.scenePanelChanged,
-  "canvasReady", "createToken", "updateToken", "deleteToken", "updateActor", "deleteActor", "updateScene"
-]);
-
-/** Plain token data of the viewed scene. */
-function sceneTokens() {
-  const scene = canvas?.scene ?? game.scenes?.viewed;
-  return (scene?.tokens ?? []).map((token) => ({
-    id: token.id, actorId: token.actorLink ? token.actorId : token.id, name: token.name,
-    type: token.actor?.type, hidden: token.hidden, traits: token.actor?.system?.traits
-  }));
-}
+const REFRESH_HOOKS = Object.freeze([LEVERAGE.hooks.activeJobChanged, LEVERAGE.hooks.hudChanged, "canvasReady"]);
 
 export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   /** @override */
@@ -63,31 +54,21 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   /** @override */
   async _prepareContext() {
     const isGM = game.user.isGM;
-    const view = buildScenePanel({
-      job: readSetting("activeJob", {}), tokens: sceneTokens(), isGM,
-      showActorTraits: Boolean(readSetting("scenePanel.showActorTraits", true))
-    });
+    const view = buildScenePanel({ job: readSetting("activeJob", {}), sceneTraits: readSceneTraits() });
     const collapsed = Boolean(readSetting("scenePanel.collapsed", false));
     const toggle = t(collapsed ? "LEVERAGE.ScenePanel.expand" : "LEVERAGE.ScenePanel.collapse");
     return {
-      ...view, isGM, collapsed, dieSize: DIE_SIZE, toggleLabel: toggle,
+      ...view, isGM, collapsed, dieSize: DIE_SIZE, toggleLabel: toggle, chipTag: isGM ? "button" : "span",
       show: Boolean(readSetting("scenePanel.show", true)),
-      summary: this.#summary(view),
-      emptyText: t("LEVERAGE.ScenePanel.empty"),
-      actors: view.actors.map((a) => ({
-        ...a, icon: a.type === "location" ? "fa-location-dot" : "fa-user", multiple: a.count > 1,
-        hiddenTip: a.hidden ? t("LEVERAGE.ScenePanel.hiddenToPlayers") : ""
-      }))
+      summary: this.#summary(view)
     };
   }
 
-  /** Short counts shown in the header when collapsed. */
-  #summary({ goal, counts }) {
+  /** Short counts shown on the collapsed tab. */
+  #summary({ counts }) {
     return [
-      goal,
       counts.traits && tn("LEVERAGE.ScenePanel.traitsCount", counts.traits),
-      counts.complications && tn("LEVERAGE.ScenePanel.complicationsCount", counts.complications),
-      counts.actors && tn("LEVERAGE.ScenePanel.actorsCount", counts.actors)
+      counts.complications && tn("LEVERAGE.ScenePanel.complicationsCount", counts.complications)
     ].filter(Boolean).join(" · ");
   }
 
@@ -122,22 +103,25 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     if (ScenePanel.#instance === this) ScenePanel.#instance = null;
   }
 
-  /** Writes the top of the panel (the HUD's bottom edge plus a gap) to `--lv-scene-panel-top`. */
+  /** Writes the strip's corner (under the Foundry scene navigation, same left edge) to CSS variables. */
   updatePosition() {
-    const hud = document.getElementById("leverage-hud");
-    const bottom = hud ? hud.getBoundingClientRect().bottom : 0;
-    const top = Math.round(Math.max(bottom, 0) + LEVERAGE.scenePanel.gapPx);
-    document.documentElement.style.setProperty("--lv-scene-panel-top", `${top}px`);
+    const nav = document.getElementById(NAV_ID);
+    const rect = nav?.getBoundingClientRect();
+    const top = Math.round((rect?.bottom ?? 0) + LEVERAGE.scenePanel.gapPx);
+    const left = Math.round(rect?.left ?? 0);
+    const root = document.documentElement.style;
+    root.setProperty("--lv-scene-panel-top", `${top}px`);
+    root.setProperty("--lv-scene-panel-left", `${left}px`);
   }
 
-  /** Watches the HUD's size (it grows and shrinks with the minimize button and the settings). */
+  /** Watches the scene navigation's size (it grows with the number of scenes and when it expands). */
   #bindHud() {
-    const hud = document.getElementById("leverage-hud");
-    if (!hud || hud === this.#observed) return;
+    const nav = document.getElementById(NAV_ID);
+    if (!nav || nav === this.#observed) return;
     this.#observer?.disconnect();
-    this.#observed = hud;
+    this.#observed = nav;
     this.#observer = new ResizeObserver(() => this.updatePosition());
-    this.#observer.observe(hud);
+    this.#observer.observe(nav);
   }
 
   static async #onToggle() {

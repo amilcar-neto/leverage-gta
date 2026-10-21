@@ -15,7 +15,7 @@
     {{#if pool.optional.length}}<span class="lv-tray-sep" aria-hidden="true"></span>{{/if}}
     {{#each pool.optional as |chip|}}{{> chip chip}}{{/each}}
     {{/if}}
-    <button type="button" class="lv-chip lv-chip--add is-optional" data-action="addDie" aria-haspopup="menu">{{localize "LEVERAGE.Sheet.Tray.addDie"}}</button>
+    <button type="button" class="lv-chip lv-chip--add is-optional" data-action="addDie" aria-haspopup="dialog">{{localize "LEVERAGE.Sheet.Tray.addDie"}}</button>
     {{#unless pool.empty}}<button type="button" class="lv-tray-clear" data-action="clearPool">{{localize "LEVERAGE.Sheet.Tray.clear"}}</button>{{/unless}}
   </div>
   <button type="button" class="lv-roll-btn" data-action="roll"{{#unless pool.canRoll}} disabled title="{{pool.rollTitle}}"{{/unless}}>{{localize "LEVERAGE.Sheet.Tray.roll"}}</button>

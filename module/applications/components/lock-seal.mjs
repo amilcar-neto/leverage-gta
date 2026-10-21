@@ -1,39 +1,32 @@
 /**
- * Trait-lock seal in the window title bar (docs/06 "Janela"). One rule for every sheet that shows it:
- * the seal mirrors the `traitsLocked` world setting. The GM sees the real state too, but its tooltip says the GM
- * can always edit. Used by the actor sheets and by the Item sheet.
+ * Sheet-lock seal in the window title bar (docs/06 "Janela"). It is a button: the owner of the sheet clicks it to lock
+ * or unlock their own sheet (actor flag `sheetUnlocked`). When the GM turned off `playersCanUnlock`, the seal of a
+ * player is disabled and its tooltip says why. The GM sees the state too and can click it as well.
+ * Used by the actor sheets and by the Item sheet (which shows the lock of the Actor that owns the Item).
  */
-import { LOCK_HOOK } from "../../config.mjs";
-import { LeverageActor } from "../../documents/actor.mjs";
+import { LEVERAGE, LOCK_HOOK, SHEET_UNLOCK_FLAG } from "../../config.mjs";
+import { isActorLocked } from "../../documents/guards.mjs";
+import { sealState } from "../../rules/sheet-lock.mjs";
 import { t } from "./i18n.mjs";
 
-/**
- * What the seal shows.
- * @param {boolean} locked Whether the `traitsLocked` setting is on.
- * @param {boolean} isGM Whether the viewer is a GM.
- * @returns {{locked: boolean, icon: string, label: string, hint: string}} `label` and `hint` are i18n keys.
- */
-export function sealState(locked, isGM) {
-  const key = locked ? "locked" : "unlocked";
-  const hint = locked && isGM ? "lockedGmHint" : `${key}Hint`;
-  return {
-    locked,
-    icon: locked ? "fa-lock" : "fa-lock-open",
-    label: `LEVERAGE.Sheet.Seal.${key}`,
-    hint: `LEVERAGE.Sheet.Seal.${hint}`
-  };
-}
+export { sealState };
 
-/** The seal element plus the lock-change subscription of one window. */
+/** The seal button plus the lock-change subscriptions of one window. */
 export class LockSeal {
   #el = null;
 
-  #hookId = null;
+  #hooks = [];
+
+  #getActor;
 
   #onChange;
 
-  /** @param {() => void} [onChange] Called after the seal refreshed itself when the lock changes (e.g. re-render). */
-  constructor(onChange = () => {}) {
+  /**
+   * @param {() => Actor|null} getActor The Actor whose lock the seal shows and flips.
+   * @param {() => void} [onChange] Called after the seal refreshed itself when the lock changes (e.g. re-render).
+   */
+  constructor(getActor, onChange = () => {}) {
+    this.#getActor = getActor;
     this.#onChange = onChange;
   }
 
@@ -42,38 +35,56 @@ export class LockSeal {
    * @param {HTMLElement} frame The window frame returned by `_renderFrame`.
    */
   mount(frame) {
-    const el = document.createElement("span");
+    const el = document.createElement("button");
+    el.type = "button";
     el.className = "lv-lock-seal";
     el.append(Object.assign(document.createElement("i"), { className: "lv-lock-seal-icon" }));
     el.append(Object.assign(document.createElement("span"), { className: "lv-lock-seal-label" }));
+    el.addEventListener("click", () => this.#toggle());
     frame.querySelector(".window-title")?.after(el);
     this.#el = el;
     this.sync();
   }
 
-  /** Refreshes icon, label, tooltip and state classes from the setting. No-op when not mounted. */
+  /** Flips the sheet's own lock flag (owner or GM only, and only while the policy allows it). */
+  async #toggle() {
+    const actor = this.#getActor();
+    if (!actor || this.#el.disabled) return;
+    await actor.setFlag(LEVERAGE.systemId, SHEET_UNLOCK_FLAG, isActorLocked(actor));
+  }
+
+  /** Refreshes icon, label, tooltip, disabled and state classes. No-op when not mounted. */
   sync() {
-    if (!this.#el) return;
-    const state = sealState(LeverageActor.traitsLocked, game.user.isGM);
+    const actor = this.#getActor();
+    if (!this.#el || !actor) return;
+    const playersCanUnlock = Boolean(game.settings.get(LEVERAGE.systemId, "playersCanUnlock"));
+    const state = sealState({ locked: isActorLocked(actor), playersCanUnlock, isGM: game.user.isGM });
     this.#el.classList.toggle("is-locked", state.locked);
     this.#el.classList.toggle("is-unlocked", !state.locked);
+    this.#el.disabled = state.disabled || !actor.isOwner;
     this.#el.title = t(state.hint);
+    this.#el.setAttribute("aria-pressed", String(!state.locked));
     this.#el.querySelector(".lv-lock-seal-icon").className = `lv-lock-seal-icon fa-solid ${state.icon}`;
     this.#el.querySelector(".lv-lock-seal-label").textContent = t(state.label);
   }
 
-  /** Starts listening to the lock hook (call once, from `_onFirstRender`). */
+  /** Starts listening to the policy hook and to flag changes of the Actor (call once, from `_onFirstRender`). */
   watch() {
-    if (this.#hookId !== null) return;
-    this.#hookId = Hooks.on(LOCK_HOOK, () => {
+    if (this.#hooks.length) return;
+    const refresh = () => {
       this.sync();
       this.#onChange();
-    });
+    };
+    this.#hooks.push(["leverage-lock", Hooks.on(LOCK_HOOK, refresh)]);
+    this.#hooks.push(["updateActor", Hooks.on("updateActor", (actor, changes) => {
+      const flags = changes?.flags?.[LEVERAGE.systemId];
+      if (actor.id === this.#getActor()?.id && flags && SHEET_UNLOCK_FLAG in flags) refresh();
+    })]);
   }
 
   /** Stops listening (call from `_onClose`). */
   unwatch() {
-    if (this.#hookId !== null) Hooks.off(LOCK_HOOK, this.#hookId);
-    this.#hookId = null;
+    for (const [name, id] of this.#hooks) Hooks.off(name === "leverage-lock" ? LOCK_HOOK : name, id);
+    this.#hooks = [];
   }
 }

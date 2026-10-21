@@ -4,6 +4,13 @@
     <i class="fa-solid {{#if minimized}}fa-up-right-and-down-left-from-center{{else}}fa-down-left-and-up-right-to-center{{/if}}" aria-hidden="true"></i>
   </button>
 
+  {{#if party.canToggle}}
+  <button type="button" class="lv-hud-min lv-hud-party-btn" data-action="toggleParty" aria-pressed="{{party.enabled}}"
+    aria-label="{{party.toggleLabel}}" data-tooltip="{{party.toggleLabel}}">
+    <i class="fa-solid fa-users" aria-hidden="true"></i>
+  </button>
+  {{/if}}
+
   {{#if stars.show}}
   <div class="lv-hud-stars" role="group" aria-label="{{stars.label}}">
     {{#each stars.items as |s|}}
@@ -26,6 +33,31 @@
       {{#each money.dice as |d|}}{{{lvDie d die=d size=@root.dieSize money=true}}}{{/each}}
     {{/if}}
   </button>
+  {{/if}}
+
+  {{#if party.show}}
+  <section class="lv-hud-party{{#if party.collapsed}} is-collapsed{{/if}}" aria-label="{{party.title}}">
+    <button type="button" class="lv-hud-party-head" data-action="collapseParty" aria-expanded="{{#if party.collapsed}}false{{else}}true{{/if}}"
+      data-tooltip="{{party.collapseLabel}}">
+      <span class="lv-hud-party-title">{{party.title}} · {{party.count}}</span>
+      <i class="fa-solid {{#if party.collapsed}}fa-chevron-down{{else}}fa-chevron-up{{/if}}" aria-hidden="true"></i>
+    </button>
+    {{#unless party.collapsed}}
+    <ul class="lv-hud-party-list">
+      {{#each party.rows as |r|}}
+      <li class="lv-hud-party-row" data-tooltip="{{r.name}} · {{r.steps}}">
+        <span class="lv-hud-party-name">{{r.name}}</span>
+        <span class="lv-hud-party-dice">
+          {{#if r.empty}}{{{lvDie 0 die=4 size=party.dieSize money=true empty=true}}}
+          {{else}}{{#each r.dice as |d|}}{{{lvDie d die=d size=party.dieSize money=true}}}{{/each}}{{/if}}
+        </span>
+      </li>
+      {{else}}
+      <li class="lv-hud-party-none">{{party.empty}}</li>
+      {{/each}}
+    </ul>
+    {{/unless}}
+  </section>
   {{/if}}
 
   {{#if plotPoints.show}}

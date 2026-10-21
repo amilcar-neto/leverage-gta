@@ -11,7 +11,7 @@
       <span class="lv-npc-trait-die">
         {{#if @root.canEdit}}<button type="button" class="lv-step" data-action="stepTraitDie" data-delta="-1" aria-label="{{localize 'LEVERAGE.NpcSheet.smaller'}}" title="{{localize 'LEVERAGE.NpcSheet.smaller'}}"{{#unless canDown}} disabled{{/unless}}>&lsaquo;</button>{{/if}}
         {{#if @root.isGM}}
-        <button type="button" class="lv-pool-btn" data-action="pickTraitDie" data-source-key="{{sourceKey}}" title="{{localize 'LEVERAGE.NpcSheet.toRoller'}}" aria-label="{{localize 'LEVERAGE.NpcSheet.toRoller'}}">{{lvDie die die=die size=32}}</button>
+        <button type="button" class="lv-pool-btn" data-action="pickTraitDie" data-source-key="{{sourceKey}}" aria-label="{{localize 'LEVERAGE.NpcSheet.toRoller'}}">{{lvDie die die=die size=32}}</button>
         {{else}}{{lvDie die die=die size=32}}{{/if}}
         {{#if @root.canEdit}}<button type="button" class="lv-step" data-action="stepTraitDie" data-delta="1" aria-label="{{localize 'LEVERAGE.NpcSheet.bigger'}}" title="{{localize 'LEVERAGE.NpcSheet.bigger'}}"{{#unless canUp}} disabled{{/unless}}>&rsaquo;</button>{{/if}}
       </span>

@@ -64,3 +64,27 @@ export function hudPermissions({ isGM, isOwner, hasActor }) {
   const mine = hasActor && (isGM || isOwner);
   return { money: mine, spendPlotPoints: mine, gainPlotPoints: hasActor && isGM, stars: isGM };
 }
+
+/**
+ * Compact Money lines of the player characters, for the Fixer's party list under the main Money (docs/07).
+ * Sorted by name; each line carries the dice (biggest last, like the main Money) or `empty`.
+ * @param {{id: string, name: string, system?: {money?: {steps?: number}}}[]} actors Player characters.
+ * @returns {{id: string, name: string, steps: number, dice: number[], empty: boolean}[]}
+ */
+export function partyRows(actors) {
+  return actors
+    .map((actor) => {
+      const steps = actor.system?.money?.steps ?? 0;
+      return { id: actor.id, name: actor.name, steps, ...moneyView(steps) };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Whether the party list is drawn: only for the Fixer, only when the option is on, and never in the minimized HUD.
+ * @param {{isGM: boolean, enabled: boolean, minimized: boolean, moneyRule: boolean}} state
+ * @returns {boolean}
+ */
+export function showParty({ isGM, enabled, minimized, moneyRule }) {
+  return Boolean(isGM && enabled && !minimized && moneyRule);
+}

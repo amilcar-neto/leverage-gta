@@ -3,7 +3,6 @@
  * (`canEdit`, `canEditTraits`, `isGM`, `locked`) and the Trait-lock seal in the window title bar (docs/06 "Janela").
  */
 import { LEVERAGE } from "../../config.mjs";
-import { LeverageActor } from "../../documents/actor.mjs";
 import { LockSeal } from "../components/lock-seal.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -25,13 +24,13 @@ export class LeverageActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
   static HAS_LOCK_SEAL = true;
 
   /** Seal in the title bar; the lock hook re-renders the sheet because every part's permissions depend on it. */
-  #seal = new LockSeal(() => {
+  #seal = new LockSeal(() => this.actor, () => {
     if (this.rendered) this.render();
   });
 
   /** Whether the Trait lock lets the current user add, remove or re-rate Traits (and the sheet is editable). */
   get canEditTraits() {
-    return this.isEditable && LeverageActor.canEditTraits(game.user);
+    return this.isEditable && this.actor.canEditTraits(game.user);
   }
 
   /** @override */
@@ -42,7 +41,7 @@ export class LeverageActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       system: this.actor.system,
       config: LEVERAGE,
       isGM: game.user.isGM,
-      locked: LeverageActor.traitsLocked,
+      locked: this.actor.sheetLocked,
       isOwner: this.actor.isOwner,
       canEdit: this.isEditable,
       canEditTraits: this.canEditTraits

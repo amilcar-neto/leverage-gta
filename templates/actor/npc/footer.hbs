@@ -1,6 +1,6 @@
 <footer class="lv-npc-foot{{#unless isGM}} is-empty{{/unless}}">
   {{#if isGM}}
-  <button type="button" class="lv-npc-roll" data-action="rollAsOpposition" title="{{localize 'LEVERAGE.NpcSheet.rollHint'}}">{{localize "LEVERAGE.NpcSheet.roll"}}</button>
+  <button type="button" class="lv-npc-roll" data-action="rollAsOpposition"><i class="fa-solid fa-dice-d20" aria-hidden="true"></i> {{localize "LEVERAGE.NpcSheet.roll"}}</button>
   <span class="lv-npc-roll-hint lv-ellipsis" title="{{poolText}}">{{poolText}}</span>
   {{/if}}
 </footer>
