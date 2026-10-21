@@ -99,6 +99,13 @@
   white-space: nowrap;
 }
 
+/* Dice that come from the scene: a Scene Trait (teal) or a Complication (red), tagged so the table sees why they are in the Pool */
+.leverage-gta .lv-roll-chip--scene { border-color: var(--lv-accent-2); }
+.leverage-gta .lv-roll-chip--complication { border-color: var(--lv-danger); }
+.leverage-gta .lv-roll-chip-tag { flex: none; padding: 0 5px; border-radius: 999px; font-size: 10px; letter-spacing: 0.1em; line-height: 1.5; color: var(--lv-bg-b); }
+.leverage-gta .lv-roll-chip--scene .lv-roll-chip-tag { background: var(--lv-accent-2); }
+.leverage-gta .lv-roll-chip--complication .lv-roll-chip-tag { background: var(--lv-danger); }
+
 .leverage-gta .lv-roll-chip-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .leverage-gta .lv-roll-chip-die { flex: none; letter-spacing: 0.02em; text-transform: none; }
 .leverage-gta .lv-roll-chip-die--d4 { color: var(--lv-d4); }

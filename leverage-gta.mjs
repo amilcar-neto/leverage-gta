@@ -22,6 +22,7 @@ import { registerRollCard } from "./module/applications/chat/roll-card.mjs";
 import { api, registerApi } from "./module/api.mjs";
 import { registerSceneControls } from "./module/applications/gm/controls.mjs";
 import { registerHud } from "./module/applications/hud/leverage-hud.mjs";
+import { registerScenePanel } from "./module/applications/scene-panel/scene-panel.mjs";
 
 /** Registers one default sheet per Item type (T-401). */
 function registerItemSheets() {
@@ -84,5 +85,6 @@ Hooks.once("ready", async () => {
   await migrateWorld();
   registerSocket();
   registerHud();
+  registerScenePanel();
   Hooks.callAll("leverage.ready", api);
 });

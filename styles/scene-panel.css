@@ -1,0 +1,120 @@
+/* Scene Panel: Scene Traits, Complications and the Traits of the NPCs/places on the scene. Sits under the HUD
+   (top written by scene-panel.mjs), 16px from the sidebar, at the HUD's z-index (over the scene, under windows). */
+#leverage-scene-panel {
+  position: fixed;
+  top: var(--lv-scene-panel-top, 130px);
+  right: calc(var(--lv-sidebar-w, 0px) + 16px);
+  z-index: 30;
+  width: 264px;
+  max-height: calc(100vh - var(--lv-scene-panel-top, 130px) - 90px);
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  transition: right 0.2s ease;
+}
+
+#leverage-scene-panel .lv-sp {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--lv-panel);
+  border: 1px solid var(--lv-line);
+  border-radius: 4px;
+  color: var(--lv-ink);
+  font-family: var(--lv-font-ui);
+  font-size: 15px;
+  line-height: 1.2;
+  pointer-events: auto;
+}
+
+/* Discreet when there is nothing to show */
+#leverage-scene-panel .lv-sp.is-empty { background: rgba(10, 16, 18, 0.6); }
+#leverage-scene-panel .lv-sp.is-empty .lv-sp-head { opacity: 0.75; }
+
+#leverage-scene-panel .lv-sp-head { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 4px 8px; }
+
+#leverage-scene-panel button {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: inherit;
+  cursor: pointer;
+  line-height: 1;
+}
+
+#leverage-scene-panel .lv-sp-toggle { display: flex; flex: none; align-items: center; gap: 6px; height: 24px; }
+#leverage-scene-panel .lv-sp-toggle i { width: 12px; color: var(--lv-muted); font-size: 11px; }
+#leverage-scene-panel .lv-sp-title {
+  color: var(--lv-header);
+  font-family: var(--lv-font-display);
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#leverage-scene-panel .lv-sp-summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--lv-muted);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#leverage-scene-panel .lv-sp-edit { flex: none; margin-inline-start: auto; width: 24px; height: 24px; color: var(--lv-muted); font-size: 12px; }
+#leverage-scene-panel .lv-sp-edit:hover,
+#leverage-scene-panel .lv-sp-toggle:hover i { color: var(--lv-ink); }
+
+/* Body: scrolls on its own, the scrollbar gutter is reserved so it never covers a name */
+#leverage-scene-panel .lv-sp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding: 2px 8px 8px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+#leverage-scene-panel .lv-sp-empty { margin: 0; color: var(--lv-muted); font-style: italic; }
+
+#leverage-scene-panel .lv-sp-sec { display: flex; flex-direction: column; gap: 4px; }
+#leverage-scene-panel .lv-sp-sec-title {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--lv-muted);
+  font-family: var(--lv-font-display);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Complications read as threats: red title */
+#leverage-scene-panel .lv-sp-sec--complications .lv-sp-sec-title { color: var(--lv-danger); }
+
+#leverage-scene-panel .lv-sp-list { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+#leverage-scene-panel .lv-sp-row { display: flex; align-items: center; gap: 8px; min-height: 30px; margin: 0; }
+#leverage-scene-panel .lv-sp-row .lv-die { flex: none; }
+
+#leverage-scene-panel .lv-sp-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#leverage-scene-panel .lv-sp-row .lv-sp-name { flex: 1; }
+
+#leverage-scene-panel .lv-sp-actor { display: flex; flex-direction: column; gap: 2px; }
+#leverage-scene-panel .lv-sp-actor-name { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--lv-teal-ink); font-size: 14px; }
+#leverage-scene-panel .lv-sp-actor-name i { flex: none; font-size: 11px; }
+#leverage-scene-panel .lv-sp-count { flex: none; color: var(--lv-muted); }
+#leverage-scene-panel .lv-sp-actor.is-hidden { opacity: 0.6; }

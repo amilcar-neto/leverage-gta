@@ -8,7 +8,7 @@
   </header>
 
   <div class="lv-roll-chips">
-    {{#each chips}}<span class="lv-roll-chip" data-tooltip="{{label}} {{die}}"><span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}{{#if money}} lv-roll-chip-die--money{{/if}}">{{die}}</span></span>{{/each}}
+    {{#each chips}}<span class="lv-roll-chip{{#if tag}} lv-roll-chip--{{tag}}{{/if}}" data-tooltip="{{tip}}">{{#if tag}}<span class="lv-roll-chip-tag">{{tagText}}</span>{{/if}}<span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}{{#if money}} lv-roll-chip-die--money{{/if}}">{{die}}</span></span>{{/each}}
   </div>
 
   <div class="lv-roll-dice" data-count="{{dice.length}}">

@@ -8,6 +8,7 @@ import { renderDie } from "../components/die.mjs";
 import { unresolvedOnes } from "../../dice/card-actions.mjs";
 import { cardHandlers, isCharacterOwner, latestRollOf, registerCardSocket } from "./card-handlers.mjs";
 import { damageView, registerDamageMessages } from "./damage.mjs";
+import { sceneTagOf } from "../scene-panel/scene-panel-logic.mjs";
 
 /** Template of the card. */
 export const ROLL_CARD_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/roll-card.hbs`;
@@ -43,6 +44,17 @@ export function dieContext(entry, t) {
   return { html, caption: caption.text, state: caption.state };
 }
 
+/** Template data of one chip; a die from the scene (Scene Trait, Complication) carries a tag saying so. */
+function chipOf(entry, t) {
+  const tag = sceneTagOf(entry);
+  const tagText = tag ? t(`LEVERAGE.Roll.tag.${tag}`) : "";
+  const label = entry.label;
+  return {
+    label, die: `d${entry.faces}`, faces: entry.faces, money: entry.kind === "money", tag, tagText,
+    tip: tag ? `${tagText}: ${label} d${entry.faces}` : `${label} d${entry.faces}`
+  };
+}
+
 /**
  * Template data of the whole card.
  * @param {object} data `flags.leverage-gta.roll`.
@@ -68,7 +80,7 @@ export function rollCardContext(data, { t, isOwner = false, isLatest = true, isG
   const showComplication = !opposition && isGM && unresolved > 0;
   return {
     opposition, name: data.actorName, img: opposition ? "" : photo, flavor: data.flavor,
-    chips: entries.map((e) => ({ label: e.label, die: `d${e.faces}`, faces: e.faces, money: e.kind === "money" })),
+    chips: entries.map((e) => chipOf(e, t)),
     dice: entries.map((e) => dieContext(e, t)),
     total: data.total,
     countText: keptValues.length ? t("LEVERAGE.Roll.explain", { count: keptValues.length }) : t("LEVERAGE.Roll.noneKept"),

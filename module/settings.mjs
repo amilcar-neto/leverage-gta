@@ -67,6 +67,7 @@ function registerWorldSettings() {
   worldNumber("moneyStart", LEVERAGE.money.startSteps);
   worldNumber("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints);
   worldBoolean("traitsLocked", true, notify("traitsLockedChanged"));
+  worldBoolean("scenePanel.showActorTraits", true, notify("hudChanged"));
   hiddenWorld("wanted", new (fields().ObjectField)(), { city: LEVERAGE.stars.defaultCity, level: LEVERAGE.stars.min },
     notify("starsChanged"));
   hiddenWorld("cityScales", new (fields().ArrayField)(new (fields().ObjectField)()),
@@ -86,6 +87,10 @@ function registerClientSettings() {
   clientBoolean("hud.showMoney", true, notify("hudChanged"));
   clientBoolean("hud.showPlotPoints", true, notify("hudChanged"));
   game.settings.register(SYSTEM_ID, "hud.minimized", {
+    scope: "client", config: false, type: Boolean, default: false, onChange: notify("hudChanged")
+  });
+  clientBoolean("scenePanel.show", true, notify("hudChanged"));
+  game.settings.register(SYSTEM_ID, "scenePanel.collapsed", {
     scope: "client", config: false, type: Boolean, default: false, onChange: notify("hudChanged")
   });
   clientBoolean("pool.keepAfterRoll", false);

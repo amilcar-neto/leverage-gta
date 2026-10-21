@@ -24,3 +24,4 @@
 @import url("config-apps.css") layer(system);
 @import url("dialogs.css") layer(system);
 @import url("hud.css") layer(system);
+@import url("scene-panel.css") layer(system);
