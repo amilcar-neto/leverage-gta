@@ -14,6 +14,13 @@
   <div class="lv-sp-body">
     {{#if empty}}<p class="lv-sp-empty">{{emptyText}}</p>{{/if}}
 
+    {{#if goal}}
+    <section class="lv-sp-sec lv-sp-sec--goal" aria-label="{{localize "LEVERAGE.ScenePanel.goal"}}">
+      <h3 class="lv-sp-sec-title">{{localize "LEVERAGE.ScenePanel.goal"}}</h3>
+      <p class="lv-sp-goal" data-tooltip="{{goal}}">{{goal}}</p>
+    </section>
+    {{/if}}
+
     {{#if sceneTraits.length}}
     <section class="lv-sp-sec" aria-label="{{localize "LEVERAGE.ScenePanel.sceneTraits"}}">
       <h3 class="lv-sp-sec-title">{{localize "LEVERAGE.ScenePanel.sceneTraits"}}</h3>

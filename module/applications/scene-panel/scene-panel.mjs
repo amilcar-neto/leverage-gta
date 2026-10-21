@@ -72,7 +72,7 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     return {
       ...view, isGM, collapsed, dieSize: DIE_SIZE, toggleLabel: toggle,
       show: Boolean(readSetting("scenePanel.show", true)),
-      summary: this.#summary(view.counts),
+      summary: this.#summary(view),
       emptyText: t("LEVERAGE.ScenePanel.empty"),
       actors: view.actors.map((a) => ({
         ...a, icon: a.type === "location" ? "fa-location-dot" : "fa-user", multiple: a.count > 1,
@@ -82,8 +82,9 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /** Short counts shown in the header when collapsed. */
-  #summary(counts) {
+  #summary({ goal, counts }) {
     return [
+      goal,
       counts.traits && tn("LEVERAGE.ScenePanel.traitsCount", counts.traits),
       counts.complications && tn("LEVERAGE.ScenePanel.complicationsCount", counts.complications),
       counts.actors && tn("LEVERAGE.ScenePanel.actorsCount", counts.actors)

@@ -26,6 +26,8 @@
   <section class="lv-trk-sec">
     <label class="lv-trk-title" for="lv-trk-job-name">{{localize "LEVERAGE.Tracker.job"}}</label>
     <input type="text" id="lv-trk-job-name" class="lv-trk-input" name="jobName" maxlength="80" value="{{name}}" placeholder="{{localize "LEVERAGE.Tracker.jobPlaceholder"}}">
+    <label class="lv-trk-title" for="lv-trk-job-goal">{{localize "LEVERAGE.Tracker.goal"}}</label>
+    <input type="text" id="lv-trk-job-goal" class="lv-trk-input" name="jobGoal" maxlength="200" value="{{goal}}" title="{{goal}}" placeholder="{{localize "LEVERAGE.Tracker.goalPlaceholder"}}">
   </section>
 
   {{> entries rows=complications list="complications" title="LEVERAGE.Tracker.complications" empty="LEVERAGE.Tracker.noComplications" placeholder="LEVERAGE.Tracker.newComplication"}}

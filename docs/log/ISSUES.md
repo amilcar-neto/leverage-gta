@@ -62,3 +62,15 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - **Baixa, aberto:** card de rolagem diz "1 maiores mantidos" (falta singular em `LEVERAGE.Roll.explain`).
 - Melhorias (sem gravidade): campo "Objetivo" no Job, gangue do NPC da cena como sugestão no Rolador de oposição, arma preenchida no APLICAR DANO, aviso ao trocar de colete por um pior. Ver PLAYTEST.md.
 - O mundo de teste está com a Trava de Traços desligada; o dono deve conferir antes de jogar.
+
+## Playtest 2026-10-21 - bugs corrigidos
+- Os 4 bugs (Asset em branco, nome na ficha minimizada, Encerrar Job, plural de "maior mantido") foram corrigidos e conferidos no Foundry real com `tests/foundry/playtest-fixes.mjs`. O campo Objetivo do Job foi implementado.
+
+## Playtest 2026-10-21 - sugestoes (nao feitas)
+- Rolador de oposicao: se a cena tem um so NPC com gangue, sugerir o dado dele em vez de 3 x d6.
+- APLICAR DANO comeca em "Sem atacante / Sem arma": lembrar a arma ou destacar o campo quando o dano e so a margem.
+- Comprar colete leve quando ja se tem um melhor: avisar que rebaixa.
+- Aviso na configuracao `scenePanel.showActorTraits`: os Traits de NPC ficam visiveis aos jogadores por padrao.
+- Barra lateral fechada esconde o chat: avisar quando ha acao pendente no card.
+- Mundo de teste com Trava de Tracos desligada: o dono confere antes de jogar de verdade.
+- Retratos para fichas e tokens; dado de 1 degrau da Grana no Rastreador muito pequeno.

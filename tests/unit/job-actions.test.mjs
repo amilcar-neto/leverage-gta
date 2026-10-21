@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { checkJobResult, emptyJob, freshJob, jobAfterScene, evenSplit, toSteps, jobItemData, assetIdsOf, usedCallbackIds } from "../../module/applications/gm/job-actions.mjs";
 
 test("freshJob drops Complications and scene Traits and trims the name", () => {
-  assert.deepEqual(freshJob("  Bank  "), { name: "Bank", complications: [], sceneTraits: [] });
+  assert.deepEqual(freshJob("  Bank  "), { name: "Bank", goal: "", complications: [], sceneTraits: [] });
   assert.equal(freshJob(null).name, "");
 });
 
@@ -35,7 +35,9 @@ test("toSteps and jobItemData sanitise numbers", () => {
   assert.equal(toSteps("3.9"), 3);
   assert.equal(toSteps(-2), 0);
   assert.equal(toSteps("x"), 0);
-  assert.deepEqual(jobItemData("Heist", 6, "2"), { name: "Heist", type: "job", system: { payout: { total: 6, share: 2 } } });
+  assert.deepEqual(jobItemData("Heist", 6, "2"), { name: "Heist", type: "job", system: { goal: "", payout: { total: 6, share: 2 } } });
+  assert.equal(jobItemData("Heist", 6, 2, "  Get the ledger ").system.goal, "Get the ledger");
+  assert.equal(freshJob("Bank", " Ledger ").goal, "Ledger");
 });
 
 test("assetIdsOf and usedCallbackIds pick the right Items", () => {

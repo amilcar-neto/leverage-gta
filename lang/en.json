@@ -192,6 +192,9 @@
           },
           "spent": {
             "label": "Spent"
+          },
+          "goal": {
+            "label": "Goal"
           }
         }
       },
@@ -400,7 +403,8 @@
           "other": "You have {count} Plot Points."
         },
         "confirm": "Create",
-        "dieNote": "The new Asset gets a {die}."
+        "dieNote": "The new Asset gets a {die}.",
+        "nameRequired": "Give the Asset a name."
       },
       "Delete": {
         "title": "Delete",
@@ -428,7 +432,8 @@
         "name": "Name",
         "namePlaceholder": "What goes wrong?",
         "hint": "The player gets 1 Plot Point. The Complication goes to the active Job.",
-        "confirm": "Add"
+        "confirm": "Add",
+        "nameRequired": "Name the Complication."
       }
     },
     "SystemTitle": "Leverage: Liberty City",
@@ -647,7 +652,9 @@
       "descriptionPlaceholder": "Nothing written yet.",
       "effectPlaceholder": "Nothing written yet.",
       "notesPlaceholder": "No notes yet.",
-      "protectedHint": "Only the GM changes this."
+      "protectedHint": "Only the GM changes this.",
+      "jobGoal": "Goal",
+      "jobGoalPlaceholder": "What does the Crew want from this Job?"
     },
     "Roll": {
       "defaultFlavor": "rolls the Pool",
@@ -655,7 +662,8 @@
       "kept": "Kept",
       "out": "1 · Out",
       "total": "Total",
-      "explain": "{count} highest kept",
+      "explainOne": "{count} highest kept",
+      "explainMany": "{count} highest kept",
       "noneKept": "No die kept",
       "onesWarningOne": "One die came up 1. The GM may add a Complication and hand you a Plot Point.",
       "onesWarningMany": "{count} dice came up 1. The GM may add a Complication and hand you a Plot Point.",
@@ -755,7 +763,9 @@
             "one": "Plot Points go to {count} character: {names}.",
             "other": "Plot Points go to {count} characters: {names}."
           },
-          "nobody": "none (no character has a player)"
+          "nobody": "none (no character has a player)",
+          "goal": "Goal",
+          "goalPlaceholder": "What does the Crew want from this Job?"
         },
         "EndJob": {
           "title": "End Job",
@@ -824,7 +834,9 @@
       "life": "Life",
       "vest": "Vest",
       "money": "Money",
-      "plotPoints": "Plot Points"
+      "plotPoints": "Plot Points",
+      "goal": "Goal",
+      "goalPlaceholder": "What does the Crew want from this Job?"
     },
     "Api": {
       "noCrew": "That is not a Crew character.",
@@ -1153,7 +1165,8 @@
       "actorsCount": {
         "one": "{count} NPC",
         "other": "{count} NPCs"
-      }
+      },
+      "goal": "Goal"
     }
   }
 }

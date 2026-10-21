@@ -9,7 +9,7 @@ import { clampSteps } from "../../rules/money.mjs";
 import { renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
 import { crewActors, readJob } from "./job-actions.mjs";
-import { addEntry, clampedAdd, removeEntry, renameJob, stepEntry } from "./job-tracker-logic.mjs";
+import { addEntry, clampedAdd, removeEntry, renameJob, setJobGoal, stepEntry } from "./job-tracker-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -59,6 +59,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     const job = readJob();
     return {
       name: job.name,
+      goal: job.goal,
       complications: job.complications.map(entryRow("complications")),
       sceneTraits: job.sceneTraits.map(entryRow("sceneTraits")),
       crew: crewActors().map(crewRow),
@@ -85,6 +86,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     super._onRender(context, options);
     const el = this.element;
     el.querySelector('[name="jobName"]')?.addEventListener("change", (event) => this.#save(renameJob(readJob(), event.target.value)));
+    el.querySelector("[name=\"jobGoal\"]")?.addEventListener("change", (event) => this.#save(setJobGoal(readJob(), event.target.value)));
     for (const input of el.querySelectorAll("[data-new-name]")) {
       input.addEventListener("keydown", (event) => {
         if (event.key !== "Enter") return;

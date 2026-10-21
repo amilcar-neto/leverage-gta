@@ -317,3 +317,7 @@
 }
 
 .leverage-gta.lv-dialog .lv-dlg-option input[type="radio"]:focus-visible { outline: 2px solid var(--lv-accent-2); outline-offset: 2px; }
+
+/* End Job dialog: the name takes the free room and ends in an ellipsis; the number box keeps its own width. */
+.leverage-gta.lv-dialog .lv-dlg-share-row .lv-dlg-option-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leverage-gta.lv-dialog .lv-dlg-share-row .lv-dlg-share { flex: none; width: 84px; min-width: 0; }

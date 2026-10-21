@@ -7,6 +7,7 @@ import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
 import { escapeHtml, requireGM, resolveActor } from "../components/common.mjs";
 import { t, tn } from "../components/i18n.mjs";
+import { isAnswer, requireTextField } from "../components/dialog-guard.mjs";
 import { normalizeJob } from "./job-tracker-logic.mjs";
 
 /* -------------------------------------------- */
@@ -14,15 +15,16 @@ import { normalizeJob } from "./job-tracker-logic.mjs";
 /* -------------------------------------------- */
 
 /** An empty active Job (no name, no Complications, no scene Traits). */
-export const emptyJob = () => ({ name: "", complications: [], sceneTraits: [] });
+export const emptyJob = () => ({ name: "", goal: "", complications: [], sceneTraits: [] });
 
 /**
  * State of a freshly started Job: the old Complications and scene Traits are gone.
  * @param {string} name
- * @returns {{name: string, complications: [], sceneTraits: []}}
+ * @param {string} [goal] What the Crew wants from this Job (optional).
+ * @returns {{name: string, goal: string, complications: [], sceneTraits: []}}
  */
-export function freshJob(name) {
-  return { ...emptyJob(), name: String(name ?? "").trim() };
+export function freshJob(name, goal = "") {
+  return { ...emptyJob(), name: String(name ?? "").trim(), goal: String(goal ?? "").trim() };
 }
 
 /**
@@ -63,10 +65,11 @@ export const toSteps = (value) => Math.max(0, Math.trunc(Number(value) || 0));
  * @param {string} name
  * @param {number} total Steps the whole Crew was paid.
  * @param {number} share Steps for this character.
- * @returns {{name: string, type: "job", system: {payout: {total: number, share: number}}}}
+ * @param {string} [goal] Goal of the Job (copied from the active Job).
+ * @returns {{name: string, type: "job", system: {goal: string, payout: {total: number, share: number}}}}
  */
-export function jobItemData(name, total, share) {
-  return { name, type: "job", system: { payout: { total: toSteps(total), share: toSteps(share) } } };
+export function jobItemData(name, total, share, goal = "") {
+  return { name, type: "job", system: { goal: String(goal ?? "").trim(), payout: { total: toSteps(total), share: toSteps(share) } } };
 }
 
 /**
@@ -225,11 +228,12 @@ export async function endScene({ confirm = true } = {}) {
  * Starts a Job: sets the active Job (no old Complications) and raises each character to at least `jobStartPlotPoints`
  * Plot Points (the book: everybody has 1 to start the Job; Plot Points left over are kept, never added on top).
  * @param {string} name
+ * @param {string} [goal] Optional goal shown in the Tracker, the Scene Panel and the Job sheet.
  * @returns {Promise<boolean>} false when the name is empty or the user is not the GM
  */
-export async function newJob(name) {
+export async function newJob(name, goal = "") {
   if (!requireGM()) return false;
-  const job = freshJob(name);
+  const job = freshJob(name, goal);
   if (!job.name) return false;
   await game.settings.set(SYSTEM_ID, "activeJob", job);
   const each = toSteps(readSetting("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints));
@@ -241,28 +245,30 @@ export async function newJob(name) {
 /** Dialog asking the name of a new Job, then starts it. */
 export async function newJobDialog() {
   if (!requireGM()) return false;
-  const current = readJob().name;
+  const current = readJob();
   const crew = crewActors();
   const who = crew.map((a) => a.name).join(", ") || t("LEVERAGE.GM.Dialog.NewJob.nobody");
-  const name = await foundry.applications.api.DialogV2.prompt({
+  const answer = await foundry.applications.api.DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog"],
     window: { title: t("LEVERAGE.GM.Dialog.NewJob.title") },
     position: { width: 380 },
     rejectClose: false,
     content: `<div class="lv-dlg"><label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.NewJob.name")}</span>
-      <input type="text" name="name" autofocus maxlength="80" value="${escapeHtml(current)}"></label>
+      <input type="text" name="name" autofocus maxlength="80" value="${escapeHtml(current.name)}"></label>
+      <label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.NewJob.goal")}</span>
+      <input type="text" name="goal" maxlength="200" value="${escapeHtml(current.goal)}" placeholder="${escapeHtml(t("LEVERAGE.GM.Dialog.NewJob.goalPlaceholder"))}"></label>
       <p class="lv-dlg-hint">${t("LEVERAGE.GM.Dialog.NewJob.hint")}</p>
       <p class="lv-dlg-hint" title="${escapeHtml(who)}">${escapeHtml(tn("LEVERAGE.GM.Dialog.NewJob.who", crew.length, { names: who }))}</p></div>`,
+    render: (_event, dialog) => requireTextField(dialog, "name", "LEVERAGE.GM.Warn.jobNameRequired"),
     ok: {
       label: t("LEVERAGE.GM.Dialog.NewJob.confirm"),
       callback: (_event, button) => {
-        const value = button.form.elements.name.value.trim();
-        if (!value) ui.notifications.warn(t("LEVERAGE.GM.Warn.jobNameRequired"));
-        return value;
+        const { name, goal } = button.form.elements;
+        return { name: name.value.trim(), goal: goal.value.trim() };
       }
     }
   });
-  return name ? newJob(name) : false;
+  return isAnswer(answer) && answer.name ? newJob(answer.name, answer.goal) : false;
 }
 
 /**
@@ -293,10 +299,11 @@ export async function endJob({ name, total, shares }) {
     return 0;
   }
   name = name.trim();
+  const goal = readJob().goal;
   let paid = 0;
   for (const actor of crew) {
     const share = toSteps(shares?.[actor.id]);
-    await actor.createEmbeddedDocuments("Item", [jobItemData(name, total, share)]);
+    await actor.createEmbeddedDocuments("Item", [jobItemData(name, total, share, goal)]);
     if (share && moneyRuleOn()) {
       const added = await actor.money.add(share);
       if (added < share) ui.notifications.warn(tn("LEVERAGE.GM.Warn.shareDidNotFit", share - added, { name: actor.name }));
@@ -312,7 +319,7 @@ export async function endJob({ name, total, shares }) {
 
 /** One share row of the End Job dialog. */
 function shareRow(actor, share) {
-  return `<label class="lv-dlg-option"><span class="lv-dlg-option-name" title="${escapeHtml(actor.name)}">${escapeHtml(actor.name)}</span>
+  return `<label class="lv-dlg-option lv-dlg-share-row"><span class="lv-dlg-option-name" title="${escapeHtml(actor.name)}">${escapeHtml(actor.name)}</span>
     <input type="number" class="lv-dlg-share" name="share-${actor.id}" min="0" step="1" value="${share}"></label>`;
 }
 
@@ -351,19 +358,18 @@ export async function endJobDialog() {
       <p class="lv-dlg-hint">${t("LEVERAGE.GM.Dialog.EndJob.hint")}</p>
       ${crew.map((a, i) => shareRow(a, split[i])).join("")}
       <p class="lv-dlg-hint" data-sum></p></div>`,
-    render: (_event, dialog) => wireShares(dialog, crew),
+    render: (_event, dialog) => {
+      requireTextField(dialog, "name", "LEVERAGE.GM.Warn.jobNameRequired");
+      wireShares(dialog, crew);
+    },
     ok: {
       label: t("LEVERAGE.GM.Dialog.EndJob.confirm"),
       callback: (_event, button) => {
         const f = button.form.elements;
         const name = f.name.value.trim();
-        if (!name) {
-          ui.notifications.warn(t("LEVERAGE.GM.Warn.jobNameRequired"));
-          return null;
-        }
         return { name, total: toSteps(f.total.value), shares: Object.fromEntries(crew.map((a) => [a.id, toSteps(f[`share-${a.id}`].value)])) };
       }
     }
   });
-  return result ? endJob(result) : 0;
+  return isAnswer(result) && result.name ? endJob(result) : 0;
 }

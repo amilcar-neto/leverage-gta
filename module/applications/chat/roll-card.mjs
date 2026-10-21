@@ -83,7 +83,7 @@ export function rollCardContext(data, { t, isOwner = false, isLatest = true, isG
     chips: entries.map((e) => chipOf(e, t)),
     dice: entries.map((e) => dieContext(e, t)),
     total: data.total,
-    countText: keptValues.length ? t("LEVERAGE.Roll.explain", { count: keptValues.length }) : t("LEVERAGE.Roll.noneKept"),
+    countText: keptValues.length ? t(`LEVERAGE.Roll.explain${keptValues.length === 1 ? "One" : "Many"}`, { count: keptValues.length }) : t("LEVERAGE.Roll.noneKept"),
     sumText: keptValues.join(" + "),
     onesCount: unresolved,
     onesText: unresolved ? t(`LEVERAGE.Roll.onesWarning${unresolved === 1 ? "One" : "Many"}`, { count: unresolved }) : "",

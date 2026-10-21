@@ -5,6 +5,7 @@
 import { LEVERAGE } from "../../config.mjs";
 import { escapeHtml } from "../components/die.mjs";
 import { t, tn } from "../components/i18n.mjs";
+import { isAnswer, requireTextField } from "../components/dialog-guard.mjs";
 
 /** Plot Point cost of an Asset duration (Signature has no PP cost: it is paid in Jobs). */
 export function assetCostOf(duration) {
@@ -55,13 +56,14 @@ function buildContent({ plotPoints, duration, die, chooseDie }) {
 export async function promptCreateAsset({ plotPoints, suggestDie, chooseDie = false }) {
   const duration = "scene";
   const { DialogV2 } = foundry.applications.api;
-  return DialogV2.prompt({
+  const answer = await DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog"],
     window: { title: t("LEVERAGE.Dialog.Asset.title") },
     position: { width: 380 },
     rejectClose: false,
     content: buildContent({ plotPoints, duration, die: suggestDie(duration), chooseDie }),
     render: (_event, dialog) => {
+      requireTextField(dialog, "name", "LEVERAGE.Dialog.Asset.nameRequired");
       const form = dialog.element.querySelector("form");
       form.elements.duration.addEventListener("change", () => {
         const suggested = suggestDie(form.elements.duration.value);
@@ -81,4 +83,5 @@ export async function promptCreateAsset({ plotPoints, suggestDie, chooseDie = fa
       }
     }
   });
+  return isAnswer(answer) ? answer : null;
 }

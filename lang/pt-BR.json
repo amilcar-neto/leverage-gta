@@ -192,6 +192,9 @@
           },
           "spent": {
             "label": "Gasto"
+          },
+          "goal": {
+            "label": "Objetivo"
           }
         }
       },
@@ -400,7 +403,8 @@
           "other": "Você tem {count} Plot Points."
         },
         "confirm": "Criar",
-        "dieNote": "O novo Asset recebe um {die}."
+        "dieNote": "O novo Asset recebe um {die}.",
+        "nameRequired": "Dê um nome ao Asset."
       },
       "Delete": {
         "title": "Excluir",
@@ -428,7 +432,8 @@
         "name": "Nome",
         "namePlaceholder": "O que dá errado?",
         "hint": "O jogador ganha 1 Plot Point. A Complication vai para o Job ativo.",
-        "confirm": "Adicionar"
+        "confirm": "Adicionar",
+        "nameRequired": "Dê um nome à Complication."
       }
     },
     "SystemTitle": "Leverage: Liberty City",
@@ -647,7 +652,9 @@
       "descriptionPlaceholder": "Nada escrito ainda.",
       "effectPlaceholder": "Nada escrito ainda.",
       "notesPlaceholder": "Sem anotações ainda.",
-      "protectedHint": "Só o mestre altera isto."
+      "protectedHint": "Só o mestre altera isto.",
+      "jobGoal": "Objetivo",
+      "jobGoalPlaceholder": "O que a equipe quer deste Job?"
     },
     "Roll": {
       "defaultFlavor": "rola a Pool",
@@ -655,7 +662,8 @@
       "kept": "Mantido",
       "out": "1 · Fora",
       "total": "Total",
-      "explain": "{count} maiores mantidos",
+      "explainOne": "{count} maior mantido",
+      "explainMany": "{count} maiores mantidos",
       "noneKept": "Nenhum dado mantido",
       "onesWarningOne": "Um dado tirou 1. O mestre pode criar uma Complication e te dar um Plot Point.",
       "onesWarningMany": "{count} dados tiraram 1. O mestre pode criar uma Complication e te dar um Plot Point.",
@@ -755,7 +763,9 @@
             "one": "Os Plot Points vão para {count} personagem: {names}.",
             "other": "Os Plot Points vão para {count} personagens: {names}."
           },
-          "nobody": "nenhum (nenhum personagem tem jogador)"
+          "nobody": "nenhum (nenhum personagem tem jogador)",
+          "goal": "Objetivo",
+          "goalPlaceholder": "O que a equipe quer deste Job?"
         },
         "EndJob": {
           "title": "Encerrar Job",
@@ -824,7 +834,9 @@
       "life": "Vida",
       "vest": "Colete",
       "money": "Grana",
-      "plotPoints": "Plot Points"
+      "plotPoints": "Plot Points",
+      "goal": "Objetivo",
+      "goalPlaceholder": "O que a equipe quer deste Job?"
     },
     "Api": {
       "noCrew": "Isso não é um personagem da Equipe.",
@@ -1153,7 +1165,8 @@
       "actorsCount": {
         "one": "{count} NPC",
         "other": "{count} NPCs"
-      }
+      },
+      "goal": "Objetivo"
     }
   }
 }

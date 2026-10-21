@@ -36,3 +36,9 @@ test("roll card tag: Scene Trait and Complication dice are told apart", () => {
   assert.equal(sceneTagOf({ kind: "opposition", ref: "job.abc" }), "complication");
   assert.equal(sceneTagOf({ kind: "attribute", ref: "attributes.body" }), null);
 });
+
+test("panel: the Job goal is shown and counts as content", () => {
+  const view = buildScenePanel({ job: { goal: "  Get the ledger ", sceneTraits: [], complications: [] }, tokens: [], isGM: false });
+  assert.equal(view.goal, "Get the ledger");
+  assert.equal(view.empty, false);
+});

@@ -118,3 +118,14 @@
 #leverage-scene-panel .lv-sp-actor-name i { flex: none; font-size: 11px; }
 #leverage-scene-panel .lv-sp-count { flex: none; color: var(--lv-muted); }
 #leverage-scene-panel .lv-sp-actor.is-hidden { opacity: 0.6; }
+
+#leverage-scene-panel .lv-sp-goal {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-weight: 700;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow-wrap: anywhere;
+}

@@ -18,7 +18,7 @@ export function normalizeJob(job) {
   const clean = (list) => (Array.isArray(list) ? list : [])
     .filter((e) => e && e.id && isValidDie(Number(e.die)))
     .map((e) => ({ ...e, name: String(e.name ?? ""), die: Number(e.die) }));
-  return { ...job, name: String(job?.name ?? ""), complications: clean(job?.complications), sceneTraits: clean(job?.sceneTraits) };
+  return { ...job, name: String(job?.name ?? ""), goal: String(job?.goal ?? ""), complications: clean(job?.complications), sceneTraits: clean(job?.sceneTraits) };
 }
 
 /**
@@ -29,7 +29,15 @@ export function normalizeJob(job) {
 export const renameJob = (job, name) => ({ ...normalizeJob(job), name: String(name ?? "").trim() });
 
 /**
+ * @param {object} job
+ * @param {string} goal
+ * @returns {object} the Job with a new (trimmed) goal
+ */
+export const setJobGoal = (job, goal) => ({ ...normalizeJob(job), goal: String(goal ?? "").trim() });
+
+/**
  * Adds an entry to a list.
+
  * @param {object} job
  * @param {"complications"|"sceneTraits"} list
  * @param {string} name Empty names are ignored.

@@ -52,14 +52,15 @@ export function groupSceneActors(tokens, { isGM, showActorTraits }) {
  * @param {object[]} input.tokens See {@link groupSceneActors}.
  * @param {boolean} input.isGM
  * @param {boolean} [input.showActorTraits=true]
- * @returns {{sceneTraits: object[], complications: object[], actors: object[], counts: {traits: number, complications: number, actors: number}, empty: boolean}}
+ * @returns {{goal: string, sceneTraits: object[], complications: object[], actors: object[], counts: {traits: number, complications: number, actors: number}, empty: boolean}}
  */
 export function buildScenePanel({ job, tokens, isGM, showActorTraits = true }) {
   const sceneTraits = cleanList(job?.sceneTraits);
   const complications = cleanList(job?.complications);
   const actors = groupSceneActors(tokens, { isGM, showActorTraits });
   const counts = { traits: sceneTraits.length, complications: complications.length, actors: actors.length };
-  return { sceneTraits, complications, actors, counts, empty: !(counts.traits || counts.complications || counts.actors) };
+  const goal = String(job?.goal ?? "").trim();
+  return { goal, sceneTraits, complications, actors, counts, empty: !(goal || counts.traits || counts.complications || counts.actors) };
 }
 
 /** Prefix of the `ref` of a Complication die in the Fixer's opposition roll (see `complicationSources`). */

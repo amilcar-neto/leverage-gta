@@ -10,7 +10,7 @@ test("normalizeJob fills lists and drops invalid entries", () => {
   assert.equal(job.name, "5");
   assert.deepEqual(job.complications, [{ id: "a", name: "x", die: 8 }]);
   assert.deepEqual(job.sceneTraits, []);
-  assert.deepEqual(normalizeJob(undefined), { name: "", complications: [], sceneTraits: [] });
+  assert.deepEqual(normalizeJob(undefined), { name: "", goal: "", complications: [], sceneTraits: [] });
 });
 
 test("addEntry starts Complications at d6 and ignores empty names", () => {
@@ -47,4 +47,12 @@ test("clampedAdd keeps counters in range", () => {
   assert.equal(clampedAdd(0, -1), 0);
   assert.equal(clampedAdd(2, 5), 7);
   assert.equal(clampedAdd("x", 1), 1);
+});
+
+test("setJobGoal trims, keeps the rest and normalizeJob always has a goal", async () => {
+  const { setJobGoal, normalizeJob } = await import("../../module/applications/gm/job-tracker-logic.mjs");
+  assert.equal(normalizeJob({ name: "A" }).goal, "");
+  const job = setJobGoal({ name: "A", complications: [], sceneTraits: [] }, "  Ledger ");
+  assert.equal(job.goal, "Ledger");
+  assert.equal(job.name, "A");
 });

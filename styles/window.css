@@ -124,3 +124,8 @@
 /* Item sheets: the seal shows the icon only (the tooltip says the rest) */
 .leverage-gta.lv-item-sheet .lv-lock-seal { width: 22px; padding: 0; justify-content: center; background: none; border-color: transparent; color: var(--lv-muted-2); }
 .leverage-gta.lv-item-sheet .lv-lock-seal-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+/* Minimized sheet: the bar is narrow, so the seal shows only its icon and the character name keeps the room. */
+.leverage-gta:is(.minimizing, .minimized) .lv-lock-seal { width: 22px; padding: 0; justify-content: center; }
+.leverage-gta:is(.minimizing, .minimized) .lv-lock-seal-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.leverage-gta:is(.minimizing, .minimized) .window-header .window-title { min-width: 4ch; }

@@ -6,6 +6,7 @@ import { escapeHtml } from "../components/die.mjs";
 import { LEVERAGE } from "../../config.mjs";
 import { stepUp } from "../../dice/die.mjs";
 import { t } from "../components/i18n.mjs";
+import { isAnswer, requireTextField } from "../components/dialog-guard.mjs";
 
 /** `<option>` list: a new Complication first, then each existing one with the die it would become. */
 function targetOptions(complications) {
@@ -34,8 +35,8 @@ function buildContent(complications) {
  * @param {{id: string, name: string, die: number}[]} complications Complications of the active Job.
  * @returns {Promise<{id: string|null, name: string}|null>} the choice, or null when cancelled / nothing valid chosen
  */
-export function promptComplication(complications) {
-  return foundry.applications.api.DialogV2.prompt({
+export async function promptComplication(complications) {
+  const answer = await foundry.applications.api.DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog"],
     window: { title: t("LEVERAGE.Dialog.Complication.title") },
     position: { width: 380 },
@@ -45,6 +46,7 @@ export function promptComplication(complications) {
       const { elements } = dialog.element.querySelector("form");
       const sync = () => { if (elements.target) elements.name.disabled = Boolean(elements.target.value); };
       elements.target?.addEventListener("change", sync);
+      requireTextField(dialog, "name", "LEVERAGE.Dialog.Complication.nameRequired");
     },
     ok: {
       class: "lv-config-btn lv-config-btn--primary",
@@ -57,4 +59,5 @@ export function promptComplication(complications) {
       }
     }
   });
+  return isAnswer(answer) ? answer : null;
 }
