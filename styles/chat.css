@@ -19,6 +19,8 @@
 .chat-message.lv-roll-message > .message-header .message-sender,
 .chat-message.lv-roll-message > .message-header .message-sender + .whisper-to { flex: 1 1 0; min-width: 0; }
 .chat-message.lv-roll-message > .message-header .message-sender { display: none; }
+/* The card already shows the flavor text */
+.chat-message.lv-roll-message > .message-header .flavor-text { display: none; }
 .chat-message.lv-roll-message > .message-header .whisper-to {
   flex: 1 1 0;
   min-width: 0;
@@ -126,7 +128,8 @@
 }
 .leverage-gta .lv-roll-dice[data-count="5"], .leverage-gta .lv-roll-dice[data-count="6"] { --cols: 3; }
 .leverage-gta .lv-roll-dice[data-count="7"], .leverage-gta .lv-roll-dice[data-count="8"],
-.leverage-gta .lv-roll-dice[data-count="11"], .leverage-gta .lv-roll-dice[data-count="12"] { --cols: 4; }
+.leverage-gta .lv-roll-dice[data-count="11"], .leverage-gta .lv-roll-dice[data-count="12"],
+.leverage-gta .lv-roll-dice[data-count="16"] { --cols: 4; }
 .leverage-gta .lv-roll-dice:not([data-count="1"]):not([data-count="2"]):not([data-count="3"]):not([data-count="4"]) .lv-roll-die { width: var(--cell); }
 .leverage-gta .lv-roll-dice:not([data-count="1"]):not([data-count="2"]):not([data-count="3"]):not([data-count="4"]) .lv-die { zoom: 0.72; }
 .leverage-gta .lv-roll-dice:not([data-count="1"]):not([data-count="2"]):not([data-count="3"]):not([data-count="4"]) .lv-roll-cap { max-width: 100%; overflow: hidden; font-size: 10px; letter-spacing: 0.04em; text-overflow: ellipsis; white-space: nowrap; }
@@ -206,7 +209,7 @@
   color: var(--lv-wasted);
 }
 
-.leverage-gta .lv-down-card--busted .lv-down-title { color: var(--lv-busted); }
+.leverage-gta.lv-down-card--busted .lv-down-title { color: var(--lv-busted); }
 
 .leverage-gta .lv-down-who { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 10px 8px; }
 .leverage-gta .lv-down-mug { width: 28px; height: 32px; flex: none; object-fit: cover; border: 2px solid var(--lv-header); }
@@ -224,7 +227,7 @@
 }
 
 .leverage-gta .lv-down-lines { margin: 0; padding: 8px 14px 12px; list-style: none; text-align: start; border-top: 2px solid var(--lv-wasted); }
-.leverage-gta .lv-down-card--busted .lv-down-lines { border-top-color: var(--lv-busted); }
+.leverage-gta.lv-down-card--busted .lv-down-lines { border-top-color: var(--lv-busted); }
 .leverage-gta .lv-down-lines li { padding: 2px 0; overflow-wrap: anywhere; }
 
 /* Stars line (T-604): "STARS: from N to M" plus the reason. Red edge when the heat goes up, blue when it goes down. */

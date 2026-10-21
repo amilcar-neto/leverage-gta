@@ -11,6 +11,7 @@ const results = [];
 const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), detail: ok ? "" : JSON.stringify(detail) });
 const wait = (ms) => page.waitForTimeout(ms);
 const sheet = ".application.crew-sheet";
+let playerBrowser = null;
 
 /** Runs in the page: Rosa Delgado with the Traits of the mockup. */
 async function setup() {
@@ -86,6 +87,22 @@ try {
   record("money untouched without a money die", f.money === false && r.money === 8, r);
   record("card drawn: dice, chips, total", r.card?.dice === 4 && r.card.chips === 4 && r.card.total === String(f.total) && r.card.headerHidden, r.card);
   record("the Fixer sees no KEEP button (only the character's player keeps dice)", !r.card.buttons.includes("keepDie"), r.card);
+
+  // The character's owner (a player, second browser) does see the KEEP button on the latest roll.
+  const msgId = await page.evaluate(async (actorId) => {
+    const player = await foundry.documents.User.create({ name: "[TEST] Player", role: CONST.USER_ROLES.PLAYER });
+    await game.actors.get(actorId).update({ ownership: { default: 0, [player.id]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER } });
+    return game.messages.contents.filter((m) => m.getFlag("leverage-gta", "roll")?.actorUuid === `Actor.${actorId}`).at(-1).id;
+  }, id);
+  const { chromium } = await import("playwright");
+  const httpCredentials = env.FOUNDRY_HTTP_USER ? { username: env.FOUNDRY_HTTP_USER, password: env.FOUNDRY_HTTP_PASSWORD ?? "" } : undefined;
+  playerBrowser = await chromium.launch();
+  const pp = await playerBrowser.newPage({ viewport: { width: 1920, height: 1080 }, httpCredentials });
+  await login(pp, { ...env, FOUNDRY_USER: "[TEST] Player", FOUNDRY_PASSWORD: "" });
+  await pp.evaluate(() => { ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary"); });
+  await pp.waitForTimeout(1500);
+  const ownerButtons = await pp.evaluate((i) => [...document.querySelectorAll(`.chat-message[data-message-id="${i}"] .lv-roll-btn`)].map((b) => b.dataset.action), msgId);
+  record("the character's owner sees the KEEP button", ownerButtons.includes("keepDie"), ownerButtons);
   record("card is 330-ish px wide, nothing overflows", r.card.cardWidth > 250 && !r.card.overflow, r.card);
   record("pool cleared after rolling", (await page.locator(`${sheet} .lv-tray-chips .lv-chip[data-pool-ref]`).count()) === 0);
 
@@ -109,12 +126,14 @@ try {
   record("run", false, err.message.split("\n").slice(0, 6).join(" | "));
   await page.screenshot({ path: `${SHOTS}/T-502-failure.png` }).catch(() => {});
 } finally {
+  await playerBrowser?.close().catch(() => {});
   await page.evaluate(async () => {
     const test = game.actors.filter((x) => x.name.startsWith("[TEST]"));
     const uuids = new Set(test.map((a) => a.uuid));
     const msgs = game.messages.filter((m) => uuids.has(m.getFlag("leverage-gta", "roll")?.actorUuid)).map((m) => m.id);
     if (msgs.length) await ChatMessage.deleteDocuments(msgs);
     for (const a of test) { await a.sheet.close(); await a.delete(); }
+    await game.users.getName("[TEST] Player")?.delete();
   }).catch(() => {});
 }
 for (const r of results) console.log(`${r.ok ? "PASS" : "FAIL"} ${r.name}${r.detail ? ` ${r.detail}` : ""}`);

@@ -34,13 +34,13 @@ Alvo visual: `reference/mockups/png/hud-sidebar-open.png`, `hud-sidebar-collapse
 
 - `$` em Anton 40 px verde-dinheiro com sombra suave (sem contorno preto) + dados verde-dinheiro de 38 px com o número dentro, **maior à
   direita**, dados novos nascendo à esquerda. Sem dinheiro: `$` + um contorno tracejado de d4 com "0".
-- **Clique esquerdo: +1 degrau. Clique direito: −1 degrau.** Só dono do personagem e mestre. Para pagar um preço em
-  dados (ex.: d12 + d6) há um item no menu de contexto ("Pay…") que abre um diálogo com a tabela de preços.
-- Tooltip: "Grana · 7 steps · left click +1, right click −1".
+- **Clique esquerdo: Pagar** (abre o diálogo com a tabela de preços; Shift + clique minimiza o HUD). **Clique direito:
+  Emprestar** (abre o diálogo de empréstimo). Só dono do personagem e mestre.
+- Tooltip: "Grana · 7 steps · click to pay, right click to lend".
 
 ## Plot Points
 
-- Ficha de cassino amarela (30 px) + número em Anton 34 px amarelo com sombra suave, botões − e + (22 px) à esquerda.
+- Ficha de cassino amarela (30 px) + número em Anton 34 px amarelo com sombra suave, botão − (22 px) à esquerda; o botão + só aparece para o mestre (e o clique no número também dá +1 só ao mestre; botão direito no número gasta 1).
 - Sempre visível, inclusive com 0.
 - Animação curta (pulso) quando o valor muda, para o jogador perceber que ganhou um PP.
 

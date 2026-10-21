@@ -77,7 +77,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   Distinction, Talent (Role, custo FREE/1 PP, Activation, Effect, dado opcional), Specialty, Asset (dado, duração,
   nota, arma), Job (rendimento total e parte, callback, gasto, notas). Botão de apagar no rodapé. Ícones padrão por
   tipo em `assets/`. *Dep:* T-103, T-202. *Par:* um builder por 2–3 tipos.
-- [ ] **R-F4 Revisão de fase.**
+- [x] **R-F4 Revisão de fase.**
 
 ## Fase 5 — Pool, rolagem e chat
 
@@ -92,7 +92,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   complicações). *Dep:* T-502.
 - [x] **T-505 API e macros.** `game.leverage.*`, `docs/macros.md` com exemplos testados. *Dep:* T-502.
 - [x] **T-506 Dice So Nice** (opcional, só se simples). *Dep:* T-502.
-- [ ] **R-F5 Revisão de fase.**
+- [x] **R-F5 Revisão de fase.**
 
 ## Fase 6 — Regras da casa
 
@@ -103,7 +103,7 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   rendimento. *Dep:* T-105, T-502.
 - [x] **T-604 Estrelas.** Configuração `wanted`, escalas por cidade (app de edição), Pool da polícia no rolador.
   *Dep:* T-504.
-- [ ] **R-F6 Revisão de fase.**
+- [x] **R-F6 Revisão de fase.**
 
 ## Fase 7 — HUD e ferramentas do mestre
 
@@ -113,19 +113,19 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 - [x] **T-703 Rastreador do Job.** Job ativo, Complications, Traços de cena, visão da Equipe. *Dep:* T-702.
 - [x] **T-704 Encerrar cena / Novo Job / Encerrar Job / Nova sessão / Dar PP.** *Dep:* T-703, T-305.
 - [x] **T-705 Apps de configuração** (escalas de cidade, preços, custos de evolução). *Dep:* T-106.
-- [ ] **R-F7 Revisão de fase.**
+- [x] **R-F7 Revisão de fase.**
 
 ## Fase 8 — NPC e Local
 
 - [x] **T-801 Ficha de NPC** (tiers, Traços, gangue, arma, polícia, ROLL AS OPPOSITION). *Dep:* T-504.
   *Par:* T-802.
 - [x] **T-802 Ficha de Local.** *Dep:* T-301. *Par:* T-801.
-- [ ] **R-F8 Revisão de fase.**
+- [x] **R-F8 Revisão de fase.**
 
 ## Fase 9 — Acabamento
 
 - [ ] **T-901 i18n completo** (`scribe`): nenhuma string fixa; pt-BR revisado. *Dep:* tudo acima.
-- [ ] **T-902 Compêndio de exemplo** com a Rosa Delgado do mockup, NPCs (gangue de rua, polícia de choque), um Local,
+- [x] **T-902 Compêndio de exemplo** com a Rosa Delgado do mockup, NPCs (gangue de rua, polícia de choque), um Local,
   Talents e Assets de exemplo **próprios** (não copiados do livro). *Dep:* T-401, T-801.
 - [ ] **T-903 Migração e versão 0.1.0**, `CHANGELOG.md`, `tools/release.mjs` gera `dist/leverage-gta.zip` sem
   `docs/`, `reference/`, `tests/`, `scripts/`, `.claude/`. *Dep:* tudo acima.

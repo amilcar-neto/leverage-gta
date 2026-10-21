@@ -1,1 +1,1 @@
-IN PROGRESS: onda B (CSS/UI) de R-F4..R-F8, T-902 (compêndio)
+IN PROGRESS: T-901 (i18n), T-903 (versão/zip), T-904 (USO.md), R-F9, R-FINAL

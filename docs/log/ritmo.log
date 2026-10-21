@@ -5,3 +5,4 @@ Regra: ao esgotar o limite, não ficar tentando de hora em hora; agendar um úni
 Cada sessão de trabalho anota aqui: hora de início e hora em que o limite acabou (se souber).
 2026-10-21 02:45  Revisão da onda B+T-902 voltou: 2 bloqueios, 7 deveria. Correção em andamento.
 2026-10-21 03:11  Onda B corrigida + logo + HUD sombra suave; commit; revisão curta a seguir.
+2026-10-21 03:24  R-F4..R-F8 e T-902 fechadas. Próximo: T-901/T-903/T-904.

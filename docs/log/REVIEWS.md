@@ -34,3 +34,7 @@ Um resumo por revisão: tarefa ou fase, veredito, defeitos encontrados, o que fo
 - Deveria: estrela do Busted sobe na prisão em vez do resgate; Wasted/Busted com pouca Grana não segue docs/02; 3 caminhos para mudar estrelas (só 2 anunciam no chat); jogador cria PP para si no HUD/API; docs/07 desatualizado (cliques da Grana); campo `city` do Local sem efeito; selo da trava aparece em NPC/Local; moldura de janela copiada 4× em CSS; NPC×Local com editores de Traço diferentes; ações de mestre em massa sobre todos os crew do mundo e sem confirmação (Novo Job); regras da casa desligadas não desligam tudo (endJob, Rastreador); listeners do HUD sem remoção; helpers duplicados (`t`, `setting`, `readJob`, `wanted`); tamanhos de dado e cores fora de config/tokens.
 - Visual: 4 estilos de botão; Local fora da linguagem da Equipe; Rastreador com +/− colados; print do estado vazio do HUD não é o estado vazio.
 - Correção em duas frentes: (A) regras/JS agora; (B) CSS/UI depois que a correção visual anterior (R-F4 B) terminar.
+
+## Correções de R-F4..R-F8 + T-902 — rodadas 2 e 3 (Opus)
+- 2ª rodada: sem bloqueios (colunas de 5+ dados e chaves de i18n dos pacotes resolvidos e medidos no Foundry real). 5 itens menores: cor do BUSTED, moldura/botões dos diálogos, flavor duplicado no chat, docs/07 desatualizado, fins de linha. Todos corrigidos.
+- Ficaram para o dono: visual da Grana no HUD (ISSUES.md); HUD só testado sobre cena escura.

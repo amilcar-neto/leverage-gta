@@ -129,5 +129,24 @@
 
 .leverage-gta .lv-paper-btn--solid { --btn-bg: var(--lv-paper-ink); --btn-ink: var(--lv-paper); --btn-line: var(--lv-outline); }
 
+/* Dialog footer buttons (DialogV2): same shape as the system buttons; the default one is primary */
+.leverage-gta.lv-dialog .form-footer button {
+  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-ink: var(--lv-ink);
+  --btn-line: rgba(255, 255, 255, 0.25);
+  box-sizing: border-box;
+  height: 30px;
+  padding: 0 14px;
+  border: 2px solid var(--btn-line);
+  border-radius: 4px;
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-family: var(--lv-font-ui);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.leverage-gta.lv-dialog .form-footer button.default { --btn-bg: var(--lv-header); --btn-ink: var(--lv-die-ink); --btn-line: var(--lv-outline); }
+
 /* Chat card action row: the buttons share the width */
 .leverage-gta .lv-roll-btn { --btn-h: 34px; flex: 1 1 0; padding: 0 6px; font-size: 14px; }

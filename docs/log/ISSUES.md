@@ -45,7 +45,7 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 ## Onda B (CSS/UI) de R-F4..R-F8: conferência no Foundry real
 - Conferido com screenshots no Foundry do VPS (ficha da Equipe, NPC, Local, itens Talent/Asset, cards de rolagem com Grana e 7 dados, Rastreador, Rolador de oposição). Sem erros no console.
 - Não conferido: janelas de configuração (cidades, preços, treino), diálogos de Grana, card WASTED/BUSTED e o HUD vazio (só tokens trocados, sem mudança de layout).
-- O selo da trava em NPC/Local está escondido por CSS (`window.css`). O certo é não montar o selo nessas fichas (JS em `base-actor-sheet.mjs`). Gravidade baixa.
+- O selo da trava em NPC/Local está escondido por CSS (`window.css`). O certo é não montar o selo nessas fichas (JS em `base-actor-sheet.mjs`). Gravidade baixa. **Resolvido:** o selo não é mais montado em JS nessas fichas.
 
 ## Visual da Grana no HUD (decisão do dono pendente)
 - O dono acha feio (cifrão + dados de formatos diferentes). Não mexer até o dono rever o sistema pronto.

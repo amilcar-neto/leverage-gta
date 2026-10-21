@@ -22,6 +22,7 @@ export function needsDeleteConfirm(item) {
 export async function deleteWithConfirm(item) {
   if (needsDeleteConfirm(item)) {
     const yes = await foundry.applications.api.DialogV2.confirm({
+      classes: ["leverage-gta", "lv-dialog"],
       window: { title: t("LEVERAGE.Dialog.Delete.title") },
       content: `<p>${t("LEVERAGE.Dialog.Delete.body", { name: escapeHtml(item.name) })}</p>`,
       rejectClose: false
