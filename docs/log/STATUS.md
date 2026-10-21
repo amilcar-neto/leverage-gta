@@ -1,1 +1,1 @@
-IN PROGRESS: T-901 (i18n), T-903 (versão/zip), T-904 (USO.md), R-F9, R-FINAL
+IN PROGRESS: R-F9 (revisão da fase 9), depois R-FINAL

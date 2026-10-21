@@ -35,3 +35,4 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 - Em andamento: onda B (CSS/UI) de R-F4..R-F8, depois T-902, T-901, T-903, T-904, R-F9, R-FINAL.
 - R-F4..R-F8 e T-902 concluídas (revisadas em 3 rodadas). Em andamento: T-901, T-903, T-904.
 - T-901 e T-903 concluídas (revisadas). Em andamento: T-904.
+- T-904 concluída (docs/USO.md + prints). Em andamento: R-F9, depois R-FINAL.

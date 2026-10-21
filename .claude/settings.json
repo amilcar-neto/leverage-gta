@@ -11,7 +11,13 @@
       "Glob",
       "Grep",
       "WebFetch",
-      "WebSearch"
+      "WebSearch",
+      "Monitor",
+      "CronCreate",
+      "CronDelete",
+      "CronList",
+      "SendMessage",
+      "ScheduleWakeup"
     ],
     "deny": [
       "Bash(git push *)",
