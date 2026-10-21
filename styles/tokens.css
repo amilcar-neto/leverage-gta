@@ -1,5 +1,7 @@
 /* Design tokens (docs/03-decisoes-de-design.md). Scoped to .leverage-gta. */
-.leverage-gta {
+/* The logo tokens also apply to Foundry's own scene controls, which sit outside .leverage-gta. */
+.leverage-gta,
+#scene-controls {
   /* Palette */
   --lv-bg-a: #27363f;
   --lv-bg-b: #0b1012;

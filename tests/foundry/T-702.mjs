@@ -1,7 +1,8 @@
 /**
- * T-702 check: "Leverage" scene-control group in the real Foundry (GM). Uses one `[TEST]` crew character; the tools
- * that touch every Crew character (new session, end scene, new Job, end Job) only run when no other Crew exists.
- * Restores the settings it changes and deletes `[TEST]` documents. Run after `npm run deploy`.
+ * T-702 check: "Leverage" scene-control group in the real Foundry (GM). Uses one played `[TEST]` crew character (owned
+ * by a temporary `[TEST]` player user) and one unplayed `[TEST]` crew character; the tools that touch every played Crew
+ * character (new session, end scene, new Job, end Job) only run when no other played Crew with Items exists.
+ * Restores the settings it changes and deletes `[TEST]` documents, users and the chat messages it caused. Run after `npm run deploy`.
  * Exit codes: 0 pass, 1 fail, 2 not available.
  */
 import { requireEnv, openBrowser, collectConsole, login, SHOTS } from "./lib.mjs";
@@ -15,8 +16,10 @@ const wait = (ms) => page.waitForTimeout(ms);
 const S = "leverage-gta";
 let saved = null;
 let snap = [];
+let msgsBefore = [];
 const tool = (name) => page.locator(`button.tool[data-tool="${name}"]`);
 const dialog = page.locator(".application.lv-dialog");
+const wanted = page.locator(".application.lv-opposition.lv-wanted");
 const setting = (key) => page.evaluate(([s, k]) => game.settings.get(s, k), [S, key]);
 const actorState = (id) => page.evaluate((i) => {
   const a = game.actors.get(i);
@@ -28,18 +31,22 @@ try {
   const setup = await page.evaluate(async (s) => {
     const saved = Object.fromEntries(["traitsLocked", "wanted", "activeJob"].map((k) => [k, foundry.utils.deepClone(game.settings.get(s, k))]));
     const crew = game.actors.filter((a) => a.type === "crew");
-    const others = crew.filter((a) => a.items.size > 0).length; // other Crew with Items would be touched: skip then
+    const others = crew.filter((a) => a.items.size > 0 && game.users.some((u) => !u.isGM && a.testUserPermission(u, "OWNER"))).length; // other played Crew with Items would be touched: skip then
     const snap = crew.map((a) => [a.id, a.system.plotPoints.value, a.system.money.steps]);
-    const actor = await Actor.create({ name: "[TEST] Controls", type: "crew", system: { plotPoints: { value: 1 }, money: { steps: 4 } } });
+    const msgs = game.messages.map((m) => m.id);
+    const user = await foundry.documents.User.create({ name: "[TEST] Player", role: CONST.USER_ROLES.PLAYER });
+    const actor = await Actor.create({ name: "[TEST] Controls", type: "crew", ownership: { default: 0, [user.id]: 3 }, system: { plotPoints: { value: 1 }, money: { steps: 4 } } });
+    await Actor.create({ name: "[TEST] Unplayed", type: "crew", ownership: { default: 0 }, system: { plotPoints: { value: 1 } } });
     await actor.createEmbeddedDocuments("Item", [
       { name: "[TEST] Scene asset", type: "asset", system: { duration: "scene" } },
       { name: "[TEST] Job asset", type: "asset", system: { duration: "job" } },
       { name: "[TEST] Old job", type: "job", system: { callbackUsed: true } }
     ]);
-    return { saved, others, id: actor.id, snap };
+    return { saved, others, id: actor.id, snap, msgs, jobPP: game.settings.get(s, "jobStartPlotPoints") };
   }, S);
   saved = setup.saved;
   snap = setup.snap;
+  msgsBefore = setup.msgs;
   const alone = setup.others === 0;
   await wait(1000);
 
@@ -67,12 +74,14 @@ try {
 
   // Wanted level.
   await tool("wanted").click();
-  await dialog.waitFor({ timeout: 5000 });
+  await wanted.waitFor({ timeout: 5000 });
   await page.screenshot({ path: `${SHOTS}/T-702-wanted.png` });
-  await dialog.locator('label.lv-gm-star:has-text("3")').click();
-  await dialog.locator('button[data-action="ok"]').click();
-  await wait(800);
+  record("wanted dialog lists 6 levels (0-5)", (await wanted.locator("button.lv-wanted-level").count()) === 6);
+  await wanted.locator('button.lv-wanted-level[data-level="3"]').click();
+  await page.waitForFunction(() => game.settings.get("leverage-gta", "wanted").level === 3, null, { timeout: 5000 }).catch(() => {});
   record("wanted level saved", (await setting("wanted")).level === 3, await setting("wanted"));
+  record("wanted dialog shows level 3 pressed", (await wanted.locator('button.lv-wanted-level[data-level="3"]').getAttribute("aria-pressed")) === "true");
+  await page.evaluate(() => foundry.applications.instances.get("leverage-wanted-dialog")?.close());
 
   // Opposition roller: opens or warns, never throws.
   await tool("opposition").click();
@@ -82,6 +91,8 @@ try {
   // Give Plot Point to the test character only.
   await tool("givePlotPoint").click();
   await dialog.waitFor({ timeout: 5000 });
+  const listed = await page.evaluate(() => [...document.querySelectorAll('.lv-dialog input[name="actor"]')].map((i) => game.actors.get(i.value)?.name));
+  record("Give Plot Point lists played Crew only", listed.includes("[TEST] Controls") && !listed.includes("[TEST] Unplayed"), listed);
   await page.evaluate((id) => document.querySelectorAll('.lv-dialog input[name="actor"]').forEach((i) => { i.checked = i.value === id; }), setup.id);
   await dialog.locator('button[data-action="ok"]').click();
   await wait(1000);
@@ -104,7 +115,19 @@ try {
     await dialog.locator('input[name="name"]').fill("[TEST] Heist");
     await dialog.locator('button[data-action="ok"]').click();
     await wait(1000);
-    record("New Job sets activeJob and gives PP", (await setting("activeJob")).name === "[TEST] Heist" && (await actorState(setup.id)).pp === 3, await setting("activeJob"));
+    const startPP = Number(setup.jobPP);
+    record("New Job sets activeJob", (await setting("activeJob")).name === "[TEST] Heist", await setting("activeJob"));
+    record("New Job keeps PP above the minimum (no sum)", (await actorState(setup.id)).pp === Math.max(2, startPP), await actorState(setup.id));
+    const unplayed = await page.evaluate(() => game.actors.find((a) => a.name === "[TEST] Unplayed").system.plotPoints.value);
+    record("New Job does not touch unplayed Crew", unplayed === 1, unplayed);
+    await page.evaluate((id) => game.actors.get(id).update({ "system.plotPoints.value": 0 }), setup.id);
+    await page.evaluate(() => game.settings.set("leverage-gta", "activeJob", { ...game.settings.get("leverage-gta", "activeJob"), name: "" }));
+    await tool("newJob").click();
+    await dialog.waitFor({ timeout: 5000 });
+    await dialog.locator('input[name="name"]').fill("[TEST] Heist");
+    await dialog.locator('button[data-action="ok"]').click();
+    await wait(1000);
+    record("New Job raises PP up to the minimum", (await actorState(setup.id)).pp === startPP, await actorState(setup.id));
 
     await tool("endJob").click();
     await dialog.waitFor({ timeout: 5000 });
@@ -128,7 +151,7 @@ try {
   record("run", false, err.message.split("\n").slice(0, 6).join(" | "));
   await page.screenshot({ path: `${SHOTS}/T-702-failure.png` }).catch(() => {});
 } finally {
-  await page.evaluate(async ([s, saved, snap]) => {
+  await page.evaluate(async ([s, saved, snap, before]) => {
     for (const a of game.actors.filter((x) => x.name.startsWith("[TEST]"))) await a.delete();
     for (const [id, pp, steps] of snap) {
       const a = game.actors.get(id);
@@ -136,10 +159,11 @@ try {
       if (junk.length) await a.deleteEmbeddedDocuments("Item", junk);
       await a?.update({ "system.plotPoints.value": pp, "system.money.steps": steps });
     }
-    const msgs = game.messages.filter((m) => m.content.includes("lv-gm-note")).map((m) => m.id);
+    for (const u of game.users.filter((x) => x.name.startsWith("[TEST]"))) await u.delete();
+    const msgs = game.messages.filter((m) => !before.includes(m.id)).map((m) => m.id);
     if (msgs.length) await ChatMessage.deleteDocuments(msgs);
     if (saved) for (const [k, v] of Object.entries(saved)) await game.settings.set(s, k, v);
-  }, [S, saved, snap]).catch(() => {});
+  }, [S, saved, snap, msgsBefore]).catch(() => {});
 }
 for (const r of results) console.log(`${r.ok ? "PASS" : "FAIL"} ${r.name}${r.detail ? ` ${r.detail}` : ""}`);
 await browser.close();

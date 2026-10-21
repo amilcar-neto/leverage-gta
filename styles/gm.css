@@ -175,13 +175,13 @@
 }
 
 #scene-controls .lv-control-logo::before {
-  background: var(--lv-logo-white, #ffffff);
+  background: var(--lv-logo-white);
   -webkit-mask: url("../assets/sheet/window-icon.svg") center / contain no-repeat;
   mask: url("../assets/sheet/window-icon.svg") center / contain no-repeat;
 }
 
 #scene-controls .lv-control-logo::after {
-  background: var(--lv-logo-red, #ff1a4b);
+  background: var(--lv-logo-red);
   -webkit-mask: url("../assets/sheet/window-icon-accent.svg") center / contain no-repeat;
   mask: url("../assets/sheet/window-icon-accent.svg") center / contain no-repeat;
 }
