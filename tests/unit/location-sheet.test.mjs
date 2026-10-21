@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { moveEntry, nameSizeClass, traitRows } from "../../module/applications/actor/location-rows.mjs";
+import { moveEntry, nameSizeClass, presentNpcs, traitRows } from "../../module/applications/actor/location-rows.mjs";
 
 test("moveEntry moves an entry and ignores bad indexes", () => {
   assert.deepEqual(moveEntry(["a", "b", "c"], 0, 2), ["b", "c", "a"]);
@@ -23,4 +23,11 @@ test("nameSizeClass steps long names down", () => {
   assert.equal(nameSizeClass("Old Harbor Warehouse"), " is-long");
   assert.equal(nameSizeClass("The Old Harbor Warehouse Annex"), " is-longer");
   assert.equal(nameSizeClass(undefined), "");
+});
+
+test("presentNpcs lists distinct NPCs of the tokens, skipping the linked and non-NPC ones", () => {
+  const npc = (uuid) => ({ baseActor: { uuid, type: "npc" } });
+  const tokens = [npc("A.1"), npc("A.1"), npc("A.2"), { baseActor: { uuid: "A.3", type: "crew" } }, { baseActor: null }, npc("A.4")];
+  assert.deepEqual(presentNpcs(tokens, ["A.2"]).map((a) => a.uuid), ["A.1", "A.4"]);
+  assert.deepEqual(presentNpcs(undefined, undefined), []);
 });

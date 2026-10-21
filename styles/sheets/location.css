@@ -291,3 +291,6 @@
 }
 
 .leverage-gta.location-sheet .lv-loc-empty i { margin-inline-end: 6px; }
+
+/* NPC present in the scene of this place but not linked yet: dashed edge, the + button links it */
+.leverage-gta.location-sheet .lv-loc-person.is-present { border-style: dashed; }

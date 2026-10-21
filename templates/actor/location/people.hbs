@@ -2,14 +2,17 @@
   <h2 class="lv-panel-head"><span>{{localize "LEVERAGE.LocationSheet.people"}}</span><span class="lv-head-tools"><span class="lv-panel-hint">{{people.length}}</span></span></h2>
   <div class="lv-panel-body lv-scroll lv-loc-list lv-loc-drop">
     {{#each people}}
-    <div class="lv-row lv-loc-person" data-uuid="{{uuid}}">
+    <div class="lv-row lv-loc-person{{#if present}} is-present{{/if}}" data-uuid="{{uuid}}">
       <button type="button" class="lv-loc-person-open" data-action="openNpc" title="{{name}}">
         <span class="lv-loc-person-img"><img src="{{img}}" alt=""></span>
         <span class="lv-loc-person-name lv-ellipsis">{{name}}</span>
         <span class="lv-tag lv-tag--role">{{localize tierLabel}}</span>
         {{#if police}}<span class="lv-tag lv-tag--police"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>{{/if}}
       </button>
-      {{#if @root.canManage}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="unlinkNpc" label=(localize "LEVERAGE.Sheet.delete") small=true}}{{/if}}
+      {{#if @root.canManage}}
+      {{#if present}}<button type="button" class="lv-xbtn lv-xbtn--sm" data-action="linkNpc" aria-label="{{localize "LEVERAGE.LocationSheet.linkNpc"}}" title="{{localize "LEVERAGE.LocationSheet.linkNpc"}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+      {{else}}{{> "systems/leverage-gta/templates/actor/crew/partials/x-button.hbs" action="unlinkNpc" label=(localize "LEVERAGE.Sheet.delete") small=true}}{{/if}}
+      {{/if}}
     </div>
     {{else}}
     <p class="lv-loc-empty"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> {{localize "LEVERAGE.LocationSheet.emptyPeople"}}</p>

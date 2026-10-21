@@ -15,6 +15,21 @@ export const GANG_MAX = LEVERAGE.gangMax;
 export const showsLadders = (tier) => LADDER_TIERS.includes(tier);
 
 /**
+ * Whether Life and Vest apply to the tier: extras are a gang of dice (the book), so they have none.
+ * @param {string} tier
+ * @returns {boolean}
+ */
+export const showsVitalsFor = (tier) => tier !== "extra";
+
+/**
+ * Whether the gang panel is shown: always for extras; for the other tiers only when they have a gang.
+ * @param {string} tier
+ * @param {number} size Gang size.
+ * @returns {boolean}
+ */
+export const showsGang = (tier, size) => tier === "extra" || Number(size) > 0;
+
+/**
  * Die written by a click on a ladder die of the NPC: clicking the current die clears it (every NPC die may be blank).
  * @param {number|null} current
  * @param {number} clicked

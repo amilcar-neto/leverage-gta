@@ -5,7 +5,7 @@
 import { LEVERAGE, hasRealPortrait } from "../../config.mjs";
 import { getCityScales } from "../../world-state.mjs";
 import { LeverageActorSheet } from "./base-actor-sheet.mjs";
-import { moveEntry, nameSizeClass, traitRows } from "./location-rows.mjs";
+import { moveEntry, nameSizeClass, presentNpcs, traitRows } from "./location-rows.mjs";
 
 const TEMPLATES = `systems/${LEVERAGE.systemId}/templates/actor/location`;
 const part = (name, extra = {}) => ({ template: `${TEMPLATES}/${name}.hbs`, ...extra });
@@ -25,7 +25,8 @@ export class LocationSheet extends LeverageActorSheet {
       deleteTrait: LocationSheet.#deleteTrait,
       setTraitDie: LocationSheet.#setTraitDie,
       openNpc: LocationSheet.#openNpc,
-      unlinkNpc: LocationSheet.#unlinkNpc
+      unlinkNpc: LocationSheet.#unlinkNpc,
+      linkNpc: LocationSheet.#linkNpc
     }
   };
 
@@ -78,16 +79,21 @@ export class LocationSheet extends LeverageActorSheet {
     });
   }
 
-  /** The linked NPCs that still exist, as rows for the template. */
+  /** Template row of an NPC. */
+  static #personRow(npc, present) {
+    return {
+      uuid: npc.uuid, name: npc.name, img: npc.img, police: npc.system.police, present,
+      tierLabel: LEVERAGE.npcTiers[npc.system.tier]?.label ?? LEVERAGE.npcTiers.extra.label
+    };
+  }
+
+  /** The linked NPCs that still exist, then the NPCs with a token in the scene(s) of this place (`present`). */
   #people() {
-    return (this.actor.system.npcs ?? []).map((uuid) => {
-      const npc = fromUuidSync(uuid);
-      if (!npc || npc.type !== "npc") return null;
-      return {
-        uuid, name: npc.name, img: npc.img, police: npc.system.police,
-        tierLabel: LEVERAGE.npcTiers[npc.system.tier]?.label ?? LEVERAGE.npcTiers.extra.label
-      };
-    }).filter(Boolean);
+    const linked = (this.actor.system.npcs ?? []).map((uuid) => fromUuidSync(uuid)).filter((npc) => npc?.type === "npc");
+    const scenes = (game.scenes?.contents ?? []).filter((scene) => scene.tokens.some((token) => token.actorId === this.actor.id));
+    const tokens = scenes.flatMap((scene) => scene.tokens.contents);
+    const present = presentNpcs(tokens, linked.map((npc) => npc.uuid));
+    return [...linked.map((npc) => LocationSheet.#personRow(npc, false)), ...present.map((npc) => LocationSheet.#personRow(npc, true))];
   }
 
   /** @override */
@@ -105,6 +111,11 @@ export class LocationSheet extends LeverageActorSheet {
     el.addEventListener("dragover", (event) => this.#onDragOverPeople(event), { signal });
     el.addEventListener("dragleave", (event) => event.target.closest?.(".lv-loc-drop")?.classList.remove("is-over"), { signal });
     el.addEventListener("drop", (event) => this.#onDropNpc(event), { signal });
+    const refresh = () => this.rendered && this.render({ parts: ["people"] });
+    for (const name of ["createToken", "deleteToken"]) {
+      const id = Hooks.on(name, refresh);
+      signal.addEventListener("abort", () => Hooks.off(name, id));
+    }
   }
 
   /** @override */
@@ -203,6 +214,14 @@ export class LocationSheet extends LeverageActorSheet {
     const uuid = target.closest("[data-uuid]")?.dataset.uuid;
     const npc = uuid ? await fromUuid(uuid) : null;
     return npc?.sheet.render(true);
+  }
+
+  /** Link button of an NPC that is only present in the scene: adds it to the linked list. */
+  static #linkNpc(event, target) {
+    if (!this.canManage) return;
+    const uuid = target.closest("[data-uuid]")?.dataset.uuid;
+    const linked = this.actor.system.npcs;
+    if (uuid && !linked.includes(uuid)) return this.actor.update({ "system.npcs": [...linked, uuid] });
   }
 
   /** X on a linked NPC row: unlinks it (the NPC itself is untouched). */

@@ -28,6 +28,11 @@ function selectedActor(type) {
   return canvas?.tokens?.controlled.map((token) => token.actor).find((actor) => actor?.type === type) ?? null;
 }
 
+/** The NPC the Fixer points at: the selected NPC token, else the first targeted one. */
+function tokenNpc() {
+  return selectedActor("npc") ?? [...(game.user?.targets ?? [])].map((token) => token.actor).find((actor) => actor?.type === "npc") ?? null;
+}
+
 /** Locations of the moment: the selected one, else those with a token on the current scene. */
 function sceneLocations() {
   const selected = selectedActor("location");
@@ -73,7 +78,9 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   static async open({ npc = null, all = false, toggle = null } = {}) {
     OppositionRoller.#instance ??= new OppositionRoller();
     const app = OppositionRoller.#instance;
+    const pointed = npc ? null : tokenNpc();
     if (npc?.type === "npc") app.#useNpc(npc, { all, toggle });
+    else if (pointed && pointed.id !== app.#npcId) app.#useNpc(pointed, { all: true });
     await app.render({ force: true });
     app.bringToFront();
   }
@@ -104,9 +111,9 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     return Boolean(readSetting("houseRules.stars", true));
   }
 
-  /** The NPC the roller works with: the selected token's, else the one an NPC sheet loaded. */
+  /** The NPC the roller works with: the selected or targeted token's, else the one an NPC sheet loaded. */
   #npcActor() {
-    return selectedActor("npc") ?? this.#loadedNpc;
+    return tokenNpc() ?? this.#loadedNpc;
   }
 
   /** Display names of the NPC sources. */
@@ -181,6 +188,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     const refresh = () => this.rendered && this.render();
     this.#hooks = [
       ["controlToken", Hooks.on("controlToken", () => this.#onSelectionChanged())],
+      ["targetToken", Hooks.on("targetToken", () => this.#onSelectionChanged())],
       ["canvasReady", Hooks.on("canvasReady", refresh)],
       ["updateSetting", Hooks.on("updateSetting", (setting) => WATCHED_SETTINGS.has(setting.key) && refresh())],
       ["updateActor", Hooks.on("updateActor", (actor) => actor.id === this.#npcId && refresh())]
@@ -204,10 +212,11 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     super._onClose(options);
   }
 
-  /** Re-renders when another NPC is selected; dice picked from the previous one are dropped. */
+  /** Re-renders when another NPC is selected or targeted: its dice and gang are picked, those of the previous one dropped. */
   #onSelectionChanged() {
-    if (selectedActor("npc")) this.#loadedNpc = null;
-    this.#switchNpc(this.#npcActor()?.id ?? null);
+    const npc = tokenNpc();
+    if (npc && npc.id !== this.#npcId) this.#useNpc(npc, { all: true });
+    else this.#switchNpc(this.#npcActor()?.id ?? null);
     if (this.rendered) this.render();
   }
 
@@ -230,6 +239,15 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     } else if (toggle && keys.includes(toggle) && !this.#picked.delete(toggle)) {
       this.#picked.add(toggle);
     }
+  }
+
+  /** The NPC whose dice are in the roll (a picked die or its gang), so the damage dialog can start from it. */
+  #rolledNpc(sources) {
+    const npc = sources.npc;
+    if (!npc) return null;
+    const gang = npc.system.gang;
+    const usesGang = this.#gang.on && gang?.size > 0 && gang.die === this.#gang.die && gang.size === this.#gang.size;
+    return [...this.#picked].some((key) => key.startsWith("npc.")) || usesGang ? npc : null;
   }
 
   /** Updates the gang inputs without losing the focus. */
@@ -290,8 +308,12 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     if (this.#rolling) return;
     this.#rolling = true;
     try {
-      const { dice, source } = this.#chosen(this.#sources());
-      await rollOpposition({ dice: dice.map(({ die, label, ref }) => ({ die, label, ref })), label: this.#label, source: source || "none" });
+      const sources = this.#sources();
+      const { dice, source } = this.#chosen(sources);
+      await rollOpposition({
+        dice: dice.map(({ die, label, ref }) => ({ die, label, ref })), label: this.#label, source: source || "none",
+        npcUuid: this.#rolledNpc(sources)?.uuid
+      });
     } finally {
       this.#rolling = false;
     }

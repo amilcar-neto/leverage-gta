@@ -114,3 +114,9 @@ test("opposition card: no portrait, no Plot Point buttons, no ones warning", () 
   assert.equal(ctx.onesCount, 0);
   assert.deepEqual(ctx.ppNotes, []);
 });
+
+test("the opposition card remembers the NPC it came from", () => {
+  const dice = [{ ref: "a", label: "x", die: 6, kind: "opposition" }];
+  assert.equal(buildOppositionData({ dice, values: [3], name: "FIXER", flavor: "", npcUuid: "Actor.n1" }).npcUuid, "Actor.n1");
+  assert.equal("npcUuid" in buildOppositionData({ dice, values: [3], name: "FIXER", flavor: "" }), false);
+});

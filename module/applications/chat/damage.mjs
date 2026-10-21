@@ -47,8 +47,11 @@ function targetOf(target) {
 
 /* ------------------------------------------------------------ the card button */
 
+/** A player roll older than this (ms) before the opposition card is no longer its roll (another scene, another moment). */
+export const LINK_MAX_AGE = 15 * 60 * 1000;
+
 /**
- * The player roll that this opposition card belongs to: the closest earlier Pool roll of a character.
+ * The player roll that this opposition card belongs to: the closest earlier Pool roll of a character, if it is recent.
  * @param {ChatMessage} message The opposition card.
  * @returns {{message: ChatMessage, data: object}|null}
  */
@@ -56,7 +59,8 @@ export function linkedRoll(message) {
   const all = game.messages.contents;
   const rolls = all.map(rollOf);
   const index = linkedRollIndex(rolls, all.indexOf(message));
-  return index < 0 ? null : { message: all[index], data: rolls[index] };
+  if (index < 0 || message.timestamp - all[index].timestamp > LINK_MAX_AGE) return null;
+  return { message: all[index], data: rolls[index] };
 }
 
 /**
@@ -78,7 +82,7 @@ const options = (list, selected) => list.map(({ value, label, extra = "" }) =>
   `<option value="${escapeHtml(String(value))}"${String(value) === String(selected) ? " selected" : ""}${extra}>${escapeHtml(label)}</option>`).join("");
 
 /** Dialog body. */
-function dialogContent({ targets, attackers, selected, margin, police, hint }) {
+function dialogContent({ targets, attackers, selected, margin, police, attacker = "", weaponDie = 0 }) {
   const weapons = weaponOptions(LEVERAGE.dice, LEVERAGE.weaponDice, t);
   const attackerList = [{ value: "", label: t("LEVERAGE.Damage.Dialog.attackerNone") }, ...attackers.map((a) => ({
     value: a.uuid, label: a.name, extra: ` data-weapon="${a.system.weapon?.die ?? 0}" data-police="${a.system.police ? 1 : 0}"`
@@ -89,13 +93,24 @@ function dialogContent({ targets, attackers, selected, margin, police, hint }) {
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Damage.Dialog.margin")}</span>
       <input type="number" name="margin" min="0" step="1" value="${margin}"></label>
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Damage.Dialog.attacker")}</span>
-      <select name="attacker">${options(attackerList, "")}</select></label>
+      <select name="attacker">${options(attackerList, attacker)}</select></label>
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Damage.Dialog.weapon")}</span>
-      <select name="weapon">${options(weapons, 0)}</select></label>
+      <select name="weapon">${options(weapons, weaponDie)}</select></label>
     <label class="lv-dlg-check"><input type="checkbox" name="cover"><span>${t("LEVERAGE.Damage.Dialog.cover")}</span></label>
     <label class="lv-dlg-check"><input type="checkbox" name="police"${police ? " checked" : ""}><span>${t("LEVERAGE.Damage.Dialog.police")}</span></label>
-    <p class="lv-dlg-hint">${escapeHtml(hint)}</p>
   </div>`;
+}
+
+/**
+ * Where the damage dialog opens: beside the chat column (where the card is) instead of the middle of the screen, so it
+ * does not sit on top of the NPC sheet and the roller. Falls back to the default (centred) when the chat is not found.
+ * @param {number} width
+ * @returns {{width: number, left?: number, top?: number}}
+ */
+function dialogPosition(width) {
+  const chat = document.getElementById("sidebar")?.getBoundingClientRect();
+  if (!chat?.width) return { width };
+  return { width, left: Math.max(8, Math.round(chat.left - width - 12)), top: Math.max(8, Math.round(window.innerHeight * 0.2)) };
 }
 
 /**
@@ -107,7 +122,7 @@ function promptDamage(defaults) {
   return foundry.applications.api.DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog"],
     window: { title: t("LEVERAGE.Damage.Dialog.title") },
-    position: { width: 400 },
+    position: dialogPosition(400),
     rejectClose: false,
     content: dialogContent(defaults),
     render: (_event, dialog) => {
@@ -142,12 +157,13 @@ export async function damageFromCard(message) {
   if (!data?.opposition || data.damage || !allowed()) return;
   const linked = linkedRoll(message);
   const targets = game.actors.filter((a) => a.system?.life && ["crew", "npc"].includes(a.type));
+  const npc = data.npcUuid ? await fromUuid(data.npcUuid) : null;
   const answer = await promptDamage({
     targets, attackers: game.actors.filter((a) => a.type === "npc"),
     selected: linked?.data.actorUuid ?? targets[0]?.uuid,
     margin: linked ? lostBy(linked.data.total, data.total) : 0,
-    police: isPoliceSource(data.source),
-    hint: t(linked ? "LEVERAGE.Damage.Dialog.hintLinked" : "LEVERAGE.Damage.Dialog.hintFree")
+    police: isPoliceSource(data.source) || Boolean(npc?.system.police),
+    attacker: (game.actors.get(npc?.id) ?? npc)?.uuid ?? "", weaponDie: npc?.system.weapon?.die ?? 0
   });
   if (!answer) return;
   const record = await applyDamage({ ...answer });

@@ -109,9 +109,18 @@ export function buildControl() {
     button("givePlotPoint", "fa-solid fa-circle-plus", 9, actions.giveEachPlotPointDialog)
   ];
   return {
-    name: CONTROL_NAME, title: "LEVERAGE.GM.Controls.title", icon: "lv-control-logo", order: 100,
+    name: CONTROL_NAME, title: "LEVERAGE.GM.Controls.title", icon: "lv-control-logo", order: 0,
     visible: game.user.isGM, activeTool: null, tools: Object.fromEntries(tools.map((tool) => [tool.name, tool]))
   };
+}
+
+/**
+ * Opens the Leverage group so the Fixer sees the tools when the world loads (not only after finding the logo).
+ * The group has no canvas layer, so the Token layer stays active.
+ */
+export function revealControls() {
+  if (!game.user.isGM || ui.controls?.control?.name === CONTROL_NAME) return;
+  ui.controls?.activate({ control: CONTROL_NAME });
 }
 
 /** Registers the control group and keeps the lock toggle in step with its setting. Call once from `init`. */
@@ -119,5 +128,6 @@ export function registerSceneControls() {
   Hooks.on("getSceneControlButtons", (controls) => {
     if (game.user.isGM) controls[CONTROL_NAME] = buildControl();
   });
+  Hooks.once("ready", revealControls);
   Hooks.on(LOCK_HOOK, () => { if (game.user.isGM) ui.controls?.render(); });
 }

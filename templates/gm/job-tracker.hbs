@@ -23,6 +23,7 @@
 </section>
 {{/inline}}
 <div class="lv-trk">
+  {{#if hasJob}}
   <section class="lv-trk-sec">
     <label class="lv-trk-title" for="lv-trk-job-name">{{localize "LEVERAGE.Tracker.job"}}</label>
     <input type="text" id="lv-trk-job-name" class="lv-trk-input" name="jobName" maxlength="80" value="{{name}}" placeholder="{{localize "LEVERAGE.Tracker.jobPlaceholder"}}">
@@ -31,6 +32,11 @@
   </section>
 
   {{> entries rows=complications list="complications" title="LEVERAGE.Tracker.complications" empty="LEVERAGE.Tracker.noComplications" placeholder="LEVERAGE.Tracker.newComplication"}}
+  {{else}}
+  <section class="lv-trk-sec lv-trk-nojob">
+    <button type="button" class="lv-config-btn lv-config-btn--primary lv-trk-start" data-action="newJob"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{localize "LEVERAGE.GM.Tool.newJob"}}</button>
+  </section>
+  {{/if}}
   {{> entries rows=sceneTraits list="sceneTraits" title="LEVERAGE.Tracker.sceneTraits" empty="LEVERAGE.Tracker.noSceneTraits" placeholder="LEVERAGE.Tracker.newSceneTrait"}}
 
   <section class="lv-trk-sec">

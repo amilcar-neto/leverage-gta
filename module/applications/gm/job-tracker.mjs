@@ -8,7 +8,7 @@ import { readSetting } from "../../data/fields.mjs";
 import { clampSteps } from "../../rules/money.mjs";
 import { renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
-import { crewActors, readJob, writeJob } from "./job-actions.mjs";
+import { crewActors, newJobDialog, readJob, writeJob } from "./job-actions.mjs";
 import { addEntry, clampedAdd, removeEntry, renameJob, setJobGoal, stepEntry } from "./job-tracker-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -46,7 +46,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     tag: "div",
     window: { title: "LEVERAGE.Tracker.title", icon: "fa-solid fa-clipboard-list", resizable: true },
     position: { width: 600, height: "auto" },
-    actions: { add: JobTracker.#onAdd, remove: JobTracker.#onRemove, step: JobTracker.#onStep, adjust: JobTracker.#onAdjust }
+    actions: { newJob: () => newJobDialog(), add: JobTracker.#onAdd, remove: JobTracker.#onRemove, step: JobTracker.#onStep, adjust: JobTracker.#onAdjust }
   };
 
   /** @override */
@@ -58,6 +58,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
   async _prepareContext() {
     const job = readJob();
     return {
+      hasJob: Boolean(job.name),
       name: job.name,
       goal: job.goal,
       complications: job.complications.map(entryRow("complications")),

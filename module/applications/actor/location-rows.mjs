@@ -38,3 +38,21 @@ export function nameSizeClass(name) {
   if (length > 24) return " is-longer";
   return length > 14 ? " is-long" : "";
 }
+
+/**
+ * NPCs present in the scenes where a Location has a token, minus the ones already linked.
+ * @param {{baseActor?: {uuid: string, type: string}|null}[]} tokens Tokens of those scenes.
+ * @param {string[]} linked UUIDs of the linked NPCs.
+ * @returns {object[]} the distinct world NPC actors (first token wins), in token order
+ */
+export function presentNpcs(tokens, linked) {
+  const seen = new Set(linked ?? []);
+  const found = [];
+  for (const token of tokens ?? []) {
+    const actor = token.baseActor ?? token.actor;
+    if (actor?.type !== "npc" || seen.has(actor.uuid)) continue;
+    seen.add(actor.uuid);
+    found.push(actor);
+  }
+  return found;
+}

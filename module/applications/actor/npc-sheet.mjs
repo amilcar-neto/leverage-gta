@@ -11,7 +11,7 @@ import { buildRows } from "./parts/ladders.mjs";
 import { vestKindUpdate, vitalsEnabled } from "./parts/header.mjs";
 import { t } from "../components/i18n.mjs";
 import {
-  GANG_MAX, addTrait, clampGang, dieLadder, isDiePath, nextNpcDie, opposeDiceCount, patchTrait, removeTrait, showsLadders, stepDie,
+  GANG_MAX, addTrait, clampGang, dieLadder, isDiePath, nextNpcDie, opposeDiceCount, patchTrait, removeTrait, showsGang, showsLadders, showsVitalsFor, stepDie,
   traitRows
 } from "./npc-logic.mjs";
 
@@ -141,7 +141,8 @@ export class NpcSheet extends LeverageActorSheet {
       tiers: Object.fromEntries(Object.entries(LEVERAGE.npcTiers).map(([key, def]) => [key, def.label])),
       tierIcon: TIER_ICONS[system.tier] ?? TIER_ICONS.extra,
       tierLabel: LEVERAGE.npcTiers[system.tier]?.label,
-      showVitals: vitalsEnabled(),
+      showVitals: vitalsEnabled() && showsVitalsFor(system.tier),
+      showGang: showsGang(system.tier, system.gang.size),
       lifeMaxEditable: canEdit && !system.attributes?.vitality?.die,
       vestKinds: Object.fromEntries(Object.entries(LEVERAGE.vestKinds).map(([key, def]) => [key, def.label])),
       vestLabel: LEVERAGE.vestKinds[system.vest.kind]?.label,

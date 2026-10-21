@@ -104,3 +104,7 @@
 .leverage-gta .lv-trk-value--life { color: var(--lv-life-ink); }
 .leverage-gta .lv-trk-value--vest { color: var(--lv-vest); }
 .leverage-gta .lv-trk-value--pp { color: var(--lv-pp); }
+
+/* No active Job: one clear button instead of empty fields */
+.leverage-gta .lv-trk-nojob { align-items: stretch; }
+.leverage-gta .lv-trk-start { --btn-h: 40px; width: 100%; font-size: 16px; }

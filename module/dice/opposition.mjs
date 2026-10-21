@@ -177,10 +177,12 @@ export function normalizeDice(dice, defaultLabel) {
  * @param {string} input.name Name on the card header (FIXER).
  * @param {string} input.flavor
  * @param {string} [input.source]
+ * @param {string} [input.npcUuid] NPC whose dice were rolled (APPLY DAMAGE takes the attacker and weapon from it).
  * @returns {object}
  */
-export function buildOppositionData({ dice, values, name, flavor, source = "" }) {
-  return { ...buildRollData({ entries: dice, values, actorName: name, flavor }), opposition: true, source };
+export function buildOppositionData({ dice, values, name, flavor, source = "", npcUuid = "" }) {
+  const data = { ...buildRollData({ entries: dice, values, actorName: name, flavor }), opposition: true, source };
+  return npcUuid ? { ...data, npcUuid } : data;
 }
 
 /* ------------------------------------------------------------ Foundry half */
@@ -191,9 +193,10 @@ export function buildOppositionData({ dice, values, name, flavor, source = "" })
  * @param {(number|{die: number, label?: string})[]} [request.dice] Die sizes or `{die, label}`; empty means 2d6.
  * @param {string} [request.label] Description of the opposition (card subtitle).
  * @param {string} [request.source] Which shortcut built it (`"police"`, `"gang"`, `"manual"`...).
+ * @param {string} [request.npcUuid] NPC the dice come from, saved on the card.
  * @returns {Promise<ChatMessage|null>}
  */
-export async function rollOpposition({ dice, label, source = "manual" } = {}) {
+export async function rollOpposition({ dice, label, source = "manual", npcUuid = "" } = {}) {
   if (!game.user.isGM) {
     ui.notifications.warn(t("LEVERAGE.Opposition.gmOnly"));
     return null;
@@ -201,7 +204,7 @@ export async function rollOpposition({ dice, label, source = "manual" } = {}) {
   const { dice: entries, fallback } = normalizeDice(dice, t("LEVERAGE.Opposition.dieLabel"));
   const { roll, values } = await evaluateDice(entries.map((e) => e.die));
   const flavor = label?.trim() || t(fallback ? "LEVERAGE.Opposition.noneLabel" : "LEVERAGE.Opposition.defaultFlavor");
-  const data = buildOppositionData({ dice: entries, values, name: t("LEVERAGE.Opposition.fixer"), flavor, source: fallback ? "none" : source });
+  const data = buildOppositionData({ dice: entries, values, name: t("LEVERAGE.Opposition.fixer"), flavor, source: fallback ? "none" : source, npcUuid });
   return roll.toMessage({ speaker: { alias: data.actorName }, flavor, flags: { [SYSTEM_ID]: { roll: data } } });
 }
 

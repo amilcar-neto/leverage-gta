@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  GANG_MAX, addTrait, clampGang, dieLadder, isDiePath, nextNpcDie, opposeDiceCount, patchTrait, removeTrait, showsLadders,
-  stepDie, traitRows
+  GANG_MAX, addTrait, clampGang, dieLadder, isDiePath, nextNpcDie, opposeDiceCount, patchTrait, removeTrait, showsGang, showsLadders,
+  showsVitalsFor, stepDie, traitRows
 } from "../../module/applications/actor/npc-logic.mjs";
 import { npcSources, npcTraitKey } from "../../module/dice/opposition.mjs";
 
@@ -81,4 +81,11 @@ test("the weapon is a roller source only when the caller names it", () => {
   const system = { traits: [], attributes: {}, roles: {}, weapon: { die: 6 } };
   assert.deepEqual(npcSources(system, { ...names, weapon: undefined }), []);
   assert.deepEqual(npcSources(system, names), [{ key: "npc.weapon", label: "Weapon", die: 6 }]);
+});
+
+test("extras have no Life or Vest; the gang panel shows for extras or any gang", () => {
+  assert.deepEqual(["extra", "foil", "mark", "agent"].map(showsVitalsFor), [false, true, true, true]);
+  assert.equal(showsGang("extra", 0), true);
+  assert.equal(showsGang("foil", 0), false);
+  assert.equal(showsGang("mark", 3), true);
 });
