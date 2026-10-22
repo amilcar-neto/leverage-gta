@@ -54,6 +54,7 @@
         {{#each gang.options}}<option value="{{value}}"{{#if selected}} selected{{/if}}>d{{value}}</option>{{/each}}
       </select>
     </div>
+    {{#if versus}}<button type="button" class="lv-opp-chip lv-opp-chip--wide{{#if versus.on}} is-on{{/if}}" data-action="toggleVersus" aria-pressed="{{versus.on}}" title="{{versus.label}}"><span class="lv-opp-chip-name">{{versus.label}}</span></button>{{/if}}
   </section>
 
   {{#if npc}}

@@ -46,6 +46,16 @@
 
 .leverage-gta .lv-rd-shortcuts { display: flex; flex: none; gap: 6px; padding: 6px 14px 0; }
 
+.leverage-gta .lv-rd-link {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.leverage-gta .lv-rd-link.is-on { border-color: var(--lv-roll); color: var(--lv-roll); }
+
 .leverage-gta .lv-rd-dice {
   display: grid;
   flex: 1 1 auto;

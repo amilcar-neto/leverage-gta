@@ -30,7 +30,14 @@ function dieOptions(selected) {
 const dieNote = (die) => t("LEVERAGE.Dialog.Asset.dieNote", { die: `d${die}` });
 
 /** Builds the dialog body. */
-function buildContent({ plotPoints, duration, die, chooseDie }) {
+function buildContent({ plotPoints, duration, die, chooseDie, effect = false }) {
+  if (effect) {
+    return `<div class="lv-dlg">
+    <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.name")}</span>
+      <input type="text" name="name" required autofocus maxlength="80" placeholder="${escapeHtml(t("LEVERAGE.Dialog.Asset.namePlaceholder"))}"></label>
+    <p class="lv-dlg-hint">${t("LEVERAGE.Dialog.Asset.effectNote", { die: `d${die}` })}</p>
+  </div>`;
+  }
   const dieField = chooseDie ? `
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.die")}</span>
       <select name="die">${dieOptions(die)}</select></label>`
@@ -51,20 +58,23 @@ function buildContent({ plotPoints, duration, die, chooseDie }) {
  * @param {number} options.plotPoints Plot Points the actor has now (shown as information).
  * @param {(duration: string) => number} options.suggestDie Die suggested for a duration.
  * @param {boolean} [options.chooseDie] Show the die selector (Fixer only); otherwise the suggested die is used.
+ * @param {number|null} [options.effectDie] Effect die of a roll (Cortex Prime): the Asset is a Scene Asset of that die, free of Plot Points; only the name is asked.
  * @returns {Promise<{name: string, duration: string, die: number}|null>} the choices, or null when cancelled
  */
-export async function promptCreateAsset({ plotPoints, suggestDie, chooseDie = false }) {
+export async function promptCreateAsset({ plotPoints, suggestDie, chooseDie = false, effectDie = null }) {
   const duration = "scene";
+  const effect = Boolean(effectDie);
   const { DialogV2 } = foundry.applications.api;
   const answer = await DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog"],
     window: { title: t("LEVERAGE.Dialog.Asset.title") },
     position: { width: 380 },
     rejectClose: false,
-    content: buildContent({ plotPoints, duration, die: suggestDie(duration), chooseDie }),
+    content: buildContent({ plotPoints, duration, die: effect ? effectDie : suggestDie(duration), chooseDie, effect }),
     render: (_event, dialog) => {
       requireTextField(dialog, "name", "LEVERAGE.Dialog.Asset.nameRequired");
       const form = dialog.element.querySelector("form");
+      if (effect) return;
       form.elements.duration.addEventListener("change", () => {
         const suggested = suggestDie(form.elements.duration.value);
         if (form.elements.die) form.elements.die.value = String(suggested);
@@ -78,6 +88,7 @@ export async function promptCreateAsset({ plotPoints, suggestDie, chooseDie = fa
         const { name, duration: chosen, die } = new foundry.applications.ux.FormDataExtended(button.form).object;
         const trimmed = String(name ?? "").trim();
         if (!trimmed) return null;
+        if (effect) return { name: trimmed, duration, die: effectDie };
         const picked = chooseDie ? Number(die) : suggestDie(chosen);
         return { name: trimmed, duration: chosen, die: picked };
       }

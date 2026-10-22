@@ -373,6 +373,30 @@
 }
 .leverage-gta .lv-roll-opps-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* Versus result band (T-1011): same shape as the strips; SUCCESS green, HEROIC gold, FAIL red */
+.leverage-gta .lv-roll-versus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  min-width: 0;
+  margin: 0 10px 10px;
+  padding: 5px 10px;
+  border-inline-start: 3px solid var(--lv-roll);
+  background: color-mix(in srgb, var(--lv-roll) 9%, transparent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-roll);
+}
+.leverage-gta .lv-roll-versus--heroic { border-inline-start-color: var(--lv-pp); background: color-mix(in srgb, var(--lv-pp) 10%, transparent); color: var(--lv-pp); }
+.leverage-gta .lv-roll-versus--fail { border-inline-start-color: var(--lv-danger); background: color-mix(in srgb, var(--lv-danger) 8%, transparent); color: var(--lv-danger-soft); }
+.leverage-gta .lv-roll-versus-title { flex: none; font-family: var(--lv-font-display); font-size: 18px; letter-spacing: 0.08em; white-space: nowrap; }
+.leverage-gta .lv-roll-versus-steps { font-family: var(--lv-font-body, inherit); font-size: 12px; letter-spacing: 0.04em; }
+.leverage-gta .lv-roll-versus-detail { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leverage-gta .lv-roll-versus-effect { flex: none; margin-left: auto; color: var(--lv-white); white-space: nowrap; }
+
 /* BOTCH: the whole strip turns solid red, like a stamp (T-1008) */
 .leverage-gta .lv-roll-hitches--botch {
   border-inline-start-color: var(--lv-danger);

@@ -455,3 +455,19 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
      O card é redesenhado quando o PP do jogador muda (o botão depende dele).
 - **Descartado:** um diálogo em duas etapas (tipo, depois alvo): um só `<select>` com dois grupos basta.
 
+
+## Versus e efeito em ações (T-1011/T-1012, 2026-10-22)
+
+- **Contexto:** ligar a rolagem do jogador a um card do Fixer sem nunca fazer isso por proximidade; usar o efeito.
+- **Escolha:**
+  1. **Lógica pura** em `module/dice/versus.mjs` (`latestFixerCard`, `latestPlayerCard`, `buildVersus`, `complicationFromEffect`,
+     `lostAgainst`, `effectUsable`, `finalEffectDie`...) e `versus-cards.mjs` (lê o chat; a única escrita é `linkPlayerCard`).
+     Cena do card = `message.speaker.scene` (o card do Fixer passa a gravar a cena do canvas).
+  2. **Ligar é botão desligado por padrão**, na janela (vs último do Mestre) e no Rolador (vs último do jogador). O servidor
+     (Mestre) só aceita o `versusId` se ainda é o card que a janela ofereceria (id velho ou forjado é ignorado).
+  3. **Efeito final** (`versus.effectDie`) é o que Asset e Complication usam; o dado rolado continua em `effectDie`.
+  4. **Criar Asset do efeito:** o dono cria o Item na própria ficha (sem PP, escopo cena) e pede ao Mestre só a marca
+     `effectUsed.asset`. **Complications:** o Mestre escreve a lista, depois o card; se o card falha, desfaz a lista.
+  5. Complication do vencedor: marca `versus.complicationMade` na rolagem do perdedor (o botão passa para o próximo).
+     Nome padrão automático (sem diálogo): "Efeito: <card>" e "<card> vs <personagem>".
+- **Descartado:** ligar sozinho ao último card do Fixer; perguntar o nome da Complication (o Mestre renomeia no painel da cena).

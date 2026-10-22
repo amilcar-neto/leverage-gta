@@ -232,7 +232,7 @@ export async function rollOpposition({ dice, label, source = "manual", npcUuid =
   const { roll, values } = await evaluateDice(entries.map((e) => e.die));
   const flavor = label?.trim() || t(fallback ? "LEVERAGE.Opposition.noneLabel" : "LEVERAGE.Opposition.defaultFlavor");
   const data = buildOppositionData({ dice: entries, values, name: t("LEVERAGE.Opposition.fixer"), flavor, source: fallback ? "none" : source, npcUuid });
-  return roll.toMessage({ speaker: { alias: data.actorName }, flavor, flags: { [SYSTEM_ID]: { roll: data } } });
+  return roll.toMessage({ speaker: { alias: data.actorName, scene: canvas?.scene?.id ?? null }, flavor, flags: { [SYSTEM_ID]: { roll: data } } });
 }
 
 /**

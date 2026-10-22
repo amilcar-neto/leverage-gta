@@ -71,7 +71,7 @@
   cursor: pointer;
 }
 
-.leverage-gta .lv-opp-chip--wide { align-self: flex-start; }
+.leverage-gta .lv-opp-chip--wide { align-self: flex-start; max-width: 100%; }
 .leverage-gta .lv-opp-chip-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .leverage-gta .lv-opp-chip-dice { flex: none; color: var(--lv-muted); letter-spacing: 0.04em; text-transform: none; }
 .leverage-gta .lv-opp-chip:hover:not(:disabled) { background: rgba(255, 255, 255, 0.16); }

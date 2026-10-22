@@ -12,6 +12,7 @@ import { currentViewedLocations, locationTraitEntries } from "../../scene-locati
 import { isValidDie } from "../../dice/die.mjs";
 import { readSetting } from "../../data/fields.mjs";
 import { readJob } from "../../job-store.mjs";
+import { linkPlayerCard, playerCardForFixer } from "../../dice/versus-cards.mjs";
 import { poolText } from "../../rules/stars.mjs";
 import { readComplications } from "../../table-state.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
@@ -61,7 +62,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     window: { title: "LEVERAGE.Opposition.title", icon: "fa-solid fa-user-secret", resizable: false },
     position: { width: 460, height: "auto" },
     actions: {
-      step: OppositionRoller.#onStep, noOpposition: OppositionRoller.#onNoOpposition, togglePolice: OppositionRoller.#onTogglePolice,
+      toggleVersus: OppositionRoller.#onToggleVersus, step: OppositionRoller.#onStep, noOpposition: OppositionRoller.#onNoOpposition, togglePolice: OppositionRoller.#onTogglePolice,
       toggleGang: OppositionRoller.#onToggleGang, useNpcGang: OppositionRoller.#onUseNpcGang, toggle: OppositionRoller.#onToggle, difficulty: OppositionRoller.#onDifficulty,
       clear: OppositionRoller.#onClear, roll: OppositionRoller.#onRoll
     }
@@ -96,6 +97,8 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   #picked = new Set();
   #difficulty = BASELINE_DIFFICULTY;
   #label = "";
+  /** The Fixer chose to read the newest player roll as the contest (explicit, never on by itself). */
+  #versus = false;
   /** A roll is in flight (a double click or Enter + click must not post two cards). */
   #rolling = false;
   #hooks = [];
@@ -164,7 +167,9 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     const police = policeDice(city, stars, "", scales);
     const dieOptions = LEVERAGE.dice.map((value) => ({ value, selected: value === this.#gang.die }));
     const npcGang = sources.npc?.system.gang;
+    const player = playerCardForFixer();
     return {
+      versus: player && { on: this.#versus, label: t("LEVERAGE.Opposition.versusPlayer", { name: player.roll.actorName, total: player.roll.total }) },
       difficulties: LEVERAGE.difficulties.map((d) => ({
         key: d.key, label: t(`LEVERAGE.Difficulty.${d.key}`), dice: `${d.dice}d${d.size}`, on: d.key === this.#difficulty
       })),
@@ -276,6 +281,11 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     this.render();
   }
 
+  static #onToggleVersus() {
+    this.#versus = !this.#versus;
+    this.render();
+  }
+
   static #onDifficulty(event, target) {
     this.#difficulty = target.dataset.key;
     this.render();
@@ -329,10 +339,13 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     try {
       const sources = this.#sources();
       const { dice, source } = this.#chosen(sources);
-      await rollOpposition({
+      const player = this.#versus ? playerCardForFixer() : null;
+      const message = await rollOpposition({
         dice: dice.map(({ die, label, ref }) => ({ die, label, ref })), label: this.#label, source: source || "none",
         npcUuid: this.#rolledNpc(sources)?.uuid
       });
+      if (message && player) await linkPlayerCard(player.id, message);
+      this.#versus = false;
     } finally {
       this.#rolling = false;
     }

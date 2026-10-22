@@ -10,6 +10,7 @@ import { buyDie, clickDie, dieCaption, dieStates, draftFrom, draftSummary, empty
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
+import { fixerCardFor } from "../../dice/versus-cards.mjs";
 import { canResolve, confirmRoll, plotPointsFor, registerResolveSocket } from "./resolve-dice-flow.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -48,7 +49,7 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
     position: { width: 560, height: "auto" },
     actions: {
       pick: ResolveDiceApp.#onPick, effect: ResolveDiceApp.#onEffect, autoTotal: ResolveDiceApp.#onAutoTotal,
-      autoEffect: ResolveDiceApp.#onAutoEffect, buy: ResolveDiceApp.#onBuy, dismissOffer: ResolveDiceApp.#onDismissOffer,
+      autoEffect: ResolveDiceApp.#onAutoEffect, toggleVersus: ResolveDiceApp.#onToggleVersus, buy: ResolveDiceApp.#onBuy, dismissOffer: ResolveDiceApp.#onDismissOffer,
       confirm: ResolveDiceApp.#onConfirm, cancel: ResolveDiceApp.#onCancel
     }
   };
@@ -61,6 +62,8 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
   #draft = emptyDraft();
   /** Index of the die the player is offered to buy with a Plot Point. */
   #offer = null;
+  /** The player chose to roll against the last Fixer card (never on by itself). */
+  #versus = false;
 
   /** @param {ChatMessage} message The pending roll card. */
   constructor(message, options = {}) {
@@ -73,13 +76,16 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const data = rollOf(this.message);
     const entries = data?.entries ?? [];
     const available = data ? plotPointsFor(data) : 0;
-    const summary = data ? draftSummary(data, this.#draft, { ppAvailable: available }) : null;
+    const fixer = data ? fixerCardFor(this.message) : null;
+    const against = this.#versus && fixer ? fixer.roll.total : null;
+    const summary = data ? draftSummary(data, this.#draft, { ppAvailable: available, versusDifficulty: against }) : null;
     const allowed = Boolean(data) && canResolve(data.actorUuid ? resolveActor(data.actorUuid) : null, game.user);
     const states = dieStates(entries, this.#draft);
     const offer = this.#offer !== null && summary?.ppLeft >= LEVERAGE.prime.paidDiceCost ? tileOf(entries[this.#offer], states[this.#offer]) : null;
     return {
       who: data?.actorName ?? "", flavor: data?.flavor ?? "",
       tiles: entries.map((e, i) => tileOf(e, states[i])), offer,
+      link: fixer && { on: this.#versus, label: t("LEVERAGE.Resolve.versusLink", { total: fixer.roll.total }), tip: t("LEVERAGE.Resolve.versusLinkTip") },
       summary: summary && this.#summaryView(summary),
       canConfirm: allowed && Boolean(summary?.ok)
     };
@@ -155,6 +161,11 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
     return this.render();
   }
 
+  static #onToggleVersus() {
+    this.#versus = !this.#versus;
+    return this.render();
+  }
+
   static #onBuy() {
     if (this.#offer !== null) this.#draft = buyDie(this.#entries, this.#draft, this.#offer, { ppLeft: this.#ppLeft });
     this.#offer = null;
@@ -167,7 +178,8 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static async #onConfirm() {
-    if (!(await confirmRoll(this.message, this.#draft))) return;
+    const fixer = this.#versus ? fixerCardFor(this.message) : null;
+    if (!(await confirmRoll(this.message, this.#draft, fixer?.id ?? null))) return;
     await this.close();
   }
 

@@ -12,6 +12,9 @@ import { normalizeRoll } from "../../dice/roll-core.mjs";
 import { cardHandlers, isCharacterOwner, isExpanded, latestRollOf, opportunityActorOf, registerCardSocket } from "./card-handlers.mjs";
 import { canResolve } from "../dialogs/resolve-dice-flow.mjs";
 import { damageView, registerDamageMessages } from "./damage.mjs";
+import { effectActions, versusBand } from "./versus-view.mjs";
+import { chatCards } from "../../dice/versus-cards.mjs";
+import { complicationFromEffect, lostAgainst } from "../../dice/versus.mjs";
 import { sceneTagOf } from "../scene-panel/scene-panel-logic.mjs";
 
 /** Template of the card. */
@@ -188,10 +191,11 @@ function primeFields(data, layout, view) {
  * @param {number} [view.plotPoints] Plot Points the actor has now.
  * @param {{show: boolean, applied: string}} [view.damage] Opposition card: APPLY DAMAGE button and the applied summary.
  * @param {boolean} [view.expanded] The viewer opened the full roll (client state, never saved).
+ * @param {{actor: string, die: number}|null} [view.versusLost] Opposition card: the player who lost against it and the Complication die of the winner's effect.
  * @param {{canUse: boolean, plotPoints: number}} [view.opportunity] The viewer owns a character (`canUse`) and its Plot Points: Opportunity button of the Fixer's card.
  * @returns {object}
  */
-export function rollCardContext(raw, { t, isOwner = false, canChoose = false, isLatest = true, isGM = false, plotPoints = 0, lang = "en", expanded = false, damage = { show: false, applied: "" }, opportunity = { canUse: false, plotPoints: 0 } }) {
+export function rollCardContext(raw, { t, isOwner = false, canChoose = false, isLatest = true, isGM = false, plotPoints = 0, lang = "en", expanded = false, damage = { show: false, applied: "" }, opportunity = { canUse: false, plotPoints: 0 }, versusLost = null }) {
   const data = normalizeRoll(raw);
   const layout = layoutOf(data);
   const resolved = layout !== "pending";
@@ -230,8 +234,9 @@ export function rollCardContext(raw, { t, isOwner = false, canChoose = false, is
     keepTip: t(keepDisabled ? "LEVERAGE.Roll.keepTipNoPlotPoints" : "LEVERAGE.Roll.keepTip"),
     complicationLabel: t("LEVERAGE.Roll.complicationButton"), complicationTip: t("LEVERAGE.Roll.complicationTip")
   };
-  const context = { ...base, ...primeFields(data, layout, { t, canChoose, expanded }), ...opportunityView(data, t, opportunity) };
-  context.showActions = Boolean(showKeep || showComplication || showActivate || context.showDamage || context.showChoose || context.showOpportunity);
+  const context = { ...base, ...primeFields(data, layout, { t, canChoose, expanded }), ...opportunityView(data, t, opportunity), ...effectActions(data, { t, prime: layout === "prime", isOwner, isGM, lost: versusLost }) };
+  context.versus = resolved ? versusBand(data, t) : null;
+  context.showActions = Boolean(showKeep || showComplication || showActivate || context.showDamage || context.showChoose || context.showOpportunity || context.showEffectAsset || context.showEffectComplication || context.showFixerComplication);
   return context;
 }
 
@@ -251,6 +256,16 @@ function opportunityViewer() {
   return { canUse: Boolean(mine), plotPoints: mine?.system?.plotPoints?.value ?? 0 };
 }
 
+/** Opposition card: the first player who lost against it with no Complication made yet, and the die of the winner's effect. */
+function lostPlayerOf(message, data) {
+  if (!data.opposition || !game.user.isGM) return null;
+  for (const card of lostAgainst(chatCards(), message.id)) {
+    const die = complicationFromEffect(data.effectDie, card.roll.effectDie);
+    if (die) return { actor: card.roll.actorName, die, messageId: card.id };
+  }
+  return null;
+}
+
 /** Draws the card into one rendered message element. Nothing is drawn for a message the viewer may not read. */
 function paint(message, html, data, template) {
   if (!message.isContentVisible) return;
@@ -259,7 +274,7 @@ function paint(message, html, data, template) {
     t: (key, args) => game.i18n.format(key, args), lang: game.i18n.lang,
     isOwner: isCharacterOwner(actor, game.user), canChoose: canResolve(actor, game.user), isLatest: latestRollOf(data.actorUuid)?.id === message.id,
     isGM: game.user.isGM, plotPoints: actor?.system?.plotPoints?.value ?? 0, damage: damageView(message, data),
-    expanded: isExpanded(message), opportunity: opportunityViewer()
+    expanded: isExpanded(message), opportunity: opportunityViewer(), versusLost: lostPlayerOf(message, data)
   });
   const host = html.querySelector(".message-content");
   if (!host) return;
@@ -298,6 +313,11 @@ function registerRefreshHooks() {
     if (changes.system?.plotPoints === undefined) return;
     refreshLatest(actor.uuid);
     if (actor.id === opportunityActorOf(game.user)?.id) refreshOpportunityCards();
+  });
+  Hooks.on("updateChatMessage", (message) => {
+    const target = rollOf(message)?.versus?.messageId;
+    const fixer = target ? game.messages.get(target) : null;
+    if (fixer) ui.chat?.updateMessage(fixer);
   });
   Hooks.on("createChatMessage", (message) => {
     const data = message.getFlag(SYSTEM_ID, "roll");

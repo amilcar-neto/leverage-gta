@@ -392,7 +392,8 @@
         },
         "confirm": "Create",
         "dieNote": "The new Asset gets a {die}.",
-        "nameRequired": "Give the Asset a name."
+        "nameRequired": "Give the Asset a name.",
+        "effectNote": "Effect die: {die}. This Scene Asset costs no Plot Points."
       },
       "Delete": {
         "title": "Delete",
@@ -698,7 +699,25 @@
         "lower": "{by} lowered {name}: d{from} to d{to}",
         "gone": "{by} removed {name} (d{from})",
         "raise": "{by} raised {name}: d{from} to d{to}"
-      }
+      },
+      "versus": {
+        "success": "Success",
+        "fail": "Fail",
+        "heroic": "Heroic",
+        "beat": "beats by {n}",
+        "miss": "fails by {n}",
+        "stepsOne": "+{n} step",
+        "stepsMany": "+{n} steps"
+      },
+      "effectAsset": "Create Asset {die}",
+      "effectAssetTip": "Turn the effect die ({die}) into a Scene Asset. Costs no Plot Points.",
+      "effectComplication": "Complication {die}",
+      "effectComplicationTip": "Turn the effect die ({die}) into a Complication of the scene.",
+      "fixerComplication": "Complication = effect {die}",
+      "fixerComplicationTip": "{actor} lost: a Complication {die} from the winner's effect (one step lower if the loser's effect is the same or bigger).",
+      "effectComplicationName": "Effect: {name}",
+      "fixerComplicationName": "{name} vs {actor}",
+      "effectFailed": "Could not use the effect."
     },
     "Migration": {
       "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing.",
@@ -832,7 +851,8 @@
       "labelPlaceholder": "What is the opposition doing?",
       "roll": "Roll",
       "difficulty": "Difficulty",
-      "opportunities": "{count} Opportunities"
+      "opportunities": "{count} Opportunities",
+      "versusPlayer": "vs {name}'s last roll (total {total})"
     },
     "Tracker": {
       "title": "Job Tracker",
@@ -1211,7 +1231,9 @@
       "notPending": "This roll was already resolved.",
       "invalid": "Invalid dice choice.",
       "noAnswer": "The Fixer did not answer. Try again.",
-      "error": "Could not resolve the roll. Nothing was changed."
+      "error": "Could not resolve the roll. Nothing was changed.",
+      "versusLink": "vs last GM roll (total {total})",
+      "versusLinkTip": "Roll against the GM's latest opposition roll: the card will show success, failure or heroic success."
     },
     "Opportunity": {
       "taken": "No Opportunity is left on this card.",

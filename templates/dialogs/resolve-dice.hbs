@@ -6,6 +6,7 @@
   <div class="lv-rd-shortcuts">
     <button type="button" class="lv-config-btn" data-action="autoTotal">{{localize "LEVERAGE.Resolve.maxTotal"}}</button>
     <button type="button" class="lv-config-btn" data-action="autoEffect">{{localize "LEVERAGE.Resolve.maxEffect"}}</button>
+    {{#if link}}<button type="button" class="lv-config-btn lv-rd-link{{#if link.on}} is-on{{/if}}" data-action="toggleVersus" aria-pressed="{{#if link.on}}true{{else}}false{{/if}}" title="{{link.tip}}">{{link.label}}</button>{{/if}}
   </div>
   <div class="lv-rd-dice lv-scroll">
     {{#each tiles}}

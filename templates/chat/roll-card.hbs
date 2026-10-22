@@ -54,6 +54,14 @@
 
   {{/unless}}
 
+  {{#if versus}}
+  <div class="lv-roll-versus lv-roll-versus--{{versus.outcome}}" data-tooltip="{{versus.tip}}">
+    <span class="lv-roll-versus-title">{{versus.title}}{{#if versus.steps}} <span class="lv-roll-versus-steps">{{versus.steps}}</span>{{/if}}</span>
+    <span class="lv-roll-versus-detail">{{versus.detail}}</span>
+    {{#if versus.effect}}<span class="lv-roll-versus-effect">{{versus.effect}}</span>{{/if}}
+  </div>
+  {{/if}}
+
   {{#each ppNotes}}<div class="lv-roll-note">{{this}}</div>{{/each}}
 
   {{#if onesCount}}
@@ -87,6 +95,9 @@
     {{#if showActivate}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="activateHitches" data-tooltip="{{activateTip}}">{{activateLabel}}</button>{{/if}}
     {{#if showComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="complication" data-tooltip="{{complicationTip}}">{{complicationLabel}}</button>{{/if}}
     {{#if showOpportunity}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="useOpportunity" data-tooltip="{{opportunityTip}}" {{#if opportunityDisabled}}disabled{{/if}}>{{opportunityLabel}}</button>{{/if}}
+    {{#if showEffectAsset}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="effectAsset" data-tooltip="{{effectAssetTip}}">{{effectAssetLabel}}</button>{{/if}}
+    {{#if showEffectComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="effectComplication" data-tooltip="{{effectComplicationTip}}">{{effectComplicationLabel}}</button>{{/if}}
+    {{#if showFixerComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="fixerComplication" data-tooltip="{{fixerComplicationTip}}">{{fixerComplicationLabel}}</button>{{/if}}
     {{#if showDamage}}<button type="button" class="lv-roll-btn lv-roll-btn--damage" data-action="applyDamage" data-tooltip="{{damageTip}}">{{damageLabel}}</button>{{/if}}
   </div>
   {{/if}}

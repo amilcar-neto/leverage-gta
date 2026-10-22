@@ -8,6 +8,7 @@ import { logger } from "../../logger.mjs";
 import { lowestActiveGM, registerSocketAction, requestAsGM } from "../../socket.mjs";
 import { applyConfirm, ppAvailable } from "../../dice/resolve-draft.mjs";
 import { applyRollEffects } from "../../dice/roll-core.mjs";
+import { fixerCardFor, heroicOn } from "../../dice/versus-cards.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { t } from "../components/i18n.mjs";
 import { isCharacterOwner } from "../chat/card-handlers.mjs";
@@ -49,14 +50,15 @@ export function plotPointsFor(data) {
  * @param {ChatMessage} message
  * @param {{total: number[], effect: number[], paid?: number[]}} selection Untrusted: it may come from a socket.
  * @param {User} user Who asks.
+ * @param {string|null} [versusId] Fixer card the player chose to roll against; used only when it is still the card the window offers (untrusted).
  * @returns {Promise<{ok: boolean, reason?: "forbidden"|"notPending"|"invalid"|"error"}>}
  */
-export async function resolveNow(message, selection, user) {
+export async function resolveNow(message, selection, user, versusId = null) {
   const data = rollOf(message);
   if (!data || data.status !== "pending") return { ok: false, reason: "notPending" };
   const actor = data.actorUuid ? resolveActor(data.actorUuid) : null;
   if (!canResolve(actor, user)) return { ok: false, reason: "forbidden" };
-  const resolved = applyConfirm(data, selection, { ppAvailable: plotPointsFor(data) });
+  const resolved = applyConfirm(data, selection, { ppAvailable: plotPointsFor(data), versus: versusFor(message, versusId) });
   if (!resolved) return { ok: false, reason: "invalid" };
   try {
     await message.setFlag(SYSTEM_ID, "roll", resolved);
@@ -74,6 +76,12 @@ export async function resolveNow(message, selection, user) {
   return { ok: true };
 }
 
+/** The link to save for a chosen Fixer card, or null when it is not the card offered now (stale or forged id). */
+function versusFor(message, versusId) {
+  const card = versusId ? fixerCardFor(message) : null;
+  return card?.id === versusId ? { messageId: card.id, difficulty: card.roll.total, heroic: heroicOn() } : null;
+}
+
 /** Warns about a refused confirmation (only for the client that asked). */
 function warn(reason) {
   ui.notifications.warn(t(`LEVERAGE.Resolve.${reason}`));
@@ -84,15 +92,16 @@ function warn(reason) {
  * himself, through the same queue) and the answer comes back; with none, a user who can update the card does it here.
  * @param {ChatMessage} message
  * @param {{total: number[], effect: number[], paid?: number[]}} selection
+ * @param {string|null} [versusId] Fixer card to roll against (optional link, never automatic).
  * @returns {Promise<boolean>} whether the card was resolved; a refusal warns this user and returns false
  */
-export async function confirmRoll(message, selection) {
+export async function confirmRoll(message, selection, versusId = null) {
   if (busy.has(message.id)) return false;
   busy.add(message.id);
   try {
     let result;
-    if (lowestActiveGM(game.users)) result = await requestAsGM("resolveRoll", { messageId: message.id, selection });
-    else if (message.canUserModify(game.user, "update")) result = await resolveNow(message, selection, game.user);
+    if (lowestActiveGM(game.users)) result = await requestAsGM("resolveRoll", { messageId: message.id, selection, versusId });
+    else if (message.canUserModify(game.user, "update")) result = await resolveNow(message, selection, game.user, versusId);
     else {
       ui.notifications.warn(t("LEVERAGE.Socket.noGM"));
       return false;
@@ -106,11 +115,11 @@ export async function confirmRoll(message, selection) {
 }
 
 /** Socket handler (Fixer side). The requester is the user the server authenticated; answers with the result. */
-async function onResolveRequest({ messageId, selection }, userId) {
+async function onResolveRequest({ messageId, selection, versusId }, userId) {
   const message = game.messages.get(messageId);
   const user = game.users.get(userId);
   if (!message || !user) return { ok: false, reason: "notPending" };
-  return resolveNow(message, selection ?? { total: [], effect: [] }, user);
+  return resolveNow(message, selection ?? { total: [], effect: [] }, user, versusId ?? null);
 }
 
 /** Registers the Fixer-side socket action (call once). */

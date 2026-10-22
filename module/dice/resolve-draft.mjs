@@ -4,6 +4,7 @@
  */
 import { LEVERAGE } from "../config.mjs";
 import { applyPick, compare, summarize, validate } from "./prime-math.mjs";
+import { buildVersus } from "./versus.mjs";
 
 /** @returns {{total: number[], effect: number[], paid: number[]}} A draft with nothing chosen. */
 export const emptyDraft = () => ({ total: [], effect: [], paid: [] });
@@ -107,13 +108,13 @@ export function ppAvailable(data, current) {
  * Everything the footer shows, from the draft.
  * @param {object} data Roll data (pending).
  * @param {{total: number[], effect: number[], paid: number[]}} draft
- * @param {{ppAvailable?: number}} [options]
+ * @param {{ppAvailable?: number, versusDifficulty?: number|null}} [options] `versusDifficulty`: the Fixer's total the player chose to roll against (wins over `data.versus`).
  * @returns {object} `total`, `effectFaces`, `effectDefault`, `ppSpent`, `ppLeft`, `ppAvailable`, `ok`, `missing`, `errors`, `versus`
  */
-export function draftSummary(data, draft, { ppAvailable: available = 0 } = {}) {
+export function draftSummary(data, draft, { ppAvailable: available = 0, versusDifficulty = null } = {}) {
   const checked = validate(data.entries, draft, { ppAvailable: available });
   const sum = summarize(data.entries, draft);
-  const difficulty = data.versus?.difficulty;
+  const difficulty = versusDifficulty ?? data.versus?.difficulty;
   return {
     total: sum.total, effectFaces: sum.effectFaces, effectDefault: sum.effectDefault, ppSpent: sum.ppSpent,
     ppLeft: Math.max(0, available - sum.ppSpent), ppAvailable: available, ok: checked.ok,
@@ -127,10 +128,11 @@ export function draftSummary(data, draft, { ppAvailable: available = 0 } = {}) {
  * (including indexes that are not whole numbers inside the roll).
  * @param {object} data Roll data (v2, pending).
  * @param {{total: number[], effect: number[], paid?: number[]}} draft
- * @param {{ppAvailable?: number}} [options]
+ * @param {{ppAvailable?: number, versus?: {messageId: string, difficulty: number, heroic?: boolean}|null}} [options]
+ *   `versus`: the Fixer card the player chose to roll against (already checked by the caller); it is saved on the roll with its result.
  * @returns {object|null} the resolved roll data
  */
-export function applyConfirm(data, draft, { ppAvailable: available = 0 } = {}) {
+export function applyConfirm(data, draft, { ppAvailable: available = 0, versus = null } = {}) {
   if (!data || data.status !== "pending") return null;
   // Validate the raw selection first (it may come from a socket): only whole die indexes are accepted.
   if (!validate(data.entries, draft, { ppAvailable: available }).ok) return null;
@@ -144,6 +146,7 @@ export function applyConfirm(data, draft, { ppAvailable: available = 0 } = {}) {
     keptCount: picked.total.length,
     total: sum.total,
     effectDie: sum.effectFaces,
-    ppSpent: sum.ppSpent
+    ppSpent: sum.ppSpent,
+    ...(versus ? { versus: buildVersus({ messageId: versus.messageId, difficulty: versus.difficulty, total: sum.total, effectDie: sum.effectFaces, heroic: versus.heroic }) } : {})
   };
 }

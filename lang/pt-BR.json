@@ -392,7 +392,8 @@
         },
         "confirm": "Criar",
         "dieNote": "O novo Asset recebe um {die}.",
-        "nameRequired": "Dê um nome ao Asset."
+        "nameRequired": "Dê um nome ao Asset.",
+        "effectNote": "Dado de efeito: {die}. Este Asset de cena não custa Plot Points."
       },
       "Delete": {
         "title": "Excluir",
@@ -698,7 +699,25 @@
         "lower": "{by} desceu {name}: d{from} para d{to}",
         "gone": "{by} removeu {name} (d{from})",
         "raise": "{by} subiu {name}: d{from} para d{to}"
-      }
+      },
+      "versus": {
+        "success": "Sucesso",
+        "fail": "Falha",
+        "heroic": "Heroico",
+        "beat": "supera por {n}",
+        "miss": "falha por {n}",
+        "stepsOne": "+{n} passo",
+        "stepsMany": "+{n} passos"
+      },
+      "effectAsset": "Criar Asset {die}",
+      "effectAssetTip": "Transforma o dado de efeito ({die}) em Asset de cena. Não custa Plot Points.",
+      "effectComplication": "Complication {die}",
+      "effectComplicationTip": "Transforma o dado de efeito ({die}) em Complication da cena.",
+      "fixerComplication": "Complication = efeito {die}",
+      "fixerComplicationTip": "{actor} perdeu: Complication {die} pelo efeito do vencedor (um passo abaixo se o efeito do perdedor for igual ou maior).",
+      "effectComplicationName": "Efeito: {name}",
+      "fixerComplicationName": "{name} vs {actor}",
+      "effectFailed": "Não foi possível usar o efeito."
     },
     "Migration": {
       "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar.",
@@ -832,7 +851,8 @@
       "labelPlaceholder": "O que a oposição está fazendo?",
       "roll": "Rolar",
       "difficulty": "Dificuldade",
-      "opportunities": "{count} oportunidades"
+      "opportunities": "{count} oportunidades",
+      "versusPlayer": "vs último de {name} (total {total})"
     },
     "Tracker": {
       "title": "Rastreador do Job",
@@ -1211,7 +1231,9 @@
       "notPending": "Esta rolagem já foi resolvida.",
       "invalid": "Escolha de dados inválida.",
       "noAnswer": "O Mestre não respondeu. Tente de novo.",
-      "error": "Não foi possível resolver a rolagem. Nada foi alterado."
+      "error": "Não foi possível resolver a rolagem. Nada foi alterado.",
+      "versusLink": "vs último do Mestre (total {total})",
+      "versusLinkTip": "Rolar contra a última oposição do Mestre: o card mostra sucesso, falha ou sucesso heroico."
     },
     "Opportunity": {
       "taken": "Não sobrou oportunidade neste card.",
