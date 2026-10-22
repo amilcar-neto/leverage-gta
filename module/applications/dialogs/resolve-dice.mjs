@@ -10,7 +10,9 @@ import { buyDie, clickDie, dieCaption, dieStates, draftFrom, draftSummary, empty
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
-import { fixerCardFor } from "../../dice/versus-cards.mjs";
+import { fixerCardFor, heroicOn } from "../../dice/versus-cards.mjs";
+import { stepEffect } from "../../dice/prime-math.mjs";
+import { stepsBetween } from "../../dice/versus.mjs";
 import { canResolve, confirmRoll, plotPointsFor, registerResolveSocket } from "./resolve-dice-flow.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -91,10 +93,24 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
     };
   }
 
+  /** Versus line of the footer: "Beats by 6 · +1 step · effect d8" (steps and effect only when the roll beats it; heroic rule respected). */
+  #versusLine(s) {
+    if (!s.versus) return "";
+    const beat = s.versus.outcome !== "fail";
+    const parts = [t(beat ? "LEVERAGE.Resolve.versusBeat" : "LEVERAGE.Resolve.versusFail", { n: Math.abs(s.versus.margin) })];
+    if (beat && s.effectFaces) {
+      const final = stepEffect(s.effectFaces, heroicOn() ? s.versus.steps : 0);
+      const steps = stepsBetween(s.effectFaces, final);
+      if (steps) parts.push(t(`LEVERAGE.Roll.versus.steps${steps === 1 ? "One" : "Many"}`, { n: steps }));
+      parts.push(t("LEVERAGE.Resolve.versusEffect", { die: `d${final}` }));
+    }
+    return parts.join(" · ");
+  }
+
   /** Footer texts from the summary. */
   #summaryView(s) {
     const beat = s.versus?.outcome !== "fail";
-    const versus = s.versus ? t(beat ? "LEVERAGE.Resolve.versusBeat" : "LEVERAGE.Resolve.versusFail", { n: Math.abs(s.versus.margin) }) : "";
+    const versus = this.#versusLine(s);
     const missing = s.missing.map((key) => t(`LEVERAGE.Resolve.missing.${key}`)).join(", ");
     return {
       hasNotes: Boolean(versus || s.botch || missing),
@@ -209,6 +225,11 @@ export async function openResolveDice(message) {
   return app;
 }
 
+/** A new chat message may be a newer Fixer roll: the open windows offer it (and the link follows what is shown). */
+function onCreateMessage() {
+  for (const app of open.values()) if (rollOf(app.message)?.status === "pending") app.render();
+}
+
 /** A card update redraws its open window, or closes it when the card was resolved elsewhere. */
 function onUpdateMessage(message) {
   const app = open.get(message.id);
@@ -227,6 +248,7 @@ function onUpdateActor(actor, changes) {
 export function registerResolveDice() {
   registerResolveSocket();
   Hooks.on("updateChatMessage", onUpdateMessage);
+  Hooks.on("createChatMessage", onCreateMessage);
   Hooks.on("updateActor", onUpdateActor);
   Hooks.on("deleteChatMessage", (message) => open.get(message.id)?.close());
 }

@@ -51,14 +51,16 @@ export function plotPointsFor(data) {
  * @param {{total: number[], effect: number[], paid?: number[]}} selection Untrusted: it may come from a socket.
  * @param {User} user Who asks.
  * @param {string|null} [versusId] Fixer card the player chose to roll against; used only when it is still the card the window offers (untrusted).
- * @returns {Promise<{ok: boolean, reason?: "forbidden"|"notPending"|"invalid"|"error"}>}
+ * @returns {Promise<{ok: boolean, reason?: "forbidden"|"notPending"|"invalid"|"versusStale"|"error"}>}
  */
 export async function resolveNow(message, selection, user, versusId = null) {
   const data = rollOf(message);
   if (!data || data.status !== "pending") return { ok: false, reason: "notPending" };
   const actor = data.actorUuid ? resolveActor(data.actorUuid) : null;
   if (!canResolve(actor, user)) return { ok: false, reason: "forbidden" };
-  const resolved = applyConfirm(data, selection, { ppAvailable: plotPointsFor(data), versus: versusFor(message, versusId) });
+  const link = versusFor(message, versusId, user);
+  if (link?.stale) return { ok: false, reason: "versusStale" };
+  const resolved = applyConfirm(data, selection, { ppAvailable: plotPointsFor(data), versus: link });
   if (!resolved) return { ok: false, reason: "invalid" };
   try {
     await message.setFlag(SYSTEM_ID, "roll", resolved);
@@ -76,10 +78,15 @@ export async function resolveNow(message, selection, user, versusId = null) {
   return { ok: true };
 }
 
-/** The link to save for a chosen Fixer card, or null when it is not the card offered now (stale or forged id). */
-function versusFor(message, versusId) {
-  const card = versusId ? fixerCardFor(message) : null;
-  return card?.id === versusId ? { messageId: card.id, difficulty: card.roll.total, heroic: heroicOn() } : null;
+/**
+ * The link to save for a chosen Fixer card. A card that is not the one offered to this user now (the Fixer rolled
+ * again, or the id is forged or of a card the user cannot read) answers `{stale: true}`: the confirmation is refused.
+ * @returns {{messageId: string, difficulty: number, heroic: boolean}|{stale: true}|null} null when no link was asked
+ */
+function versusFor(message, versusId, user) {
+  if (!versusId) return null;
+  const card = fixerCardFor(message, user);
+  return card?.id === versusId ? { messageId: card.id, difficulty: card.roll.total, heroic: heroicOn() } : { stale: true };
 }
 
 /** Warns about a refused confirmation (only for the client that asked). */

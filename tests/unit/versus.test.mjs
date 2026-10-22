@@ -1,13 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  addEffectComplication, buildVersus, complicationFromEffect, effectUsable, finalEffectDie, latestFixerCard, latestPlayerCard, lostAgainst,
-  markComplicationMade, markEffectUsed, versusWon
+  addEffectComplication, buildVersus, complicationFromEffect, effectSpent, effectUsable, finalEffectDie, isFixerCard, latestFixerCard, latestPlayerCard, lostAgainst,
+  markComplicationMade, markEffectUsed, nextLostCard, stepsBetween, versusWon, visibleTo
 } from "../../module/dice/versus.mjs";
 import { applyConfirm, draftSummary } from "../../module/dice/resolve-draft.mjs";
 import { effectActions, versusBand } from "../../module/applications/chat/versus-view.mjs";
 
-const fixer = (id, timestamp, total = 10, extra = {}) => ({ id, timestamp, roll: { opposition: true, status: "resolved", total, effectDie: 8, ...extra } });
+const fixer = (id, timestamp, total = 10, extra = {}) => ({ id, timestamp, byGM: true, roll: { opposition: true, status: "resolved", total, effectDie: 8, ...extra } });
 const player = (id, timestamp, extra = {}) => ({ id, timestamp, roll: { status: "resolved", total: 12, effectDie: 6, v: 2, ...extra } });
 const t = (key, data) => `${key}${data ? JSON.stringify(data) : ""}`;
 
@@ -38,10 +38,45 @@ test("latestFixerCard: newest Fixer card before the player's, same scene only", 
   assert.equal(latestFixerCard([fixer("pend", 1, 5, { status: "pending" })], { id: "p", timestamp: 9 }), null);
 });
 
+test("a card of a player (forged opposition roll) is never a Fixer card", () => {
+  const forged = { ...fixer("x", 5, 0), byGM: false };
+  assert.equal(isFixerCard(forged), false);
+  assert.equal(isFixerCard({ ...forged, byGM: undefined }), false);
+  assert.equal(isFixerCard(fixer("ok", 5)), true);
+  assert.equal(isFixerCard({ ...fixer("ok", 5), visible: false }), false);
+  assert.equal(latestFixerCard([forged, fixer("real", 1)], { id: "p", timestamp: 10 }).id, "real");
+  assert.equal(latestFixerCard([forged], { id: "p", timestamp: 10 }), null);
+});
+
+test("latestFixerCard: a card the viewer cannot read (blind or private roll) is not offered", () => {
+  const hidden = { ...fixer("h", 8, 3), visible: false };
+  assert.equal(latestFixerCard([hidden, fixer("a", 2)], { id: "p", timestamp: 10 }).id, "a");
+});
+
+test("latestFixerCard: a pending player card also accepts a newer Fixer card", () => {
+  const cards = [fixer("a", 1), fixer("n", 20)];
+  assert.equal(latestFixerCard(cards, { id: "p", timestamp: 10, roll: { status: "pending" } }).id, "n");
+  assert.equal(latestFixerCard(cards, { id: "p", timestamp: 10, roll: { status: "resolved" } }).id, "a");
+});
+
+test("visibleTo: public, sent to the user, or his own and not blind", () => {
+  const me = { id: "u1" };
+  assert.equal(visibleTo({ whisper: [] }, me), true);
+  assert.equal(visibleTo({ whisper: ["u2"], author: { id: "u2" } }, me), false);
+  assert.equal(visibleTo({ whisper: ["u1"], author: { id: "u2" } }, me), true);
+  assert.equal(visibleTo({ whisper: ["u2"], author: { id: "u1" } }, me), true);
+  assert.equal(visibleTo({ whisper: ["u2"], author: { id: "u1" }, blind: true }, me), false);
+});
+
 test("latestPlayerCard: newest resolved card without a link", () => {
   const cards = [player("a", 1), player("b", 5), player("c", 9, { versus: { outcome: "fail" } }), player("d", 12, { status: "pending" }), fixer("f", 14)];
   assert.equal(latestPlayerCard(cards).id, "b");
   assert.equal(latestPlayerCard([]), null);
+});
+
+test("latestPlayerCard: skips a card whose effect was already used", () => {
+  const cards = [player("a", 1), player("b", 5, { effectUsed: { asset: true } })];
+  assert.equal(latestPlayerCard(cards).id, "a");
 });
 
 test("complicationFromEffect: winner's die, one step lower when the loser's effect is the same or bigger", () => {
@@ -64,10 +99,38 @@ test("lostAgainst: only failed links to that card, not yet used, oldest first", 
   assert.equal(markComplicationMade(cards[0].roll).versus.complicationMade, true);
 });
 
+test("nextLostCard: the next loser for a Fixer card written by a Fixer", () => {
+  const cards = [
+    player("b", 2, { versus: { messageId: "f", outcome: "fail" }, effectDie: 8 }),
+    player("a", 5, { versus: { messageId: "f", outcome: "fail" }, effectDie: 4 })
+  ];
+  const next = nextLostCard(cards, fixer("f", 1));
+  assert.deepEqual([next.card.id, next.die], ["b", 6]);
+  assert.equal(nextLostCard(cards, { ...fixer("f", 1), byGM: false }), null);
+  assert.equal(nextLostCard(cards, null), null);
+  assert.equal(nextLostCard(cards, fixer("f", 1, 10, { effectDie: null })), null);
+  assert.equal(nextLostCard([], fixer("f", 1)), null);
+});
+
+test("stepsBetween counts the sizes really climbed (a d12 cannot rise)", () => {
+  assert.equal(stepsBetween(6, 10), 2);
+  assert.equal(stepsBetween(12, 12), 0);
+  assert.equal(stepsBetween(10, 12), 1);
+});
+
 test("finalEffectDie: the versus raises it, else the rolled die", () => {
   assert.equal(finalEffectDie({ effectDie: 6, versus: { effectDie: 10 } }), 10);
   assert.equal(finalEffectDie({ effectDie: 6 }), 6);
   assert.equal(finalEffectDie(null), null);
+});
+
+test("one effect die is one action: any mark spends it", () => {
+  const used = markEffectUsed(player("a", 1).roll, "asset");
+  assert.equal(effectSpent(used), true);
+  assert.equal(effectUsable(used), false);
+  assert.equal(effectUsable({ ...used, effectUsed: { complication: true } }), false);
+  assert.equal(effectSpent({ effectUsed: {} }), false);
+  assert.equal(effectSpent(player("a", 1).roll), false);
 });
 
 test("effectUsable and markEffectUsed", () => {
@@ -76,7 +139,7 @@ test("effectUsable and markEffectUsed", () => {
   assert.equal(effectUsable(player("a", 1, { status: "pending" }).roll), false);
   assert.equal(effectUsable(fixer("f", 1).roll), false);
   assert.equal(effectUsable(player("a", 1, { v: 1, effectDie: null }).roll), false);
-  assert.equal(markEffectUsed({ effectUsed: { asset: true } }, "complication").effectUsed.complication, true);
+  assert.equal(markEffectUsed({ effectUsed: {} }, "asset").effectUsed.asset, true);
 });
 
 test("addEffectComplication needs a name and a die", () => {
@@ -109,17 +172,24 @@ test("versusBand: title, margin, steps and the final effect only when it won", (
   assert.equal(lose.effect, "");
   assert.match(lose.detail, /miss/);
   assert.equal(versusBand({}, t), null);
+  // heroic on a d12 effect: no step really taken, none shown
+  const capped = versusBand({ effectDie: 12, versus: { outcome: "heroic", margin: 6, steps: 1, effectDie: 12 } }, t);
+  assert.equal(capped.steps, "");
+  const real = versusBand({ effectDie: 6, versus: { outcome: "heroic", margin: 12, steps: 2, effectDie: 10 } }, t);
+  assert.match(real.steps, /stepsMany.*"n":2/);
 });
 
-test("effectActions: Asset for the owner, Complication for the Fixer, Fixer button only with a lost roll", () => {
+test("effectActions: Asset for the owner only (no Complication on the player's card), Fixer button only with a lost roll", () => {
   const data = player("a", 1).roll;
   const owner = effectActions(data, { t, prime: true, isOwner: true, isGM: false });
-  assert.deepEqual([owner.showEffectAsset, owner.showEffectComplication], [true, false]);
+  assert.equal(owner.showEffectAsset, true);
+  assert.equal("showEffectComplication" in owner, false);
   const gm = effectActions(data, { t, prime: true, isOwner: false, isGM: true });
-  assert.deepEqual([gm.showEffectAsset, gm.showEffectComplication], [false, true]);
-  const used = effectActions({ ...data, effectUsed: { asset: true, complication: true } }, { t, prime: true, isOwner: true, isGM: true });
-  assert.deepEqual([used.showEffectAsset, used.showEffectComplication], [false, false]);
+  assert.equal(gm.showEffectAsset, false);
+  const used = effectActions({ ...data, effectUsed: { asset: true } }, { t, prime: true, isOwner: true, isGM: true });
+  assert.equal(used.showEffectAsset, false);
   const lost = effectActions(fixer("f", 1).roll, { t, prime: false, isOwner: false, isGM: true, lost: { actor: "Carl", die: 6 } });
   assert.equal(lost.showFixerComplication, true);
+  assert.match(lost.fixerComplicationLabel, /"actor":"Carl"/);
   assert.equal(effectActions(fixer("f", 1).roll, { t, prime: false, isOwner: false, isGM: false, lost: { actor: "Carl", die: 6 } }).showFixerComplication, false);
 });

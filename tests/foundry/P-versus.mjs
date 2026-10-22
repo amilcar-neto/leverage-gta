@@ -2,8 +2,10 @@
  * Versus and effect actions (T-1011/T-1012) in the real Foundry. GM browser + a [TEST] Player who owns a [TEST] Crew.
  * Checks: the Choose dice window offers "vs last GM roll" only when a resolved Fixer card is older, never on by itself;
  * confirming with the link saves `versus` (margin, heroic steps, final effect); the card shows the band; the player's
- * "Create Asset dX" (free, scene, name required) and the GM's "Complication dX"; the Fixer card's "Complication =
- * effect" after a loss; the opposition roller reads the newest player roll (inverted order). Everything is `[TEST]` and
+ * "Create Asset dX" (free, scene, name required, created by the GM, one effect = one action, no Complication button on
+ * the player's card); the Fixer card's "Complication = effect" after a loss; a card forged by a player (opposition
+ * roll with total 0) is never offered; the opposition roller reads the newest player roll (inverted order); a pending
+ * player card accepts a newer Fixer card. Everything is `[TEST]` and
  * removed; the `complications` setting is restored. Client language pt-BR (keys must be in lang/).
  *
  * Screenshots: tests/foundry/screenshots/F10-versus-*.png. Exit codes: 0 pass, 1 fail. Run after `npm run deploy`.
@@ -61,6 +63,13 @@ const postFixer = (values) => page.evaluate(async (vals) => {
   return (await ChatMessage.create({ content: "<p>t</p>", flavor: data.flavor, flags: { "leverage-gta": { roll: data } } })).id;
 }, values);
 
+/** A player (second browser) forges an opposition card: a Fixer card is only trusted when a Fixer wrote it. */
+const postForgedFixer = () => pp.evaluate(async () => {
+  const { buildOppositionData } = await import(foundry.utils.getRoute("systems/leverage-gta/module/dice/opposition.mjs"));
+  const data = buildOppositionData({ dice: [{ ref: "o0", label: "Opposition", kind: "opposition", die: 8 }, { ref: "o1", label: "Opposition", kind: "opposition", die: 8 }], values: [1, 1], name: "GM", flavor: "[TEST] forged" });
+  return (await ChatMessage.create({ content: "<p>t</p>", flavor: data.flavor, flags: { "leverage-gta": { roll: data } } })).id;
+});
+
 /** Posts a pending prime card of the test Crew (d10, d8, d6). */
 const postPlayer = (values, dice = [10, 8, 6]) => page.evaluate(async ([vals, sizes]) => {
   const { buildRollData } = await import(foundry.utils.getRoute("systems/leverage-gta/module/dice/roll-core.mjs"));
@@ -111,17 +120,19 @@ try {
   /* ---- Fixer card A (total 11), then the player's roll: heroic win ---- */
   const A = await postFixer([6, 5, 4]);
   await wait(1200);
+  await postForgedFixer();
+  await wait(1200);
   const P1 = await postPlayer([9, 8, 3]);
   await wait(1200);
   await resolveAs(P1, { link: false });
   const label = await pp.evaluate((id) => document.querySelector(`#lv-resolve-${id} [data-action="toggleVersus"]`)?.textContent.trim(), P1);
-  record("window: offers 'vs último do Mestre (total 11)'", /11/.test(label ?? "") && /Mestre/.test(label ?? ""), label);
+  record("window: offers 'vs último do Mestre (total 11)' (the forged total 0 card is ignored)", /11/.test(label ?? "") && /Mestre/.test(label ?? ""), label);
   const off = await pp.evaluate((id) => ({ pressed: document.querySelector(`#lv-resolve-${id} [data-action="toggleVersus"]`).getAttribute("aria-pressed"), note: Boolean(document.querySelector(`#lv-resolve-${id} .lv-rd-versus`)) }), P1);
   record("window: the link is off by default (no note in the footer)", off.pressed === "false" && !off.note, off);
   await domClick(pp, `#lv-resolve-${P1} [data-action="toggleVersus"]`);
   await wait(500);
   const on = await pp.evaluate((id) => document.querySelector(`#lv-resolve-${id} .lv-rd-versus`)?.textContent.trim(), P1);
-  record("window: with the link on the footer says 'Supera por 6'", /Supera por 6/.test(on ?? ""), on);
+  record("window: with the link on the footer says 'Supera por 6 · +1 passo · efeito d8'", /Supera por 6/.test(on ?? "") && /[+]1 passo/.test(on ?? "") && /efeito d8/.test(on ?? ""), on);
   await pp.locator(`#lv-resolve-${P1}`).screenshot({ path: `${SHOTS}/F10-versus-01-window.png` }).catch(() => {});
   record("window: no overlap, cut text or overflow", clean(await audit(pp, `#lv-resolve-${P1}`)), await audit(pp, `#lv-resolve-${P1}`));
   await domClick(pp, `#lv-resolve-${P1} [data-action="confirm"]`);
@@ -130,13 +141,15 @@ try {
   record("heroic: versus saved with margin 6, heroic, 1 step, effect d6 -> d8", r?.versus?.messageId === A && r.versus.margin === 6 && r.versus.outcome === "heroic" && r.versus.steps === 1 && r.versus.effectDie === 8, r?.versus);
   await shotCard(pp, P1, "02-card-heroic");
   const band = await pp.evaluate((id) => document.querySelector(`.chat-message[data-message-id="${id}"] .lv-roll-versus`)?.textContent.replace(/\s+/g, " ").trim(), P1);
-  record("heroic: the card shows HEROICO +1 passo and EFEITO d8", /Heroico/i.test(band ?? "") && /\+1 passo/.test(band ?? "") && /d8/.test(band ?? ""), band);
+  record("heroic: the band shows HEROICO +1 passo (the final effect is in the EFEITO block)", /Heroico/i.test(band ?? "") && /\+1 passo/.test(band ?? ""), band);
+  const block = await pp.evaluate((id) => document.querySelector(`.chat-message[data-message-id="${id}"] .lv-roll-effect-size`)?.textContent.trim(), P1);
+  record("heroic: the EFEITO block shows d6 → d8 (rolled to final)", /d6/.test(block ?? "") && /d8/.test(block ?? ""), block);
   record("heroic: band: no overlap, cut text or overflow", clean(await audit(pp, `.chat-message[data-message-id="${P1}"] .lv-roll-card`)), await audit(pp, `.chat-message[data-message-id="${P1}"] .lv-roll-card`));
 
   /* ---- effect actions on the won card ---- */
   const gmBtns = await buttons(page, P1);
   const plBtns = await buttons(pp, P1);
-  record("actions: GM gets Complication, player gets Create Asset (and not the other's)", gmBtns.includes("effectComplication") && !gmBtns.includes("effectAsset") && plBtns.includes("effectAsset") && !plBtns.includes("effectComplication"), { gmBtns, plBtns });
+  record("actions: the player gets Create Asset; nobody gets a Complication button on the player's card", !gmBtns.includes("effectAsset") && !gmBtns.includes("effectComplication") && plBtns.includes("effectAsset") && !plBtns.includes("effectComplication"), { gmBtns, plBtns });
   await domClick(pp, `.chat-message[data-message-id="${P1}"] [data-action="effectAsset"]`);
   await pp.waitForSelector(".lv-dialog form input[name=name]", { timeout: 8000 });
   const dlg = await pp.evaluate(() => ({ text: document.querySelector(".lv-dialog")?.textContent.replace(/\s+/g, " "), hasDuration: Boolean(document.querySelector('.lv-dialog select[name="duration"]')), hasDie: Boolean(document.querySelector('.lv-dialog select[name="die"]')) }));
@@ -151,11 +164,10 @@ try {
   await wait(2500);
   const asset = await page.evaluate(() => { const a = game.actors.getName("[TEST] Crew"); const i = a.items.getName("[TEST] Smoke screen"); return { die: i?.system.die, duration: i?.system.duration, pp: a.system.plotPoints.value }; });
   record("asset: created as a Scene Asset d8, Plot Points untouched (5)", asset.die === 8 && asset.duration === "scene" && asset.pp === 5, asset);
-  record("asset: the button is gone after use", !(await buttons(pp, P1)).includes("effectAsset"), await buttons(pp, P1));
-  await domClick(page, `.chat-message[data-message-id="${P1}"] [data-action="effectComplication"]`);
-  await wait(2000);
-  const list1 = await complications();
-  record("complication: d8 Complication written to the table, button gone", list1.length === 1 && list1[0].die === 8 && !(await buttons(page, P1)).includes("effectComplication"), list1);
+  record("asset: the button is gone after use, and the card says the effect was used", !(await buttons(pp, P1)).includes("effectAsset") && (await rollOf(P1))?.effectUsed?.asset === true, await rollOf(P1));
+  const assetCount = await page.evaluate(() => game.actors.getName("[TEST] Crew").items.filter((i) => i.name === "[TEST] Smoke screen").length);
+  record("asset: exactly one Asset was created", assetCount === 1, assetCount);
+  record("complications: the player's win wrote none to the table", (await complications()).length === 0, await complications());
   await shotCard(page, P1, "04-card-used");
 
   /* ---- a loss, then the Fixer's Complication ---- */
@@ -181,7 +193,7 @@ try {
   await wait(2500);
   const list2 = await complications();
   r = await rollOf(P2);
-  record("loss: Complication d8 added (loser's d6 < d8), player's link marked, button gone", list2.length === 2 && list2[1].die === 8 && r.versus.complicationMade === true && !(await buttons(page, A2)).includes("fixerComplication"), { list2, v: r?.versus });
+  record("loss: Complication d8 added (loser's d6 < d8), player's link marked, button gone", list2.length === 1 && list2[0].die === 8 && r.versus.complicationMade === true && !(await buttons(page, A2)).includes("fixerComplication"), { list2, v: r?.versus });
 
   /* ---- link not made without asking ---- */
   const P3 = await postPlayer([7, 6, 3]);
@@ -215,6 +227,16 @@ try {
   }, P4);
   record("roller: the player's card got a versus against the new Fixer card (difficulty = its total)", linked.opposition && linked.versus?.difficulty === linked.fixerTotal && linked.versus.margin === 17 - linked.fixerTotal, linked);
   await page.evaluate(() => foundry.applications.instances.get("leverage-opposition-roller")?.close());
+
+  /* ---- a pending player card accepts a Fixer card rolled after it ---- */
+  const P5 = await postPlayer([7, 6, 3]);
+  await wait(1200);
+  await postFixer([5, 5, 4]);
+  await wait(1200);
+  await resolveAs(P5, { link: false });
+  const label5 = await pp.evaluate((id) => document.querySelector(`#lv-resolve-${id} [data-action="toggleVersus"]`)?.textContent.trim(), P5);
+  record("pending first: the window offers the Fixer card rolled after it (total 10)", /total 10/.test(label5 ?? ""), label5);
+  await pp.evaluate((id) => foundry.applications.instances.get(`lv-resolve-${id}`)?.close(), P5);
 
   record("console: no system errors (GM)", log.own().length === 0, log.own());
   record("console: no system errors (player)", playerLog.own().length === 0, playerLog.own());

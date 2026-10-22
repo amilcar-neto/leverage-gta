@@ -5,7 +5,7 @@
  */
 import { SYSTEM_ID } from "../../config.mjs";
 import { logger } from "../../logger.mjs";
-import { executeAsGM, registerSocketAction, requestAsGM } from "../../socket.mjs";
+import { executeAsGM, lowestActiveGM, registerSocketAction, requestAsGM } from "../../socket.mjs";
 import { applyComplication, keepNextDie, resolveHitches, resolveNextOne, undoHitchList, unresolvedOnes } from "../../dice/card-actions.mjs";
 import { checkOpportunityRequest, latestOppositionId, opportunitiesLeft, undoLower, useOpportunity } from "../../dice/opportunity.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
@@ -14,14 +14,17 @@ import { promptComplication, promptHitches } from "./complication-dialog.mjs";
 import { opportunityOptions, promptOpportunity } from "./opportunity-dialog.mjs";
 import { damageFromCard } from "./damage.mjs";
 import { promptCreateAsset } from "../dialogs/create-asset-dialog.mjs";
-import { chatCards } from "../../dice/versus-cards.mjs";
-import { addEffectComplication, complicationFromEffect, effectUsable, finalEffectDie, lostAgainst, markComplicationMade, markEffectUsed } from "../../dice/versus.mjs";
+import { cardOf, cardsLinkedTo, chatCards } from "../../dice/versus-cards.mjs";
+import { addEffectComplication, effectUsable, finalEffectDie, markComplicationMade, markEffectUsed, nextLostCard } from "../../dice/versus.mjs";
 
 /** Messages with an action in flight (a double click must not spend two Plot Points). */
 const busy = new Set();
 
 /** How long a player's "+1 PP" button stays disabled while it waits for the Fixer to update the card (ms). */
 const WAIT_FOR_FIXER = 4000;
+
+/** Longest name of an Asset created from an effect (the dialog's field has the same limit). */
+const ASSET_NAME_MAX = 80;
 
 const actorOf = (data) => (data?.actorUuid ? resolveActor(data.actorUuid) : null);
 const plotPointsOf = (actor) => actor?.system?.plotPoints?.value ?? 0;
@@ -367,55 +370,60 @@ async function writeEffectComplication(message, entry, nextData) {
   return { ok: true };
 }
 
-/** Name of a Complication born from an effect. */
-const effectName = (data) => game.i18n.format("LEVERAGE.Roll.effectComplicationName", { name: data.flavor || data.actorName || "" });
-
-/**
- * "Complication dX" of a roll that won: the card's effect die as a Complication of the table. Runs on the processing
- * Fixer (inside the socket queue): the card is read fresh, the Complication written, then the card marked.
- */
-async function writeActionComplication(message) {
-  const data = rollOf(message);
-  if (!effectUsable(data) || data.effectUsed?.complication) return { ok: false, reason: "invalid" };
-  return writeEffectComplication(message, { name: effectName(data), die: finalEffectDie(data) }, markEffectUsed(data, "complication"));
-}
-
 /**
  * "Complication = winner's effect" on the Fixer's card: the first player roll that lost against it and has none yet gets
  * a Complication of the Fixer's effect (one step lower when the player's effect is the same or bigger). The player's card
- * is marked, so the button goes to the next one.
+ * is marked, so the button goes to the next one. The Fixer's card must have been written by a Fixer (client data).
  */
 async function writeFixerComplication(message) {
-  const data = rollOf(message);
-  if (!data?.opposition) return { ok: false, reason: "invalid" };
-  for (const card of lostAgainst(chatCards(), message.id)) {
-    const die = complicationFromEffect(data.effectDie, card.roll.effectDie);
-    if (!die) continue;
-    const player = game.messages.get(card.id);
-    const name = game.i18n.format("LEVERAGE.Roll.fixerComplicationName", { name: data.flavor || data.actorName || "", actor: card.roll.actorName });
-    return writeEffectComplication(player, { name, die }, markComplicationMade(card.roll));
-  }
-  return { ok: false, reason: "invalid" };
+  const fixer = cardOf(message);
+  const next = nextLostCard(cardsLinkedTo(message.id), fixer);
+  if (!next) return { ok: false, reason: "invalid" };
+  const { card, die } = next;
+  const name = game.i18n.format("LEVERAGE.Roll.fixerComplicationName", { name: fixer.roll.flavor || fixer.roll.actorName || "", actor: card.roll.actorName });
+  return writeEffectComplication(game.messages.get(card.id), { name, die }, markComplicationMade(card.roll));
 }
 
-/** Marks the Asset use on the card after the player created it (checked: the character's owner, effect still usable). */
-async function markAssetUsed(message, userId) {
+/**
+ * Creates the Asset of a roll's effect. Runs on the processing Fixer inside the socket `packetQueue`: the card is read
+ * fresh, marked FIRST (that is the reservation: a second request, from another tab or player, finds it spent), then the
+ * Item is created on the character; a failed creation puts the card back. Checked: the asker owns the character, the
+ * effect is usable, the name is not empty. The die is the card's final effect die, never what the client says.
+ * @param {ChatMessage} message
+ * @param {string} name Name the player typed.
+ * @param {User} user Who asked (the server's word).
+ * @returns {Promise<{ok: boolean, reason?: "invalid"|"error"}>}
+ */
+async function createEffectAsset(message, name, user) {
   const data = rollOf(message);
-  const user = game.users.get(userId);
-  if (!effectUsable(data) || data.effectUsed?.asset || !isCharacterOwner(actorOf(data), user)) return { ok: false, reason: "invalid" };
-  await message.setFlag(SYSTEM_ID, "roll", markEffectUsed(data, "asset"));
+  const actor = actorOf(data);
+  const clean = String(name ?? "").trim().slice(0, ASSET_NAME_MAX);
+  if (!clean || !effectUsable(data) || !isCharacterOwner(actor, user)) return { ok: false, reason: "invalid" };
+  try {
+    await message.setFlag(SYSTEM_ID, "roll", markEffectUsed(data, "asset"));
+  } catch (err) {
+    logger.error("Could not mark the effect", err);
+    return { ok: false, reason: "error" };
+  }
+  try {
+    await actor.createEmbeddedDocuments("Item", [{ name: clean, type: "asset", system: { duration: "scene", die: finalEffectDie(data) } }]);
+  } catch (err) {
+    logger.error("Could not create the Asset", err);
+    await restoreCard(message, data);
+    return { ok: false, reason: "error" };
+  }
   return { ok: true };
 }
 
-/** Socket handler (Fixer side): `kind` is `asset` (mark), `complication` or `fixer`. */
-async function onEffectRequest({ messageId, kind }, userId) {
+/** Socket handler (Fixer side): `kind` is `asset` (the character's player; `name` is the Asset's) or `fixer` (a Fixer). */
+async function onEffectRequest({ messageId, kind, name }, userId) {
   const message = game.messages.get(messageId);
   const user = game.users.get(userId);
   if (!message || !user) return { ok: false, reason: "invalid" };
   try {
-    if (kind === "asset") return await markAssetUsed(message, userId);
-    if (!user.isGM) return { ok: false, reason: "invalid" };
-    return await (kind === "fixer" ? writeFixerComplication(message) : writeActionComplication(message));
+    if (kind === "asset") return await createEffectAsset(message, name, user);
+    if (kind === "fixer" && user.isGM && message.author?.isGM) return await writeFixerComplication(message);
+    return { ok: false, reason: "invalid" };
   } catch (err) {
     logger.error("Effect action failed", err);
     return { ok: false, reason: "error" };
@@ -427,23 +435,19 @@ function reportEffect(result) {
   if (!result?.ok) ui.notifications.error(game.i18n.localize("LEVERAGE.Roll.effectFailed"));
 }
 
-/** Button "Create Asset dX" (the character's player): a Scene Asset of the effect die, no Plot Points, name required. */
+/**
+ * Button "Create Asset dX" (the character's player): a Scene Asset of the effect die, no Plot Points, name required.
+ * The Fixer creates it (and spends the effect on the card first); with no Fixer connected nothing is created.
+ */
 function effectAsset(message) {
   const data = rollOf(message);
   const actor = actorOf(data);
   if (!effectUsable(data) || !isCharacterOwner(actor, game.user)) return undefined;
+  if (!lowestActiveGM(game.users)) return ui.notifications.warn(game.i18n.localize("LEVERAGE.Socket.noGM"));
   return exclusive(message, async () => {
     const choice = await promptCreateAsset({ plotPoints: plotPointsOf(actor), suggestDie: () => finalEffectDie(data), effectDie: finalEffectDie(data) });
-    if (!choice) return;
-    await actor.createEmbeddedDocuments("Item", [{ name: choice.name, type: "asset", system: { duration: "scene", die: finalEffectDie(data) } }]);
-    reportEffect(await requestAsGM("effectAction", { messageId: message.id, kind: "asset" }));
+    if (choice) reportEffect(await requestAsGM("effectAction", { messageId: message.id, kind: "asset", name: choice.name }));
   });
-}
-
-/** Button "Complication dX" (Fixer): the effect die of a won roll as a Complication of the table. */
-function effectComplication(message) {
-  if (!game.user.isGM) return undefined;
-  return exclusive(message, async () => reportEffect(await requestAsGM("effectAction", { messageId: message.id, kind: "complication" })));
 }
 
 /** Button "Complication = effect dX" (Fixer's card): the Fixer's effect against a player who lost. */
@@ -490,7 +494,7 @@ async function chooseDice(message) {
  */
 export const cardHandlers = {
   keepDie, complication, activateHitches, useOpportunity: useOpportunityButton, applyDamage, chooseDice, toggleExpand,
-  effectAsset, effectComplication, fixerComplication
+  effectAsset, fixerComplication
 };
 
 /** Registers the Fixer-side socket action (call once). */

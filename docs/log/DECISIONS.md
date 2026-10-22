@@ -485,3 +485,24 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   5. Complication do vencedor: marca `versus.complicationMade` na rolagem do perdedor (o botão passa para o próximo).
      Nome padrão automático (sem diálogo): "Efeito: <card>" e "<card> vs <personagem>".
 - **Descartado:** ligar sozinho ao último card do Fixer; perguntar o nome da Complication (o Mestre renomeia no painel da cena).
+
+## Versus e efeito: correções da revisão (T-1011/T-1012, 2026-10-22)
+
+1. **Autoria:** um card do Fixer só conta se `message.author.isGM` (`cardOf` expõe `byGM`; `isFixerCard` exige). Vale para a janela,
+   `versusFor`, `fixerCardFor`, `linkPlayerCard`, `nextLostCard` e a escrita de "Complication = efeito" (a mesma regra da T-1010).
+2. **Criar Asset do efeito:** o Mestre marca `effectUsed.asset` PRIMEIRO e cria o Item na mesma tarefa da fila; falhou, desfaz a
+   marca (`restoreCard`). Sem Mestre: aviso e nada é criado. O dado e o limite do nome vêm do servidor, não do cliente.
+3. **Um efeito = uma ação:** `effectUsed` é uma marca única compartilhada (`effectSpent`); a rolagem tem um só dado de efeito.
+4. **Sem "Complication no oponente" no card do jogador.** O livro põe o efeito do vencedor no oponente; a lista global
+   `complications` é a oposição do Fixer contra a Crew, então escrever ali o sucesso do jogador estava errado. Fica o "Complication =
+   efeito do vencedor" do card do Fixer (contra a Crew). Futuro: poderia virar Traço do NPC (ISSUES).
+5. **Link velho:** `resolveNow` recusa com `versusStale` (aviso "O Mestre rolou de novo") em vez de descartar em silêncio; a janela
+   redesenha quando chega mensagem nova. Card do jogador `pending` aceita também um card do Fixer mais NOVO (jogador rola, Mestre
+   rola, jogador escolhe).
+6. **Rolador de oposição:** guarda o id do card mostrado e liga só ele, se ainda livre (sem `versus`, sem efeito usado); mudou o card
+   oferecido, a escolha desliga. Redesenha só quando o card oferecido muda (não tira o foco do campo de texto).
+7. **Rolagem cega/privada:** `cardOf(message, user)` marca `visible` por `visibleTo`; o Mestre que processa usa o usuário que pediu.
+8. **Efeito no card:** o bloco EFEITO mostra o dado final ("d6 → d8"), a faixa mostra os passos realmente subidos (d12 não sobe) e
+   não repete o efeito (fica no tooltip). "Heroico" (sem acento, ortografia atual) é o texto; o CSS põe em caixa alta.
+9. **Duplicação:** `nextLostCard(cards, fixer)` em `versus.mjs`; o card de oposição busca só as mensagens ligadas a ele
+   (`cardsLinkedTo`, lê só a flag), sem normalizar o log inteiro a cada pintura.

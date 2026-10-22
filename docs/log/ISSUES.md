@@ -100,3 +100,12 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 ## T-1009: oppositionChoice "choose" ainda automatico
 - Gravidade: baixa. O modo `choose` nao abre janela: o card do Fixer sai resolvido (2 maiores, efeito automatico).
 - Como fazer depois: em `rollOpposition`, com `rules.oppositionChoice = "choose"`, montar o roll como pending (`buildRollData` com `mode: "prime"`) e abrir `openResolveDice` para o mestre. Precisa confirmar que a janela aceita card de oposicao (sem ator) e que `opposition`/`source` sobrevivem a confirmacao. Nada exigido do dono.
+
+## T-1011/T-1012: limites do modelo de versus (2026-10-22)
+- **Baixa, aberto:** o jogador é autor do próprio card de rolagem e pode editar `versus` e `effectUsed` direto (console). O Mestre só
+  valida o card do Fixer (autoria) e o dono do personagem; o card do jogador é dado do cliente. Fechar exigiria gravar o resultado
+  só pelo Mestre (fora do modelo atual). Num jogo entre amigos, aceito.
+- **Baixa, aberto:** o sucesso do jogador (efeito) não vira nada contra o oponente. Hoje o efeito vai para Asset (jogador) ou, no card do
+  Fixer, para Complication contra a Crew. Futuro: o efeito vencedor do jogador poderia virar Traço/Complication do NPC alvo.
+- **Baixa, aberto:** a rolagem cega/privada do Fixer não é testada ao vivo (o servidor pode nem entregar a mensagem ao jogador); a
+  regra `visibleTo` está coberta por teste unitário.

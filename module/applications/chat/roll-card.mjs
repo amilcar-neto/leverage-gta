@@ -7,14 +7,15 @@ import { resolveActor, rollOf } from "../components/common.mjs";
 import { renderDie } from "../components/die.mjs";
 import { unresolvedOnes } from "../../dice/card-actions.mjs";
 import { latestOppositionId, opportunitiesLeft } from "../../dice/opportunity.mjs";
+import { chatCards } from "../../dice/versus-cards.mjs";
 import { dieCaption, dieState } from "../../dice/resolve-draft.mjs";
 import { normalizeRoll } from "../../dice/roll-core.mjs";
 import { cardHandlers, isCharacterOwner, isExpanded, latestRollOf, opportunityActorOf, registerCardSocket } from "./card-handlers.mjs";
 import { canResolve } from "../dialogs/resolve-dice-flow.mjs";
 import { damageView, registerDamageMessages } from "./damage.mjs";
 import { effectActions, versusBand } from "./versus-view.mjs";
-import { chatCards } from "../../dice/versus-cards.mjs";
-import { complicationFromEffect, lostAgainst } from "../../dice/versus.mjs";
+import { cardOf, cardsLinkedTo } from "../../dice/versus-cards.mjs";
+import { finalEffectDie, nextLostCard } from "../../dice/versus.mjs";
 import { sceneTagOf } from "../scene-panel/scene-panel-logic.mjs";
 
 /** Template of the card. */
@@ -108,12 +109,17 @@ export function primeDieContext(entry, index, selection, t) {
   return { html, caption, state };
 }
 
-/** The EFFECT block of the summary: a small empty die of the effect size (the size is written beside it, never a result). */
+/**
+ * The EFFECT block of the summary: a small empty die of the final effect size (the size is written beside it, never a
+ * result). A heroic success that raised it shows "d6 → d8"; the die drawn is the final one.
+ */
 function effectBlock(data, t) {
-  const faces = data.effectDie;
+  const rolled = data.effectDie;
+  const final = finalEffectDie(data) ?? rolled;
   const label = t("LEVERAGE.Roll.effect");
-  const html = renderDie({ die: faces, value: "", size: EFFECT_DIE_SIZE, title: `${label} d${faces}`, cls: "lv-roll-die--effect" });
-  return { label, faces: `d${faces}`, html };
+  const faces = final !== rolled ? `d${rolled} → d${final}` : `d${final}`;
+  const html = renderDie({ die: final, value: "", size: EFFECT_DIE_SIZE, title: `${label} ${faces}`, cls: "lv-roll-die--effect" });
+  return { label, faces, html };
 }
 
 /** Hitch strip text ("2 hitches", plus "activated" once the Fixer spent them) and the BOTCH flag; empty when the roll has no hitch. */
@@ -236,7 +242,7 @@ export function rollCardContext(raw, { t, isOwner = false, canChoose = false, is
   };
   const context = { ...base, ...primeFields(data, layout, { t, canChoose, expanded }), ...opportunityView(data, t, opportunity), ...effectActions(data, { t, prime: layout === "prime", isOwner, isGM, lost: versusLost }) };
   context.versus = resolved ? versusBand(data, t) : null;
-  context.showActions = Boolean(showKeep || showComplication || showActivate || context.showDamage || context.showChoose || context.showOpportunity || context.showEffectAsset || context.showEffectComplication || context.showFixerComplication);
+  context.showActions = Boolean(showKeep || showComplication || showActivate || context.showDamage || context.showChoose || context.showOpportunity || context.showEffectAsset || context.showFixerComplication);
   return context;
 }
 
@@ -259,11 +265,8 @@ function opportunityViewer() {
 /** Opposition card: the first player who lost against it with no Complication made yet, and the die of the winner's effect. */
 function lostPlayerOf(message, data) {
   if (!data.opposition || !game.user.isGM) return null;
-  for (const card of lostAgainst(chatCards(), message.id)) {
-    const die = complicationFromEffect(data.effectDie, card.roll.effectDie);
-    if (die) return { actor: card.roll.actorName, die, messageId: card.id };
-  }
-  return null;
+  const next = nextLostCard(cardsLinkedTo(message.id), cardOf(message));
+  return next && { actor: next.card.roll.actorName, die: next.die, messageId: next.card.id };
 }
 
 /** Draws the card into one rendered message element. Nothing is drawn for a message the viewer may not read. */

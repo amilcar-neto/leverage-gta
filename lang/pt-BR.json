@@ -713,11 +713,8 @@
       },
       "effectAsset": "Criar Asset {die}",
       "effectAssetTip": "Transforma o dado de efeito ({die}) em Asset de cena. Não custa Plot Points.",
-      "effectComplication": "Complication {die}",
-      "effectComplicationTip": "Transforma o dado de efeito ({die}) em Complication da cena.",
-      "fixerComplication": "Complication = efeito {die}",
+      "fixerComplication": "Complication = efeito {die} vs {actor}",
       "fixerComplicationTip": "{actor} perdeu: Complication {die} pelo efeito do vencedor (um passo abaixo se o efeito do perdedor for igual ou maior).",
-      "effectComplicationName": "Efeito: {name}",
       "fixerComplicationName": "{name} vs {actor}",
       "effectFailed": "Não foi possível usar o efeito.",
       "opportunityTipNoPlotPoints": "Sem Plot Points para gastar"
@@ -1236,7 +1233,9 @@
       "noAnswer": "O Mestre não respondeu. Tente de novo.",
       "error": "Não foi possível resolver a rolagem. Nada foi alterado.",
       "versusLink": "vs último do Mestre (total {total})",
-      "versusLinkTip": "Rolar contra a última oposição do Mestre: o card mostra sucesso, falha ou sucesso heroico."
+      "versusLinkTip": "Rolar contra a última oposição do Mestre: o card mostra sucesso, falha ou sucesso heroico.",
+      "versusStale": "O Mestre rolou de novo. Confira a ligação e confirme outra vez.",
+      "versusEffect": "efeito {die}"
     },
     "Opportunity": {
       "taken": "Não sobrou oportunidade neste card.",

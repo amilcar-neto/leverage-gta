@@ -96,16 +96,22 @@ Em ambos, crie a mensagem de chat com o card e as `flags` de `docs/05`.
   `rules.oppositionChoice = "choose"` ainda resolve automático (ver ISSUES).
 - Opcional: card de **disputa** (`versus` em `docs/05`) que liga a rolagem do jogador a um card do Fixer por `messageId`, mostra
   a margem, quem venceu e o sucesso heroico (+5 = +1 passo de efeito).
-- **Versus (T-1011), sempre opcional:** com um card do Fixer resolvido mais antigo (mesma cena), a janela Escolher dados
-  mostra o botão "vs último do Mestre (total N)", desligado; ao confirmar com ele ligado o Mestre grava `versus` (relê o
-  card: o `messageId` precisa ainda ser o oferecido). Ordem inversa: o Rolador de oposição mostra "vs último de X
-  (total N)" (desligado); ao rolar, o Mestre grava `versus` na rolagem do jogador (resolvida e sem ligação). `margin` =
-  jogador - dificuldade; empate = falha; heroico só com `rules.heroicSuccess`. O card mostra a faixa SUCESSO / FALHA /
-  HERÓICO (+N passos) com o efeito final. O resultado de "taken out" fica narrativo.
-- **Efeito em ações (T-1012):** card resolvido que venceu (ou sem `versus`): o jogador vê "Criar Asset dX" (Asset de cena
-  com o dado do efeito final, sem PP, nome obrigatório) e o Mestre "Complication dX" (grava em Complications da mesa).
-  Card do Fixer: "Complication = efeito dX" para a primeira rolagem de jogador que perdeu contra ele (desce 1 passo se o
-  efeito do perdedor for >= ao do Fixer; d4 que desce não vira nada). Escrita pelo Mestre (`effectAction`), relendo o card.
+- **Versus (T-1011), sempre opcional:** só conta um card do Fixer **escrito por um Mestre** (`message.author.isGM`) e que o
+  usuário pode ler (rolagem cega ou privada não aparece). Com um card do Fixer resolvido mais antigo (mesma cena), ou, se o
+  card do jogador ainda está `pending`, também um mais novo, a janela Escolher dados mostra "vs último do Mestre (total N)",
+  desligado; com ele ligado a nota do rodapé diz "Supera por 6 · +1 passo · efeito d8" (passos só com `rules.heroicSuccess`).
+  Ao confirmar, o Mestre grava `versus` (relê: o `messageId` precisa ainda ser o oferecido; senão recusa com "O Mestre rolou
+  de novo"). Ordem inversa: o Rolador de oposição mostra "vs último de X (total N)" (desligado, um card por vez; ao rolar liga
+  só aquele card, se ainda estiver livre: sem `versus` e sem efeito usado). `margin` = jogador - dificuldade; empate = falha;
+  heroico só com `rules.heroicSuccess`. O card mostra a faixa SUCESSO / FALHA / HEROICO (em caixa alta pelo CSS) com os
+  passos realmente subidos (d12 não sobe: sem passo) e o bloco EFEITO com o dado final ("d6 → d8"). "Taken out" é narrativo.
+- **Efeito em ações (T-1012):** um dado de efeito é **uma** ação (`effectUsed`: qualquer marca esconde o botão). Card resolvido
+  que venceu (ou sem `versus`): o jogador vê "Criar Asset dX" (Asset de cena com o dado do efeito final, sem PP, nome
+  obrigatório). O **Mestre** marca o card e cria o Item na mesma tarefa da fila (`effectAction`; desfaz a marca se falhar);
+  sem Mestre online nada é criado. Não há "Complication no oponente" no card do jogador (o livro põe o efeito no oponente;
+  ver ISSUES). Card do Fixer: "Complication = efeito dX vs <nome>" para a primeira rolagem de jogador que perdeu contra ele
+  (desce 1 passo se o efeito do perdedor for >= ao do Fixer; d4 que desce não vira nada); vai para as Complications da mesa
+  (contra a Crew). Escrita pelo Mestre, relendo o card.
 
 - **Opportunities (T-1010):** o card do Fixer mostra a faixa "N oportunidades" enquanto sobra alguma (`opportunities - opportunitiesUsed`).
   O dono de um personagem vê "Usar oportunidade (1 PP)" (desativado sem PP). O diálogo é um `<select>` com dois grupos: **descer** uma

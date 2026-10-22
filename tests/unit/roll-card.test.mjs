@@ -96,3 +96,12 @@ test("hitch strip fades once activated and keeps the BOTCH flag; the out of the 
   assert.deepEqual(ctx.warnings, ['LEVERAGE.Roll.outOfScene:{"actor":"Ann","names":"Cops"}']);
   assert.equal(rollCardContext(prime([row(1), row(9)], { hitches: 1 }), { t }).hitchesDone, false);
 });
+
+test("EFFECT block shows the final effect die; a heroic raise reads d6 → d8", () => {
+  const plain = rollCardContext(prime(dice(), { effectDie: 6 }), { t });
+  assert.equal(plain.effect.faces, "d6");
+  const raised = rollCardContext(prime(dice(), { effectDie: 6, versus: { messageId: "f", difficulty: 5, margin: 6, outcome: "heroic", steps: 1, effectDie: 8 } }), { t });
+  assert.equal(raised.effect.faces, "d6 → d8");
+  const lost = rollCardContext(prime(dice(), { effectDie: 6, versus: { messageId: "f", difficulty: 20, margin: -9, outcome: "fail", steps: 0, effectDie: 6 } }), { t });
+  assert.equal(lost.effect.faces, "d6");
+});

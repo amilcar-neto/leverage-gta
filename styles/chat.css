@@ -312,7 +312,7 @@
   background: var(--lv-wash-06);
 }
 .leverage-gta .lv-roll-effect-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lv-roll); white-space: nowrap; }
-.leverage-gta .lv-roll-effect-size { font-family: var(--lv-font-display); font-size: 18px; color: var(--lv-white); }
+.leverage-gta .lv-roll-effect-size { font-family: var(--lv-font-display); font-size: 18px; color: var(--lv-white); white-space: nowrap; }
 .leverage-gta .lv-roll-cap--effect { color: var(--lv-roll); }
 /* The effect die: green ring, as in the Choose dice window (resolve-dice.css) */
 .leverage-gta .lv-die.lv-roll-die--effect { --die-stroke: var(--lv-roll); --die-sw: 7; }
@@ -395,7 +395,6 @@
 .leverage-gta .lv-roll-versus-title { flex: none; font-family: var(--lv-font-display); font-size: 18px; letter-spacing: 0.08em; white-space: nowrap; }
 .leverage-gta .lv-roll-versus-steps { font-family: var(--lv-font-body, inherit); font-size: 12px; letter-spacing: 0.04em; }
 .leverage-gta .lv-roll-versus-detail { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.leverage-gta .lv-roll-versus-effect { flex: none; margin-left: auto; color: var(--lv-white); white-space: nowrap; }
 
 /* BOTCH: the whole strip turns solid red, like a stamp (T-1008) */
 .leverage-gta .lv-roll-hitches--botch {

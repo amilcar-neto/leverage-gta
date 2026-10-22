@@ -12,7 +12,7 @@ import { currentViewedLocations, locationTraitEntries } from "../../scene-locati
 import { isValidDie } from "../../dice/die.mjs";
 import { readSetting } from "../../data/fields.mjs";
 import { readJob } from "../../job-store.mjs";
-import { linkPlayerCard, playerCardForFixer } from "../../dice/versus-cards.mjs";
+import { freePlayerCard, linkPlayerCard, playerCardForFixer } from "../../dice/versus-cards.mjs";
 import { poolText } from "../../rules/stars.mjs";
 import { readComplications } from "../../table-state.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
@@ -43,6 +43,9 @@ function sceneLocations() {
   const selected = selectedActor("location");
   return selected ? [selected] : currentViewedLocations();
 }
+
+/** Identity of the offered player card: its id and total (the button says both). */
+const cardKey = (card) => (card ? `${card.id}:${card.roll.total}` : "");
 
 /** Selectable dice of a Location. The key holds the stable Trait id, so a pick survives reordering and never crosses Traits. */
 const locationPickables = (actor) => locationTraitEntries([actor], isValidDie).map((e) => ({ key: `loc.${e.id}`, label: e.name, die: e.die }));
@@ -97,8 +100,12 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   #picked = new Set();
   #difficulty = BASELINE_DIFFICULTY;
   #label = "";
-  /** The Fixer chose to read the newest player roll as the contest (explicit, never on by itself). */
+  /** The Fixer chose to read the player roll shown on the button as the contest (explicit, never on by itself). */
   #versus = false;
+  /** Id of the player card the button shows now: what ROLL links, only if it is still free (never a newer card). */
+  #shownCardId = null;
+  /** `cardKey` of the card shown, to see when the chat changed what is offered. */
+  #shownKey = "";
   /** A roll is in flight (a double click or Enter + click must not post two cards). */
   #rolling = false;
   #hooks = [];
@@ -144,6 +151,15 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     };
   }
 
+  /** The player card to offer now; a different card than before turns the choice off (it is explicit, per card). */
+  #shownCard() {
+    const player = playerCardForFixer();
+    if (player?.id !== this.#shownCardId) this.#versus = false;
+    this.#shownCardId = player?.id ?? null;
+    this.#shownKey = cardKey(player);
+    return player;
+  }
+
   /** Every die currently chosen, with the sources that fed them. */
   #chosen(sources) {
     const { city, stars, scales } = this.#wanted();
@@ -167,7 +183,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     const police = policeDice(city, stars, "", scales);
     const dieOptions = LEVERAGE.dice.map((value) => ({ value, selected: value === this.#gang.die }));
     const npcGang = sources.npc?.system.gang;
-    const player = playerCardForFixer();
+    const player = this.#shownCard();
     return {
       versus: player && { on: this.#versus, label: t("LEVERAGE.Opposition.versusPlayer", { name: player.roll.actorName, total: player.roll.total }) },
       difficulties: LEVERAGE.difficulties.map((d) => ({
@@ -201,7 +217,12 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   _onFirstRender(context, options) {
     super._onFirstRender(context, options);
     const refresh = () => this.rendered && this.render();
+    // Only a change of the offered player roll redraws (a redraw while the Fixer types a label would drop the focus).
+    const onChat = () => this.rendered && this.#shownKey !== cardKey(playerCardForFixer()) && this.render();
     this.#hooks = [
+      ["createChatMessage", Hooks.on("createChatMessage", onChat)],
+      ["updateChatMessage", Hooks.on("updateChatMessage", onChat)],
+      ["deleteChatMessage", Hooks.on("deleteChatMessage", onChat)],
       ["controlToken", Hooks.on("controlToken", () => this.#onSelectionChanged())],
       ["targetToken", Hooks.on("targetToken", () => this.#onSelectionChanged())],
       ["canvasReady", Hooks.on("canvasReady", refresh)],
@@ -339,7 +360,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     try {
       const sources = this.#sources();
       const { dice, source } = this.#chosen(sources);
-      const player = this.#versus ? playerCardForFixer() : null;
+      const player = this.#versus ? freePlayerCard(this.#shownCardId) : null;
       const message = await rollOpposition({
         dice: dice.map(({ die, label, ref }) => ({ die, label, ref })), label: this.#label, source: source || "none",
         npcUuid: this.#rolledNpc(sources)?.uuid

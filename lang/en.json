@@ -713,11 +713,8 @@
       },
       "effectAsset": "Create Asset {die}",
       "effectAssetTip": "Turn the effect die ({die}) into a Scene Asset. Costs no Plot Points.",
-      "effectComplication": "Complication {die}",
-      "effectComplicationTip": "Turn the effect die ({die}) into a Complication of the scene.",
-      "fixerComplication": "Complication = effect {die}",
+      "fixerComplication": "Complication = effect {die} vs {actor}",
       "fixerComplicationTip": "{actor} lost: a Complication {die} from the winner's effect (one step lower if the loser's effect is the same or bigger).",
-      "effectComplicationName": "Effect: {name}",
       "fixerComplicationName": "{name} vs {actor}",
       "effectFailed": "Could not use the effect.",
       "opportunityTipNoPlotPoints": "No Plot Points to spend"
@@ -1236,7 +1233,9 @@
       "noAnswer": "The Fixer did not answer. Try again.",
       "error": "Could not resolve the roll. Nothing was changed.",
       "versusLink": "vs last GM roll (total {total})",
-      "versusLinkTip": "Roll against the GM's latest opposition roll: the card will show success, failure or heroic success."
+      "versusLinkTip": "Roll against the GM's latest opposition roll: the card will show success, failure or heroic success.",
+      "versusStale": "The GM rolled again. Check the link and confirm once more.",
+      "versusEffect": "effect {die}"
     },
     "Opportunity": {
       "taken": "No Opportunity is left on this card.",

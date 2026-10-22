@@ -143,7 +143,8 @@ O Record guarda a ligação ao Job de mundo em `flags.leverage-gta.jobUuid`. O J
   // opcional, só em Pool de jogador resolvida contra um card do Fixer:
   versus: { messageId, difficulty, margin, outcome: "success" | "fail" | "heroic", steps, effectDie, complicationMade? },
   // effectDie = efeito final (já subido pelos passos heroicos); steps = passos heroicos (0 com rules.heroicSuccess desligada)
-  effectUsed: { asset?: true, complication?: true }   // usos do efeito (T-1012); some o botão correspondente
+  effectUsed: { asset?: true }   // uso do efeito (T-1012): um dado de efeito = uma ação; qualquer marca esconde os botões
+  // um card do Fixer só vale se a mensagem foi escrita por um Mestre (message.author.isGM)
 }
 ```
 
