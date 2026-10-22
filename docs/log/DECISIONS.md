@@ -265,3 +265,22 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   Substitui o campo `complications`/`sceneTraits` do esquema em `jobs-e-locais.md` A.4-1.
 - **Descartado:** Complications dentro do Job (somem do histórico só por não estarem lá); Complications na Cena (um mapa
   abriga várias cenas narrativas, e a Complication vale entre cenas).
+
+## Traits e Complications globais no HUD do mestre; Lugar escolhe a Cena (dono, 2026-10-21)
+
+- **Escolha:**
+  1. **Traits e Complications globais** (valem em qualquer cena até serem removidas). O mestre cria e remove pelo HUD do
+     mestre. Complications seguem como estado global da mesa; Traits globais passam a ter o mesmo tratamento.
+  2. **Traits da cena vêm do Lugar.** A ficha de Lugar ganha um campo **Cena**: um seletor com as Cenas do mundo (grava o
+     UUID no próprio Lugar, campo validado no modelo de dados). Quando uma Cena está sendo vista, os Traços dos Lugares
+     ligados a ela entram sozinhos no painel de cena, na Pool e no rolador de oposição. Vários Lugares podem apontar para a
+     mesma Cena; um Lugar aponta para uma Cena.
+  3. **Sem flag na Cena, sem arrastar Cena para a ficha, sem botão "Criar mapa".** A ligação mora só no Lugar; o lado
+     contrário (Cena -> Lugares) é calculado. Tokens de Lugar continuam valendo (união sem repetir).
+  4. **Lugar continua sendo Ator** (`location`), não Item: ficha, compêndio `locais`, tokens e testes já existem; um lugar
+     não pertence a nenhum personagem.
+  5. Os Traços por Cena guardados em flag (commit 601cfeb) deixam de existir: quem quiser Traços por cena cria um Lugar.
+- **Efeito no backlog:** L-01 lê o campo `scene` dos Lugares; L-03 vira só o seletor de Cena na ficha do Lugar (sem
+  arrastar, sem "Criar mapa"); nova tarefa L-06 tira os Traços por flag da Cena e põe criar Traço/Complication global
+  no HUD do mestre. Substitui `jobs-e-locais.md` B.4 itens 1, 3 e 4.
+- **Descartado:** flag na Cena (exigia arrastar ou botão); Lugar como Item (migração sem ganho).
