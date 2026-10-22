@@ -1,4 +1,3 @@
-IN PROGRESS: Fase 10 — Cortex Prime (T-1001..T-1016). Commitado: T-1100, L-01..L-06, T-1101, J-01..J-10 (1886a08).
-Onda 1 do Prime: T-1001..T-1004 (núcleo puro, roll data v2, configurações, docs). Fluxo do dono em DECISIONS (2026-10-21):
-card inativo -> janela Escolher dados -> lançar no card; resumido mostra só o decidido, expandido mostra tudo; sem escolha automática.
-Pendentes depois: scene-panel.mjs (seletor v14 obsoleto no teste), playtest-play/finale inconclusivos.
+IN PROGRESS: Fase 10 — Cortex Prime. Commitado: T-1001..T-1007, T-1009 (cbda1e1+), Job, L-06, T-1101.
+Em andamento: T-1008 (hitches/botch), revisão de 2ª rodada das correções de T-1005..1007. Depois: T-1010 oportunidades, T-1011 versus, T-1012 efeito em ações,
+T-1013, T-1014, T-1015 (0.2.0), T-1016, R-F10, R-FINAL-2.

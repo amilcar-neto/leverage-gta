@@ -123,6 +123,7 @@ do livro**. Discussões, perseguições e golpes seguem o livro. O mestre avisa 
 
 ### Quando a Vida zera
 
+- **Complication acima de d12** (Cortex Prime, hitches ativados): o personagem sai da cena; o card só avisa, e Wasted/Busted seguem manuais.
 - **Wasted** (qualquer um que não seja a polícia): acorda no hospital, perde os Assets de arma daquela cena, paga
   **d4 de Grana** (1 degrau), volta com a Vida cheia e **ganha 1 PP**. O hospital é o único preço que aceita
   pagamento parcial: o que faltar vira dívida no card.

@@ -66,7 +66,14 @@ Em ambos, crie a mensagem de chat com o card e as `flags` de `docs/05`.
     1 PP, marca o próximo maior como mantido, atualiza total e card. Pode repetir. No modo `prime` o PP é gasto na janela.
   - **"GM · COMPLICATION"** (só o mestre, por 1 não resolvido): abre um mini-diálogo (nome da Complication, nova ou
     subir uma existente do Job ativo), cria/sobe no Rastreador do Job e **dá 1 PP** ao jogador. Marca o 1 como
-    resolvido.
+    resolvido. No card **prime** este botão não existe: vale o de baixo.
+  - **"Mestre · Ativar hitches"** (card prime resolvido, só o mestre, enquanto houver hitch não resolvido; não existe no
+    card pendente): um diálogo age em **todos** os hitches abertos de uma vez (n = quantos). (a) **nova Complication** d6
+    subida n-1 passos, 1 PP ao jogador; (b) **subir uma existente** n passos, 1 PP; (c) **n Complications separadas**,
+    1 PP cada. O card marca os hitches como resolvidos (`complicationsResolved`) e guarda `hitchPP`, numa só escrita; o
+    PP vai só ao jogador (o mestre nunca tira). **BOTCH** (todos 1, total 0): faixa vermelha cheia; as mesmas opções,
+    mas **sem PP**. Passo além do d12 = personagem **fora da cena**: só um aviso no card (`outOfScene`) e uma
+    notificação ao mestre; Wasted/Busted continuam manuais (docs/02).
 - O card é atualizado editando a própria mensagem (o dono e o mestre têm permissão; use socket se o jogador não
   puder atualizar a mensagem diretamente).
 - **Mockup:** o `roll-chat-card.png` cobre o card clássico. Pendente, resumido, expandido e a janela não têm PNG: derivam do

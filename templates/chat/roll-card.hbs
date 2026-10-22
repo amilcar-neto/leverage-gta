@@ -70,12 +70,15 @@
   </div>
   {{/if}}
 
+  {{#each warnings}}<div class="lv-roll-note lv-roll-note--warn" data-tooltip="{{this}}">{{this}}</div>{{/each}}
+
   {{#if damageApplied}}<div class="lv-roll-note lv-roll-note--damage">{{damageApplied}}</div>{{/if}}
 
   {{#if showActions}}
   <div class="lv-roll-actions">
     {{#if showChoose}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="chooseDice" data-tooltip="{{chooseTip}}">{{chooseLabel}}</button>{{/if}}
     {{#if showKeep}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="keepDie" data-tooltip="{{keepTip}}" {{#if keepDisabled}}disabled{{/if}}>{{keepLabel}}</button>{{/if}}
+    {{#if showActivate}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="activateHitches" data-tooltip="{{activateTip}}">{{activateLabel}}</button>{{/if}}
     {{#if showComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="complication" data-tooltip="{{complicationTip}}">{{complicationLabel}}</button>{{/if}}
     {{#if showDamage}}<button type="button" class="lv-roll-btn lv-roll-btn--damage" data-action="applyDamage" data-tooltip="{{damageTip}}">{{damageLabel}}</button>{{/if}}
   </div>

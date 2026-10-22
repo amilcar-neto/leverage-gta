@@ -71,8 +71,10 @@ test("pending card: dice without marks, no total, Choose button for whoever may 
   assert.equal(rollCardContext(data, { t, isOwner: true, isGM: false }).showChoose, false, "canResolve decides, not ownership alone");
 });
 
-test("resolved prime card keeps the Complication button for the Fixer; classic keeps its old behavior", () => {
-  assert.equal(rollCardContext(prime(dice()), { t, isGM: true }).showComplication, true);
+test("resolved prime card offers Activate hitches (not the one-by-one Complication) to the Fixer; classic keeps its old behavior", () => {
+  const gm = rollCardContext(prime(dice()), { t, isGM: true });
+  assert.equal(gm.showComplication, false);
+  assert.equal(gm.showActivate, true);
   const classic = rollCardContext({ entries: [row(9, 10, { kept: true }), row(5, 8, { kept: true }), row(1, 6)], total: 14, keptCount: 2, complicationsResolved: [] }, { t, isGM: true });
   assert.equal(classic.layout, "classic");
   assert.equal(classic.onesCount, 1);

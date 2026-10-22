@@ -176,7 +176,8 @@ export function rollCardContext(raw, { t, isOwner = false, canChoose = false, is
   const opposition = Boolean(data.opposition);
   const showKeep = !opposition && resolved && layout === "classic" && isOwner && isLatest && spare;
   const keepDisabled = showKeep && plotPoints < 1;
-  const showComplication = !opposition && resolved && isGM && unresolved > 0;
+  const showComplication = !opposition && resolved && isGM && unresolved > 0 && layout === "classic";
+  const showActivate = !opposition && layout === "prime" && isGM && unresolved > 0;
   const base = {
     layout, pending: layout === "pending", prime: layout === "prime", classic: layout === "classic", opposition,
     name: data.actorName, img: opposition ? "" : photo, flavor: data.flavor,
@@ -190,8 +191,11 @@ export function rollCardContext(raw, { t, isOwner = false, canChoose = false, is
     ppNotes: !resolved ? [] : [
       data.distinctionPP ? t("LEVERAGE.Roll.distinctionPP", { count: data.distinctionPP }) : "",
       data.ppSpent ? t(`LEVERAGE.Roll.ppSpent${data.ppSpent === 1 ? "One" : "Many"}`, { count: data.ppSpent }) : "",
-      data.money ? t("LEVERAGE.Roll.moneyDrop") : ""
+      data.money ? t("LEVERAGE.Roll.moneyDrop") : "",
+      data.hitchPP ? t("LEVERAGE.Roll.hitchPP", { count: data.hitchPP }) : ""
     ].filter(Boolean),
+    warnings: layout === "prime" && data.outOfScene?.length ? [t("LEVERAGE.Roll.outOfScene", { names: data.outOfScene.join(", ") })] : [],
+    showActivate, activateLabel: t("LEVERAGE.Roll.activateButton"), activateTip: t("LEVERAGE.Roll.activateTip"),
     showKeep, keepDisabled, showComplication, showDamage: resolved && damage.show, damageApplied: resolved ? damage.applied : "",
     damageLabel: t("LEVERAGE.Damage.button"), damageTip: t("LEVERAGE.Damage.buttonTip"),
     keepLabel: t("LEVERAGE.Roll.keepButton", { n: ordinal((data.keptCount ?? 0) + 1, t, lang) }),
@@ -199,7 +203,7 @@ export function rollCardContext(raw, { t, isOwner = false, canChoose = false, is
     complicationLabel: t("LEVERAGE.Roll.complicationButton"), complicationTip: t("LEVERAGE.Roll.complicationTip")
   };
   const context = { ...base, ...primeFields(data, layout, { t, canChoose, expanded }) };
-  context.showActions = Boolean(showKeep || showComplication || context.showDamage || context.showChoose);
+  context.showActions = Boolean(showKeep || showComplication || showActivate || context.showDamage || context.showChoose);
   return context;
 }
 

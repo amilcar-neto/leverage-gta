@@ -421,6 +421,18 @@
         "namePlaceholder": "O que dá errado?",
         "confirm": "Adicionar",
         "nameRequired": "Dê um nome à Complication."
+      },
+      "Hitches": {
+        "window": "Ativar hitches",
+        "title": "{count} hitches",
+        "mode": {
+          "new": "Uma nova Complication (d6), subida {steps}",
+          "raise": "Subir uma Complication existente {count}",
+          "separate": "{count} Complications separadas (d6)"
+        },
+        "plotPoints": " · +{pp} PP",
+        "raise": "{name}: d{from}, sobe {steps}",
+        "confirm": "Ativar"
       }
     },
     "SystemTitle": "Leverage: Liberty City",
@@ -652,7 +664,11 @@
       "chooseTip": "Escolha os dois dados do total e o dado de efeito",
       "chooseUnavailable": "A janela de escolha dos dados não está disponível.",
       "expandTip": "Mostrar a rolagem inteira",
-      "collapseTip": "Mostrar só o resultado"
+      "collapseTip": "Mostrar só o resultado",
+      "activateButton": "Mestre · Ativar hitches",
+      "activateTip": "Mestre: transforma todos os hitches abertos em Complications e dá Plot Points ao jogador",
+      "hitchPP": "Hitches ativados: +{count} Plot Point para o jogador",
+      "outOfScene": "Fora da cena (passou do d12): {names}. Veja Wasted / Busted."
     },
     "Migration": {
       "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar.",

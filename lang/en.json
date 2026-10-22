@@ -421,6 +421,18 @@
         "namePlaceholder": "What goes wrong?",
         "confirm": "Add",
         "nameRequired": "Name the Complication."
+      },
+      "Hitches": {
+        "window": "Activate hitches",
+        "title": "{count} hitches",
+        "mode": {
+          "new": "One new Complication (d6), stepped up {steps}",
+          "raise": "Step up an existing Complication {count}",
+          "separate": "{count} separate Complications (d6)"
+        },
+        "plotPoints": " · +{pp} PP",
+        "raise": "{name}: d{from}, up {steps}",
+        "confirm": "Activate"
       }
     },
     "SystemTitle": "Leverage: Liberty City",
@@ -652,7 +664,11 @@
       "chooseTip": "Pick the two dice for the total and the effect die",
       "chooseUnavailable": "The choose dice window is not available.",
       "expandTip": "Show the whole roll",
-      "collapseTip": "Show only the result"
+      "collapseTip": "Show only the result",
+      "activateButton": "GM · Activate hitches",
+      "activateTip": "GM: turn every open hitch into Complications and give the player Plot Points",
+      "hitchPP": "Hitches activated: +{count} Plot Point for the player",
+      "outOfScene": "Out of the scene (past d12): {names}. See Wasted / Busted."
     },
     "Migration": {
       "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing.",

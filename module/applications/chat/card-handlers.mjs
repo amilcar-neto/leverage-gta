@@ -6,10 +6,10 @@
 import { SYSTEM_ID } from "../../config.mjs";
 import { logger } from "../../logger.mjs";
 import { executeAsGM, registerSocketAction } from "../../socket.mjs";
-import { applyComplication, keepNextDie, resolveNextOne } from "../../dice/card-actions.mjs";
+import { activateHitches as applyHitches, applyComplication, keepNextDie, resolveNextOne, unresolvedOnes } from "../../dice/card-actions.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { editTableList, readComplications } from "../../table-state.mjs";
-import { promptComplication } from "./complication-dialog.mjs";
+import { promptComplication, promptHitches } from "./complication-dialog.mjs";
 import { damageFromCard } from "./damage.mjs";
 
 /** Messages with an action in flight (a double click must not spend two Plot Points). */
@@ -148,6 +148,39 @@ function complication(message) {
   });
 }
 
+/**
+ * Writes the activation of every open hitch: the Complications (through the table queue), the card (hitches resolved,
+ * Plot Points noted) and the player's Plot Points, in that order. The card is read inside the queue, so a second
+ * activation of the same card finds no hitch left and does nothing.
+ * @returns {Promise<{ppGain: number, outOfScene: string[]}|null>} null when nothing was written
+ */
+async function writeHitches(message, choice) {
+  let result = null;
+  await editTableList("complications", (list) => {
+    const data = rollOf(message);
+    result = data ? applyHitches(data, list, choice, foundry.utils.randomID) : null;
+    return result?.list ?? list;
+  });
+  if (!result) return null;
+  await message.setFlag(SYSTEM_ID, "roll", result.data);
+  if (result.ppGain > 0) await actorOf(result.data)?.addPlotPoints(result.ppGain);
+  return result;
+}
+
+/** Button "ACTIVATE HITCHES" (Cortex Prime card, Fixer only): one dialog for all the open hitches. */
+function activateHitches(message) {
+  if (!game.user.isGM) return undefined;
+  return exclusive(message, async () => {
+    const data = rollOf(message);
+    const count = data ? unresolvedOnes(data).length : 0;
+    if (!count) return;
+    const choice = await promptHitches(readComplications(), { count, free: Boolean(data.botch) });
+    if (!choice) return;
+    const done = await writeHitches(message, choice);
+    if (done?.outOfScene.length) ui.notifications.warn(game.i18n.format("LEVERAGE.Roll.outOfScene", { names: done.outOfScene.join(", ") }));
+  });
+}
+
 /** Button "APPLY DAMAGE" (opposition card, Fixer only). */
 function applyDamage(message) {
   if (!game.user.isGM) return undefined;
@@ -184,7 +217,7 @@ async function chooseDice(message) {
  * Click handlers by `data-action`.
  * @type {Record<string, (message: ChatMessage, event: Event) => Promise<void>|void>}
  */
-export const cardHandlers = { keepDie, complication, applyDamage, chooseDice, toggleExpand };
+export const cardHandlers = { keepDie, complication, activateHitches, applyDamage, chooseDice, toggleExpand };
 
 /** Registers the Fixer-side socket action (call once). */
 export function registerCardSocket() {

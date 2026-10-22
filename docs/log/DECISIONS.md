@@ -414,3 +414,17 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   gastos); `dieState`/`dieCaption` em `resolve-draft.mjs` servem a janela e o card; legendas só em `LEVERAGE.Roll.*`.
 - **Cor do efeito:** verde `--lv-roll` na janela e no card; o dado de efeito do card expandido leva o anel verde.
 - **Dados da janela:** grade de colunas inteiras de 84 px, centralizada. Dado simples (nome "d10") não repete o nome.
+
+## Hitches e botch no card prime (T-1008, 2026-10-22)
+
+- **Contexto:** o Prime junta os hitches de uma rolagem; o clássico resolve cada 1 sozinho.
+- **Escolha:**
+  1. **Lógica pura** `activateHitches(data, complications, choice, newId)` em `card-actions.mjs`: modos `new` (d6 subido n-1, 1 PP),
+     `raise` (existente subida n, 1 PP), `separate` (n nomes, 1 PP cada). Marca todos os hitches abertos em `complicationsResolved`,
+     soma `hitchPP` e `hitchesActivated`. `raiseDie` conta o excesso além do d12.
+  2. **Botch** (todos 1): as mesmas três opções, sempre sem PP; passos iguais (n-1 na nova). Faixa BOTCH cheia no vermelho `--lv-stamp`.
+  3. **Acima de d12:** guarda `outOfScene` (nomes) no card, mostra aviso (cita Wasted/Busted) e notifica o mestre. Nada automático.
+  4. **Escrita:** dentro da fila `editTableList` lê o card fresco e calcula; depois grava o card (uma atualização) e por fim o PP
+     (`addPlotPoints(+n)`, o mestre nunca tira). Trava `exclusive` por mensagem barra o duplo clique; um 2º clique encontra 0 hitches.
+  5. **Card prime** não tem mais o botão "GM · Complication" (só o "Ativar hitches"); o card classic/v1 mantém o antigo.
+- **Descartado:** um diálogo por hitch; desfazer a Complication se a escrita do card falhar (raro; o PP só sai depois do card).

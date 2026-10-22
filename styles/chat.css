@@ -355,3 +355,14 @@
 }
 .leverage-gta .lv-roll-hitches-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .leverage-gta .lv-roll-botch { flex: none; font-family: var(--lv-font-display); font-size: 18px; letter-spacing: 0.08em; color: var(--lv-danger); }
+
+/* BOTCH: the whole strip turns solid red, like a stamp (T-1008) */
+.leverage-gta .lv-roll-hitches--botch {
+  border-inline-start-color: var(--lv-danger);
+  background: var(--lv-stamp);
+  color: var(--lv-white);
+}
+.leverage-gta .lv-roll-hitches--botch .lv-roll-botch { color: var(--lv-white); }
+
+/* Out of the scene warning (a Complication went past d12): wraps, never cut */
+.leverage-gta .lv-roll-note--warn { border-left-color: var(--lv-danger); color: var(--lv-danger-soft); overflow-wrap: anywhere; }
