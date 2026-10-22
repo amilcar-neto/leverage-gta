@@ -271,9 +271,10 @@ const assetRow = (item) => ({
   id: item.id,
   name: item.name,
   note: item.system.note,
-  die: item.system.die,
+  die: item.system.effectiveDie ?? item.system.die,
   duration: item.system.duration,
-  durationLabel: t(LEVERAGE.assetDurations[item.system.duration]?.label ?? "")
+  // A raised Asset (Opportunity, until the end of the scene) shows how many steps it went up.
+  durationLabel: t(LEVERAGE.assetDurations[item.system.duration]?.label ?? "") + (item.system.boost ? ` ▲${item.system.boost}` : "")
 });
 
 const jobRow = (item) => ({

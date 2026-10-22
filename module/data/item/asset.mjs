@@ -1,7 +1,8 @@
 import { LEVERAGE } from "../../config.mjs";
+import { effectiveDie } from "../../dice/opportunity.mjs";
 import { DieField } from "../fields.mjs";
 
-const { BooleanField, StringField } = foundry.data.fields;
+const { BooleanField, NumberField, StringField } = foundry.data.fields;
 
 /**
  * Asset Item: a piece of gear or resource that adds a die to the Pool.
@@ -10,6 +11,7 @@ const { BooleanField, StringField } = foundry.data.fields;
  * @property {string} note        One-line note.
  * @property {boolean} weapon     Weapons are lost on Wasted/Busted when `duration` is `scene`.
  * @property {boolean} purchased  Bought with Money (for reports).
+ * @property {number} boost       Temporary steps up from Opportunities (docs/08); cleared at the end of the scene.
  */
 export class AssetData extends foundry.abstract.TypeDataModel {
   /** @inheritdoc */
@@ -24,7 +26,13 @@ export class AssetData extends foundry.abstract.TypeDataModel {
       }),
       note: new StringField({ required: true, blank: true, initial: "" }),
       weapon: new BooleanField({ required: true, initial: false }),
-      purchased: new BooleanField({ required: true, initial: false })
+      purchased: new BooleanField({ required: true, initial: false }),
+      boost: new NumberField({ required: true, nullable: false, integer: true, min: 0, max: LEVERAGE.dice.length - 1, initial: 0 })
     };
+  }
+
+  /** The die the Asset rolls now: `die` stepped up by `boost` (never past d12). @returns {number} */
+  get effectiveDie() {
+    return effectiveDie(this.die, this.boost);
   }
 }

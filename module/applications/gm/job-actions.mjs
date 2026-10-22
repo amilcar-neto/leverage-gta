@@ -77,6 +77,15 @@ export function assetIdsOf(items, duration) {
 }
 
 /**
+ * Ids of the Assets raised by an Opportunity (`system.boost` above 0): the raise lasts until the end of the scene.
+ * @param {{id: string, type: string, system?: {boost?: number}}[]} items
+ * @returns {string[]}
+ */
+export function boostedAssetIds(items) {
+  return [...items].filter((i) => i.type === "asset" && (i.system?.boost ?? 0) > 0).map((i) => i.id);
+}
+
+/**
  * Ids of Job Items that have `callbackUsed` set.
  * @param {{id: string, type: string, system?: {callbackUsed?: boolean}}[]} items
  * @returns {string[]}
@@ -189,8 +198,17 @@ export async function newSession() {
   return count;
 }
 
+/** Takes back every Opportunity raise of the Assets (end of scene), in every Crew sheet. */
+async function clearBoosts() {
+  for (const actor of game.actors.filter((a) => a.type === "crew")) {
+    const ids = boostedAssetIds(actor.items);
+    if (ids.length) await actor.updateEmbeddedDocuments("Item", ids.map((_id) => ({ _id, "system.boost": 0 })));
+  }
+}
+
 /**
- * End of scene: deletes every `scene` Asset of the Crew (after a confirmation) and clears the global Traits.
+ * End of scene: deletes every `scene` Asset of the Crew (after a confirmation), takes back the Opportunity raises of the
+ * other Assets and clears the global Traits.
  * @param {{confirm?: boolean}} [options] `confirm: false` skips the dialog (macros).
  * @returns {Promise<number|null>} Assets removed, or null when cancelled
  */
@@ -208,6 +226,7 @@ export async function endScene({ confirm = true } = {}) {
     if (!yes) return null;
   }
   for (const { actor, ids } of targets) if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
+  await clearBoosts();
   const traitsCleared = readGlobalTraits().length;
   await clearGlobalTraits();
   const detail = targets.filter((x) => x.ids.length).map((x) => `${escapeHtml(x.actor.name)} (${x.ids.length})`).join(", ");

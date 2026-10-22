@@ -434,3 +434,24 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   8. **`raise` aceita qualquer Complication**, d12 inclusive: o excesso vira "fora da cena" (o rótulo da opção avisa).
   5. **Card prime** não tem mais o botão "GM · Complication" (só o "Ativar hitches"); o card classic/v1 mantém o antigo.
 - **Descartado:** um diálogo por hitch.
+
+## Opportunities (T-1010, 2026-10-22)
+
+- **Contexto:** cada 1 do Fixer é uma oportunidade (`opportunities`); o livro deixa um jogador gastar 1 PP para descer uma
+  Complication ou subir um Asset até o fim da cena.
+- **Escolha:**
+  1. **Lógica pura** em `module/dice/opportunity.mjs`: `useOpportunity(data, {kind: "lower"|"raise", id|assetId}, {complications, assets, by})`,
+     `opportunitiesLeft`, `canBoostAsset`, `effectiveDie`, `undoLower`. Cada uso soma 1 em `opportunitiesUsed` e guarda uma linha em
+     `opportunityLog` (`{kind, name, from, to, by}`), que o card mostra como nota. Vários usos = vários PP, um por vez.
+  2. **Descer:** só Complication que existe na lista da mesa; d4 some (`to: null`). **Subir:** só Asset `scene` ou `job` do
+     personagem do jogador com dado efetivo abaixo de d12 (Signature fica de fora).
+  3. **Boost do Asset:** campo validado `system.boost` (inteiro 0..4, passos). O dado base não muda; `AssetData#effectiveDie` e
+     `resolvePoolRef` usam o dado subido. A ficha mostra o dado efetivo e `▲n` na etiqueta de duração. "Encerrar cena" zera o
+     boost de todos os Assets de todos os Crews (`clearBoosts`), além de apagar os Assets de cena.
+  4. **Quem usa:** o dono do personagem (personagem do usuário, senão o primeiro Crew que ele possui); o Mestre não usa (não é dono).
+     O botão fica desativado sem PP. O card do Fixer mostra a faixa "N oportunidades" para todos (some quando acaba).
+  5. **Escrita:** `requestAsGM("useOpportunity")`; o Mestre que processa roda na `packetQueue`: relê o card, confere dono e PP, grava a
+     Complication (ou o boost), depois o card (uma atualização) e por fim tira 1 PP; falha desfaz o que já foi escrito.
+     O card é redesenhado quando o PP do jogador muda (o botão depende dele).
+- **Descartado:** um diálogo em duas etapas (tipo, depois alvo): um só `<select>` com dois grupos basta.
+

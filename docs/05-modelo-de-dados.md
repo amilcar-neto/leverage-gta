@@ -82,6 +82,7 @@ Ao entrar na Pool soma **d6** (`CONFIG.LEVERAGE.specialtyDie`).
 | `note` | String | uma linha |
 | `weapon` | Boolean | Arma: perde-se no Wasted/Busted se `duration = scene` |
 | `purchased` | Boolean | Comprado com Grana (para relatórios) |
+| `boost` | Integer 0..4 | Passos temporários para cima por Opportunity (até d12, "Encerrar cena" zera). Dado rolado = `die` subido `boost` vezes (`effectiveDie`) |
 
 ### `job`
 Um tipo só, dois papéis. O Item **de mundo** (diretório de Itens, `game.items`, sem dono Ator) é o **Job do mestre**; o Item **embutido** na ficha de um Crew é o **Record** daquele Job (copiado ao encerrar). `status` só vale no Job de mundo; o Record o ignora.

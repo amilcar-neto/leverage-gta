@@ -92,10 +92,16 @@ Em ambos, crie a mensagem de chat com o card e as `flags` de `docs/05`.
   O Rolador tem a linha DIFICULDADE (Muito fácil 2d4 ... Muito difícil 2d12); os dados dela somam aos Traços/fontes
   escolhidos. Fácil (2d6) é o padrão e não soma nada: é a oposição "nenhuma" que já vale quando nada é escolhido.
   O card do Fixer guarda `total`, `effectDie` (maior dado sobrando, d4 se nada sobra), `hitches` e `opportunities`
-  (= hitches, `opportunitiesUsed: 0`) em `flags.leverage-gta.roll`; hitches nunca entram no total. Gastar Opportunities é a T-1010.
+  (= hitches, `opportunitiesUsed: 0`) em `flags.leverage-gta.roll`; hitches nunca entram no total. Gastar Opportunities: ver abaixo.
   `rules.oppositionChoice = "choose"` ainda resolve automático (ver ISSUES).
 - Opcional: card de **disputa** (`versus` em `docs/05`) que liga a rolagem do jogador a um card do Fixer por `messageId`, mostra
   a margem, quem venceu e o sucesso heroico (+5 = +1 passo de efeito).
+
+- **Opportunities (T-1010):** o card do Fixer mostra a faixa "N oportunidades" enquanto sobra alguma (`opportunities - opportunitiesUsed`).
+  O dono de um personagem vê "Usar oportunidade (1 PP)" (desativado sem PP). O diálogo é um `<select>` com dois grupos: **descer** uma
+  Complication da mesa (d4 some) ou **subir** um Asset de cena/Job do personagem (até d12; guarda `system.boost`, que dura até
+  "Encerrar cena"). Cada uso gasta 1 PP, soma `opportunitiesUsed`, grava `opportunityLog` e é uma escrita pelo Mestre
+  (`requestAsGM("useOpportunity")`, `packetQueue`, desfaz se falhar). Lógica em `dice/opportunity.mjs`.
 
 ## Tiroteio (regra da casa "Vida")
 

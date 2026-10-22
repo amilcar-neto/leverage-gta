@@ -70,6 +70,12 @@
   </div>
   {{/if}}
 
+  {{#if showOpportunities}}
+  <div class="lv-roll-opps">
+    <span class="lv-roll-opps-text" data-tooltip="{{opportunityText}}">{{opportunityText}}</span>
+  </div>
+  {{/if}}
+
   {{#each warnings}}<div class="lv-roll-note lv-roll-note--warn">{{this}}</div>{{/each}}
 
   {{#if damageApplied}}<div class="lv-roll-note lv-roll-note--damage">{{damageApplied}}</div>{{/if}}
@@ -80,6 +86,7 @@
     {{#if showKeep}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="keepDie" data-tooltip="{{keepTip}}" {{#if keepDisabled}}disabled{{/if}}>{{keepLabel}}</button>{{/if}}
     {{#if showActivate}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="activateHitches" data-tooltip="{{activateTip}}">{{activateLabel}}</button>{{/if}}
     {{#if showComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="complication" data-tooltip="{{complicationTip}}">{{complicationLabel}}</button>{{/if}}
+    {{#if showOpportunity}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="useOpportunity" data-tooltip="{{opportunityTip}}" {{#if opportunityDisabled}}disabled{{/if}}>{{opportunityLabel}}</button>{{/if}}
     {{#if showDamage}}<button type="button" class="lv-roll-btn lv-roll-btn--damage" data-action="applyDamage" data-tooltip="{{damageTip}}">{{damageLabel}}</button>{{/if}}
   </div>
   {{/if}}

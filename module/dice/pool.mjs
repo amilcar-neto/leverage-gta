@@ -7,6 +7,7 @@
  */
 import { LEVERAGE } from "../config.mjs";
 import { isValidDie } from "./die.mjs";
+import { effectiveDie } from "./opportunity.mjs";
 import { moneyRollDie } from "../rules/money.mjs";
 
 /** Kinds that fill a required slot (exactly one each), in display order. */
@@ -61,7 +62,7 @@ function resolveItem(actor, { id, size }) {
     case "specialty":
       return { kind: "specialty", name: item.name, die: item.system?.die ?? LEVERAGE.specialtyDie, role: item.system?.role };
     case "asset":
-      return { kind: "asset", name: item.name, die: item.system?.die ?? LEVERAGE.defaultDie };
+      return { kind: "asset", name: item.name, die: effectiveDie(item.system?.die ?? LEVERAGE.defaultDie, item.system?.boost) };
     case "talent":
       return item.system?.die ? { kind: "talent", name: item.name, die: item.system.die } : null;
     default:

@@ -438,6 +438,18 @@
         "stepsMany": "+{steps} steps",
         "raiseOut": "{name}: d{from}, past d12 (out of the scene)",
         "nameN": "Complication {n}"
+      },
+      "Opportunity": {
+        "window": "Use an Opportunity",
+        "field": "Effect",
+        "confirm": "Use (1 PP)",
+        "group": {
+          "lower": "Lower a Complication",
+          "raise": "Raise an Asset (until end of scene)"
+        },
+        "lower": "{name}: d{from} to d{to}",
+        "lowerGone": "{name}: d{from} gone",
+        "raise": "{name}: d{from} to d{to}"
       }
     },
     "SystemTitle": "Leverage: Liberty City",
@@ -677,7 +689,16 @@
       "hitchPPMany": "Hitches activated: +{count} Plot Points for the player",
       "hitchesDone": " · activated",
       "hitchFailed": "The hitches could not be activated. Nothing was changed.",
-      "hitchTaken": "These hitches were already activated."
+      "hitchTaken": "These hitches were already activated.",
+      "opportunityOne": "1 Opportunity",
+      "opportunityButton": "Use Opportunity (1 PP)",
+      "opportunityTip": "Spend 1 Plot Point",
+      "opportunityAnon": "Someone",
+      "opportunityNote": {
+        "lower": "{by} lowered {name}: d{from} to d{to}",
+        "gone": "{by} removed {name} (d{from})",
+        "raise": "{by} raised {name}: d{from} to d{to}"
+      }
     },
     "Migration": {
       "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing.",
@@ -1191,6 +1212,11 @@
       "invalid": "Invalid dice choice.",
       "noAnswer": "The Fixer did not answer. Try again.",
       "error": "Could not resolve the roll. Nothing was changed."
+    },
+    "Opportunity": {
+      "taken": "No Opportunity is left on this card.",
+      "failed": "The Opportunity could not be used.",
+      "nothing": "There is no Complication to lower and no Asset to raise."
     }
   }
 }

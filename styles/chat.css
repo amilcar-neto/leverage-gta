@@ -356,6 +356,23 @@
 .leverage-gta .lv-roll-hitches-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .leverage-gta .lv-roll-botch { flex: none; font-family: var(--lv-font-display); font-size: 18px; letter-spacing: 0.08em; color: var(--lv-danger); }
 
+/* Opportunity strip of the Fixer's card (T-1010): same shape as the hitch strip, Plot Point gold */
+.leverage-gta .lv-roll-opps {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0 10px 10px;
+  padding: 5px 10px;
+  border-inline-start: 3px solid var(--lv-pp);
+  background: color-mix(in srgb, var(--lv-pp) 10%, transparent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-pp);
+}
+.leverage-gta .lv-roll-opps-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* BOTCH: the whole strip turns solid red, like a stamp (T-1008) */
 .leverage-gta .lv-roll-hitches--botch {
   border-inline-start-color: var(--lv-danger);

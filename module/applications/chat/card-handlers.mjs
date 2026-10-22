@@ -7,9 +7,11 @@ import { SYSTEM_ID } from "../../config.mjs";
 import { logger } from "../../logger.mjs";
 import { executeAsGM, registerSocketAction, requestAsGM } from "../../socket.mjs";
 import { applyComplication, keepNextDie, resolveHitches, resolveNextOne, undoHitchList, unresolvedOnes } from "../../dice/card-actions.mjs";
+import { opportunitiesLeft, undoLower, useOpportunity } from "../../dice/opportunity.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { editTableList, readComplications } from "../../table-state.mjs";
 import { promptComplication, promptHitches } from "./complication-dialog.mjs";
+import { opportunityOptions, promptOpportunity } from "./opportunity-dialog.mjs";
 import { damageFromCard } from "./damage.mjs";
 
 /** Messages with an action in flight (a double click must not spend two Plot Points). */
@@ -222,6 +224,112 @@ function activateHitches(message) {
   });
 }
 
+/* ------------------------------------------------------------ Opportunities (Fixer's card) */
+
+/**
+ * The character a player spends Opportunities with: his assigned character, else the first Crew he owns.
+ * @param {User} user
+ * @returns {Actor|null} null for the Fixer (he is not a character's owner here) or a player without a Crew
+ */
+export function opportunityActorOf(user) {
+  if (!user || user.isGM) return null;
+  const mine = (a) => a?.type === "crew" && isCharacterOwner(a, user);
+  return [user.character, ...game.actors.filter(mine)].find(mine) ?? null;
+}
+
+/** Plain data of the Assets of an actor (what `useOpportunity` reads). */
+const assetsOf = (actor) => actor.items.filter((i) => i.type === "asset").map((i) => ({
+  id: i.id, name: i.name, die: i.system.die, boost: i.system.boost ?? 0, duration: i.system.duration
+}));
+
+/**
+ * Spends one Opportunity of an opposition card. Runs on the processing Fixer inside the socket `packetQueue`, so two
+ * uses never overlap: the card, the Plot Points and the target are read fresh in this one serial task. Writes the
+ * Complication (or the Asset boost), then the card, then takes the Plot Point; a failed step takes back the earlier ones.
+ * @param {ChatMessage} message
+ * @param {{kind: string, id?: string, assetId?: string}} choice
+ * @param {string} actorId The player's character.
+ * @param {User} user Who asked (must own the character; checked here, not trusted from the client).
+ * @returns {Promise<{ok: boolean, reason?: "taken"|"invalid"|"noPlotPoints"|"error"}>}
+ */
+async function writeOpportunity(message, choice, actorId, user) {
+  const data = rollOf(message);
+  const actor = game.actors.get(actorId);
+  if (!data || actor?.type !== "crew" || !isCharacterOwner(actor, user)) return { ok: false, reason: "invalid" };
+  if (!opportunitiesLeft(data)) return { ok: false, reason: "taken" };
+  if (plotPointsOf(actor) < 1) return { ok: false, reason: "noPlotPoints" };
+  const raising = choice?.kind === "raise";
+  let result = null;
+  try {
+    if (raising) {
+      result = useOpportunity(data, choice, { assets: assetsOf(actor), by: actor.name });
+      if (result) await actor.items.get(result.assetId).update({ "system.boost": result.boost });
+    } else {
+      await editTableList("complications", (list) => {
+        result = useOpportunity(data, choice, { complications: list, by: actor.name });
+        return result?.list ?? list;
+      });
+    }
+  } catch (err) {
+    logger.error("Could not write the Opportunity", err);
+    return { ok: false, reason: "error" };
+  }
+  if (!result) return { ok: false, reason: "invalid" };
+  const undo = async () => {
+    try {
+      if (raising) await actor.items.get(result.assetId)?.update({ "system.boost": result.previousBoost });
+      else await editTableList("complications", (list) => undoLower(list, result));
+    } catch (err) {
+      logger.error("Could not undo the Opportunity", err);
+    }
+  };
+  try {
+    await message.setFlag(SYSTEM_ID, "roll", result.data);
+  } catch (err) {
+    logger.error("Could not write the card", err);
+    await undo();
+    return { ok: false, reason: "error" };
+  }
+  try {
+    await actor.addPlotPoints(-1);
+  } catch (err) {
+    logger.error("Could not take the Plot Point", err);
+    await restoreCard(message, data);
+    await undo();
+    return { ok: false, reason: "error" };
+  }
+  return { ok: true };
+}
+
+/** Socket handler (Fixer side): the asker is the user the server authenticated. */
+async function onUseOpportunityRequest({ messageId, choice, actorId }, userId) {
+  const message = game.messages.get(messageId);
+  const user = game.users.get(userId);
+  if (!message || !user) return { ok: false, reason: "invalid" };
+  return writeOpportunity(message, choice, actorId, user);
+}
+
+/** Tells the player how it went (nothing when it worked: the card redraws). */
+function reportOpportunity(result) {
+  if (result?.ok) return;
+  const key = { taken: "LEVERAGE.Opportunity.taken", noPlotPoints: "LEVERAGE.Roll.noPlotPoints" }[result?.reason] ?? "LEVERAGE.Opportunity.failed";
+  ui.notifications[result?.reason === "error" || !result ? "error" : "warn"](game.i18n.localize(key));
+}
+
+/** Button "USE OPPORTUNITY (1 PP)" (Fixer's card, the character's player): pick an effect, the Fixer writes it. */
+function useOpportunityButton(message) {
+  const actor = opportunityActorOf(game.user);
+  if (!actor) return undefined;
+  return exclusive(message, async () => {
+    if (!opportunitiesLeft(rollOf(message))) return;
+    if (plotPointsOf(actor) < 1) return reportOpportunity({ ok: false, reason: "noPlotPoints" });
+    const options = opportunityOptions(readComplications(), assetsOf(actor));
+    if (!options.length) return ui.notifications.warn(game.i18n.localize("LEVERAGE.Opportunity.nothing"));
+    const choice = await promptOpportunity(options);
+    if (choice) reportOpportunity(await requestAsGM("useOpportunity", { messageId: message.id, choice, actorId: actor.id }));
+  });
+}
+
 /** Button "APPLY DAMAGE" (opposition card, Fixer only). */
 function applyDamage(message) {
   if (!game.user.isGM) return undefined;
@@ -258,10 +366,11 @@ async function chooseDice(message) {
  * Click handlers by `data-action`.
  * @type {Record<string, (message: ChatMessage, event: Event) => Promise<void>|void>}
  */
-export const cardHandlers = { keepDie, complication, activateHitches, applyDamage, chooseDice, toggleExpand };
+export const cardHandlers = { keepDie, complication, activateHitches, useOpportunity: useOpportunityButton, applyDamage, chooseDice, toggleExpand };
 
 /** Registers the Fixer-side socket action (call once). */
 export function registerCardSocket() {
   registerSocketAction("keepDie", onKeepDieRequest);
   registerSocketAction("activateHitches", onActivateHitchesRequest);
+  registerSocketAction("useOpportunity", onUseOpportunityRequest);
 }

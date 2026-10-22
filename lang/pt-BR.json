@@ -438,6 +438,18 @@
         "stepsMany": "+{steps} passos",
         "raiseOut": "{name}: d{from}, passa do d12 (fora da cena)",
         "nameN": "Complication {n}"
+      },
+      "Opportunity": {
+        "window": "Usar uma oportunidade",
+        "field": "Efeito",
+        "confirm": "Usar (1 PP)",
+        "group": {
+          "lower": "Descer uma Complication",
+          "raise": "Subir um Asset (até o fim da cena)"
+        },
+        "lower": "{name}: d{from} para d{to}",
+        "lowerGone": "{name}: d{from} some",
+        "raise": "{name}: d{from} para d{to}"
       }
     },
     "SystemTitle": "Leverage: Liberty City",
@@ -677,7 +689,16 @@
       "hitchPPMany": "Hitches ativados: +{count} Plot Points para o jogador",
       "hitchesDone": " · ativado",
       "hitchFailed": "Não foi possível ativar os hitches. Nada foi alterado.",
-      "hitchTaken": "Esses hitches já foram ativados."
+      "hitchTaken": "Esses hitches já foram ativados.",
+      "opportunityOne": "1 oportunidade",
+      "opportunityButton": "Usar oportunidade (1 PP)",
+      "opportunityTip": "Gasta 1 Plot Point",
+      "opportunityAnon": "Alguém",
+      "opportunityNote": {
+        "lower": "{by} desceu {name}: d{from} para d{to}",
+        "gone": "{by} removeu {name} (d{from})",
+        "raise": "{by} subiu {name}: d{from} para d{to}"
+      }
     },
     "Migration": {
       "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar.",
@@ -1191,6 +1212,11 @@
       "invalid": "Escolha de dados inválida.",
       "noAnswer": "O Mestre não respondeu. Tente de novo.",
       "error": "Não foi possível resolver a rolagem. Nada foi alterado."
+    },
+    "Opportunity": {
+      "taken": "Não sobrou oportunidade neste card.",
+      "failed": "Não foi possível usar a oportunidade.",
+      "nothing": "Não há Complication para descer nem Asset para subir."
     }
   }
 }

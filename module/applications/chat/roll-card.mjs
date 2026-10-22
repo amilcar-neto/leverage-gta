@@ -6,9 +6,10 @@ import { LEVERAGE, SYSTEM_ID, hasRealPortrait } from "../../config.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { renderDie } from "../components/die.mjs";
 import { unresolvedOnes } from "../../dice/card-actions.mjs";
+import { opportunitiesLeft } from "../../dice/opportunity.mjs";
 import { dieCaption, dieState } from "../../dice/resolve-draft.mjs";
 import { normalizeRoll } from "../../dice/roll-core.mjs";
-import { cardHandlers, isCharacterOwner, isExpanded, latestRollOf, registerCardSocket } from "./card-handlers.mjs";
+import { cardHandlers, isCharacterOwner, isExpanded, latestRollOf, opportunityActorOf, registerCardSocket } from "./card-handlers.mjs";
 import { canResolve } from "../dialogs/resolve-dice-flow.mjs";
 import { damageView, registerDamageMessages } from "./damage.mjs";
 import { sceneTagOf } from "../scene-panel/scene-panel-logic.mjs";
@@ -126,6 +127,28 @@ function hitchView(data, entries, t) {
   };
 }
 
+/** Lines saying what each used Opportunity did (kept on the card, `opportunityLog`). */
+function opportunityNotes(data, t) {
+  return (data.opportunityLog ?? []).map((u) => {
+    const kind = u.kind === "raise" ? "raise" : u.to === null || u.to === undefined ? "gone" : "lower";
+    return t(`LEVERAGE.Roll.opportunityNote.${kind}`, { by: u.by || t("LEVERAGE.Roll.opportunityAnon"), name: u.name, from: u.from, to: u.to });
+  });
+}
+
+/** Opportunity strip and button of the Fixer's card (`opportunity` view: the viewer's character and its Plot Points). */
+function opportunityView(data, t, opportunity) {
+  const left = opportunitiesLeft(data);
+  const showOpportunity = left > 0 && opportunity.canUse;
+  const noPP = showOpportunity && opportunity.plotPoints < 1;
+  return {
+    showOpportunities: left > 0,
+    opportunityText: left ? (left === 1 ? t("LEVERAGE.Roll.opportunityOne") : t("LEVERAGE.Opposition.opportunities", { count: left })) : "",
+    showOpportunity, opportunityDisabled: noPP,
+    opportunityLabel: t("LEVERAGE.Roll.opportunityButton"),
+    opportunityTip: t(noPP ? "LEVERAGE.Roll.keepTipNoPlotPoints" : "LEVERAGE.Roll.opportunityTip")
+  };
+}
+
 /** Fields only the pending and prime layouts use (see `rollCardContext`). */
 function primeFields(data, layout, view) {
   const { t, canChoose, expanded } = view;
@@ -165,9 +188,10 @@ function primeFields(data, layout, view) {
  * @param {number} [view.plotPoints] Plot Points the actor has now.
  * @param {{show: boolean, applied: string}} [view.damage] Opposition card: APPLY DAMAGE button and the applied summary.
  * @param {boolean} [view.expanded] The viewer opened the full roll (client state, never saved).
+ * @param {{canUse: boolean, plotPoints: number}} [view.opportunity] The viewer owns a character (`canUse`) and its Plot Points: Opportunity button of the Fixer's card.
  * @returns {object}
  */
-export function rollCardContext(raw, { t, isOwner = false, canChoose = false, isLatest = true, isGM = false, plotPoints = 0, lang = "en", expanded = false, damage = { show: false, applied: "" } }) {
+export function rollCardContext(raw, { t, isOwner = false, canChoose = false, isLatest = true, isGM = false, plotPoints = 0, lang = "en", expanded = false, damage = { show: false, applied: "" }, opportunity = { canUse: false, plotPoints: 0 } }) {
   const data = normalizeRoll(raw);
   const layout = layoutOf(data);
   const resolved = layout !== "pending";
@@ -195,7 +219,8 @@ export function rollCardContext(raw, { t, isOwner = false, canChoose = false, is
       data.distinctionPP ? t("LEVERAGE.Roll.distinctionPP", { count: data.distinctionPP }) : "",
       data.ppSpent ? t(`LEVERAGE.Roll.ppSpent${data.ppSpent === 1 ? "One" : "Many"}`, { count: data.ppSpent }) : "",
       data.money ? t("LEVERAGE.Roll.moneyDrop") : "",
-      data.hitchPP ? t(`LEVERAGE.Roll.hitchPP${data.hitchPP === 1 ? "One" : "Many"}`, { count: data.hitchPP }) : ""
+      data.hitchPP ? t(`LEVERAGE.Roll.hitchPP${data.hitchPP === 1 ? "One" : "Many"}`, { count: data.hitchPP }) : "",
+      ...opportunityNotes(data, t)
     ].filter(Boolean),
     warnings: layout === "prime" && data.outOfScene?.length ? [t("LEVERAGE.Roll.outOfScene", { actor: data.actorName, names: data.outOfScene.join(", ") })] : [],
     showActivate, activateLabel: t("LEVERAGE.Roll.activateButton"), activateTip: t("LEVERAGE.Roll.activateTip"),
@@ -205,8 +230,8 @@ export function rollCardContext(raw, { t, isOwner = false, canChoose = false, is
     keepTip: t(keepDisabled ? "LEVERAGE.Roll.keepTipNoPlotPoints" : "LEVERAGE.Roll.keepTip"),
     complicationLabel: t("LEVERAGE.Roll.complicationButton"), complicationTip: t("LEVERAGE.Roll.complicationTip")
   };
-  const context = { ...base, ...primeFields(data, layout, { t, canChoose, expanded }) };
-  context.showActions = Boolean(showKeep || showComplication || showActivate || context.showDamage || context.showChoose);
+  const context = { ...base, ...primeFields(data, layout, { t, canChoose, expanded }), ...opportunityView(data, t, opportunity) };
+  context.showActions = Boolean(showKeep || showComplication || showActivate || context.showDamage || context.showChoose || context.showOpportunity);
   return context;
 }
 
@@ -220,6 +245,12 @@ async function ensureTemplate() {
   return compiled;
 }
 
+/** The viewer's character for Opportunities and its Plot Points. */
+function opportunityViewer() {
+  const mine = opportunityActorOf(game.user);
+  return { canUse: Boolean(mine), plotPoints: mine?.system?.plotPoints?.value ?? 0 };
+}
+
 /** Draws the card into one rendered message element. Nothing is drawn for a message the viewer may not read. */
 function paint(message, html, data, template) {
   if (!message.isContentVisible) return;
@@ -228,7 +259,7 @@ function paint(message, html, data, template) {
     t: (key, args) => game.i18n.format(key, args), lang: game.i18n.lang,
     isOwner: isCharacterOwner(actor, game.user), canChoose: canResolve(actor, game.user), isLatest: latestRollOf(data.actorUuid)?.id === message.id,
     isGM: game.user.isGM, plotPoints: actor?.system?.plotPoints?.value ?? 0, damage: damageView(message, data),
-    expanded: isExpanded(message)
+    expanded: isExpanded(message), opportunity: opportunityViewer()
   });
   const host = html.querySelector(".message-content");
   if (!host) return;
@@ -256,10 +287,17 @@ function refreshLatest(actorUuid, except) {
   if (message && message.id !== except) ui.chat?.updateMessage(message);
 }
 
+/** Draws again the Fixer's cards that still have an Opportunity (their button depends on the viewer's Plot Points). */
+function refreshOpportunityCards() {
+  for (const message of game.messages.contents) if (opportunitiesLeft(rollOf(message)) > 0) ui.chat?.updateMessage(message);
+}
+
 /** A Plot Point change redraws the actor's newest card; a new roll redraws the card that stopped being the newest. */
 function registerRefreshHooks() {
   Hooks.on("updateActor", (actor, changes) => {
-    if (changes.system?.plotPoints !== undefined) refreshLatest(actor.uuid);
+    if (changes.system?.plotPoints === undefined) return;
+    refreshLatest(actor.uuid);
+    if (actor.id === opportunityActorOf(game.user)?.id) refreshOpportunityCards();
   });
   Hooks.on("createChatMessage", (message) => {
     const data = message.getFlag(SYSTEM_ID, "roll");
