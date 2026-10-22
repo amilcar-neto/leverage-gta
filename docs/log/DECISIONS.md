@@ -284,3 +284,16 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   arrastar, sem "Criar mapa"); nova tarefa L-06 tira os Traços por flag da Cena e põe criar Traço/Complication global
   no HUD do mestre. Substitui `jobs-e-locais.md` B.4 itens 1, 3 e 4.
 - **Descartado:** flag na Cena (exigia arrastar ou botão); Lugar como Item (migração sem ganho).
+
+## Plot Points no HUD: de todos os jogadores e do narrador (dono, 2026-10-21)
+
+- **Contexto:** o HUD mostra só os PP do próprio personagem; o mestre vê o token selecionado, e o grupo todo só no Rastreador.
+- **Escolha:**
+  1. O HUD do mestre ganha uma **linha com os PP de cada jogador** (nome/retrato curto + número), com − e + em cada um
+     (o mestre administra). Jogador continua vendo e gastando o seu.
+  2. O **narrador também tem um contador de PP** ("Mesa"): setting de mundo, com − e +. Serve para contar o que o Fixer
+     gasta e o que fica no meio da mesa, e para lembrar de passar 1 PP ao jogador quando o Fixer gasta contra ele.
+     Não é uma reserva com limite: continua valendo "o Fixer não tem reserva própria" (docs/01 l.62); é só um marcador.
+  3. Atualiza em tempo real para todos, com o mesmo pulso de hoje. Jogadores podem esconder pelas configurações de cliente.
+- **Efeito:** `docs/07` (seção Plot Points e "Mestre") passa a descrever isso; tarefa T-1101 no backlog.
+- **Descartado:** dar ao Fixer uma reserva com limite (bank do Prime); a pile do Prime já equivale ao marcador.

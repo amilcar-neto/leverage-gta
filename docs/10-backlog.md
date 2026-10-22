@@ -153,3 +153,5 @@ Ajustes do dono em `docs/log/DECISIONS.md` (última seção) valem sobre as nota
 - [ ] **T-1001..T-1016, R-F10, R-FINAL-2 Cortex Prime** (`docs/research/cortex-prime-upgrade.md`), com o fluxo do dono:
   card inativo + janela Escolher dados + lançar no card; resumido mostra só o decidido, expandido mostra tudo.
   Ajustar T-1005..T-1007 a esse fluxo. *Dep:* J-04 (para `versus`/Opportunities usarem o Job novo).
+- [ ] **T-1101 PP no HUD do mestre:** linha com os PP de cada jogador (− / +) e contador "Mesa" do narrador (setting de
+  mundo, em tempo real, sem limite); atualizar `docs/07`. Ver DECISIONS (2026-10-21). *Dep:* nenhuma.
