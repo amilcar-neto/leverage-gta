@@ -424,15 +424,20 @@
       },
       "Hitches": {
         "window": "Ativar hitches",
-        "title": "{count} hitches",
         "mode": {
-          "new": "Uma nova Complication (d6), subida {steps}",
-          "raise": "Subir uma Complication existente {count}",
+          "new": "Uma nova Complication (d6)",
+          "raise": "Subir uma Complication existente",
           "separate": "{count} Complications separadas (d6)"
         },
         "plotPoints": " · +{pp} PP",
-        "raise": "{name}: d{from}, sobe {steps}",
-        "confirm": "Ativar"
+        "raise": "{name}: d{from} para d{to}",
+        "confirm": "Ativar",
+        "titleOne": "{count} hitch",
+        "titleMany": "{count} hitches",
+        "stepsOne": "+1 passo",
+        "stepsMany": "+{steps} passos",
+        "raiseOut": "{name}: d{from}, passa do d12 (fora da cena)",
+        "nameN": "Complication {n}"
       }
     },
     "SystemTitle": "Leverage: Liberty City",
@@ -667,8 +672,12 @@
       "collapseTip": "Mostrar só o resultado",
       "activateButton": "Mestre · Ativar hitches",
       "activateTip": "Mestre: transforma todos os hitches abertos em Complications e dá Plot Points ao jogador",
-      "hitchPP": "Hitches ativados: +{count} Plot Point para o jogador",
-      "outOfScene": "Fora da cena (passou do d12): {names}. Veja Wasted / Busted."
+      "outOfScene": "{actor} está fora da cena ({names} acima de d12). Veja Wasted / Busted.",
+      "hitchPPOne": "Hitches ativados: +1 Plot Point para o jogador",
+      "hitchPPMany": "Hitches ativados: +{count} Plot Points para o jogador",
+      "hitchesDone": " · ativado",
+      "hitchFailed": "Não foi possível ativar os hitches. Nada foi alterado.",
+      "hitchTaken": "Esses hitches já foram ativados."
     },
     "Migration": {
       "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar.",

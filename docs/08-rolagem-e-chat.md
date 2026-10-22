@@ -69,10 +69,12 @@ Em ambos, crie a mensagem de chat com o card e as `flags` de `docs/05`.
     resolvido. No card **prime** este botão não existe: vale o de baixo.
   - **"Mestre · Ativar hitches"** (card prime resolvido, só o mestre, enquanto houver hitch não resolvido; não existe no
     card pendente): um diálogo age em **todos** os hitches abertos de uma vez (n = quantos). (a) **nova Complication** d6
-    subida n-1 passos, 1 PP ao jogador; (b) **subir uma existente** n passos, 1 PP; (c) **n Complications separadas**,
-    1 PP cada. O card marca os hitches como resolvidos (`complicationsResolved`) e guarda `hitchPP`, numa só escrita; o
-    PP vai só ao jogador (o mestre nunca tira). **BOTCH** (todos 1, total 0): faixa vermelha cheia; as mesmas opções,
-    mas **sem PP**. Passo além do d12 = personagem **fora da cena**: só um aviso no card (`outOfScene`) e uma
+    subida n-1 passos, 1 PP ao jogador; (b) **subir uma existente** n passos (qualquer uma, até d12: o que passa do d12 é "fora da cena"), 1 PP; (c) **n
+    Complications separadas** (d6, sem subir), 1 PP cada. O card marca os hitches como resolvidos (`complicationsResolved`) e guarda `hitchPP` e `hitchesActivated`
+    (a faixa de hitches esmaece e ganha "· ativado"), numa só escrita; o PP vai só ao jogador de uma Crew (o mestre nunca
+    tira; ator que não é Crew não ganha PP). A escrita roda no Mestre que processa, numa só tarefa da fila do socket.
+    **BOTCH** (todos 1, total 0): faixa vermelha cheia; **uma** Complication grátis, subida um passo por hitch além do
+    primeiro (livro): só as opções (a) e (b), **sem PP**. Passo além do d12 = personagem **fora da cena**: só um aviso no card (`outOfScene`) e uma
     notificação ao mestre; Wasted/Busted continuam manuais (docs/02).
 - O card é atualizado editando a própria mensagem (o dono e o mestre têm permissão; use socket se o jogador não
   puder atualizar a mensagem diretamente).

@@ -419,12 +419,18 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 
 - **Contexto:** o Prime junta os hitches de uma rolagem; o clássico resolve cada 1 sozinho.
 - **Escolha:**
-  1. **Lógica pura** `activateHitches(data, complications, choice, newId)` em `card-actions.mjs`: modos `new` (d6 subido n-1, 1 PP),
+  1. **Lógica pura** `resolveHitches(data, complications, choice, newId)` em `card-actions.mjs`: modos `new` (d6 subido n-1, 1 PP),
      `raise` (existente subida n, 1 PP), `separate` (n nomes, 1 PP cada). Marca todos os hitches abertos em `complicationsResolved`,
      soma `hitchPP` e `hitchesActivated`. `raiseDie` conta o excesso além do d12.
-  2. **Botch** (todos 1): as mesmas três opções, sempre sem PP; passos iguais (n-1 na nova). Faixa BOTCH cheia no vermelho `--lv-stamp`.
+  2. **Botch** (todos 1): UMA Complication grátis (livro, l.1558-1561), subida um passo por hitch além do primeiro: só `new` (n-1) e
+     `raise` (n); `separate` não existe no botch. Sempre sem PP. Faixa BOTCH cheia no vermelho `--lv-stamp`.
   3. **Acima de d12:** guarda `outOfScene` (nomes) no card, mostra aviso (cita Wasted/Busted) e notifica o mestre. Nada automático.
-  4. **Escrita:** dentro da fila `editTableList` lê o card fresco e calcula; depois grava o card (uma atualização) e por fim o PP
-     (`addPlotPoints(+n)`, o mestre nunca tira). Trava `exclusive` por mensagem barra o duplo clique; um 2º clique encontra 0 hitches.
+  4. **Escrita (revisada):** o diálogo manda a escolha por `requestAsGM("activateHitches")`; o Mestre que processa roda tudo numa
+     tarefa da `packetQueue`: relê o card, grava a lista de Complications, o card (uma atualização) e por fim o PP (o mestre nunca
+     tira). Dois Mestres não se cruzam (a fila é a do processador); o 2º recebe aviso "já foram ativados". Falha parcial desfaz o
+     que já foi escrito (`undoHitchList` e o card antigo); o PP é a última escrita. `exclusive` por mensagem barra o duplo clique.
+  6. **Ator que não é Crew** (NPC rolado pelo mestre): sem PP (nota e diálogo); hitch de NPC é oportunidade, tratada na T-1010.
+  7. **`separate` sempre faz n Complications d6** (sem subir), mesmo quando o livro permite subir cada uma por hitches extras.
+  8. **`raise` aceita qualquer Complication**, d12 inclusive: o excesso vira "fora da cena" (o rótulo da opção avisa).
   5. **Card prime** não tem mais o botão "GM · Complication" (só o "Ativar hitches"); o card classic/v1 mantém o antigo.
-- **Descartado:** um diálogo por hitch; desfazer a Complication se a escrita do card falhar (raro; o PP só sai depois do card).
+- **Descartado:** um diálogo por hitch.

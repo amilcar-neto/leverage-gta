@@ -86,3 +86,13 @@ test("primeDieContext without a selection draws no ring", () => {
   assert.equal(plain.caption, "d10");
   assert.ok(!/is-kept|is-one|is-dropped/.test(plain.html));
 });
+
+test("hitch strip fades once activated and keeps the BOTCH flag; the out of the scene note names the actor", () => {
+  const card = prime([row(1), row(1)], { selection: { total: [], effect: [] }, total: 0, effectDie: 4, hitches: 2, botch: true, complicationsResolved: [0, 1], hitchesActivated: 2, hitchPP: 0, outOfScene: ["Cops"], actorName: "Ann" });
+  const ctx = rollCardContext(card, { t });
+  assert.equal(ctx.hitchesDone, true);
+  assert.match(ctx.hitchText, /hitchesDone/);
+  assert.equal(ctx.botch, true);
+  assert.deepEqual(ctx.warnings, ['LEVERAGE.Roll.outOfScene:{"actor":"Ann","names":"Cops"}']);
+  assert.equal(rollCardContext(prime([row(1), row(9)], { hitches: 1 }), { t }).hitchesDone, false);
+});

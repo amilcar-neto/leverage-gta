@@ -5,8 +5,8 @@
  */
 import { SYSTEM_ID } from "../../config.mjs";
 import { logger } from "../../logger.mjs";
-import { executeAsGM, registerSocketAction } from "../../socket.mjs";
-import { activateHitches as applyHitches, applyComplication, keepNextDie, resolveNextOne, unresolvedOnes } from "../../dice/card-actions.mjs";
+import { executeAsGM, registerSocketAction, requestAsGM } from "../../socket.mjs";
+import { applyComplication, keepNextDie, resolveHitches, resolveNextOne, undoHitchList, unresolvedOnes } from "../../dice/card-actions.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { editTableList, readComplications } from "../../table-state.mjs";
 import { promptComplication, promptHitches } from "./complication-dialog.mjs";
@@ -148,23 +148,64 @@ function complication(message) {
   });
 }
 
+/** Puts the card back as it was (best effort: a failure is only logged). */
+const restoreCard = (message, data) => message.setFlag(SYSTEM_ID, "roll", data).catch((err) => logger.error("Could not put the card back", err));
+
 /**
- * Writes the activation of every open hitch: the Complications (through the table queue), the card (hitches resolved,
- * Plot Points noted) and the player's Plot Points, in that order. The card is read inside the queue, so a second
- * activation of the same card finds no hitch left and does nothing.
- * @returns {Promise<{ppGain: number, outOfScene: string[]}|null>} null when nothing was written
+ * Writes the activation of every open hitch. Runs on the processing Fixer inside the socket `packetQueue`, so two
+ * activations of the same card (from two Fixers) never overlap: the card is read fresh inside this one serial task, then
+ * the Complications, the card and the player's Plot Points are written, in that order. A failed step takes back the
+ * earlier ones (the Plot Points are the last write and are never taken away from the player).
+ * @param {ChatMessage} message
+ * @param {object} choice The Fixer's choice (validated by `resolveHitches`).
+ * @returns {Promise<{ok: boolean, reason?: "taken"|"invalid"|"error", outOfScene?: string[], actorName?: string}>}
  */
 async function writeHitches(message, choice) {
+  const data = rollOf(message);
+  if (!data) return { ok: false, reason: "invalid" };
+  const actor = actorOf(data);
   let result = null;
-  await editTableList("complications", (list) => {
-    const data = rollOf(message);
-    result = data ? applyHitches(data, list, choice, foundry.utils.randomID) : null;
-    return result?.list ?? list;
-  });
-  if (!result) return null;
-  await message.setFlag(SYSTEM_ID, "roll", result.data);
-  if (result.ppGain > 0) await actorOf(result.data)?.addPlotPoints(result.ppGain);
-  return result;
+  try {
+    await editTableList("complications", (list) => {
+      result = resolveHitches(data, list, choice, foundry.utils.randomID, { gainsPP: actor?.type === "crew" });
+      return result?.list ?? list;
+    });
+  } catch (err) {
+    logger.error("Could not write the Complications", err);
+    return { ok: false, reason: "error" };
+  }
+  if (!result) return { ok: false, reason: unresolvedOnes(data).length ? "invalid" : "taken" };
+  const undoList = () => editTableList("complications", (list) => undoHitchList(list, result)).catch((err) => logger.error("Could not undo the Complications", err));
+  try {
+    await message.setFlag(SYSTEM_ID, "roll", result.data);
+  } catch (err) {
+    logger.error("Could not write the card", err);
+    await undoList();
+    return { ok: false, reason: "error" };
+  }
+  try {
+    if (result.ppGain > 0) await actor.addPlotPoints(result.ppGain);
+  } catch (err) {
+    logger.error("Could not give the Plot Points", err);
+    await restoreCard(message, data);
+    await undoList();
+    return { ok: false, reason: "error" };
+  }
+  return { ok: true, outOfScene: result.outOfScene, actorName: data.actorName ?? "" };
+}
+
+/** Socket handler (Fixer side): only a Fixer may ask. The answer goes back to the asker. */
+async function onActivateHitchesRequest({ messageId, choice }, userId) {
+  const message = game.messages.get(messageId);
+  if (!message || !game.users.get(userId)?.isGM) return { ok: false, reason: "invalid" };
+  return writeHitches(message, choice);
+}
+
+/** Tells the Fixer who asked how the activation went. */
+function reportHitches(result) {
+  if (!result) ui.notifications.error(game.i18n.localize("LEVERAGE.Roll.hitchFailed"));
+  else if (!result.ok) ui.notifications[result.reason === "taken" ? "warn" : "error"](game.i18n.localize(result.reason === "taken" ? "LEVERAGE.Roll.hitchTaken" : "LEVERAGE.Roll.hitchFailed"));
+  else if (result.outOfScene?.length) ui.notifications.warn(game.i18n.format("LEVERAGE.Roll.outOfScene", { actor: result.actorName, names: result.outOfScene.join(", ") }));
 }
 
 /** Button "ACTIVATE HITCHES" (Cortex Prime card, Fixer only): one dialog for all the open hitches. */
@@ -174,10 +215,10 @@ function activateHitches(message) {
     const data = rollOf(message);
     const count = data ? unresolvedOnes(data).length : 0;
     if (!count) return;
-    const choice = await promptHitches(readComplications(), { count, free: Boolean(data.botch) });
+    const crew = actorOf(data)?.type === "crew";
+    const choice = await promptHitches(readComplications(), { count, botch: Boolean(data.botch), gainsPP: crew });
     if (!choice) return;
-    const done = await writeHitches(message, choice);
-    if (done?.outOfScene.length) ui.notifications.warn(game.i18n.format("LEVERAGE.Roll.outOfScene", { names: done.outOfScene.join(", ") }));
+    reportHitches(await requestAsGM("activateHitches", { messageId: message.id, choice }));
   });
 }
 
@@ -222,4 +263,5 @@ export const cardHandlers = { keepDie, complication, activateHitches, applyDamag
 /** Registers the Fixer-side socket action (call once). */
 export function registerCardSocket() {
   registerSocketAction("keepDie", onKeepDieRequest);
+  registerSocketAction("activateHitches", onActivateHitchesRequest);
 }

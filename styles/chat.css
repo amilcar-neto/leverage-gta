@@ -364,5 +364,8 @@
 }
 .leverage-gta .lv-roll-hitches--botch .lv-roll-botch { color: var(--lv-white); }
 
+/* Hitches already activated by the Fixer: the strip fades (still readable) */
+.leverage-gta .lv-roll-hitches.is-done { opacity: 0.55; }
+
 /* Out of the scene warning (a Complication went past d12): wraps, never cut */
 .leverage-gta .lv-roll-note--warn { border-left-color: var(--lv-danger); color: var(--lv-danger-soft); overflow-wrap: anywhere; }

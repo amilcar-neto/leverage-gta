@@ -64,13 +64,13 @@
   {{/if}}
 
   {{#if showHitches}}
-  <div class="lv-roll-hitches{{#if botch}} lv-roll-hitches--botch{{/if}}">
+  <div class="lv-roll-hitches{{#if botch}} lv-roll-hitches--botch{{/if}}{{#if hitchesDone}} is-done{{/if}}">
     {{#if hitchCount}}<span class="lv-roll-hitches-text" data-tooltip="{{hitchText}}">{{hitchText}}</span>{{/if}}
     {{#if botch}}<span class="lv-roll-botch">{{botchText}}</span>{{/if}}
   </div>
   {{/if}}
 
-  {{#each warnings}}<div class="lv-roll-note lv-roll-note--warn" data-tooltip="{{this}}">{{this}}</div>{{/each}}
+  {{#each warnings}}<div class="lv-roll-note lv-roll-note--warn">{{this}}</div>{{/each}}
 
   {{#if damageApplied}}<div class="lv-roll-note lv-roll-note--damage">{{damageApplied}}</div>{{/if}}
 

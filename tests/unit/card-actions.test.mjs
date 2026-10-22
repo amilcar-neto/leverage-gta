@@ -1,7 +1,7 @@
 import "./helpers/foundry-stub.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { activateHitches, raiseDie, applyComplication, keepNextDie, nextSpareIndex, resolveNextOne, unresolvedOnes } from "../../module/dice/card-actions.mjs";
+import { resolveHitches, undoHitchList, raiseDie, applyComplication, keepNextDie, nextSpareIndex, resolveNextOne, unresolvedOnes } from "../../module/dice/card-actions.mjs";
 import { lowestActiveGM, routePacket, routeRequest } from "../../module/socket.mjs";
 import { rollCardContext } from "../../module/applications/chat/roll-card.mjs";
 
@@ -135,61 +135,61 @@ test("raiseDie steps and counts what goes past d12", () => {
 test("hitches: new Complication is a d6 stepped up n-1, 1 PP, all hitches resolved at once", () => {
   const data = primeCard([9, 1, 7, 1, 1]);
   const copy = structuredClone(data);
-  const r = activateHitches(data, [], { mode: "new", name: " Alarm " }, ids());
+  const r = resolveHitches(data, [], { mode: "new", name: " Alarm " }, ids());
   assert.deepEqual(data, copy);
   assert.deepEqual(r.complications, [{ id: "id1", name: "Alarm", die: 10 }]);
   assert.equal(r.ppGain, 1);
   assert.deepEqual(r.data.complicationsResolved, [1, 3, 4]);
   assert.equal(r.data.hitchPP, 1);
-  assert.equal(activateHitches(r.data, r.list, { mode: "new", name: "x" }, ids()), null);
+  assert.equal(resolveHitches(r.data, r.list, { mode: "new", name: "x" }, ids()), null);
 });
 
 test("hitches: one hitch makes a plain d6", () => {
-  const r = activateHitches(primeCard([9, 1, 7]), [], { mode: "new", name: "Alarm" }, ids());
+  const r = resolveHitches(primeCard([9, 1, 7]), [], { mode: "new", name: "Alarm" }, ids());
   assert.equal(r.complications[0].die, 6);
 });
 
 test("hitches: raising an existing Complication n steps, 1 PP; unknown id is refused", () => {
   const list = [{ id: "a", name: "Cops", die: 6 }, { id: "b", name: "Rain", die: 8 }];
-  const r = activateHitches(primeCard([9, 1, 1]), list, { mode: "raise", id: "a" }, ids());
+  const r = resolveHitches(primeCard([9, 1, 1]), list, { mode: "raise", id: "a" }, ids());
   assert.deepEqual(r.list, [{ id: "a", name: "Cops", die: 10 }, list[1]]);
   assert.equal(r.ppGain, 1);
-  assert.equal(activateHitches(primeCard([9, 1]), list, { mode: "raise", id: "zzz" }, ids()), null);
+  assert.equal(resolveHitches(primeCard([9, 1]), list, { mode: "raise", id: "zzz" }, ids()), null);
 });
 
 test("hitches: separate Complications need one name per hitch, 1 PP each", () => {
   const data = primeCard([9, 1, 1]);
-  assert.equal(activateHitches(data, [], { mode: "separate", names: ["A"] }, ids()), null);
-  assert.equal(activateHitches(data, [], { mode: "separate", names: ["A", " "] }, ids()), null);
-  const r = activateHitches(data, [], { mode: "separate", names: ["A", "B"] }, ids());
+  assert.equal(resolveHitches(data, [], { mode: "separate", names: ["A"] }, ids()), null);
+  assert.equal(resolveHitches(data, [], { mode: "separate", names: ["A", " "] }, ids()), null);
+  const r = resolveHitches(data, [], { mode: "separate", names: ["A", "B"] }, ids());
   assert.deepEqual(r.complications.map((c) => [c.name, c.die]), [["A", 6], ["B", 6]]);
   assert.equal(r.ppGain, 2);
   assert.equal(r.list.length, 2);
 });
 
 test("hitches: a botch is free (no PP) with the same steps", () => {
-  const r = activateHitches(primeCard([1, 1, 1]), [], { mode: "new", name: "Disaster" }, ids());
+  const r = resolveHitches(primeCard([1, 1, 1]), [], { mode: "new", name: "Disaster" }, ids());
   assert.equal(r.data.botch, true);
   assert.equal(r.ppGain, 0);
   assert.equal(r.complications[0].die, 10);
-  assert.equal(activateHitches(primeCard([1, 1]), [], { mode: "separate", names: ["A", "B"] }, ids()).ppGain, 0);
+  assert.equal(resolveHitches(primeCard([1, 1]), [], { mode: "raise", id: "zz" }, ids()), null);
 });
 
 test("hitches: going past d12 reports the character out of the scene", () => {
   const list = [{ id: "a", name: "Cops", die: 10 }];
-  const r = activateHitches(primeCard([9, 1, 1, 1]), list, { mode: "raise", id: "a" }, ids());
+  const r = resolveHitches(primeCard([9, 1, 1, 1]), list, { mode: "raise", id: "a" }, ids());
   assert.equal(r.list[0].die, 12);
   assert.deepEqual(r.outOfScene, ["Cops"]);
   assert.deepEqual(r.data.outOfScene, ["Cops"]);
-  const many = activateHitches(primeCard([9, 1, 1, 1, 1, 1]), [], { mode: "new", name: "Mess" }, ids());
+  const many = resolveHitches(primeCard([9, 1, 1, 1, 1, 1]), [], { mode: "new", name: "Mess" }, ids());
   assert.equal(many.complications[0].die, 12);
   assert.deepEqual(many.outOfScene, ["Mess"]);
 });
 
 test("hitches: no action on a pending or opposition card or without hitches", () => {
-  assert.equal(activateHitches(primeCard([9, 1], { status: "pending" }), [], { mode: "new", name: "x" }, ids()), null);
-  assert.equal(activateHitches(primeCard([9, 1], { opposition: true }), [], { mode: "new", name: "x" }, ids()), null);
-  assert.equal(activateHitches(primeCard([9, 8]), [], { mode: "new", name: "x" }, ids()), null);
+  assert.equal(resolveHitches(primeCard([9, 1], { status: "pending" }), [], { mode: "new", name: "x" }, ids()), null);
+  assert.equal(resolveHitches(primeCard([9, 1], { opposition: true }), [], { mode: "new", name: "x" }, ids()), null);
+  assert.equal(resolveHitches(primeCard([9, 8]), [], { mode: "new", name: "x" }, ids()), null);
 });
 
 test("roll card: prime card shows ACTIVATE for the GM only, classic keeps the old button", () => {
@@ -198,11 +198,49 @@ test("roll card: prime card shows ACTIVATE for the GM only, classic keeps the ol
   assert.equal(gm.showActivate, true);
   assert.equal(gm.showComplication, false);
   assert.equal(rollCardContext(prime, { t, isGM: false, isOwner: true }).showActivate, false);
-  const done = activateHitches(prime, [], { mode: "new", name: "x" }, ids()).data;
+  const done = resolveHitches(prime, [], { mode: "new", name: "x" }, ids()).data;
   assert.equal(rollCardContext(done, { t, isGM: true }).showActivate, false);
   assert.ok(rollCardContext(done, { t, isGM: true }).ppNotes.some((n) => n.startsWith("LEVERAGE.Roll.hitchPP")));
   const classic = rollCardContext(roll([entry(9, true), entry(1)]), { t, isGM: true });
   assert.equal(classic.showComplication, true);
   assert.equal(classic.showActivate, false);
   assert.equal(rollCardContext(primeCard([9, 1], { status: "pending", effectDie: null }), { t, isGM: true }).showActivate, false);
+});
+
+test("hitches: a botch offers no `separate` (one free Complication), `raise` steps up n", () => {
+  const botch = primeCard([1, 1, 1]);
+  assert.equal(resolveHitches(botch, [], { mode: "separate", names: ["A", "B", "C"] }, ids()), null);
+  const list = [{ id: "a", name: "Cops", die: 6 }];
+  const r = resolveHitches(botch, list, { mode: "raise", id: "a" }, ids());
+  assert.equal(r.list[0].die, 12);
+  assert.equal(r.ppGain, 0);
+});
+
+test("hitches: a d12 can be raised; the steps past it send the character out of the scene", () => {
+  const list = [{ id: "a", name: "Cops", die: 12 }];
+  const r = resolveHitches(primeCard([9, 1]), list, { mode: "raise", id: "a" }, ids());
+  assert.equal(r.list[0].die, 12);
+  assert.deepEqual(r.outOfScene, ["Cops"]);
+});
+
+test("hitches: no Plot Point when nobody gains them (not a Crew), names are not repeated", () => {
+  const r = resolveHitches(primeCard([9, 1, 1]), [], { mode: "separate", names: ["A", "B"] }, ids(), { gainsPP: false });
+  assert.equal(r.ppGain, 0);
+  assert.equal(r.data.hitchPP, 0);
+  const first = resolveHitches(primeCard([9, 1, 1, 1, 1, 1]), [], { mode: "new", name: "Mess" }, ids());
+  const again = resolveHitches({ ...primeCard([9, 1]), outOfScene: first.data.outOfScene }, [], { mode: "new", name: "Mess" }, () => "x");
+  assert.deepEqual(again.data.outOfScene, ["Mess"]);
+});
+
+test("hitches: undoHitchList removes what was created or puts the old die back", () => {
+  const made = resolveHitches(primeCard([9, 1, 1]), [{ id: "k", name: "Keep", die: 8 }], { mode: "new", name: "Alarm" }, ids());
+  assert.deepEqual(undoHitchList(made.list, made), [{ id: "k", name: "Keep", die: 8 }]);
+  const list = [{ id: "a", name: "Cops", die: 6 }];
+  const raised = resolveHitches(primeCard([9, 1, 1]), list, { mode: "raise", id: "a" }, ids());
+  assert.deepEqual(undoHitchList(raised.list, raised), list);
+});
+
+test("applyComplication shares the hitch builder: a d12 stays, a blank name is refused", () => {
+  assert.equal(applyComplication([{ id: "a", name: "x", die: 12 }], { id: "a" }, ids()).complication.die, 12);
+  assert.equal(applyComplication([], { name: " " }, ids()), null);
 });

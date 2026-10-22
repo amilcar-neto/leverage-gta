@@ -4,12 +4,11 @@
  * permissions, double click, the classic card and the pending card. Two browsers: the GM test user and a [TEST] Player
  * who owns a [TEST] Crew. Everything created is `[TEST]` and removed at the end; the `complications` setting and
  * `rules.rollMode` are restored. Cards are posted resolved straight from `buildRollData` + `autoSelection` (the Choose
- * dice window has its own check, P-prime.mjs). Not-yet-merged i18n keys are loaded from docs/log/tmp-i18n-P6.json.
+ * dice window has its own check, P-prime.mjs). Run in the client language of the test world (pt-BR); the keys must be in lang/.
  *
  * Screenshots: tests/foundry/screenshots/F10-hitch-*.png. Exit codes: 0 pass, 1 fail, 2 not available.
  * Run after `npm run deploy`.
  */
-import { readFileSync } from "node:fs";
 import { requireEnv, openBrowser, collectConsole, login, SHOTS } from "./lib.mjs";
 
 const env = requireEnv();
@@ -22,7 +21,6 @@ let playerBrowser = null;
 let pp = null;
 let playerLog = null;
 let saved = null;
-const extraKeys = JSON.parse(readFileSync("docs/log/tmp-i18n-P6.json", "utf8")).en;
 
 /** Posts a card for the [TEST] Crew. `kind`: "resolved" (prime, 2 best dice for the total) or "pending". */
 const post = (values, kind = "resolved", mode = "prime") => page.evaluate(async ([vals, k, m]) => {
@@ -116,9 +114,8 @@ const clean = (r) => r?.overlaps?.length === 0 && r?.cut?.length === 0 && r?.out
 
 try {
   await login(page, env);
-  const previous = await page.evaluate(async (keys) => {
+  const previous = await page.evaluate(async () => {
     const OWNER = CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
-    foundry.utils.mergeObject(game.i18n.translations, foundry.utils.expandObject(keys));
     const player = await foundry.documents.User.create({ name: "[TEST] Player", role: CONST.USER_ROLES.PLAYER });
     await Actor.create({ name: "[TEST] Crew", type: "crew", system: { plotPoints: { value: 3 } }, ownership: { default: 0, [player.id]: OWNER } });
     window.__updates = {};
@@ -128,13 +125,13 @@ try {
     await game.settings.set("leverage-gta", "complications", []);
     ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary");
     return before;
-  }, extraKeys);
+  });
   saved = previous;
   playerBrowser = await openBrowser(env, { secondary: true });
   pp = playerBrowser.page;
   playerLog = collectConsole(pp);
   await login(pp, { ...env, FOUNDRY_USER: "[TEST] Player", FOUNDRY_PASSWORD: "" });
-  await pp.evaluate((keys) => { foundry.utils.mergeObject(game.i18n.translations, foundry.utils.expandObject(keys)); ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary"); }, extraKeys);
+  await pp.evaluate(() => { ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary"); });
   await wait(1000);
 
   /* ---- pending card: no ACTIVATE ---- */
@@ -171,6 +168,10 @@ try {
   record("a. card written in a single update", g.updates - u0 === 1, g.updates - u0);
   c = await cardOf(page, A);
   record("a. GM: button gone, note about the Plot Point shown", !c.activate && c.notes.some((n) => /Plot Point/i.test(n)), c);
+  record("a. strip stays, faded and marked as activated", await page.evaluate((id) => {
+    const strip = document.querySelector(`.chat-message[data-message-id="${id}"] .lv-roll-hitches`);
+    return Boolean(strip?.classList.contains("is-done")) && /ativado|activated/i.test(strip.textContent);
+  }, A), c.strip);
   await shotCard(page, A, "03-card-after-new");
   const pc2 = await cardOf(pp, A);
   record("a. player card updated too and still has no button", pc2 && !pc2.activate && pc2.notes.some((n) => /Plot Point/i.test(n)), pc2);
@@ -246,6 +247,10 @@ try {
   await shotCard(page, X, "07-card-botch");
   const ppBefore = (await peek(X)).pp;
   await domClick(page, cardBtn(X));
+  await page.waitForSelector(".lv-dialog form select[name=mode]", { timeout: 8000 });
+  const botchModes = await modesOf();
+  const botchPP = await page.evaluate(() => /PP/.test(document.querySelector(".lv-dialog select[name=mode]").textContent));
+  record("botch: only new + raise (one free Complication, no separate), no PP shown", botchModes.join() === "new,raise" && !botchPP, { botchModes, botchPP });
   await fillDialog({ mode: "new", name: "Disaster" });
   await page.screenshot({ path: `${SHOTS}/F10-hitch-08-dialog-botch.png` });
   await confirmDialog();
@@ -254,7 +259,39 @@ try {
   const dis = g.list.find((e) => e.name === "Disaster");
   record("botch: free Complication, 3 hitches = d6 + 2 steps = d10, NO Plot Point", dis?.die === 10 && g.pp === ppBefore && g.roll.hitchPP === 0 && g.roll.complicationsResolved.length === 3, { dis, pp: g.pp, ppBefore, roll: g.roll });
   await shotCard(page, X, "09-card-botch-done");
+  c = await cardOf(page, X);
+  record("botch: strip is marked as activated", c.botch && /ativado|activated/i.test(c.strip), c);
   record("botch: card: no overlap, cut text or overflow", clean(await audit(page, `.chat-message[data-message-id="${X}"] .lv-roll-card`)));
+
+  /* ---- one hitch: singular strip, singular Plot Point note ---- */
+  const U = await post([1, 6, 7]);
+  await wait(1500);
+  c = await cardOf(page, U);
+  record("one hitch: strip says 1 hitch (singular)", /^1 hitch(?!es)/.test(c.strip), c.strip);
+  await shotCard(page, U, "10-card-one-hitch");
+  await domClick(page, cardBtn(U));
+  await page.waitForSelector(".lv-dialog form select[name=mode]", { timeout: 8000 });
+  const oneModes = await modesOf();
+  const oneLabels = await page.evaluate(() => [...document.querySelectorAll(".lv-dialog select[name=mode] option")].map((o) => o.textContent.trim()));
+  record("one hitch: no 'separate', no '+0 steps' text", oneModes.join() === "new,raise" && !oneLabels.some((l) => /[+]0|passo|step/i.test(l) && /nova|new/i.test(l)), oneLabels);
+  await fillDialog({ mode: "new", name: "Single" });
+  await confirmDialog();
+  await wait(2000);
+  c = await cardOf(page, U);
+  record("one hitch: note says +1 Plot Point (singular)", c.notes.some((n) => /[+]1 Plot Point(?!s)/.test(n)), c.notes);
+
+  /* ---- long Complication name past d12: warning wraps, names not repeated ---- */
+  const longName = "A very long Complication name that must wrap inside the card without being cut off";
+  const L = await post([1, 1, 1, 1, 1, 7, 6]);
+  await wait(1500);
+  await domClick(page, cardBtn(L));
+  await fillDialog({ mode: "new", name: longName });
+  await confirmDialog();
+  await wait(2000);
+  c = await cardOf(page, L);
+  record("long name: out of the scene warning names the actor and the Complication once", c.warn && c.warn.includes("[TEST] Crew") && c.warn.split(longName).length === 2, c.warn);
+  await shotCard(page, L, "11-card-out-of-scene-long");
+  record("long name: no overlap, cut text or overflow", clean(await audit(page, `.chat-message[data-message-id="${L}"] .lv-roll-card`)));
 
   /* ---- classic card keeps the old one-by-one behavior ---- */
   await page.evaluate(() => game.settings.set("leverage-gta", "rules.rollMode", "classic"));

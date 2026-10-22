@@ -112,13 +112,16 @@ function effectBlock(data, t) {
   return { label, faces: `d${faces}`, html };
 }
 
-/** Hitch strip text ("2 hitches") and the BOTCH flag; empty when the roll has no hitch. */
+/** Hitch strip text ("2 hitches", plus "activated" once the Fixer spent them) and the BOTCH flag; empty when the roll has no hitch. */
 function hitchView(data, entries, t) {
   const count = data.hitches ?? entries.filter((e) => e.result === 1).length;
   const botch = Boolean(data.botch);
+  const done = (data.hitchesActivated ?? 0) > 0;
+  const text = count ? t(`LEVERAGE.Roll.hitches${count === 1 ? "One" : "Many"}`, { count }) : "";
   return {
     hitchCount: count,
-    hitchText: count ? t(`LEVERAGE.Roll.hitches${count === 1 ? "One" : "Many"}`, { count }) : "",
+    hitchText: done && text ? text + t("LEVERAGE.Roll.hitchesDone") : text,
+    hitchesDone: done,
     botch, botchText: botch ? t("LEVERAGE.Roll.botch") : "", showHitches: count > 0 || botch
   };
 }
@@ -192,9 +195,9 @@ export function rollCardContext(raw, { t, isOwner = false, canChoose = false, is
       data.distinctionPP ? t("LEVERAGE.Roll.distinctionPP", { count: data.distinctionPP }) : "",
       data.ppSpent ? t(`LEVERAGE.Roll.ppSpent${data.ppSpent === 1 ? "One" : "Many"}`, { count: data.ppSpent }) : "",
       data.money ? t("LEVERAGE.Roll.moneyDrop") : "",
-      data.hitchPP ? t("LEVERAGE.Roll.hitchPP", { count: data.hitchPP }) : ""
+      data.hitchPP ? t(`LEVERAGE.Roll.hitchPP${data.hitchPP === 1 ? "One" : "Many"}`, { count: data.hitchPP }) : ""
     ].filter(Boolean),
-    warnings: layout === "prime" && data.outOfScene?.length ? [t("LEVERAGE.Roll.outOfScene", { names: data.outOfScene.join(", ") })] : [],
+    warnings: layout === "prime" && data.outOfScene?.length ? [t("LEVERAGE.Roll.outOfScene", { actor: data.actorName, names: data.outOfScene.join(", ") })] : [],
     showActivate, activateLabel: t("LEVERAGE.Roll.activateButton"), activateTip: t("LEVERAGE.Roll.activateTip"),
     showKeep, keepDisabled, showComplication, showDamage: resolved && damage.show, damageApplied: resolved ? damage.applied : "",
     damageLabel: t("LEVERAGE.Damage.button"), damageTip: t("LEVERAGE.Damage.buttonTip"),
