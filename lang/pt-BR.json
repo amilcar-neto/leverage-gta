@@ -721,7 +721,8 @@
     },
     "Migration": {
       "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar.",
-      "unnamedJob": "Job sem nome"
+      "unnamedJob": "Job sem nome",
+      "primeRules": "Leverage: as regras de rolagem agora são as do Cortex Prime (você escolhe os dados, com dado de efeito e hitches). Seus dados não foram alterados. Para voltar às regras anteriores, mude a configuração Modo de rolagem do sistema para Clássico."
     },
     "Socket": {
       "noGM": "Nenhum mestre conectado para processar esta ação."
@@ -852,7 +853,8 @@
       "roll": "Rolar",
       "difficulty": "Dificuldade",
       "opportunities": "{count} oportunidades",
-      "versusPlayer": "vs último de {name} (total {total})"
+      "versusPlayer": "vs último de {name} (total {total})",
+      "versusStale": "Aquela rolagem do jogador já foi ligada ou mudou. Confira o vínculo e role de novo."
     },
     "Tracker": {
       "title": "Rastreador do Job",

@@ -721,7 +721,8 @@
     },
     "Migration": {
       "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing.",
-      "unnamedJob": "Unnamed Job"
+      "unnamedJob": "Unnamed Job",
+      "primeRules": "Leverage: the roll rules are now Cortex Prime (you choose the dice, with an effect die and hitches). Your data was not changed. To go back to the previous rules, set the system setting Roll mode to Classic."
     },
     "Socket": {
       "noGM": "No GM is connected to process this action."
@@ -852,7 +853,8 @@
       "roll": "Roll",
       "difficulty": "Difficulty",
       "opportunities": "{count} Opportunities",
-      "versusPlayer": "vs {name}'s last roll (total {total})"
+      "versusPlayer": "vs {name}'s last roll (total {total})",
+      "versusStale": "That player roll was already linked or changed. Check the link and roll again."
     },
     "Tracker": {
       "title": "Job Tracker",

@@ -7,14 +7,13 @@ import { resolveActor, rollOf } from "../components/common.mjs";
 import { renderDie } from "../components/die.mjs";
 import { unresolvedOnes } from "../../dice/card-actions.mjs";
 import { latestOppositionId, opportunitiesLeft } from "../../dice/opportunity.mjs";
-import { chatCards } from "../../dice/versus-cards.mjs";
 import { dieCaption, dieState } from "../../dice/resolve-draft.mjs";
 import { normalizeRoll } from "../../dice/roll-core.mjs";
 import { cardHandlers, isCharacterOwner, isExpanded, latestRollOf, opportunityActorOf, registerCardSocket } from "./card-handlers.mjs";
 import { canResolve } from "../dialogs/resolve-dice-flow.mjs";
 import { damageView, registerDamageMessages } from "./damage.mjs";
 import { effectActions, versusBand } from "./versus-view.mjs";
-import { cardOf, cardsLinkedTo } from "../../dice/versus-cards.mjs";
+import { cardOf, cardsLinkedTo, chatCards } from "../../dice/versus-cards.mjs";
 import { finalEffectDie, nextLostCard } from "../../dice/versus.mjs";
 import { sceneTagOf } from "../scene-panel/scene-panel-logic.mjs";
 

@@ -66,6 +66,8 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
   #offer = null;
   /** The player chose to roll against the last Fixer card (never on by itself). */
   #versus = false;
+  /** Id of the Fixer card the window offers now: what the confirmation sends (never "the newest" read again). */
+  #shownFixerId = null;
 
   /** @param {ChatMessage} message The pending roll card. */
   constructor(message, options = {}) {
@@ -79,6 +81,8 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const entries = data?.entries ?? [];
     const available = data ? plotPointsFor(data) : 0;
     const fixer = data ? fixerCardFor(this.message) : null;
+    if ((fixer?.id ?? null) !== this.#shownFixerId) this.#versus = false;
+    this.#shownFixerId = fixer?.id ?? null;
     const against = this.#versus && fixer ? fixer.roll.total : null;
     const summary = data ? draftSummary(data, this.#draft, { ppAvailable: available, versusDifficulty: against }) : null;
     const allowed = Boolean(data) && canResolve(data.actorUuid ? resolveActor(data.actorUuid) : null, game.user);
@@ -128,6 +132,11 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
       event.preventDefault();
       this.#setEffect(Number(tile.dataset.index));
     });
+  }
+
+  /** @returns {boolean} whether the Fixer card the chat offers now differs from the one on screen */
+  offerChanged() {
+    return (fixerCardFor(this.message)?.id ?? null) !== this.#shownFixerId;
   }
 
   /** @override */
@@ -194,8 +203,8 @@ export class ResolveDiceApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static async #onConfirm() {
-    const fixer = this.#versus ? fixerCardFor(this.message) : null;
-    if (!(await confirmRoll(this.message, this.#draft, fixer?.id ?? null))) return;
+    const versusId = this.#versus ? this.#shownFixerId : null;
+    if (!(await confirmRoll(this.message, this.#draft, versusId))) return;
     await this.close();
   }
 
@@ -225,9 +234,10 @@ export async function openResolveDice(message) {
   return app;
 }
 
-/** A new chat message may be a newer Fixer roll: the open windows offer it (and the link follows what is shown). */
-function onCreateMessage() {
-  for (const app of open.values()) if (rollOf(app.message)?.status === "pending") app.render();
+/** The chat changed (a new Fixer roll, or the shown one deleted): redraw only the windows whose offered card changed. */
+function onChatChanged(message) {
+  if (message && !message.flags?.[SYSTEM_ID]?.roll) return;
+  for (const app of open.values()) if (rollOf(app.message)?.status === "pending" && app.offerChanged()) app.render();
 }
 
 /** A card update redraws its open window, or closes it when the card was resolved elsewhere. */
@@ -248,7 +258,10 @@ function onUpdateActor(actor, changes) {
 export function registerResolveDice() {
   registerResolveSocket();
   Hooks.on("updateChatMessage", onUpdateMessage);
-  Hooks.on("createChatMessage", onCreateMessage);
+  Hooks.on("createChatMessage", onChatChanged);
   Hooks.on("updateActor", onUpdateActor);
-  Hooks.on("deleteChatMessage", (message) => open.get(message.id)?.close());
+  Hooks.on("deleteChatMessage", (message) => {
+    open.get(message.id)?.close();
+    onChatChanged(message);
+  });
 }

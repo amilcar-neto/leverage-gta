@@ -218,7 +218,10 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     super._onFirstRender(context, options);
     const refresh = () => this.rendered && this.render();
     // Only a change of the offered player roll redraws (a redraw while the Fixer types a label would drop the focus).
-    const onChat = () => this.rendered && this.#shownKey !== cardKey(playerCardForFixer()) && this.render();
+    const onChat = (message) => {
+      if (!this.rendered || (message && !message.flags?.[SYSTEM_ID]?.roll)) return;
+      if (this.#shownKey !== cardKey(playerCardForFixer())) this.render();
+    };
     this.#hooks = [
       ["createChatMessage", Hooks.on("createChatMessage", onChat)],
       ["updateChatMessage", Hooks.on("updateChatMessage", onChat)],
@@ -361,6 +364,13 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
       const sources = this.#sources();
       const { dice, source } = this.#chosen(sources);
       const player = this.#versus ? freePlayerCard(this.#shownCardId) : null;
+      if (this.#versus && !player) {
+        // The offered card was linked or changed since the last render: do not roll without the link and without a word.
+        ui.notifications.warn(t("LEVERAGE.Opposition.versusStale"));
+        this.#versus = false;
+        this.render();
+        return;
+      }
       const message = await rollOpposition({
         dice: dice.map(({ die, label, ref }) => ({ die, label, ref })), label: this.#label, source: source || "none",
         npcUuid: this.#rolledNpc(sources)?.uuid

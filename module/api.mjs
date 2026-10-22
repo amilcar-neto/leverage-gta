@@ -190,7 +190,9 @@ const cityScales = () => getCityScales();
  * @param {(string|number)[]} request.refs References: `attributes.agility`, `roles.thief`, `item:<id>`,
  *   `item:<id>:d8|d4` (Distinction), `money`, `scene:<id>` (Scene Trait: a global Trait the Fixer keeps for the table, or a Trait of a Location of the viewed Scene), `d6` or just `6` (loose die).
  * @param {string} [request.flavor] Action description on the card.
- * @returns {Promise<ChatMessage|null>} the card, or null when the Pool is not valid (a warning says why)
+ * @returns {Promise<ChatMessage|null>} the card, or null when the Pool is not valid (a warning says why). In `prime` mode
+ *   (`rules.rollMode`) the card is pending: nobody chose the dice yet, so there is no total; call {@link resolve} or let the
+ *   player choose in the window. In `classic` mode the card is already resolved.
  */
 async function rollPool({ actor, refs, flavor } = {}) {
   const doc = ownedCrew(actor);

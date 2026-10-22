@@ -3,7 +3,7 @@
  * The rules live in `dice/card-actions.mjs`; this file reads and writes documents. The card is updated by editing the
  * message flags; a user that cannot update the message asks the Fixer through the socket.
  */
-import { SYSTEM_ID } from "../../config.mjs";
+import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { logger } from "../../logger.mjs";
 import { executeAsGM, lowestActiveGM, registerSocketAction, requestAsGM } from "../../socket.mjs";
 import { applyComplication, keepNextDie, resolveHitches, resolveNextOne, undoHitchList, unresolvedOnes } from "../../dice/card-actions.mjs";
@@ -22,9 +22,6 @@ const busy = new Set();
 
 /** How long a player's "+1 PP" button stays disabled while it waits for the Fixer to update the card (ms). */
 const WAIT_FOR_FIXER = 4000;
-
-/** Longest name of an Asset created from an effect (the dialog's field has the same limit). */
-const ASSET_NAME_MAX = 80;
 
 const actorOf = (data) => (data?.actorUuid ? resolveActor(data.actorUuid) : null);
 const plotPointsOf = (actor) => actor?.system?.plotPoints?.value ?? 0;
@@ -397,7 +394,7 @@ async function writeFixerComplication(message) {
 async function createEffectAsset(message, name, user) {
   const data = rollOf(message);
   const actor = actorOf(data);
-  const clean = String(name ?? "").trim().slice(0, ASSET_NAME_MAX);
+  const clean = String(name ?? "").trim().slice(0, LEVERAGE.assetNameMax);
   if (!clean || !effectUsable(data) || !isCharacterOwner(actor, user)) return { ok: false, reason: "invalid" };
   try {
     await message.setFlag(SYSTEM_ID, "roll", markEffectUsed(data, "asset"));

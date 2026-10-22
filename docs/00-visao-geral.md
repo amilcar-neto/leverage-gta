@@ -17,9 +17,9 @@ especificamente Liberty City do GTA III: HUD com contorno preto, ficha policial,
 2. **Itens** para tudo que se adiciona e remove: Distinction, Talent, Specialty, Asset (Signature/Job/Scene) e Job.
    Cada item abre na própria janela, pode ser arrastado para a ficha, criado na ficha e apagado na ficha.
 3. **Montagem da Pool e rolagem** com card no chat igual a `roll-chat-card.png`: dados com a forma e a cor certas e o
-   resultado dentro, os dois maiores destacados, os 1s marcados.
+   resultado dentro, os dados do total e do efeito destacados, os 1s marcados.
 4. **Plot Points** com toda a automação do livro (ganhar com d4 de Distinction, com Complicação, com Giving In;
-   gastar para manter mais dados, ativar Talent, criar Asset).
+   gastar para somar mais dados ao total, ativar Talent, criar Asset).
 5. **Regras da casa** (cada uma liga/desliga nas configurações): Estrelas de procurado, Vida e Colete, Grana em escada.
 6. **HUD** no canto superior direito, preso à barra lateral: estrelas, grana, Plot Points.
 7. **Ferramentas do mestre** na barra de controles da esquerda e **configurações do sistema** na engrenagem.
@@ -28,7 +28,7 @@ especificamente Liberty City do GTA III: HUD com contorno preto, ficha policial,
 
 ## Fora do escopo (por enquanto)
 
-- Regras extras do Cortex Prime além das já adotadas (Life Points e Resources viraram Vida e Grana).
+- Regras do Cortex Prime além das já adotadas: dado de efeito, hitches, botch, oportunidades e Life Points/Resources (que viraram Vida e Grana). Não há Stress, Trauma nem Milestones.
 - Compêndios grandes com conteúdo do livro (o livro é protegido; só exemplos próprios).
 - Integrações com módulos de terceiros, exceto as opcionais citadas (Dice So Nice, se for simples).
 
@@ -49,6 +49,10 @@ especificamente Liberty City do GTA III: HUD com contorno preto, ficha policial,
 | Plot Point (PP) | Moeda do jogador |
 | Pool | Os dados que vão ser rolados juntos |
 | Stakes | O resultado a ser superado numa disputa |
+| Hitch | Dado que tirou 1: não pode ser escolhido; dá ao Fixer uma Complication (ou 1 Opportunity, se foi dele) |
+| Botch | Todos os dados da Pool tiraram 1: total 0 |
+| Efeito | Dado escolhido entre os da rolagem que mede o tamanho do resultado (d4 a d12; sem dado sobrando, d4) |
+| Oportunidade (Opportunity) | 1 do Fixer: o jogador pode gastar 1 PP para usá-la (descer Complication, subir Asset, boost de cena) |
 | Job | Um golpe completo. Na ficha, a aba JOBS é o "Record" do livro |
 | Stars / Estrelas | Nível de procurado da Equipe numa cidade (regra da casa) |
 | Grana | Dinheiro em escada de dados (regra da casa) |

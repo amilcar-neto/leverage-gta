@@ -4,6 +4,37 @@ Todas as mudanças importantes deste sistema ficam neste arquivo.
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa
 [versionamento semântico](https://semver.org/lang/pt-BR/).
 
+## [0.2.0] - 2026-10-22
+
+### Adicionado
+- **Rolagem Cortex Prime** (padrão, configuração `rules.rollMode`): a Pool rola inteira e o jogador escolhe 2 dados para o
+  total e 1 para o efeito, na janela **Escolher dados** (atalhos Máx. total e Máx. efeito). Cada dado a mais no total custa
+  1 PP. Sem dado sobrando, o efeito é d4.
+- Card de chat novo: **pendente** (antes da escolha), **resumido** (dados do total, soma e efeito) e **expandido** (rolagem
+  inteira, com hitches e dados pagos). Um clique alterna.
+- **Hitches e botch:** o dado que tira 1 não é escolhido; o mestre usa **Ativar hitches** para criar ou subir Complications
+  (cada uma dá 1 PP). Todos os dados em 1 é botch, com total 0.
+- **Oportunidades** do Fixer (1 do mestre): descer Complication, subir Asset ou criar bônus de cena, por 1 PP, só no card
+  mais recente da cena.
+- **Disputa (versus)** opcional entre dois cards, com sucesso, falha e **sucesso heroico** (+1 passo no efeito a cada 5 de
+  margem, `rules.heroicSuccess`), e **efeito em ações**.
+- Oposição do Fixer automática (dois maiores) ou escolhida em janela (`rules.oppositionChoice`).
+- API: `game.leverage.resolve(message, { total, effect, paid })`; `rollPool` mantém a assinatura (no modo prime o card volta
+  pendente). Exemplos em `docs/macros.md`.
+- Lugar por Cena: a Cena escolhe seu Local, e os Traços do Local valem na cena.
+- Job como Item de mundo (Planejado, Ativo, Concluído), ficha própria e Rastreador.
+- Traits e Complications globais da mesa, controlados na faixa da cena do mestre.
+- Plot Points de todos os jogadores e do narrador no HUD.
+
+### Mudado
+- O **dano não mudou**: continua margem mais o dado da arma. O dado de efeito não entra no dano; Vida, Colete, Wasted e Busted
+  seguem iguais.
+- Textos do compêndio de exemplo (Smooth Talker, Wheelman's Nerve) ajustados ao novo fluxo de escolha dos dados.
+
+### Migração
+- 0.2.0: nenhum dado é alterado. O mestre recebe um aviso uma vez; para voltar às regras anteriores, ponha **Modo de
+  rolagem = Clássico** (rolagem imediata, dois maiores, sem dado de efeito). Cards antigos continuam funcionando.
+
 ## [0.1.2] - 2026-10-22
 
 ### Mudado

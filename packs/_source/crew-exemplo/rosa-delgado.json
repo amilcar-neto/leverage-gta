@@ -131,7 +131,7 @@
         "role": "open",
         "cost": 1,
         "activation": "You are behind the wheel during a chase. Spend a Plot Point.",
-        "effect": "<p>Spend a Plot Point to turn the chase in your favor: keep an extra die when you roll for it.</p>",
+        "effect": "<p>Spend a Plot Point to turn the chase in your favor: pay for an extra die in your total when you choose the dice for that roll.</p>",
         "die": null
       },
       "sort": 0,

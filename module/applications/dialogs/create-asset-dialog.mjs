@@ -34,7 +34,7 @@ function buildContent({ plotPoints, duration, die, chooseDie, effect = false }) 
   if (effect) {
     return `<div class="lv-dlg">
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.name")}</span>
-      <input type="text" name="name" required autofocus maxlength="80" placeholder="${escapeHtml(t("LEVERAGE.Dialog.Asset.namePlaceholder"))}"></label>
+      <input type="text" name="name" required autofocus maxlength="${LEVERAGE.assetNameMax}" placeholder="${escapeHtml(t("LEVERAGE.Dialog.Asset.namePlaceholder"))}"></label>
     <p class="lv-dlg-hint">${t("LEVERAGE.Dialog.Asset.effectNote", { die: `d${die}` })}</p>
   </div>`;
   }
@@ -44,7 +44,7 @@ function buildContent({ plotPoints, duration, die, chooseDie, effect = false }) 
     : `<p class="lv-dlg-hint" data-die-note>${dieNote(die)}</p>`;
   return `<div class="lv-dlg">
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.name")}</span>
-      <input type="text" name="name" required autofocus maxlength="80" placeholder="${escapeHtml(t("LEVERAGE.Dialog.Asset.namePlaceholder"))}"></label>
+      <input type="text" name="name" required autofocus maxlength="${LEVERAGE.assetNameMax}" placeholder="${escapeHtml(t("LEVERAGE.Dialog.Asset.namePlaceholder"))}"></label>
     <label class="lv-dlg-field"><span>${t("LEVERAGE.Dialog.Asset.duration")}</span>
       <select name="duration">${durationOptions(duration)}</select></label>
     ${dieField}

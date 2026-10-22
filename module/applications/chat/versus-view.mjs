@@ -5,7 +5,7 @@
 import { effectUsable, finalEffectDie, stepsBetween, versusWon } from "../../dice/versus.mjs";
 
 /**
- * Result band of a roll linked to a Fixer card.
+ * Result band of a roll linked to a Fixer card. `effect` only feeds the tooltip (`tip`); the card shows the steps and the margin.
  * @param {object} data Normalized roll data.
  * @param {(key: string, data?: object) => string} t
  * @returns {{outcome: string, title: string, detail: string, effect: string, steps: string, tip: string}|null} null without a link

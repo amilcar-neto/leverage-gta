@@ -12,7 +12,8 @@ desliga** nas configurações do sistema; com as três desligadas, o sistema é 
 ## Os dados em 30 segundos
 
 - **d4, d6, d8, d10, d12.** Não existe d20.
-- **Uma jogada:** junta os dados que se aplicam, rola, soma os **dois maiores**. Dado que tira 1 não conta.
+- **Uma jogada:** junta os dados que se aplicam, rola, e o jogador escolhe **2 dados** para o total e **1 para o efeito** (modo `prime`, padrão; no modo `classic` soma os **dois maiores**). Dado que tira 1 (hitch) não conta.
+- **Dano:** continua `margem + dado da arma`. O dado de efeito **não** entra no dano (Vida, Colete, Wasted e Busted não mudam).
 - **Oposição:** o mestre rola os dele e soma os dois maiores; sem oposição, **2d6**; falta um Traço, usa **d6**.
 - **Passar:** fazer **mais** que o mestre (empate é do mestre). Passar por 5 ou mais é sucesso extraordinário.
 

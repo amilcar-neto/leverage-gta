@@ -246,6 +246,8 @@ export const LEVERAGE = Object.freeze({
   extraordinaryMargin: 5,
   /** Dice kept from a Pool by default (`classic` mode and the Fixer's opposition). */
   keepDefault: 2,
+  /** Longest name of an Asset created from a roll effect (the dialog field and the server share it). */
+  assetNameMax: 80,
   /** Cortex Prime rolling (docs/08): how many dice make the total, the effect die when none is left, heroic steps. */
   prime: Object.freeze({
     totalDice: 2, effectDice: 1, defaultEffectDie: 4, heroicStep: 5, paidDiceCost: 1

@@ -67,7 +67,7 @@ await game.leverage.rollPool({
 
 No modo `prime` (padrão, configuração `rules.rollMode`) `rollPool` posta o card **pendente**: os dados aparecem, mas
 não há total. Na máquina de quem rolou abre a janela "Escolher dados" (depois da animação do Dice So Nice, se houver).
-`rollPool` devolve a mensagem sem esperar a escolha. Plot Points e Grana só mudam quando o card é resolvido.
+`rollPool` devolve a mensagem sem esperar a escolha (a rolagem fica pendente; para um macro que precisa do total, chame `resolve` em seguida, como abaixo). Plot Points e Grana só mudam quando o card é resolvido.
 
 `resolve(message, { total, effect, paid })` resolve o card sem abrir a janela. `message` é a ChatMessage (ou o id) e os
 números são os índices dos dados do card, na ordem da Pool (`message.flags["leverage-gta"].roll.entries`). `total`
@@ -87,6 +87,25 @@ const dice = message.flags["leverage-gta"].roll.entries;
 console.log(dice.map((d, i) => `${i}: d${d.faces} = ${d.result}`));
 const free = dice.flatMap((d, i) => (d.result === 1 ? [] : [i]));
 await game.leverage.resolve(message, { total: free.slice(0, 2), effect: free.slice(2, 3) });
+```
+
+### Rolar no modo `classic`
+
+Com `rules.rollMode = "classic"` (configuração de mundo, só o Mestre muda) `rollPool` rola e **resolve na hora**: soma os
+dois maiores, sem dado de efeito, e a mensagem já volta com `status: "resolved"`. Não é preciso chamar `resolve`.
+O exemplo troca o modo, rola e devolve o modo anterior:
+
+<!-- teste: gm id=roll-classic -->
+```js
+const actor = game.actors.getName("Nome da Personagem");
+const before = game.settings.get("leverage-gta", "rules.rollMode");
+await game.settings.set("leverage-gta", "rules.rollMode", "classic");
+try {
+  const message = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "roles.thief"] });
+  console.log(message.flags["leverage-gta"].roll.status, message.flags["leverage-gta"].roll.total);
+} finally {
+  await game.settings.set("leverage-gta", "rules.rollMode", before);
+}
 ```
 
 ### Macro por referência de Traço

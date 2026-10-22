@@ -1,7 +1,7 @@
 /**
  * World migration runner. Each entry in {@link MIGRATIONS} upgrades world data up to its `version`.
  * 0.1.0 was the first release (nothing to migrate); 0.1.1 moves the Job's Complications and scene Traits to the table state;
- * 0.1.2 turns the hidden `activeJob` setting into a world Job Item.
+ * 0.1.2 turns the hidden `activeJob` setting into a world Job Item; 0.2.0 only tells the GM about the Cortex Prime roll rules.
  */
 import { LEVERAGE, SYSTEM_ID } from "./config.mjs";
 import { logger } from "./logger.mjs";
@@ -49,13 +49,24 @@ export async function migrateActiveJobWorld() {
 }
 
 /**
- * Ordered migrations. Add `{ version: "0.2.0", run: async () => {...} }` to upgrade data from an older world.
+ * 0.2.0: the roll rules became Cortex Prime (the player chooses the dice, effect die, hitches). No data changes: old chat
+ * cards are normalized when read and settings fall back to their defaults. Runs once (the stored version moves on) and
+ * only tells the GM how to go back (`rules.rollMode = classic`).
+ * @returns {Promise<void>}
+ */
+export async function notifyPrimeRules() {
+  ui.notifications?.info(game.i18n.localize("LEVERAGE.Migration.primeRules"), { permanent: true });
+}
+
+/**
+ * Ordered migrations. Add `{ version: "0.3.0", run: async () => {...} }` to upgrade data from an older world.
  * Schema-level fixes of a single document belong in that DataModel's static `migrateData` instead.
  * @type {{version: string, run: () => Promise<void>}[]}
  */
 export const MIGRATIONS = [
   { version: "0.1.1", run: migrateTableStateWorld },
-  { version: "0.1.2", run: migrateActiveJobWorld }
+  { version: "0.1.2", run: migrateActiveJobWorld },
+  { version: "0.2.0", run: notifyPrimeRules }
 ];
 
 /**

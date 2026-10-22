@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { compareVersions, pendingMigrations, migrateWorld, migrateTableStateWorld, migrateActiveJobWorld, MIGRATIONS } from "../../module/migration.mjs";
+import { compareVersions, pendingMigrations, migrateWorld, migrateTableStateWorld, migrateActiveJobWorld, notifyPrimeRules, MIGRATIONS } from "../../module/migration.mjs";
 
 test("compareVersions orders numerically, not lexically", () => {
   assert.ok(compareVersions("0.10.0", "0.9.9") > 0);
@@ -174,4 +174,21 @@ test("0.1.2 does not duplicate an active Job with the same name that already exi
   await migrateActiveJobWorld();
   assert.equal(created.length, 0);
   assert.equal(store.activeJob.name, "");
+});
+
+test("0.2.0 is a notice-only step: worlds from 0.1.2 get it once, fresh worlds and 0.2.0 worlds do not", () => {
+  assert.deepEqual(pendingMigrations("0.1.2", "0.2.0").map((m) => m.version), ["0.2.0"]);
+  assert.deepEqual(pendingMigrations("0.1.0", "0.2.0").map((m) => m.version), ["0.1.1", "0.1.2", "0.2.0"]);
+  assert.deepEqual(pendingMigrations("0.2.0", "0.2.0"), []);
+  assert.deepEqual(pendingMigrations("", "0.2.0"), []);
+});
+
+test("notifyPrimeRules only notifies the GM and touches no setting", async () => {
+  const infos = [];
+  const sets = [];
+  globalThis.game = { i18n: { localize: (k) => k }, settings: { set: async (...a) => sets.push(a) } };
+  globalThis.ui = { notifications: { info: (m, o) => infos.push([m, o]) } };
+  await notifyPrimeRules();
+  assert.deepEqual(infos, [["LEVERAGE.Migration.primeRules", { permanent: true }]]);
+  assert.deepEqual(sets, []);
 });

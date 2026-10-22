@@ -68,16 +68,44 @@ A bandeja **POOL** fica no rodapé da ficha.
    estiver ligada, e os Traços da cena ativa).
 3. Clique em um chip para tirá-lo da Pool. **ROLAR** (ou Enter, com a ficha em foco) rola tudo.
 
-**Regra:** rola todos os dados e soma os **dois maiores**. Dado que tirou **1** não conta; se todos tirarem 1, o total
-é 0. Fica tudo no card do chat:
+### Rolagem Cortex Prime (modo padrão)
+
+**Regra:** a Pool rola inteira, e **você escolhe** os dados. Dois deles somam o **total**; um terceiro dá o **efeito**
+(só o tamanho dele conta, de d4 a d12; se não sobrou dado, o efeito é d4). Dado que tirou **1** é um **hitch**: não
+pode ser escolhido. Se todos tirarem 1, é um **botch** e o total é 0.
+
+1. **Monte a Pool** na bandeja e aperte **ROLAR**.
+2. O card sai **pendente**: os dados aparecem, mas nada vale ainda (nem Plot Points, nem Grana, nem dano). A janela
+   **Escolher dados** abre para quem rolou. Se fechá-la, o botão **Escolher dados** do card a abre de novo.
+3. Na janela, clique nos dados para pôr no total, no efeito ou deixar de fora. O total aparece ao vivo.
+   Os atalhos **Máx. total** e **Máx. efeito** só preenchem a escolha; você confirma.
+4. Cada dado a mais no total custa **1 PP** (nunca pode ser o dado de efeito). Os dados pagos aparecem marcados.
+5. **Lançar no card** confirma. O card passa a **resumido**: só os 2 dados do total, a soma e o dado de efeito.
+   Clique nele para **expandir** e ver a rolagem inteira, com os hitches e os dados pagos.
+
+Fica tudo no card do chat:
 
 ![Card de rolagem](img/card-rolagem.png)
 
-- Dados **mantidos** têm borda acesa; os **1** aparecem em vermelho (*1 · Fora*); os demais ficam apagados.
-- **+1 PP · Manter o 3º dado** (só o dono, nunca o mestre): gasta 1 PP e soma o próximo maior dado. Dá para repetir.
-  Só aparece no card **mais recente** do personagem e enquanto sobra dado; sem Plot Points o botão fica apagado.
-- **Mestre · Complication** (só o mestre, quando há um 1): cria ou sobe uma Complication da mesa e **dá 1 Plot
-  Point** ao jogador. É escolha do mestre, não é automático.
+**Hitches.** Enquanto houver hitch sem resolver, o card avisa. O mestre usa **Ativar hitches** para criar ou subir
+uma Complication da mesa; cada Complication ativada **dá 1 PP** ao jogador. É escolha do mestre.
+
+**Oportunidades.** Quando o mestre rola um 1, é uma oportunidade para os jogadores. O jogador gasta **1 PP** para
+descer uma Complication, subir um Asset ou criar um bônus que dura a cena. Só vale no card mais recente da cena.
+
+**Disputa (versus).** O mestre pode ligar um card ao outro. A margem é o seu total menos o dele; maior que zero é
+sucesso. Com **margem de 5 ou mais** o sucesso é **heroico** e o efeito sobe 1 passo a cada 5 de margem (configurável).
+Empate é do mestre. Comparar os efeitos só informa: quem decide o que acontece é a mesa.
+
+**Efeito.** O dado de efeito mede o tamanho do que a ação consegue. Em ações com efeito, ele pode virar um Asset ou uma
+Complication na cena, ou um passo numa Complication existente. O **dano** não usa o dado de efeito: continua sendo a
+margem mais o dado da arma.
+
+**Modo clássico.** O mestre pode voltar à regra anterior em **Configurações > Leverage > Modo de rolagem = Clássico**:
+a rolagem resolve na hora, soma os dois maiores e não há dado de efeito. O botão **+1 PP · Manter o 3º dado** do card
+só existe nesse modo.
+
+- Dados do total têm borda acesa; os **1** aparecem em vermelho; os demais ficam apagados.
 - Dado de **Grana** na Pool faz a Grana descer 1 degrau, e Distinction d4 dá +1 PP; o card avisa de ambos.
 
 **Rolagem do mestre (oposição):** botão **Rolador de oposição** nas ferramentas do mestre. Escolha dados avulsos ou
@@ -94,7 +122,7 @@ sucesso extraordinário. O sistema mostra os totais, mas quem decide o resultado
 - **Ganha:** Distinction d4 na rolagem; Complication criada pelo mestre a partir de um 1 seu; ao desistir (Give In, manual: o mestre cria a Complication
   e usa **Dar Plot Point**);
   ao ser Wasted ou Busted; PP dados pelo mestre (**Dar Plot Point**).
-- **Gasta:** manter mais um dado depois da rolagem (botão do card); criar um **Asset de cena** (1 PP) ou de **Job**
+- **Gasta:** somar mais um dado ao total (na janela Escolher dados; no modo clássico, pelo botão do card); criar um **Asset de cena** (1 PP) ou de **Job**
   (2 PP) pelo botão **+ Adicionar** da lista de Assets, que mostra o custo e pede confirmação; ativar Talents que
   custam 1 PP (o sistema não desconta sozinho: tire o PP à mão pelo − do HUD).
 - **Atenção, mestre:** o jogador cria um **Signature Asset** (d8 o primeiro, d6 os seguintes) pelo **+ Adicionar** **sem
@@ -129,7 +157,7 @@ Trocar de cidade zera as estrelas (a Equipe saiu de lá) e também aparece no ch
 
 - **Vida máxima = 10 + o dado de Vitality** (d8 dá 18). O número base é configurável.
 - **Colete:** pontos que absorvem dano antes da Vida (Leve 4, Comum 6, Pesado 10). Com 0, acabou.
-- **Inimigos não têm barra: são dados.** Cada capanga é um dado (4 capangas d8 = 4d8, soma dos dois maiores).
+- **Inimigos não têm barra: são dados.** Cada capanga é um dado (4 capangas d8 = 4d8; o mestre soma os dois maiores).
 - **Rodada de tiroteio:** o jogador rola contra os dados da gangue. Se passa, o mestre derruba um capanga (dois se
   passar por 5 ou mais) diminuindo o tamanho da gangue na ficha do NPC: o sistema não faz isso sozinho. Se perde ou
   empata, leva dano = **quanto perdeu por + o dado da arma** do inimigo.
@@ -292,7 +320,7 @@ ficha para a barra de atalhos cria uma macro que põe aquele Traço na Pool.
 - **O jogador não consegue mudar os Traços.** A ficha está travada: o jogador clica no selo da barra do título.
   Se o selo está desabilitado, o mestre desligou "Jogadores podem destravar suas fichas".
 - **ROLAR está desligado.** Falta um Attribute ou uma Role, ou a Role escolhida está em branco.
-- **O botão +1 PP não aparece (ou está apagado).** Sem Plot Points ele fica apagado; some se não resta dado para manter
+- **O botão +1 PP não aparece (modo clássico).** Sem Plot Points ele fica apagado; some se não resta dado para manter
   (os 1 não valem), se o card não é o mais recente do personagem ou se quem olha é o mestre.
 - **Grana insuficiente.** Faltam degraus; o diálogo informa quantos. Empreste de outro personagem ou ajuste a Grana.
 - **Não consigo mexer nas estrelas.** Só o mestre. Se estiverem escondidas, a regra Estrelas está desligada.

@@ -236,6 +236,17 @@ try {
   await resolveAs(P5, { link: false });
   const label5 = await pp.evaluate((id) => document.querySelector(`#lv-resolve-${id} [data-action="toggleVersus"]`)?.textContent.trim(), P5);
   record("pending first: the window offers the Fixer card rolled after it (total 10)", /total 10/.test(label5 ?? ""), label5);
+  /* the link is on, then a newer Fixer card arrives: the toggle goes off (the choice was for the card that was on screen) */
+  await domClick(pp, `#lv-resolve-${P5} [data-action="toggleVersus"]`);
+  await wait(400);
+  const onBefore = await pp.evaluate((id) => document.querySelector(`#lv-resolve-${id} [data-action="toggleVersus"]`)?.getAttribute("aria-pressed"), P5);
+  await postFixer([6, 6, 4]);
+  await wait(1200);
+  const after = await pp.evaluate((id) => {
+    const b = document.querySelector(`#lv-resolve-${id} [data-action="toggleVersus"]`);
+    return { pressed: b?.getAttribute("aria-pressed"), text: b?.textContent.trim() };
+  }, P5);
+  record("pending: a newer Fixer card turns the link off and offers the new total (12)", onBefore === "true" && after.pressed === "false" && /total 12/.test(after.text ?? ""), { onBefore, after });
   await pp.evaluate((id) => foundry.applications.instances.get(`lv-resolve-${id}`)?.close(), P5);
 
   record("console: no system errors (GM)", log.own().length === 0, log.own());

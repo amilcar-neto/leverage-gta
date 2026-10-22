@@ -506,3 +506,16 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
    não repete o efeito (fica no tooltip). "Heroico" (sem acento, ortografia atual) é o texto; o CSS põe em caixa alta.
 9. **Duplicação:** `nextLostCard(cards, fixer)` em `versus.mjs`; o card de oposição busca só as mensagens ligadas a ele
    (`cardsLinkedTo`, lê só a flag), sem normalizar o log inteiro a cada pintura.
+
+## Dano sem dado de efeito, API e migração 0.2.0 (T-1013/T-1014/T-1015, 2026-10-22)
+
+- **Dano (T-1013):** o dado de efeito **não** entra no dano. Mantém `margem + dado da arma`; Vida, Colete, Wasted e Busted
+  intocados. `damage.mjs` lê `total` só de card `resolved`. Descartado: usar o efeito no lugar da arma para PCs (muda o
+  equilíbrio da regra da casa e a nota de pesquisa já dizia "não mexer agora"). `docs/02` ganhou a frase; a nota de pesquisa fica como histórico.
+- **API (T-1014):** `rollPool` mantém a assinatura; no modo prime devolve o card pendente (documentado no JSDoc e em
+  `docs/macros.md`). Acrescentado exemplo de modo `classic` (troca a configuração, rola e devolve).
+- **Migração 0.2.0 (T-1015):** `notifyPrimeRules` só avisa o mestre (notificação permanente, i18n
+  `LEVERAGE.Migration.primeRules`). Roda uma vez porque a versão guardada avança; mundo novo não recebe. Nenhum dado muda.
+- **Compêndio:** Smooth Talker e Wheelman's Nerve reescritos em linguagem própria para o fluxo prime ("escolher", "dado pago").
+  Os packs binários não foram reconstruídos (ver relatório).
+
