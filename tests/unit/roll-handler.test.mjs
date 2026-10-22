@@ -3,6 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { normalizeRoll } from "../../module/dice/roll-core.mjs";
 import { buildRollData, poolFormula, rollEffects, rollableEntries, rollValues } from "../../module/dice/roll-handler.mjs";
+import { effectsUpdate } from "../../module/dice/roll-core.mjs";
 import { dieContext, rollCardContext } from "../../module/applications/chat/roll-card.mjs";
 
 const e = (ref, kind, die, extra = {}) => ({ ref, label: ref, kind, die, ...extra });
@@ -116,4 +117,15 @@ test("normalizeRoll reads old cards as v1 resolved and leaves v2 alone", () => {
   const v2 = buildRollData({ entries: pool, values: [9, 6, 1, 5] });
   assert.equal(normalizeRoll(v2), v2);
   assert.equal(normalizeRoll(null), null);
+});
+
+test("rollEffects: a resolved prime roll gains the Distinction PP minus the paid dice, and Money drops", () => {
+  assert.deepEqual(rollEffects({ distinctionPP: 1, ppSpent: 0, money: false }, 5), { plotPoints: 1, moneySteps: null });
+  assert.deepEqual(rollEffects({ distinctionPP: 1, ppSpent: 2, money: true }, 5), { plotPoints: -1, moneySteps: 4 });
+});
+
+test("effectsUpdate: one update for Plot Points (never below 0) and Money, empty when nothing changes", () => {
+  assert.deepEqual(effectsUpdate({ plotPoints: 3, steps: 5 }, { plotPoints: -1, moneySteps: 4 }), { "system.plotPoints.value": 2, "system.money.steps": 4 });
+  assert.deepEqual(effectsUpdate({ plotPoints: 1, steps: 5 }, { plotPoints: -3, moneySteps: null }), { "system.plotPoints.value": 0 });
+  assert.deepEqual(effectsUpdate({ plotPoints: 1, steps: 5 }, { plotPoints: 0, moneySteps: null }), {});
 });

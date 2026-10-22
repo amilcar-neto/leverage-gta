@@ -154,11 +154,37 @@ function applyDamage(message) {
   return exclusive(message, () => damageFromCard(message));
 }
 
+/** Messages whose card the viewer opened (client state only; never saved, lost on reload). */
+const expandedCards = new Set();
+
+/** Whether the viewer opened this card to see the whole roll. */
+export const isExpanded = (message) => expandedCards.has(message.id);
+
+/** Card click or chevron: shows or hides the whole roll (docs/08). Toggles the class in place, no redraw. */
+function toggleExpand(message, event) {
+  const card = event?.currentTarget?.closest?.(".lv-roll-card") ?? event?.target?.closest?.(".lv-roll-card");
+  const open = !expandedCards.has(message.id);
+  if (open) expandedCards.add(message.id); else expandedCards.delete(message.id);
+  card?.classList.toggle("is-expanded", open);
+  card?.querySelector("[data-action='toggleExpand']")?.setAttribute("aria-expanded", String(open));
+}
+
+/** Button "Choose dice": opens the choose-dice window (loaded on demand; it is built apart from this card). */
+async function chooseDice(message) {
+  try {
+    const { openResolveDice } = await import("../dialogs/resolve-dice.mjs");
+    await openResolveDice(message);
+  } catch (err) {
+    logger.error("Choose dice window failed", err);
+    ui.notifications.warn(game.i18n.localize("LEVERAGE.Roll.chooseUnavailable"));
+  }
+}
+
 /**
  * Click handlers by `data-action`.
  * @type {Record<string, (message: ChatMessage, event: Event) => Promise<void>|void>}
  */
-export const cardHandlers = { keepDie, complication, applyDamage };
+export const cardHandlers = { keepDie, complication, applyDamage, chooseDice, toggleExpand };
 
 /** Registers the Fixer-side socket action (call once). */
 export function registerCardSocket() {

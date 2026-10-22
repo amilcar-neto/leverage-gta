@@ -1,0 +1,218 @@
+/* "Choose dice" window (templates/dialogs/resolve-dice.hbs). Frame and title bar: window.css; buttons: buttons.css.
+   Die states: total = white ring (die.css .lv-die--kept), effect = green ring, free = gray ring, hitch = red ring. */
+
+.leverage-gta.lv-resolve .window-content { min-height: 0; }
+
+.leverage-gta .lv-rd {
+  --lv-rd-die: 64px; /* keep equal to LEVERAGE.dieGeometry.uses.resolveDice (config.mjs) */
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.leverage-gta .lv-rd-head {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px 14px 4px;
+}
+
+.leverage-gta .lv-rd-who {
+  flex: none;
+  max-width: 45%;
+  overflow: hidden;
+  font-family: var(--lv-font-display);
+  font-size: 20px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--lv-white);
+}
+
+.leverage-gta .lv-rd-flavor {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--lv-muted);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-rd-shortcuts { display: flex; flex: none; gap: 6px; padding: 6px 14px 0; }
+
+.leverage-gta .lv-rd-dice {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(auto-fill, 84px);
+  justify-content: center; /* whole columns, centered: no dead strip on the right */
+  align-content: start;
+  gap: 10px 8px;
+  max-height: 52vh;
+  padding: 12px 6px 12px 14px;
+}
+
+.leverage-gta .lv-rd-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  width: 84px;
+  min-width: 0;
+}
+
+.leverage-gta button.lv-rd-die {
+  display: block;
+  box-sizing: content-box;
+  flex: none;
+  width: var(--lv-rd-die);
+  height: var(--lv-rd-die);
+  min-height: 0;
+  padding: 2px;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.leverage-gta .lv-rd-die { flex: none; line-height: 0; }
+.leverage-gta span.lv-rd-die { display: block; padding: 2px; width: var(--lv-rd-die); height: var(--lv-rd-die); }
+.leverage-gta button.lv-rd-die:hover { filter: brightness(1.12); }
+.leverage-gta button.lv-rd-die:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 1px; }
+
+.leverage-gta .lv-die.lv-rd-die--effect { --die-stroke: var(--lv-roll); --die-sw: 7; }
+
+.leverage-gta .lv-die.lv-rd-die--free { --die-stroke: var(--lv-muted-2); --die-sw: 6; opacity: 0.8; }
+
+.leverage-gta .lv-rd-tile.is-hitch .lv-rd-die { cursor: default; }
+
+.leverage-gta .lv-rd-name {
+  display: block;
+  width: 100%;
+  min-height: 15px; /* an unnamed die (plain d10) keeps the line so the tiles align */
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--lv-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-rd-caption {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--lv-muted);
+}
+
+.leverage-gta .lv-rd-tile.is-total .lv-rd-caption { color: var(--lv-select); }
+.leverage-gta .lv-rd-tile.is-effect .lv-rd-caption { color: var(--lv-roll); }
+.leverage-gta .lv-rd-tile.is-hitch .lv-rd-caption { color: var(--lv-danger); }
+
+.leverage-gta .lv-rd-effect-btn {
+  box-sizing: border-box;
+  height: 20px;
+  padding: 0 8px;
+  background: transparent;
+  border: 1px solid var(--lv-wash-25);
+  border-radius: 3px;
+  color: var(--lv-muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.leverage-gta button.lv-rd-effect-btn:hover,
+.leverage-gta button.lv-rd-effect-btn:focus-visible { color: var(--lv-roll); border-color: var(--lv-roll); }
+.leverage-gta .lv-rd-effect-btn--none { visibility: hidden; border-color: transparent; }
+
+.leverage-gta .lv-rd-offer {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--lv-wash-06);
+  border-top: 1px solid var(--lv-wash-25);
+}
+
+.leverage-gta .lv-rd-offer-text {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-rd-foot {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--lv-outline);
+  border-top: 4px solid var(--lv-header);
+}
+
+.leverage-gta .lv-rd-stats { display: flex; align-items: flex-end; gap: 22px; }
+
+.leverage-gta .lv-rd-stat { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.leverage-gta .lv-rd-stat-label {
+  color: var(--lv-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-rd-stat-value {
+  font-family: var(--lv-font-display);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--lv-white);
+}
+
+.leverage-gta .lv-rd-stat--total .lv-rd-stat-value { font-size: 40px; }
+.leverage-gta .lv-rd-stat-value--effect { color: var(--lv-roll); }
+.leverage-gta .lv-rd-stat-value--effect.is-default { color: var(--lv-muted); font-style: italic; }
+
+.leverage-gta .lv-rd-notes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  min-height: 16px;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.leverage-gta .lv-rd-versus { color: var(--lv-roll); font-weight: 700; }
+.leverage-gta .lv-rd-versus.is-fail,
+.leverage-gta .lv-rd-botch { color: var(--lv-danger); font-weight: 700; text-transform: uppercase; }
+.leverage-gta .lv-rd-missing {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--lv-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leverage-gta .lv-rd-actions { display: flex; justify-content: flex-end; gap: 8px; }

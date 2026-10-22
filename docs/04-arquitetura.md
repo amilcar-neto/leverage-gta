@@ -150,6 +150,15 @@ await game.leverage.plotPoints.add(actor, 1);
   consegue se passar por outro. O mestre executa por conta própria o que ele mesmo pede, com o próprio id.
 - "+1 PP" do card (manter outro dado): só o jogador dono da personagem (o mestre usa `plotPoints.add`) e só na
   rolagem mais recente da personagem no chat. O pedido por socket trava a mensagem também no lado do mestre.
+- **Resposta do mestre:** `requestAsGM(ação, dados)` (socket.mjs) manda o pedido com um `requestId` e espera o resultado do
+  tratador; o mestre responde só ao solicitante (`recipients`), e só vale resposta vinda de um GM. Sem mestre conectado ou
+  sem resposta em 15 s, devolve `null`. `executeAsGM` continua sendo o "dispare e esqueça".
+- `resolveRoll` (Escolher dados, `{messageId, selection}`): quem pode é o jogador dono da personagem do card; o Mestre só
+  se o card não tem personagem ou a personagem não tem jogador dono (NPC, oposição, mesa sem jogadores). O mestre valida
+  **tudo** do pacote: o card está pendente, quem pediu pode resolver e a seleção só tem índices inteiros dentro dos dados
+  (texto, negativos, NaN, repetidos e fora da faixa são recusados como `invalid`). Os pedidos passam pela fila serial
+  do mestre (dois co-donos não resolvem o mesmo card duas vezes). Grava o card primeiro e a ficha depois (uma única
+  `actor.update` com PP e Grana); se a ficha falhar, o card volta a pendente. Responde `{ok, reason?}`.
 - Trava: configuração de mundo; os métodos de criação/remoção/alteração de Traço checam a trava (não só a interface).
 
 ## Qualidade

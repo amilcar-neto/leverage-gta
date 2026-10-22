@@ -1,30 +1,58 @@
-<div class="leverage-gta lv-roll-card{{#if opposition}} lv-roll-card--opposition{{/if}}">
+<div class="leverage-gta lv-roll-card{{#if opposition}} lv-roll-card--opposition{{/if}}{{#if pending}} lv-roll-card--pending{{/if}}{{#if prime}} lv-roll-card--prime{{#if expanded}} is-expanded{{/if}}{{/if}}">
   <header class="lv-roll-head">
     {{#if opposition}}{{else if img}}<img class="lv-roll-mug" src="{{img}}" alt="{{name}}">{{else}}<span class="lv-roll-mug lv-roll-mug--empty" aria-hidden="true"></span>{{/if}}
     <span class="lv-roll-who">
       <span class="lv-roll-name lv-hud" data-tooltip="{{name}}">{{name}}</span>
       <span class="lv-roll-flavor" data-tooltip="{{flavor}}">{{flavor}}</span>
     </span>
+    {{#if prime}}<button type="button" class="lv-roll-expand" data-action="toggleExpand" aria-expanded="{{#if expanded}}true{{else}}false{{/if}}" aria-label="{{expandLabel}}" data-tooltip="{{expandLabel}}"></button>{{/if}}
   </header>
 
-  <div class="lv-roll-chips">
-    {{#each chips}}<span class="lv-roll-chip{{#if tag}} lv-roll-chip--{{tag}}{{/if}}" data-tooltip="{{tip}}">{{#if tag}}<span class="lv-roll-chip-tag">{{tagText}}</span>{{/if}}<span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}{{#if money}} lv-roll-chip-die--money{{/if}}">{{die}}</span></span>{{/each}}
+  {{#if pending}}<div class="lv-roll-pending" data-tooltip="{{pendingText}}">{{pendingText}}</div>{{/if}}
+
+  <div class="lv-roll-full">
+    <div class="lv-roll-chips">
+      {{#each chips}}<span class="lv-roll-chip{{#if tag}} lv-roll-chip--{{tag}}{{/if}}" data-tooltip="{{tip}}">{{#if tag}}<span class="lv-roll-chip-tag">{{tagText}}</span>{{/if}}<span class="lv-roll-chip-name">{{label}}</span> <span class="lv-roll-chip-die lv-roll-chip-die--d{{faces}}{{#if money}} lv-roll-chip-die--money{{/if}}">{{die}}</span></span>{{/each}}
+    </div>
+
+    <div class="lv-roll-dice" data-count="{{dice.length}}">
+      {{#each dice}}
+      <span class="lv-roll-die">
+        {{{html}}}
+        <span class="lv-roll-cap lv-roll-cap--{{state}}">{{caption}}</span>
+      </span>
+      {{/each}}
+    </div>
   </div>
 
-  <div class="lv-roll-dice" data-count="{{dice.length}}">
-    {{#each dice}}
-    <span class="lv-roll-die">
-      {{{html}}}
-      <span class="lv-roll-cap lv-roll-cap--{{state}}">{{caption}}</span>
-    </span>
-    {{/each}}
+  {{#if prime}}
+  <div class="lv-roll-summary">
+    {{#if summaryDice.length}}
+    <div class="lv-roll-dice" data-count="{{summaryDice.length}}">
+      {{#each summaryDice}}
+      <span class="lv-roll-die">
+        {{{html}}}
+        <span class="lv-roll-cap lv-roll-cap--{{state}}">{{caption}}</span>
+      </span>
+      {{/each}}
+    </div>
+    {{/if}}
+    <div class="lv-roll-effect" data-tooltip="{{effect.label}} {{effect.faces}}">
+      <span class="lv-roll-effect-label">{{effect.label}}</span>
+      {{{effect.html}}}
+      <span class="lv-roll-effect-size">{{effect.faces}}</span>
+    </div>
   </div>
+  {{/if}}
 
+  {{#unless pending}}
   <div class="lv-roll-total">
     <span class="lv-roll-total-label">{{localize "LEVERAGE.Roll.total"}}</span>
     <span class="lv-roll-total-num lv-hud">{{total}}</span>
-    <span class="lv-roll-explain" data-tooltip="{{countText}}{{#if sumText}} {{sumText}}{{/if}}"><span>{{countText}}</span>{{#if sumText}}<span class="lv-roll-explain-sum">{{sumText}}</span>{{/if}}</span>
+    <span class="lv-roll-explain" data-tooltip="{{countText}}{{#if sumText}} {{sumText}}{{/if}}">{{#if countText}}<span>{{countText}}</span>{{/if}}{{#if sumText}}<span class="lv-roll-explain-sum">{{sumText}}</span>{{/if}}</span>
   </div>
+
+  {{/unless}}
 
   {{#each ppNotes}}<div class="lv-roll-note">{{this}}</div>{{/each}}
 
@@ -35,10 +63,18 @@
   </div>
   {{/if}}
 
+  {{#if showHitches}}
+  <div class="lv-roll-hitches{{#if botch}} lv-roll-hitches--botch{{/if}}">
+    {{#if hitchCount}}<span class="lv-roll-hitches-text" data-tooltip="{{hitchText}}">{{hitchText}}</span>{{/if}}
+    {{#if botch}}<span class="lv-roll-botch">{{botchText}}</span>{{/if}}
+  </div>
+  {{/if}}
+
   {{#if damageApplied}}<div class="lv-roll-note lv-roll-note--damage">{{damageApplied}}</div>{{/if}}
 
   {{#if showActions}}
   <div class="lv-roll-actions">
+    {{#if showChoose}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="chooseDice" data-tooltip="{{chooseTip}}">{{chooseLabel}}</button>{{/if}}
     {{#if showKeep}}<button type="button" class="lv-roll-btn lv-roll-btn--keep" data-action="keepDie" data-tooltip="{{keepTip}}" {{#if keepDisabled}}disabled{{/if}}>{{keepLabel}}</button>{{/if}}
     {{#if showComplication}}<button type="button" class="lv-roll-btn lv-roll-btn--gm" data-action="complication" data-tooltip="{{complicationTip}}">{{complicationLabel}}</button>{{/if}}
     {{#if showDamage}}<button type="button" class="lv-roll-btn lv-roll-btn--damage" data-action="applyDamage" data-tooltip="{{damageTip}}">{{damageLabel}}</button>{{/if}}

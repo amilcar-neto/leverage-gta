@@ -74,6 +74,7 @@ export function damageView(message, data) {
   if (data.damage) return { show: false, applied: damageSummary(data.damage, t) };
   if (!game.user.isGM || !houseRules().life) return { show: false, applied: "" };
   const linked = linkedRoll(message);
+  if (linked?.data.status === "pending") return { show: false, applied: "" }; // its total does not exist yet
   return { show: !linked || oppositionWins(linked.data.total, data.total), applied: "" };
 }
 
@@ -156,6 +157,7 @@ export async function damageFromCard(message) {
   const data = rollOf(message);
   if (!data?.opposition || data.damage || !allowed()) return;
   const linked = linkedRoll(message);
+  if (linked?.data.status === "pending") return;
   const targets = game.actors.filter((a) => a.system?.life && ["crew", "npc"].includes(a.type));
   const npc = data.npcUuid ? await fromUuid(data.npcUuid) : null;
   const answer = await promptDamage({

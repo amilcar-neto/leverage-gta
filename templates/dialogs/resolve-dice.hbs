@@ -1,0 +1,50 @@
+<div class="lv-rd">
+  <header class="lv-rd-head">
+    <span class="lv-rd-who" title="{{who}}">{{who}}</span>
+    <span class="lv-rd-flavor" title="{{flavor}}">{{flavor}}</span>
+  </header>
+  <div class="lv-rd-shortcuts">
+    <button type="button" class="lv-config-btn" data-action="autoTotal">{{localize "LEVERAGE.Resolve.maxTotal"}}</button>
+    <button type="button" class="lv-config-btn" data-action="autoEffect">{{localize "LEVERAGE.Resolve.maxEffect"}}</button>
+  </div>
+  <div class="lv-rd-dice lv-scroll">
+    {{#each tiles}}
+    <div class="lv-rd-tile is-{{state}}{{#if paid}} is-paid{{/if}}">
+      {{#if clickable}}
+      <button type="button" class="lv-rd-die lv-rd-pick" data-action="pick" data-index="{{index}}" aria-pressed="{{#if (eq state "free")}}false{{else}}true{{/if}}" aria-label="{{title}}" title="{{title}}">{{{html}}}</button>
+      {{else}}
+      <span class="lv-rd-die" title="{{title}}">{{{html}}}</span>
+      {{/if}}
+      <span class="lv-rd-name"{{#if name}} title="{{name}}"{{/if}}>{{name}}</span>
+      <span class="lv-rd-caption">{{caption}}</span>
+      {{#if canEffect}}<button type="button" class="lv-rd-effect-btn" data-action="effect" data-index="{{index}}">{{localize "LEVERAGE.Roll.effect"}}</button>{{else}}<span class="lv-rd-effect-btn lv-rd-effect-btn--none" aria-hidden="true"></span>{{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{#if offer}}
+  <div class="lv-rd-offer">
+    <span class="lv-rd-offer-text">{{localize "LEVERAGE.Resolve.offer"}}</span>
+    <button type="button" class="lv-config-btn lv-config-btn--primary" data-action="buy">{{localize "LEVERAGE.Resolve.offerBuy"}}</button>
+    <button type="button" class="lv-config-btn" data-action="dismissOffer">{{localize "LEVERAGE.Resolve.offerNo"}}</button>
+  </div>
+  {{/if}}
+  <footer class="lv-rd-foot">
+    <div class="lv-rd-stats">
+      <div class="lv-rd-stat lv-rd-stat--total"><span class="lv-rd-stat-label">{{localize "LEVERAGE.Roll.total"}}</span><span class="lv-rd-stat-value">{{summary.total}}</span></div>
+      <div class="lv-rd-stat"><span class="lv-rd-stat-label">{{localize "LEVERAGE.Roll.effect"}}</span><span class="lv-rd-stat-value lv-rd-stat-value--effect{{#if summary.effectDefault}} is-default{{/if}}">{{summary.effect}}</span></div>
+      <div class="lv-rd-stat"><span class="lv-rd-stat-label">{{localize "LEVERAGE.Resolve.pp"}}</span><span class="lv-rd-stat-value">{{summary.ppLeft}}</span></div>
+      <div class="lv-rd-stat"><span class="lv-rd-stat-label">{{localize "LEVERAGE.Resolve.spent"}}</span><span class="lv-rd-stat-value">{{summary.ppSpent}}</span></div>
+    </div>
+    {{#if summary.hasNotes}}
+    <div class="lv-rd-notes">
+      {{#if summary.versus}}<span class="lv-rd-versus{{#if summary.versusFail}} is-fail{{/if}}" title="{{summary.versus}}">{{summary.versus}}</span>{{/if}}
+      {{#if summary.botch}}<span class="lv-rd-botch">{{localize "LEVERAGE.Roll.botch"}}</span>{{/if}}
+      {{#if summary.missing}}<span class="lv-rd-missing" title="{{summary.missing}}">{{summary.missing}}</span>{{/if}}
+    </div>
+    {{/if}}
+    <div class="lv-rd-actions">
+      <button type="button" class="lv-config-btn" data-action="cancel">{{localize "LEVERAGE.Resolve.cancel"}}</button>
+      <button type="button" class="lv-config-btn lv-config-btn--primary" data-action="confirm"{{#unless canConfirm}} disabled{{/unless}}>{{localize "LEVERAGE.Resolve.confirm"}}</button>
+    </div>
+  </footer>
+</div>

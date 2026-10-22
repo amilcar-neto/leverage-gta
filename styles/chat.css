@@ -262,3 +262,96 @@
 .leverage-gta .lv-stars-change { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 .leverage-gta .lv-stars-reason { margin: 0; overflow: hidden; color: var(--lv-muted); text-overflow: ellipsis; white-space: nowrap; }
 
+
+/* Cortex Prime card (T-1007). No mockup of these states: they reuse the classic card's head, chips, dice and total.
+   Layouts: pending (dimmed, no total), prime summary (2 total dice + sum + EFFECT block), prime expanded (whole roll). */
+.leverage-gta.lv-roll-card--prime { cursor: pointer; }
+.leverage-gta.lv-roll-card--prime:not(.is-expanded) .lv-roll-full { display: none; }
+.leverage-gta.lv-roll-card--prime.is-expanded .lv-roll-summary { display: none; }
+
+/* Chevron in the head: discreet control that opens and closes the whole roll (the card click does the same) */
+.leverage-gta .lv-roll-expand {
+  position: relative;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: var(--lv-wash-06);
+  color: var(--lv-muted);
+  cursor: pointer;
+}
+.leverage-gta .lv-roll-expand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 6px;
+  height: 6px;
+  border-inline-end: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+.leverage-gta .lv-roll-expand[aria-expanded="true"]::before { transform: translateY(2px) rotate(-135deg); }
+.leverage-gta .lv-roll-expand:hover { color: var(--lv-white); border-color: var(--lv-muted); }
+
+/* Summary: the two total dice and, beside them, the EFFECT block with a small die (its size only) */
+.leverage-gta .lv-roll-summary { display: flex; align-items: center; justify-content: center; gap: 4px 14px; min-width: 0; padding-inline: 10px; }
+.leverage-gta .lv-roll-summary .lv-roll-dice { padding-inline: 0; }
+.leverage-gta .lv-roll-effect {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  background: var(--lv-wash-06);
+}
+.leverage-gta .lv-roll-effect-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lv-roll); white-space: nowrap; }
+.leverage-gta .lv-roll-effect-size { font-family: var(--lv-font-display); font-size: 18px; color: var(--lv-white); }
+.leverage-gta .lv-roll-cap--effect { color: var(--lv-roll); }
+/* The effect die: green ring, as in the Choose dice window (resolve-dice.css) */
+.leverage-gta .lv-die.lv-roll-die--effect { --die-stroke: var(--lv-roll); --die-sw: 7; }
+
+/* Pending: dimmed card, short seal, dice without marks */
+.leverage-gta.lv-roll-card--pending .lv-roll-chips,
+.leverage-gta.lv-roll-card--pending .lv-roll-dice { opacity: 0.7; }
+.leverage-gta .lv-roll-pending {
+  margin: 8px 10px 0;
+  padding: 2px 8px;
+  overflow: hidden;
+  border: 1px dashed var(--lv-muted-2);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--lv-muted);
+}
+.leverage-gta.lv-roll-card--pending .lv-roll-dice { padding-bottom: 12px; }
+
+/* Hitch strip (replaces the dashed box of the classic card) */
+.leverage-gta .lv-roll-hitches {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0 10px 10px;
+  padding: 5px 10px;
+  border-inline-start: 3px solid var(--lv-danger);
+  background: color-mix(in srgb, var(--lv-danger) 8%, transparent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-danger-soft);
+}
+.leverage-gta .lv-roll-hitches-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leverage-gta .lv-roll-botch { flex: none; font-family: var(--lv-font-display); font-size: 18px; letter-spacing: 0.08em; color: var(--lv-danger); }

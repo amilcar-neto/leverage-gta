@@ -56,26 +56,67 @@ export function lowestActiveGM(users) {
 }
 
 /**
- * Routes one incoming packet. Pure: the caller says whether this client is the processing GM.
+ * Routes one incoming packet and keeps what the handler returned. Pure: the caller says whether this client is the
+ * processing GM.
  * @param {{action?: string, data?: object}} packet
  * @param {{isProcessor: boolean, userId: string, handlers?: Map<string, Function>}} context `userId` is the sender as
  *   authenticated by the server (never read from the packet).
+ * @returns {Promise<{handled: boolean, result: *}>}
+ */
+export async function routeRequest(packet, { isProcessor, userId = "", handlers = HANDLERS }) {
+  const handler = isProcessor && packet?.action ? handlers.get(packet.action) : null;
+  if (!handler) return { handled: false, result: undefined };
+  return { handled: true, result: await handler(packet.data ?? {}, userId) };
+}
+
+/**
+ * Routes one incoming packet (see `routeRequest`).
  * @returns {Promise<boolean>} true when a handler ran
  */
-export async function routePacket(packet, { isProcessor, userId = "", handlers = HANDLERS }) {
-  const handler = isProcessor && packet?.action ? handlers.get(packet.action) : null;
-  if (!handler) return false;
-  await handler(packet.data ?? {}, userId);
-  return true;
+export async function routePacket(packet, context) {
+  return (await routeRequest(packet, context)).handled;
 }
 
 const isProcessingGM = () => game.user.isGM && lowestActiveGM(game.users) === game.user.id;
 
+/** Action name of the Fixer's answer to a request (see `requestAsGM`). */
+const REPLY_ACTION = "reply";
+
+/** How long `requestAsGM` waits for the Fixer's answer (ms). */
+const REPLY_TIMEOUT = 15000;
+
+/** Requests waiting for an answer: id -> resolve. */
+const waiting = new Map();
+
+/** Settles a waiting request with the Fixer's answer (`null` when the handler failed). */
+function settle({ requestId, failed, result } = {}) {
+  const done = waiting.get(requestId);
+  if (done) done(failed ? null : result ?? null);
+}
+
+/** Runs a packet on the Fixer and, for a request, sends the handler's result back to the sender only. */
+async function processPacket(packet, userId) {
+  const requestId = typeof packet?.requestId === "string" ? packet.requestId : "";
+  let reply = null;
+  try {
+    const { handled, result } = await routeRequest(packet, { isProcessor: isProcessingGM(), userId });
+    if (handled) reply = { requestId, result };
+  } catch (err) {
+    logger.error("Socket action failed", err);
+    reply = { requestId, failed: true };
+  }
+  if (requestId && reply) game.socket.emit(SOCKET_CHANNEL, { action: REPLY_ACTION, data: reply }, { recipients: [userId] });
+}
+
 /** Registers the channel listener (call once, from `ready`). */
 export function registerSocket() {
   game.socket.on(SOCKET_CHANNEL, (packet, userId) => {
-    packetQueue(() => routePacket(packet, { isProcessor: isProcessingGM(), userId }))
-      .catch((err) => logger.error("Socket action failed", err));
+    // Only a GM can answer a request; a player cannot forge an answer for another player's request.
+    if (packet?.action === REPLY_ACTION) {
+      if (game.users.get(userId)?.isGM) settle(packet.data);
+      return;
+    }
+    packetQueue(() => processPacket(packet, userId)).catch((err) => logger.error("Socket action failed", err));
   });
 }
 
@@ -94,4 +135,27 @@ export async function executeAsGM(action, data) {
   }
   game.socket.emit(SOCKET_CHANNEL, packet);
   return true;
+}
+
+/**
+ * Runs an action as the Fixer and waits for what its handler returned. Local (through the same serial queue) when this
+ * user is the processing GM.
+ * @param {string} action
+ * @param {object} data
+ * @returns {Promise<*>} the handler's result; `null` when no GM is connected, the handler failed or nobody answered in time
+ */
+export async function requestAsGM(action, data) {
+  const packet = { action, data };
+  if (isProcessingGM()) return (await packetQueue(() => routeRequest(packet, { isProcessor: true, userId: game.user.id }))).result ?? null;
+  if (!lowestActiveGM(game.users)) {
+    ui.notifications.warn(game.i18n.localize("LEVERAGE.Socket.noGM"));
+    return null;
+  }
+  const requestId = foundry.utils.randomID();
+  return new Promise((resolve) => {
+    const finish = (value) => { clearTimeout(timer); waiting.delete(requestId); resolve(value); };
+    const timer = setTimeout(() => finish(null), REPLY_TIMEOUT);
+    waiting.set(requestId, finish);
+    game.socket.emit(SOCKET_CHANNEL, { ...packet, requestId });
+  });
 }

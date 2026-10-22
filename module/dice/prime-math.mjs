@@ -59,6 +59,9 @@ export function autoSelection(entries, { prefer = "total" } = {}) {
   return { total: total.sort((a, b) => a - b), effect, paid: [] };
 }
 
+/** A list of die indexes: an array of whole numbers, each inside `0..count-1`. */
+const isIndexList = (list, count) => Array.isArray(list) && list.every((i) => Number.isInteger(i) && i >= 0 && i < count);
+
 /** Dice of `total` that are not paid. */
 function unpaidCount(selection) {
   const paid = new Set(selection.paid ?? []);
@@ -106,12 +109,14 @@ export function applyPick(entries, selection, index, slot = "auto") {
 export function validate(entries, selection, { ppAvailable = 0 } = {}) {
   const errors = [];
   const missing = [];
+  const lists = [selection?.total, selection?.effect, selection?.paid ?? []];
+  // Indexes can come from a socket: only whole numbers inside the entries (never "0", NaN, -1, 1.5) are dice.
+  if (!lists.every((list) => isIndexList(list, entries.length))) return { ok: false, errors: ["unknown-die"], missing, ppCost: 0 };
   const paid = selection.paid ?? [];
   const { eligible } = classify(entries);
   const all = [...selection.total, ...selection.effect];
-  if (all.some((i) => !entries[i])) errors.push("unknown-die");
-  if (new Set(all).size !== all.length) errors.push("duplicate-die");
-  if (all.some((i) => entries[i] && isHitch(entries[i]))) errors.push("hitch-selected");
+  if (new Set(all).size !== all.length || new Set(paid).size !== paid.length) errors.push("duplicate-die");
+  if (all.some((i) => isHitch(entries[i]))) errors.push("hitch-selected");
   if (paid.some((i) => !selection.total.includes(i))) errors.push("paid-outside-total");
   if (paid.some((i) => selection.effect.includes(i))) errors.push("paid-effect");
   if (unpaidCount(selection) > LEVERAGE.prime.totalDice) errors.push("too-many-total");

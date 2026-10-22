@@ -379,3 +379,38 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - **Descartado:** escolha automática inicial com `status: pending` valendo (nota original); diálogo modal antes do card;
   apagar e repostar a mensagem.
 - **T-1003:** `buildRollData` ganhou `mode` (padrão `classic`); a oposição do Fixer segue chamando sem `mode` (resolvida, 2 maiores).
+
+## Card de chat v2: resumido, expandido e pendente (T-1007, 2026-10-22)
+
+- **Contexto:** o dono quer o card resumido (só o decidido) e expandido ao clique. Não há mockup desses estados.
+- **Escolha:**
+  1. **Sem mockup novo:** os três estados derivam do card atual (topo preto, chips, dados de 50 px com legenda, TOTAL grande).
+     O print do tester (T-1016) vira a referência visual.
+  2. **Layout por `layoutOf`:** `classic` (oposição, v1, modo classic: sem dado de efeito, como hoje), `pending`, `prime`
+     (resolvido com `effectDie`). Contexto montado por funções puras em `roll-card.mjs`.
+  3. **Resumido:** 2 dados do total (legenda TOTAL), bloco EFEITO com dado pequeno de 28 px (só o tamanho dentro, nunca o
+     resultado) e o TOTAL grande com a soma. **Expandido:** chips e todos os dados com TOTAL / EFFECT / dX / HITCH / TOTAL +PP.
+  4. **Estado expandido é local:** `Set` de ids no cliente, alterna a classe `is-expanded` no lugar (sem redesenhar, sem gravar).
+     Clique em qualquer parte do card (menos botões) ou no chevron discreto do topo.
+  5. **Pendente:** card apagado, selo "aguardando escolha dos dados", dados sem marcação e sem total; botão "Escolher dados"
+     enquanto o card estiver pendente, para quem `canResolve(ator, usuário)` permite (jogador dono; Mestre em NPC, oposição ou
+     personagem sem jogador dono), em qualquer card pendente, sem o `isLatest` (corrigido na revisão: antes o Mestre nunca
+     recebia o botão e fechar a janela deixava o card sem volta). Chama `openResolveDice(message)` por import dinâmico.
+  6. **Faixa de hitches** substitui a caixa tracejada nos cards prime: "N hitches" e BOTCH. O botão "ATIVAR HITCHES" fica fora até
+     a T-1008. Os botões antigos (+1 PP classic, Complication, Dano) só aparecem em card resolvido.
+- **Descartado:** redesenhar a mensagem ao expandir (piscar, perde rolagem do chat).
+
+
+## Correções da revisão de T-1005/1006/1007 (2026-10-22)
+
+- **Índices do socket:** `validate` só aceita número inteiro dentro dos dados (texto, negativo, NaN, fração e repetido são
+  recusados) e `applyConfirm` valida a seleção crua antes de copiá-la.
+- **Resposta do mestre:** novo `requestAsGM` (socket.mjs) devolve o resultado do tratador ao solicitante; `confirmRoll`
+  só devolve `true` (e a janela só fecha) quando o mestre resolveu. Com mestre conectado, até o jogador autor do card passa
+  pelo mestre (fila serial, sem corrida entre co-donos); sem mestre, quem pode editar o card resolve localmente.
+- **Ordem de escrita:** card primeiro, ficha depois, com uma única `actor.update({PP, Grana})`. Se a ficha falhar, o card
+  volta a pendente (não há valor absoluto a desfazer na ficha, porque ela só é tocada em um passo).
+- **Uma fonte de cada:** `rollEffects`/`effectsUpdate`/`applyRollEffects` em `roll-core.mjs` (o Distinction PP menos os PP
+  gastos); `dieState`/`dieCaption` em `resolve-draft.mjs` servem a janela e o card; legendas só em `LEVERAGE.Roll.*`.
+- **Cor do efeito:** verde `--lv-roll` na janela e no card; o dado de efeito do card expandido leva o anel verde.
+- **Dados da janela:** grade de colunas inteiras de 84 px, centralizada. Dado simples (nome "d10") não repete o nome.

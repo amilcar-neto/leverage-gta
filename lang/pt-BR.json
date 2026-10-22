@@ -1145,10 +1145,6 @@
     },
     "Resolve": {
       "title": "Escolher dados",
-      "total": "Total",
-      "totalPaid": "Total +PP",
-      "effect": "Efeito",
-      "hitch": "Hitch",
       "maxTotal": "Máx. total",
       "maxEffect": "Máx. efeito",
       "offer": "+1 PP: somar ao total",
@@ -1156,7 +1152,6 @@
       "offerNo": "Não",
       "pp": "PP",
       "spent": "Gasto",
-      "botch": "Botch",
       "confirm": "Lançar no card",
       "cancel": "Cancelar",
       "versusBeat": "Supera por {n}",
@@ -1168,7 +1163,9 @@
       },
       "forbidden": "Só o jogador da personagem escolhe estes dados.",
       "notPending": "Esta rolagem já foi resolvida.",
-      "invalid": "Escolha de dados inválida."
+      "invalid": "Escolha de dados inválida.",
+      "noAnswer": "O Mestre não respondeu. Tente de novo.",
+      "error": "Não foi possível resolver a rolagem. Nada foi alterado."
     }
   }
 }

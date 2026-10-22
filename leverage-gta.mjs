@@ -21,6 +21,7 @@ import { registerDiceSoNice } from "./module/dice/dsn.mjs";
 import { registerRollHandler } from "./module/dice/roll-handler.mjs";
 import { registerSocket } from "./module/socket.mjs";
 import { registerRollCard } from "./module/applications/chat/roll-card.mjs";
+import { registerResolveDice } from "./module/applications/dialogs/resolve-dice.mjs";
 import { api, registerApi } from "./module/api.mjs";
 import { registerSceneControls } from "./module/applications/gm/controls.mjs";
 import { registerHud } from "./module/applications/hud/leverage-hud.mjs";
@@ -76,6 +77,7 @@ Hooks.once("init", () => {
   registerRollHandler();
   registerDiceSoNice();
   registerRollCard();
+  registerResolveDice();
   registerSceneControls();
 });
 

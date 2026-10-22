@@ -2,7 +2,7 @@ import "./helpers/foundry-stub.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { applyComplication, keepNextDie, nextSpareIndex, resolveNextOne, unresolvedOnes } from "../../module/dice/card-actions.mjs";
-import { lowestActiveGM, routePacket } from "../../module/socket.mjs";
+import { lowestActiveGM, routePacket, routeRequest } from "../../module/socket.mjs";
 import { rollCardContext } from "../../module/applications/chat/roll-card.mjs";
 
 const entry = (result, kept = false, faces = 10) => ({ ref: `r${result}`, label: "x", faces, result, kept, one: result === 1 });
@@ -108,4 +108,12 @@ test("card context: PP spent uses the singular and plural keys; keep button name
   const many = rollCardContext({ ...roll([entry(9, true), entry(5)]), ppSpent: 2 }, { t });
   assert.ok(many.ppNotes.some((n) => n.startsWith("LEVERAGE.Roll.ppSpentMany")));
   assert.equal(rollCardContext(roll([entry(9, true), entry(8, true), entry(5)]), { t, isOwner: true, plotPoints: 1 }).keepLabel.startsWith("LEVERAGE.Roll.keepButton"), true);
+});
+
+test("routeRequest returns what the handler answered; nothing for a non-processor or an unknown action", async () => {
+  const handlers = new Map([["ask", async (data, userId) => ({ ok: true, userId, n: data.n })]]);
+  const out = await routeRequest({ action: "ask", data: { n: 2 } }, { isProcessor: true, userId: "u1", handlers });
+  assert.deepEqual(out, { handled: true, result: { ok: true, userId: "u1", n: 2 } });
+  assert.deepEqual(await routeRequest({ action: "ask" }, { isProcessor: false, userId: "u1", handlers }), { handled: false, result: undefined });
+  assert.equal((await routeRequest({ action: "nope" }, { isProcessor: true, userId: "u1", handlers })).handled, false);
 });

@@ -17,6 +17,7 @@
 @import url("sheets/drag.css") layer(system);
 @import url("sheets/tray.css") layer(system);
 @import url("sheets/pool-builder.css") layer(system);
+@import url("resolve-dice.css") layer(system);
 @import url("sheets/npc.css") layer(system);
 @import url("sheets/location.css") layer(system);
 @import url("chat.css") layer(system);

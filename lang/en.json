@@ -1145,10 +1145,6 @@
     },
     "Resolve": {
       "title": "Choose dice",
-      "total": "Total",
-      "totalPaid": "Total +PP",
-      "effect": "Effect",
-      "hitch": "Hitch",
       "maxTotal": "Max total",
       "maxEffect": "Max effect",
       "offer": "+1 PP: add to total",
@@ -1156,7 +1152,6 @@
       "offerNo": "No",
       "pp": "PP",
       "spent": "Spent",
-      "botch": "Botch",
       "confirm": "Roll to card",
       "cancel": "Cancel",
       "versusBeat": "Beats by {n}",
@@ -1168,7 +1163,9 @@
       },
       "forbidden": "Only the character's player can choose these dice.",
       "notPending": "This roll was already resolved.",
-      "invalid": "Invalid dice choice."
+      "invalid": "Invalid dice choice.",
+      "noAnswer": "The Fixer did not answer. Try again.",
+      "error": "Could not resolve the roll. Nothing was changed."
     }
   }
 }

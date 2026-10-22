@@ -108,3 +108,16 @@ test("heroicSteps, compare (tie fails) and stepEffect", () => {
 test("config: difficulties are 2d4..2d12 in order", () => {
   assert.deepEqual(LEVERAGE.difficulties.map((d) => [d.dice, d.size]), [[2, 4], [2, 6], [2, 8], [2, 10], [2, 12]]);
 });
+
+test("validate rejects indexes that are not whole numbers inside the roll", () => {
+  const entries = [{ faces: 8, result: 5 }, { faces: 8, result: 4 }, { faces: 6, result: 3 }];
+  const bad = [[0, "0"], ["0", 1], [-1, 1], [0, 3], [0, Number.NaN], [0, 1.5], [0, undefined], [0, null]];
+  for (const total of bad) {
+    const out = validate(entries, { total, effect: [2] });
+    assert.deepEqual([out.ok, out.errors], [false, ["unknown-die"]], JSON.stringify(total));
+  }
+  assert.deepEqual(validate(entries, { total: [0, 1], effect: ["2"] }).errors, ["unknown-die"]);
+  assert.deepEqual(validate(entries, { total: [0, 1], effect: [2], paid: ["1"] }).errors, ["unknown-die"]);
+  assert.deepEqual(validate(entries, { total: [0, 0], effect: [] }).errors.includes("duplicate-die"), true);
+  assert.equal(validate(entries, { total: [0, 1], effect: [2] }).ok, true);
+});

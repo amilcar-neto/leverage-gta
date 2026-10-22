@@ -74,8 +74,8 @@ function registerWorldSettings() {
   worldNumber("moneyStart", LEVERAGE.money.startSteps);
   worldNumber("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints);
   worldBoolean("playersCanUnlock", true, notify("traitsLockedChanged"));
-  // Cortex Prime rolling (docs/08). "classic" until the choose-dice window exists (T-1006 switches it to "prime").
-  worldChoice("rules.rollMode", LEVERAGE.rollModes, "classic");
+  // Cortex Prime rolling (docs/08). "prime" (the player chooses the dice); "classic" is the safety net.
+  worldChoice("rules.rollMode", LEVERAGE.rollModes, "prime");
   worldChoice("rules.oppositionChoice", LEVERAGE.oppositionChoices, "auto");
   worldBoolean("rules.heroicSuccess", true);
   hiddenWorld("wanted", new (fields().ObjectField)(), { city: LEVERAGE.stars.defaultCity, level: LEVERAGE.stars.min },

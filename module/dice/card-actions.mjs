@@ -23,9 +23,10 @@ export function nextSpareIndex(entries) {
 /**
  * Keeps the next highest die. Raises the total, `keptCount` and `ppSpent`.
  * @param {object} data `flags.leverage-gta.roll`
- * @returns {object|null} new roll data, or null when no die can be kept
+ * @returns {object|null} new roll data, or null when no die can be kept  (also null for a Cortex Prime card: its extra dice are bought in the Choose dice window)
  */
 export function keepNextDie(data) {
+  if (data.mode === "prime" || data.status === "pending") return null;
   const entries = data.entries ?? [];
   const index = nextSpareIndex(entries);
   if (index < 0) return null;

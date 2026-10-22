@@ -80,11 +80,11 @@ const geo = (die, top, font) => Object.freeze({ top, font, hue: hueOf(DIE_STYLES
  * muted state, `hsl(hue, 38%, 42%)`). `sizes` are the allowed pixel sizes; stroke widths live in styles/die.css.
  */
 const DIE_GEOMETRY = Object.freeze({
-  sizes: Object.freeze([28, 32, 36, 38, 50]),
+  sizes: Object.freeze([28, 32, 36, 38, 50, 64]),
   defaultSize: 32,
   /** Size used by each surface that shows dice outside the sheets (always one of `sizes`). */
   uses: Object.freeze({
-    rollCard: 50, moneyLine: 28, hud: 38, tracker: 28, ladder: 28, oppositionCounter: 36, oppositionPreview: 28, npc: 28, npcTrait: 32, location: 28, scenePanel: 28, poolBuilderChip: 28, poolBuilderPreview: 28
+    rollCard: 50, moneyLine: 28, hud: 38, tracker: 28, ladder: 28, oppositionCounter: 36, oppositionPreview: 28, npc: 28, npcTrait: 32, location: 28, scenePanel: 28, poolBuilderChip: 28, poolBuilderPreview: 28, resolveDice: 64
   }),
   perDie: Object.freeze({
     4: geo(4, 0.44, 0.4),

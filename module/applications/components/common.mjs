@@ -4,6 +4,7 @@
  */
 import { SYSTEM_ID } from "../../config.mjs";
 import { t } from "./i18n.mjs";
+import { normalizeRoll } from "../../dice/roll-core.mjs";
 
 const ESCAPES = Object.freeze({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" });
 
@@ -31,7 +32,7 @@ export function requireGM() {
  * @param {ChatMessage|null|undefined} message
  * @returns {object|null}
  */
-export const rollOf = (message) => message?.getFlag(SYSTEM_ID, "roll") ?? null;
+export const rollOf = (message) => normalizeRoll(message?.getFlag(SYSTEM_ID, "roll") ?? null);
 
 /**
  * Resolves an Actor from a document, a UUID, a world Actor id or a Token (its Actor). Never throws.

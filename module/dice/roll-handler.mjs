@@ -6,8 +6,7 @@
  */
 import { SYSTEM_ID } from "../config.mjs";
 import { logger } from "../logger.mjs";
-import { buildRollData, evaluateDice, isRollMode, poolFormula, rollValues } from "./roll-core.mjs";
-import { afterMoneyRoll } from "../rules/money.mjs";
+import { applyRollEffects, buildRollData, evaluateDice, isRollMode, poolFormula, rollEffects, rollValues } from "./roll-core.mjs";
 import { ROLL_REQUESTED_HOOK, poolOf, syncRows } from "../applications/actor/parts/tray.mjs";
 
 /**
@@ -19,21 +18,8 @@ export function rollableEntries(entries) {
   return entries.filter((e) => !e.blank && e.die);
 }
 
-/**
- * What a roll changes on the character, derived from the roll data.
- * @param {object} data Result of `buildRollData`.
- * @param {number} moneySteps Current Money steps of the actor.
- * @returns {{plotPoints: number, moneySteps: number|null}} `moneySteps` is the new value, or null when untouched.
- */
-export function rollEffects(data, moneySteps) {
-  return {
-    plotPoints: data.distinctionPP,
-    moneySteps: data.money ? afterMoneyRoll(moneySteps) : null
-  };
-}
-
 // Re-exported: the pure roll core lives in roll-core.mjs (shared with the opposition roller).
-export { buildRollData, poolFormula, rollValues };
+export { buildRollData, poolFormula, rollEffects, rollValues };
 
 /* ------------------------------------------------------------ Foundry half */
 
@@ -43,13 +29,6 @@ const rolling = new Set();
 /** Display name of a Pool entry. */
 function labelOf(entry) {
   return entry.nameKey ? game.i18n.localize(entry.nameKey) : entry.name;
-}
-
-/** Applies Plot Point and Money changes. */
-async function applyEffects(actor, data) {
-  const effects = rollEffects(data, actor.system.money?.steps ?? 0);
-  if (effects.plotPoints) await actor.addPlotPoints(effects.plotPoints);
-  if (effects.moneySteps !== null) await actor.money.set(effects.moneySteps);
 }
 
 /** The world's roll mode (`rules.rollMode`); an unknown value falls back to `classic`. */
@@ -81,19 +60,40 @@ export async function rollPoolFor({ actor, sheet, entries, flavor }) {
   rolling.add(actor.uuid);
   try {
     const { roll, values } = await evaluateDice(rollable.map((e) => e.die), rollable.map((e) => e.kind));
+    const mode = currentRollMode();
     const data = buildRollData({
       entries: rollable, values, actorUuid: actor.uuid, actorName: actor.name, actorImg: actor.img,
-      flavor: flavor ?? game.i18n.localize("LEVERAGE.Roll.defaultFlavor"), mode: currentRollMode()
+      flavor: flavor ?? game.i18n.localize("LEVERAGE.Roll.defaultFlavor"), mode, ppAtRoll: actor.system.plotPoints?.value ?? 0
     });
     // The card first: if posting fails nothing was spent or earned. The effects follow once the card exists.
     const message = await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor }), flavor: data.flavor, flags: { [SYSTEM_ID]: { roll: data } }
     });
-    await applyEffects(actor, data);
+    // Prime: nothing is earned or spent until the player resolves the card (Plot Points, Money: resolve-dice-flow.mjs).
+    if (data.status === "resolved") await applyRollEffects(actor, data);
     await clearPoolAfterRoll(sheet);
+    if (data.status === "pending") openWhenDiceStop(message);
     return message;
   } finally {
     rolling.delete(actor.uuid);
+  }
+}
+
+/** Longest wait for Dice So Nice before the Choose dice window opens anyway (ms). */
+const DICE_ANIMATION_FALLBACK = 6000;
+
+/**
+ * Opens the Choose dice window on this client once Dice So Nice (when present) has shown the dice, or after a short
+ * fallback if the animation never ends. Never throws.
+ */
+async function openWhenDiceStop(message) {
+  try {
+    const animation = game.dice3d?.waitFor3DAnimationByMessageID?.(message.id);
+    await Promise.race([animation, new Promise((resolve) => setTimeout(resolve, DICE_ANIMATION_FALLBACK))]);
+    const { openResolveDice } = await import("../applications/dialogs/resolve-dice.mjs");
+    await openResolveDice(message);
+  } catch (err) {
+    logger.error("Could not open the Choose dice window", err);
   }
 }
 

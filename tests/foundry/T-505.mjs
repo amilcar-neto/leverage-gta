@@ -30,6 +30,29 @@ for (const m of doc.matchAll(/<!-- teste: (gm|jogador|ambos) id=([\w-]+) -->\n``
 const fences = [...doc.matchAll(/^```js$/gm)].length;
 record("every js block of docs/macros.md has a test marker", fences === Object.keys(blocks).length && fences > 0, { fences, marked: Object.keys(blocks).length });
 
+/**
+ * Cortex Prime: a Pool roll is a pending card until the player chooses the dice. Resolves the newest pending card of
+ * [TEST] Macro on page `p` through `game.leverage.resolve` (first two non-hitch dice for the total, the next for the effect).
+ */
+const settle = (p) => p.evaluate(async () => {
+  const pending = game.messages.contents.filter((m) => m.getFlag("leverage-gta", "roll")?.status === "pending").at(-1);
+  if (!pending) return false;
+  const eligible = pending.getFlag("leverage-gta", "roll").entries.flatMap((e, i) => (e.result === 1 ? [] : [i]));
+  const done = await game.leverage.resolve(pending, { total: eligible.slice(0, 2), effect: eligible.slice(2, 3) });
+  foundry.applications.instances.get(`lv-resolve-${pending.id}`)?.close();
+  return done;
+});
+
+/**
+ * The Fixer may only resolve the card of a character no player owns, so for the [gm] checks of rolls the [TEST] player
+ * loses ownership of [TEST] Macro while `fn` runs (an owned character's card is the player's: checked in P-prime.mjs).
+ */
+const withoutPlayerOwner = (fn) => page.evaluate(async (on) => {
+  const actor = game.actors.getName("[TEST] Macro");
+  const player = game.users.getName("[TEST] Player");
+  await actor.update({ [`ownership.${player.id}`]: on ? 0 : CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER });
+}, fn);
+
 /* ------------------------------------------------------------ page-side helpers */
 
 /** Runs one example; returns the warnings shown and the console.log lines (as JSON). */
@@ -148,7 +171,7 @@ try {
   await page.evaluate(prepare);
   await wait(500);
   const keys = await page.evaluate(() => Object.keys(game.leverage ?? {}).sort());
-  record("game.leverage exists with every group", keys.join() === "combat,job,jobTracker,money,openOppositionRoller,opposition,plotPoints,pool,rollPool,stars,table,traits", keys);
+  record("game.leverage exists with every group", keys.join() === "combat,job,jobTracker,money,openOppositionRoller,opposition,plotPoints,pool,resolve,rollPool,stars,table,traits", keys);
 
   /* ---- GM ---- */
   const gm = async (id) => {
@@ -173,14 +196,29 @@ try {
 
   await reset();
   known = await messageIds();
+  await withoutPlayerOwner(true);
+  out = await gm("resolve");
+  await withoutPlayerOwner(false);
+  [msg] = await newRolls(known);
+  record("[gm] resolve: the card is resolved without the window", !out.error && out.warns.length === 0 && msg?.flags.status !== "pending", { out, status: msg?.flags.status });
+  await page.evaluate(() => [...foundry.applications.instances.values()].filter((a) => a.id?.startsWith("lv-resolve-")).forEach((a) => a.close()));
+
+  await reset();
+  known = await messageIds();
+  await withoutPlayerOwner(true);
   await gm("roll-items");
+  await settle(page);
+  await withoutPlayerOwner(false);
   [msg] = await newRolls(known);
   record("[gm] roll-items: Specialty and Distinction d4 in the Pool, d4 gives a Plot Point",
     msg?.flags.entries.length === 4 && msg.flags.entries.some((e) => e.kind === "specialty") && msg.flags.entries.some((e) => e.kind === "distinction" && e.faces === 4) && (await peek()).pp === 2, msg?.flags.entries);
 
   await reset();
   known = await messageIds();
+  await withoutPlayerOwner(true);
   await gm("roll-money");
+  await settle(page);
+  await withoutPlayerOwner(false);
   [msg] = await newRolls(known);
   record("[gm] roll-money: money die in the Pool and Money drops a step", msg?.flags.money === true && (await peek()).steps === 3, { msg: msg?.flags.entries, peek: await peek() });
 
@@ -336,10 +374,12 @@ try {
     && (await inPool(pp)).includes("attributes.agility"), out);
 
   await player("roll-items");
+  await eventually(() => settle(pp));
   record("[player] roll-items: the d4 Distinction gave his own character a Plot Point", await eventually(async () => (await peek()).pp === 2), await peek());
 
   await reset(4, 1);
   await player("roll-money");
+  await eventually(() => settle(pp));
   record("[player] roll-money: Money dropped a step", await eventually(async () => (await peek()).steps === 3), await peek());
 
   await reset(0);

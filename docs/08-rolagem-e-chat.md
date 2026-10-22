@@ -33,7 +33,11 @@ pura está em `module/dice/prime-math.mjs`.
    Atalhos na janela: **Máx. total** (2 maiores; o maior que sobrar é o efeito) e **Máx. efeito** (maior dado, por faces,
    vira efeito; os 2 maiores do resto no total). Eles só preenchem a escolha; o jogador confirma.
 5. Sem dado sobrando, o efeito é **d4**. Pool de 1 dado: o total é o dado. Só hitches: **botch**, total 0.
-6. Fechar a janela sem confirmar **não** resolve nada: o card segue inativo e tem o botão **Escolher dados**.
+6. Fechar a janela sem confirmar **não** resolve nada: o card segue inativo e tem o botão **Escolher dados** enquanto estiver
+   pendente, para quem pode resolvê-lo (o jogador dono da personagem; o Mestre só em card de NPC, de oposição ou de
+   personagem sem jogador dono), em qualquer card pendente, não só no mais recente. Quem confirma só vê a janela fechar
+   depois que o Mestre aceitou; se ele recusar, o aviso aparece e a janela continua aberta. Um card nunca fica resolvido
+   sem os PP e a Grana: o card é gravado primeiro e, se a ficha falhar, volta a pendente.
 7. Se entrou **Distinction d4**: o personagem ganha 1 PP (registrado no card). Se entrou **Grana**: desce 1 degrau.
 8. Sucesso heroico (`rules.heroicSuccess`): superar a dificuldade por 5 ou mais sobe o efeito 1 passo a cada 5.
 

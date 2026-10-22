@@ -20,6 +20,7 @@ import { isValidDie } from "./dice/die.mjs";
 import { priceToSteps } from "./rules/money.mjs";
 import { clampStars, policePool } from "./rules/stars.mjs";
 import { rollPoolFor } from "./dice/roll-handler.mjs";
+import { confirmRoll } from "./applications/dialogs/resolve-dice-flow.mjs";
 import { openOppositionRoller, rollOpposition } from "./dice/opposition.mjs";
 import { getCityScales, readWanted } from "./world-state.mjs";
 import { executeAsGM, registerSocketAction } from "./socket.mjs";
@@ -199,6 +200,20 @@ async function rollPool({ actor, refs, flavor } = {}) {
   const check = checkPoolRefs(refs, (ref) => resolvePoolRef(doc, ref, { moneyEnabled, sceneTraits }));
   if (!check.ok) return warn(check) ?? null;
   return rollPoolFor({ actor: doc, entries: check.entries, flavor });
+}
+
+/**
+ * Resolves a pending Cortex Prime card without the window (macros): validates the choice and writes the card, the
+ * Plot Points and the Money in one go. Dice are the indexes of the card's dice, in Pool order.
+ * @param {ChatMessage|string} message The card, or its id.
+ * @param {{total: number[], effect?: number[], paid?: number[]}} selection Dice for the total (up to two free ones, plus
+ *   the `paid` ones bought with Plot Points) and the effect die.
+ * @returns {Promise<boolean>} whether the card was resolved
+ */
+async function resolve(message, selection = {}) {
+  const doc = typeof message === "string" ? game.messages.get(message) : message;
+  if (!doc) return false;
+  return confirmRoll(doc, { total: [...(selection.total ?? [])], effect: [...(selection.effect ?? [])], paid: [...(selection.paid ?? [])] });
 }
 
 const pool = {
@@ -545,11 +560,11 @@ const combat = {
 
 /**
  * The object behind `game.leverage`.
- * @type {{rollPool: Function, pool: object, opposition: Function, openOppositionRoller: Function, money: object, stars: object,
+ * @type {{rollPool: Function, resolve: Function, pool: object, opposition: Function, openOppositionRoller: Function, money: object, stars: object,
  *   plotPoints: object, traits: object, job: object, table: object, jobTracker: object, combat: object}}
  */
 export const api = Object.freeze({
-  rollPool, pool, opposition, openOppositionRoller, money, stars, plotPoints, traits, job, table, jobTracker, combat
+  rollPool, resolve, pool, opposition, openOppositionRoller, money, stars, plotPoints, traits, job, table, jobTracker, combat
 });
 
 /** Publishes `game.leverage` and the socket action of `money.transfer` (call from the `setup` hook). */

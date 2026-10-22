@@ -25,7 +25,7 @@ no servidor de testes (o VPS, veja `docs/13-ambiente-de-teste.md`): se você mud
 
 | Grupo | Funções |
 | --- | --- |
-| Rolagem | `rollPool({ actor, refs, flavor })`, `pool.add(actor, ref)` |
+| Rolagem | `rollPool({ actor, refs, flavor })`, `resolve(message, { total, effect })`, `pool.add(actor, ref)` |
 | Oposição (Mestre) | `opposition({ dice, label })`, `openOppositionRoller()` |
 | Grana | `money.get/add/pay/set/transfer`, `money.payDialog(actor)`, `money.lendDialog(actor)` |
 | Estrelas | leitura: `stars.get/city/cities/state`. Alterar é só do Mestre: `stars.set/raise/lower/clear`, `stars.wait/disguise`, `stars.buySilence(actor)` e `stars.lastResort(actor, { way, confirmed })`. Não há socket para estrelas |
@@ -61,6 +61,32 @@ await game.leverage.rollPool({
   refs: ["attributes.agility", "roles.thief", "d6"],
   flavor: "Arromba o cofre"
 });
+```
+
+### Escolher os dados (modo `prime`)
+
+No modo `prime` (padrão, configuração `rules.rollMode`) `rollPool` posta o card **pendente**: os dados aparecem, mas
+não há total. Na máquina de quem rolou abre a janela "Escolher dados" (depois da animação do Dice So Nice, se houver).
+`rollPool` devolve a mensagem sem esperar a escolha. Plot Points e Grana só mudam quando o card é resolvido.
+
+`resolve(message, { total, effect, paid })` resolve o card sem abrir a janela. `message` é a ChatMessage (ou o id) e os
+números são os índices dos dados do card, na ordem da Pool (`message.flags["leverage-gta"].roll.entries`). `total`
+leva até 2 dados livres; `effect` leva 1 dado; `paid` lista (entre os de `total`) os dados comprados com 1 Plot Point
+cada, que não contam nos 2. Não pode escolher dado que tirou 1 (hitch). Devolve `true` se resolveu; `false` (com um
+aviso) se a escolha é inválida (índice que não é número inteiro dentro dos dados, repetido, etc.), o card já foi resolvido,
+o usuário não pode resolver aquele card ou o Mestre não respondeu. A chamada espera a resposta do Mestre (o card é
+resolvido pelo cliente do Mestre, mesmo quando o jogador pede). Quem pode resolver: o jogador dono da personagem; o Mestre
+só em card de NPC ou de personagem **sem jogador dono**. Por isso o exemplo abaixo, que roda como Mestre, usa uma
+personagem sem jogador dono; com a Crew de um jogador, o Mestre recebe `false` e `forbidden`.
+
+<!-- teste: gm id=resolve -->
+```js
+const actor = game.actors.getName("Nome da Personagem");
+const message = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "roles.thief", "d6"] });
+const dice = message.flags["leverage-gta"].roll.entries;
+console.log(dice.map((d, i) => `${i}: d${d.faces} = ${d.result}`));
+const free = dice.flatMap((d, i) => (d.result === 1 ? [] : [i]));
+await game.leverage.resolve(message, { total: free.slice(0, 2), effect: free.slice(2, 3) });
 ```
 
 ### Macro por referência de Traço
