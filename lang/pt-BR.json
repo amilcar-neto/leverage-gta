@@ -501,7 +501,9 @@
       },
       "Assets": {
         "delete": "Excluir Asset",
-        "open": "Abrir Asset"
+        "open": "Abrir Asset",
+        "boostTag": "▲{boost}",
+        "boostTip": "Subiu {boost} passo(s) por oportunidades até o fim da cena"
       },
       "Jobs": {
         "summary": "{jobs} JOBS · {unspent} PARA TREINO",
@@ -717,7 +719,8 @@
       "fixerComplicationTip": "{actor} perdeu: Complication {die} pelo efeito do vencedor (um passo abaixo se o efeito do perdedor for igual ou maior).",
       "effectComplicationName": "Efeito: {name}",
       "fixerComplicationName": "{name} vs {actor}",
-      "effectFailed": "Não foi possível usar o efeito."
+      "effectFailed": "Não foi possível usar o efeito.",
+      "opportunityTipNoPlotPoints": "Sem Plot Points para gastar"
     },
     "Migration": {
       "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar.",
@@ -1238,7 +1241,8 @@
     "Opportunity": {
       "taken": "Não sobrou oportunidade neste card.",
       "failed": "Não foi possível usar a oportunidade.",
-      "nothing": "Não há Complication para descer nem Asset para subir."
+      "nothing": "Não há Complication para descer nem Asset para subir.",
+      "expired": "Esta oportunidade expirou: só vale o card mais recente do Fixer na cena, até a cena acabar."
     }
   }
 }

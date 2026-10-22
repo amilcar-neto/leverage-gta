@@ -220,7 +220,7 @@ export const LEVERAGE = Object.freeze({
   jobUuidFlag: "jobUuid",
   /** Item fields that only the Fixer changes once the Item exists (docs/05): an Asset's die and duration, a Job's payout share and spent flag. */
   protectedItemFields: Object.freeze({
-    asset: Object.freeze(["system.die", "system.duration"]),
+    asset: Object.freeze(["system.die", "system.duration", "system.boost"]),
     job: Object.freeze(["system.payout.share", "system.spent"])
   }),
   /** Largest gang an NPC (or the opposition roller) can bring. */

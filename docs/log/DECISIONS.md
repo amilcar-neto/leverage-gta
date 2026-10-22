@@ -455,6 +455,20 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
      O card é redesenhado quando o PP do jogador muda (o botão depende dele).
 - **Descartado:** um diálogo em duas etapas (tipo, depois alvo): um só `<select>` com dois grupos basta.
 
+### Correções da revisão da T-1010 (2026-10-22)
+
+1. **Validade das oportunidades:** só o card de oposição **mais recente da cena atual** vale (`latestOppositionId`); os mais
+   velhos expiram (resposta "expirou"). "Encerrar cena" marca `opportunitiesExpired` em todo card que ainda tinha oportunidade.
+   Alternativa descartada: deixar valer para sempre (um jogador poderia gastar oportunidades de cenas passadas).
+2. **Custo: 1 PP por uso (regra da casa deliberada).** O livro cobra 1 PP por Complication afetada (vários passos na mesma
+   Complication = 1 PP). Aqui cada passo custa 1 PP, para o card contar de forma simples e cada uso ser uma escrita. Registrado em docs/01 e docs/08.
+3. **O Mestre confia só no autor do card:** `writeOpportunity` exige `message.author.isGM` (um jogador pode criar uma mensagem
+   com flags de oposição), deriva o personagem de `opportunityActorOf(user)` (o `actorId` do cliente só é conferido) e
+   a lógica está em `checkOpportunityRequest` (testada).
+4. **`system.boost` é protegido** (`protectedItemFields`); todo Asset novo nasce com `boost = 0` (cópia, compra, soltar de outra ficha).
+   `clearBoosts` limpa Assets de qualquer ator e de mundo, e roda em Encerrar cena, Encerrar Job e Nova sessão.
+5. **Desfazer o card:** `restoreCard` troca a flag inteira (`recursive: false`), e o card do Fixer já nasce com `opportunityLog: []`.
+
 
 ## Versus e efeito em ações (T-1011/T-1012, 2026-10-22)
 

@@ -58,6 +58,9 @@
   cursor: pointer;
 }
 
+/* A die raised by an Opportunity (until the end of the scene): a soft ring behind it */
+.leverage-gta .lv-die-btn.is-boosted { filter: drop-shadow(0 0 3px var(--lv-select)); }
+
 /* ---- Folder: tabs sit on the page border (mockup: 25px idle, 28px active, 3px black border) ---- */
 .leverage-gta.crew-sheet .lv-folder {
   display: flex;

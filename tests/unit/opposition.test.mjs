@@ -139,6 +139,7 @@ test("Fixer resolves automatically: total, effect die, hitches become opportunit
   assert.equal(data.hitches, 2);
   assert.equal(data.opportunities, 2);
   assert.equal(data.opportunitiesUsed, 0);
+  assert.deepEqual(data.opportunityLog, []);
   assert.deepEqual(data.entries.map((e) => e.effect), [false, false, false, false, true]);
 });
 

@@ -5,7 +5,7 @@
  */
 import { escapeHtml } from "../components/die.mjs";
 import { stepDown } from "../../dice/die.mjs";
-import { canBoostAsset, effectiveDie } from "../../dice/opportunity.mjs";
+import { canBoostAsset, useOpportunity } from "../../dice/opportunity.mjs";
 import { t } from "../components/i18n.mjs";
 import { isAnswer } from "../components/dialog-guard.mjs";
 
@@ -22,8 +22,8 @@ export function opportunityOptions(complications, assets) {
     return { value: `lower:${c.id}`, group: "lower", label };
   });
   const raise = assets.filter(canBoostAsset).map((a) => {
-    const from = effectiveDie(a.die, a.boost);
-    const label = t("LEVERAGE.Dialog.Opportunity.raise", { name: a.name, from, to: effectiveDie(a.die, (a.boost ?? 0) + 1) });
+    const use = useOpportunity({ opposition: true, status: "resolved", opportunities: 1 }, { kind: "raise", assetId: a.id }, { assets: [a] });
+    const label = t("LEVERAGE.Dialog.Opportunity.raise", { name: a.name, from: use.from, to: use.to });
     return { value: `raise:${a.id}`, group: "raise", label };
   });
   return [...lower, ...raise];

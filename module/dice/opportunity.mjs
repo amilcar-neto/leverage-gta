@@ -28,9 +28,48 @@ export function effectiveDie(die, boost = 0) {
  * @returns {number}
  */
 export function opportunitiesLeft(data) {
-  if (!data?.opposition || data.status === "pending") return 0;
+  if (!data?.opposition || data.status === "pending" || data.opportunitiesExpired) return 0;
   return Math.max(0, Math.trunc(Number(data.opportunities) || 0) - Math.trunc(Number(data.opportunitiesUsed) || 0));
 }
+
+/**
+ * Id of the newest opposition card of a scene: the only card whose Opportunities still count (the others expired).
+ * A card or scene of unknown scene matches any scene.
+ * @param {{id: string, timestamp: number, sceneId?: string, roll: object}[]} cards Chat cards with roll data (`cardOf`), any order.
+ * @param {string} [sceneId] The current scene.
+ * @returns {string|null}
+ */
+export function latestOppositionId(cards, sceneId) {
+  const mine = cards.filter((c) => c.roll?.opposition && (!c.sceneId || !sceneId || c.sceneId === sceneId));
+  return mine.reduce((best, c) => (!best || c.timestamp >= best.timestamp ? c : best), null)?.id ?? null;
+}
+
+/**
+ * Checks a request to spend an Opportunity on the Fixer's side. Card data is client data, so the card must be an
+ * opposition card the Fixer himself posted, the character must be the asker's own, and the card must be the newest
+ * of the scene with an Opportunity left.
+ * @param {object} input
+ * @param {object|null} input.data `flags.leverage-gta.roll` of the card.
+ * @param {boolean} input.authorIsGM Whether the user that created the message is a Fixer.
+ * @param {string|null} input.ownActorId The asker's own character (`opportunityActorOf`).
+ * @param {string} [input.actorId] The character the client names (must be the same).
+ * @param {string|null} input.latestId `latestOppositionId` of the scene.
+ * @param {string} input.messageId The card asked about.
+ * @returns {{ok: true}|{ok: false, reason: "invalid"|"taken"|"expired"}}
+ */
+export function checkOpportunityRequest({ data, authorIsGM, ownActorId, actorId, latestId, messageId }) {
+  if (!data?.opposition || !authorIsGM || !ownActorId || (actorId && actorId !== ownActorId)) return { ok: false, reason: "invalid" };
+  if (!opportunitiesLeft(data)) return { ok: false, reason: "taken" };
+  if (latestId !== messageId) return { ok: false, reason: "expired" };
+  return { ok: true };
+}
+
+/**
+ * The card with its Opportunities expired (end of scene).
+ * @param {object} data `flags.leverage-gta.roll`
+ * @returns {object}
+ */
+export const expireOpportunities = (data) => ({ ...data, opportunitiesExpired: true });
 
 /**
  * Whether an Opportunity can still raise this Asset: scene or Job Asset whose rolled die is below d12.

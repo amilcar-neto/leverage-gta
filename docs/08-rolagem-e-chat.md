@@ -110,7 +110,9 @@ Em ambos, crie a mensagem de chat com o card e as `flags` de `docs/05`.
 - **Opportunities (T-1010):** o card do Fixer mostra a faixa "N oportunidades" enquanto sobra alguma (`opportunities - opportunitiesUsed`).
   O dono de um personagem vê "Usar oportunidade (1 PP)" (desativado sem PP). O diálogo é um `<select>` com dois grupos: **descer** uma
   Complication da mesa (d4 some) ou **subir** um Asset de cena/Job do personagem (até d12; guarda `system.boost`, que dura até
-  "Encerrar cena"). Cada uso gasta 1 PP, soma `opportunitiesUsed`, grava `opportunityLog` e é uma escrita pelo Mestre
+  "Encerrar cena", "Encerrar Job" ou "Nova sessão"). **Regra da casa:** 1 PP por uso (o livro cobra 1 PP por Complication afetada).
+  Só o card de oposição mais recente da cena vale; "Encerrar cena" expira os que sobraram (`opportunitiesExpired`). O Mestre só aceita
+  card postado por um Mestre e usa o personagem do próprio solicitante. Cada uso gasta 1 PP, soma `opportunitiesUsed`, grava `opportunityLog` e é uma escrita pelo Mestre
   (`requestAsGM("useOpportunity")`, `packetQueue`, desfaz se falhar). Lógica em `dice/opportunity.mjs`.
 
 ## Tiroteio (regra da casa "Vida")

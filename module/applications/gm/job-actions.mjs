@@ -5,7 +5,8 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
-import { escapeHtml, requireGM, resolveActor } from "../components/common.mjs";
+import { escapeHtml, requireGM, resolveActor, rollOf } from "../components/common.mjs";
+import { expireOpportunities, opportunitiesLeft } from "../../dice/opportunity.mjs";
 import { t, tn } from "../components/i18n.mjs";
 import { isAnswer, requireTextField } from "../components/dialog-guard.mjs";
 import { jobLink, payoutCrew } from "../../rules/jobs.mjs";
@@ -194,15 +195,26 @@ export async function newSession() {
     await actor.updateEmbeddedDocuments("Item", ids.map((_id) => ({ _id, "system.callbackUsed": false })));
     count += ids.length;
   }
+  await clearBoosts();
   await say(t("LEVERAGE.GM.Chat.newSession", { jobs: tn("LEVERAGE.GM.Chat.jobCount", count) }));
   return count;
 }
 
-/** Takes back every Opportunity raise of the Assets (end of scene), in every Crew sheet. */
+/** Takes back every Opportunity raise of the Assets (end of scene, end of Job, new session): every actor and the world Items. */
 async function clearBoosts() {
-  for (const actor of game.actors.filter((a) => a.type === "crew")) {
+  for (const actor of game.actors) {
     const ids = boostedAssetIds(actor.items);
     if (ids.length) await actor.updateEmbeddedDocuments("Item", ids.map((_id) => ({ _id, "system.boost": 0 })));
+  }
+  const world = boostedAssetIds(game.items);
+  if (world.length) await Item.updateDocuments(world.map((_id) => ({ _id, "system.boost": 0 })));
+}
+
+/** The Opportunities of the Fixer's cards end with the scene: marks every card that still had one. */
+async function expireOpportunityCards() {
+  for (const message of game.messages) {
+    const data = rollOf(message);
+    if (opportunitiesLeft(data) > 0) await message.setFlag(SYSTEM_ID, "roll", expireOpportunities(data));
   }
 }
 
@@ -227,6 +239,7 @@ export async function endScene({ confirm = true } = {}) {
   }
   for (const { actor, ids } of targets) if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
   await clearBoosts();
+  await expireOpportunityCards();
   const traitsCleared = readGlobalTraits().length;
   await clearGlobalTraits();
   const detail = targets.filter((x) => x.ids.length).map((x) => `${escapeHtml(x.actor.name)} (${x.ids.length})`).join(", ");
@@ -398,6 +411,7 @@ export async function endJob({ name, total, shares }) {
     if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
     paid += 1;
   }
+  await clearBoosts();
   await job.update({ name, "system.status": "done", "system.payout.total": toSteps(total), "system.payout.crew": payoutCrew(crew, shares) });
   await clearComplications();
   await say(t("LEVERAGE.GM.Chat.endJob", { name: jobLink(job.uuid, name), total: toSteps(total) }));

@@ -148,7 +148,7 @@ try {
   await pp.waitForSelector(".lv-dialog form select[name=choice]", { timeout: 8000 });
   const opts = await optionsOf(pp);
   record("dialog: lists both Complications and the Van + Lockpick (no d12 Crowbar, no signature Gun)",
-    opts.map((o) => `${o.value.replace(/:.*/, "")}:${o.text.split(":")[0]}`).join("|").replace(/\[TEST\] /g, "") === "lower:Alarm|lower:Dog|raise:Lockpick|raise:Van", opts);
+    opts.map((o) => `${o.value.replace(/:.*/, "")}:${o.text.split(":")[0]}`).sort().join("|").replace(/\[TEST\] /g, "") === "lower:Alarm|lower:Dog|raise:Lockpick|raise:Van", opts);
   record("dialog: the d4 option says it goes away", opts.length > 1 && /d4/.test(opts[1].text) && !/d4 (para|to) d/.test(opts[1].text), opts[1]);
   await pp.screenshot({ path: `${SHOTS}/F10-opp-03-dialog.png` });
   record("dialog: nothing overlaps, no cut text, nothing outside", clean(await audit(pp, ".lv-dialog")), await audit(pp, ".lv-dialog"));
@@ -252,14 +252,52 @@ try {
   }, D);
   record("permission: the Fixer cannot open the dialog", forged === 0, forged);
 
+  /* ---- a card forged by the player is refused (author must be the Fixer) ---- */
+  const beforeForged = (await peek(B)).list.find((c) => c.id === "tstA")?.die;
+  const forgedReply = await pp.evaluate(async () => {
+    const { requestAsGM } = await import(foundry.utils.getRoute("systems/leverage-gta/module/socket.mjs"));
+    const actor = game.actors.getName("[TEST] Crew");
+    const roll = { opposition: true, status: "resolved", v: 2, opportunities: 99, opportunitiesUsed: 0, entries: [] };
+    const msg = await ChatMessage.create({ content: "<p>forged</p>", flavor: "[TEST] forged", flags: { "leverage-gta": { roll } } });
+    const reply = await requestAsGM("useOpportunity", { messageId: msg.id, choice: { kind: "lower", id: "tstA" }, actorId: actor.id });
+    return { reply, id: msg.id };
+  });
+  g = await peek(B);
+  record("forged: a player-made opposition card is refused by the Fixer, nothing spent or lowered",
+    forgedReply.reply?.ok === false && forgedReply.reply?.reason === "invalid" && g.pp === 3 && g.list.find((c) => c.id === "tstA")?.die === beforeForged, { forgedReply, pp: g.pp, list: g.list });
+
+  /* ---- an old card expired: only the newest opposition card of the scene counts ---- */
+  const oldCard = await post([1, 5, 2]);
+  const newer = await post([1, 5, 3]);
+  await wait(1200);
+  const stale = await pp.evaluate(async (mid) => {
+    const { requestAsGM } = await import(foundry.utils.getRoute("systems/leverage-gta/module/socket.mjs"));
+    return requestAsGM("useOpportunity", { messageId: mid, choice: { kind: "lower", id: "tstA" } });
+  }, oldCard);
+  g = await peek(B);
+  record("expiry: an older opposition card is refused (expired), PP unchanged", stale?.ok === false && stale?.reason === "expired" && g.pp === 3, { stale, pp: g.pp });
+
   /* ---- end of scene clears the boost (Van is a scene Asset: deleted; Lockpick is a Job Asset: boost 0) ---- */
-  const ended = await page.evaluate(async () => {
+  const ended = await page.evaluate(async (newerId) => {
     const { endScene } = await import(foundry.utils.getRoute("systems/leverage-gta/module/applications/gm/job-actions.mjs"));
     await endScene({ confirm: false });
     const actor = game.actors.getName("[TEST] Crew");
-    return { lockpick: actor.items.getName("[TEST] Lockpick")?.system.boost, van: Boolean(actor.items.getName("[TEST] Van")) };
+    return {
+      lockpick: actor.items.getName("[TEST] Lockpick")?.system.boost, van: Boolean(actor.items.getName("[TEST] Van")),
+      expired: game.messages.get(newerId)?.getFlag("leverage-gta", "roll")?.opportunitiesExpired === true
+    };
+  }, newer);
+  record("end of scene: Lockpick boost back to 0, scene Van removed, open Opportunities expired", ended.lockpick === 0 && !ended.van && ended.expired, ended);
+
+  /* ---- a player cannot set the boost by hand; a copy of a boosted Asset starts at 0 ---- */
+  const hand = await pp.evaluate(async () => {
+    const actor = game.actors.getName("[TEST] Crew");
+    const lock = actor.items.getName("[TEST] Lockpick");
+    await lock.update({ "system.boost": 4 }).catch(() => {});
+    const copy = await actor.createEmbeddedDocuments("Item", [{ ...lock.toObject(), name: "[TEST] Copy", system: { ...lock.toObject().system, boost: 3 } }]).catch(() => []);
+    return { boost: lock.system.boost, copy: copy[0]?.system.boost ?? null };
   });
-  record("end of scene: Lockpick boost back to 0, scene Van removed", ended.lockpick === 0 && !ended.van, ended);
+  record("guard: a player cannot set an Asset's boost; a created Asset starts at 0", hand.boost === 0 && (hand.copy === null || hand.copy === 0), hand);
 
   record("console: no system errors (GM)", log.own().length === 0, log.own());
   record("console: no system errors (player)", playerLog.own().length === 0, playerLog.own());

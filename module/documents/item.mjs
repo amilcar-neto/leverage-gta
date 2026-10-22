@@ -19,7 +19,13 @@ export class LeverageItem extends Item {
         return false;
       }
     }
+    this.#clearBoost();
     this.#suggestSignatureDie(data);
+  }
+
+  /** A new Asset never starts raised (copies, purchases and drops of a boosted Asset): only an Opportunity sets `boost`. */
+  #clearBoost() {
+    if (this.type === "asset" && this.system.boost) this.updateSource({ "system.boost": 0 });
   }
 
   /** @override */

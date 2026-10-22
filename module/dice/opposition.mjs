@@ -207,7 +207,7 @@ export function buildOppositionData({ dice, values, name, flavor, source = "", n
   const data = {
     ...base, entries, keptCount: selection.total.length, total: sum.total, effectDie: sum.effectFaces,
     selection: { total: selection.total, effect: selection.effect }, hitches: sum.hitches, botch: sum.botch,
-    opportunities: sum.hitches, opportunitiesUsed: 0, opposition: true, source
+    opportunities: sum.hitches, opportunitiesUsed: 0, opportunityLog: [], opposition: true, source
   };
   return npcUuid ? { ...data, npcUuid } : data;
 }

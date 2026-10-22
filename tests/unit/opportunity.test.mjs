@@ -2,7 +2,7 @@ import "./helpers/foundry-stub.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  BOOSTABLE_DURATIONS, canBoostAsset, effectiveDie, opportunitiesLeft, undoLower, useOpportunity
+  BOOSTABLE_DURATIONS, canBoostAsset, checkOpportunityRequest, effectiveDie, expireOpportunities, latestOppositionId, opportunitiesLeft, undoLower, useOpportunity
 } from "../../module/dice/opportunity.mjs";
 import { boostedAssetIds } from "../../module/applications/gm/job-actions.mjs";
 import { rollCardContext } from "../../module/applications/chat/roll-card.mjs";
@@ -103,4 +103,33 @@ test("roll card: strip, button and notes of the Fixer's card", () => {
   assert.equal(spent.showOpportunity, false);
   assert.equal(spent.ppNotes.length, 1);
   assert.match(spent.ppNotes[0], /opportunityNote\.raise/);
+});
+
+test("expired cards have no Opportunity left", () => {
+  assert.equal(opportunitiesLeft(expireOpportunities(card())), 0);
+});
+
+test("latestOppositionId: newest opposition card of the scene only", () => {
+  const cards = [
+    { id: "a", timestamp: 1, sceneId: "s1", roll: { opposition: true } },
+    { id: "b", timestamp: 5, sceneId: "s2", roll: { opposition: true } },
+    { id: "c", timestamp: 9, sceneId: "s1", roll: { opposition: false } },
+    { id: "d", timestamp: 3, sceneId: "s1", roll: { opposition: true } }
+  ];
+  assert.equal(latestOppositionId(cards, "s1"), "d");
+  assert.equal(latestOppositionId(cards, "s2"), "b");
+  assert.equal(latestOppositionId([], "s1"), null);
+});
+
+test("checkOpportunityRequest: a forged card, a foreign character and an old card are refused", () => {
+  const ok = { data: card(), authorIsGM: true, ownActorId: "me", actorId: "me", latestId: "m1", messageId: "m1" };
+  assert.deepEqual(checkOpportunityRequest(ok), { ok: true });
+  // a player forged the message: opposition flags written by a non-GM author
+  assert.equal(checkOpportunityRequest({ ...ok, authorIsGM: false, data: card({ opportunities: 99 }) }).reason, "invalid");
+  assert.equal(checkOpportunityRequest({ ...ok, actorId: "other" }).reason, "invalid");
+  assert.equal(checkOpportunityRequest({ ...ok, ownActorId: null }).reason, "invalid");
+  assert.equal(checkOpportunityRequest({ ...ok, data: card({ opposition: false }) }).reason, "invalid");
+  assert.equal(checkOpportunityRequest({ ...ok, data: card({ opportunitiesUsed: 2 }) }).reason, "taken");
+  assert.equal(checkOpportunityRequest({ ...ok, latestId: "m2" }).reason, "expired");
+  assert.deepEqual(checkOpportunityRequest({ ...ok, actorId: undefined }), { ok: true });
 });

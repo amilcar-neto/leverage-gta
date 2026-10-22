@@ -271,10 +271,13 @@ const assetRow = (item) => ({
   id: item.id,
   name: item.name,
   note: item.system.note,
-  die: item.system.effectiveDie ?? item.system.die,
+  die: item.system.effectiveDie,
   duration: item.system.duration,
-  // A raised Asset (Opportunity, until the end of the scene) shows how many steps it went up.
-  durationLabel: t(LEVERAGE.assetDurations[item.system.duration]?.label ?? "") + (item.system.boost ? ` ▲${item.system.boost}` : "")
+  // A raised Asset (Opportunity, until the end of the scene) shows how many steps it went up, on the tag and on the die.
+  boosted: item.system.boost > 0,
+  boostTip: item.system.boost ? t("LEVERAGE.Sheet.Assets.boostTip", { boost: item.system.boost }) : "",
+  durationLabel: t(LEVERAGE.assetDurations[item.system.duration]?.label ?? "")
+    + (item.system.boost ? ` ${t("LEVERAGE.Sheet.Assets.boostTag", { boost: item.system.boost })}` : "")
 });
 
 const jobRow = (item) => ({

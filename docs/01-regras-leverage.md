@@ -36,7 +36,8 @@ algumas destas regras; onde mudam, está avisado.
    é **botch**. Os "dois maiores" ficam só como atalho e como modo `classic` (`docs/08`).
 3. Cada 1 permite ao Fixer criar uma **Complication** (d6; mais 1s sobem para d8, d10…). Quando ele usa, **entrega 1
    Plot Point** ao jogador. É opção do Fixer, não automático. (L:625–640, L:680–690, L:3262–3300)
-4. Quando o Fixer rola 1, é uma **Opportunity** para os jogadores (alguns Talents usam isso).
+4. Quando o Fixer rola 1, é uma **Opportunity** para os jogadores (alguns Talents usam isso). **No sistema (regra da casa):** cada
+   uso custa **1 PP** (o livro cobra 1 PP por Complication afetada, vários passos na mesma = 1 PP); só vale no card mais recente da cena.
 5. **Depois da rolagem**, o jogador pode gastar **1 PP para somar mais um dado** dos que rolou (3 dados somados, 4
    com 2 PP…), limitado aos dados rolados e aos PP que tem. (L:660–668) No modo `prime` qualquer dado livre serve e o dado pago
    não pode ser o de efeito.

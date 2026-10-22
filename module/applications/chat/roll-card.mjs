@@ -6,7 +6,7 @@ import { LEVERAGE, SYSTEM_ID, hasRealPortrait } from "../../config.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { renderDie } from "../components/die.mjs";
 import { unresolvedOnes } from "../../dice/card-actions.mjs";
-import { opportunitiesLeft } from "../../dice/opportunity.mjs";
+import { latestOppositionId, opportunitiesLeft } from "../../dice/opportunity.mjs";
 import { dieCaption, dieState } from "../../dice/resolve-draft.mjs";
 import { normalizeRoll } from "../../dice/roll-core.mjs";
 import { cardHandlers, isCharacterOwner, isExpanded, latestRollOf, opportunityActorOf, registerCardSocket } from "./card-handlers.mjs";
@@ -148,7 +148,7 @@ function opportunityView(data, t, opportunity) {
     opportunityText: left ? (left === 1 ? t("LEVERAGE.Roll.opportunityOne") : t("LEVERAGE.Opposition.opportunities", { count: left })) : "",
     showOpportunity, opportunityDisabled: noPP,
     opportunityLabel: t("LEVERAGE.Roll.opportunityButton"),
-    opportunityTip: t(noPP ? "LEVERAGE.Roll.keepTipNoPlotPoints" : "LEVERAGE.Roll.opportunityTip")
+    opportunityTip: t(noPP ? "LEVERAGE.Roll.opportunityTipNoPlotPoints" : "LEVERAGE.Roll.opportunityTip")
   };
 }
 
@@ -302,9 +302,10 @@ function refreshLatest(actorUuid, except) {
   if (message && message.id !== except) ui.chat?.updateMessage(message);
 }
 
-/** Draws again the Fixer's cards that still have an Opportunity (their button depends on the viewer's Plot Points). */
+/** Draws again the card whose Opportunities still count (the newest opposition card of this scene): its button depends on the viewer's Plot Points. */
 function refreshOpportunityCards() {
-  for (const message of game.messages.contents) if (opportunitiesLeft(rollOf(message)) > 0) ui.chat?.updateMessage(message);
+  const message = game.messages.get(latestOppositionId(chatCards(), canvas?.scene?.id));
+  if (message && opportunitiesLeft(rollOf(message)) > 0) ui.chat?.updateMessage(message);
 }
 
 /** A Plot Point change redraws the actor's newest card; a new roll redraws the card that stopped being the newest. */

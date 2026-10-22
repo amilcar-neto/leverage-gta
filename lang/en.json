@@ -501,7 +501,9 @@
       },
       "Assets": {
         "delete": "Delete asset",
-        "open": "Open Asset"
+        "open": "Open Asset",
+        "boostTag": "▲{boost}",
+        "boostTip": "Raised {boost} step(s) by Opportunities until the end of the scene"
       },
       "Jobs": {
         "summary": "{jobs} JOBS · {unspent} TO TRAIN",
@@ -717,7 +719,8 @@
       "fixerComplicationTip": "{actor} lost: a Complication {die} from the winner's effect (one step lower if the loser's effect is the same or bigger).",
       "effectComplicationName": "Effect: {name}",
       "fixerComplicationName": "{name} vs {actor}",
-      "effectFailed": "Could not use the effect."
+      "effectFailed": "Could not use the effect.",
+      "opportunityTipNoPlotPoints": "No Plot Points to spend"
     },
     "Migration": {
       "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing.",
@@ -1238,7 +1241,8 @@
     "Opportunity": {
       "taken": "No Opportunity is left on this card.",
       "failed": "The Opportunity could not be used.",
-      "nothing": "There is no Complication to lower and no Asset to raise."
+      "nothing": "There is no Complication to lower and no Asset to raise.",
+      "expired": "This Opportunity expired: only the newest Fixer card of the scene counts, until the scene ends."
     }
   }
 }

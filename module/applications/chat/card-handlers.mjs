@@ -7,7 +7,7 @@ import { SYSTEM_ID } from "../../config.mjs";
 import { logger } from "../../logger.mjs";
 import { executeAsGM, registerSocketAction, requestAsGM } from "../../socket.mjs";
 import { applyComplication, keepNextDie, resolveHitches, resolveNextOne, undoHitchList, unresolvedOnes } from "../../dice/card-actions.mjs";
-import { opportunitiesLeft, undoLower, useOpportunity } from "../../dice/opportunity.mjs";
+import { checkOpportunityRequest, latestOppositionId, opportunitiesLeft, undoLower, useOpportunity } from "../../dice/opportunity.mjs";
 import { resolveActor, rollOf } from "../components/common.mjs";
 import { editTableList, readComplications } from "../../table-state.mjs";
 import { promptComplication, promptHitches } from "./complication-dialog.mjs";
@@ -153,8 +153,14 @@ function complication(message) {
   });
 }
 
-/** Puts the card back as it was (best effort: a failure is only logged). */
-const restoreCard = (message, data) => message.setFlag(SYSTEM_ID, "roll", data).catch((err) => logger.error("Could not put the card back", err));
+/**
+ * Puts the card back as it was (best effort: a failure is only logged). The `flags` object is replaced whole
+ * (`recursive: false`), not merged, so a field the later write added (such as `opportunityLog`) does not survive.
+ */
+const restoreCard = (message, data) => {
+  const flags = { ...foundry.utils.deepClone(message.flags ?? {}), [SYSTEM_ID]: { ...(message.flags?.[SYSTEM_ID] ?? {}), roll: data } };
+  return message.update({ flags }, { recursive: false }).catch((err) => logger.error("Could not put the card back", err));
+};
 
 /**
  * Writes the activation of every open hitch. Runs on the processing Fixer inside the socket `packetQueue`, so two
@@ -251,15 +257,18 @@ const assetsOf = (actor) => actor.items.filter((i) => i.type === "asset").map((i
  * Complication (or the Asset boost), then the card, then takes the Plot Point; a failed step takes back the earlier ones.
  * @param {ChatMessage} message
  * @param {{kind: string, id?: string, assetId?: string}} choice
- * @param {string} actorId The player's character.
- * @param {User} user Who asked (must own the character; checked here, not trusted from the client).
- * @returns {Promise<{ok: boolean, reason?: "taken"|"invalid"|"noPlotPoints"|"error"}>}
+ * @param {string} [actorId] The character the client says it plays: only checked, the character is always the asker's own (`opportunityActorOf`).
+ * @param {User} user Who asked (the server's word, not the client's).
+ * @returns {Promise<{ok: boolean, reason?: "taken"|"expired"|"invalid"|"noPlotPoints"|"error"}>}
  */
 async function writeOpportunity(message, choice, actorId, user) {
   const data = rollOf(message);
-  const actor = game.actors.get(actorId);
-  if (!data || actor?.type !== "crew" || !isCharacterOwner(actor, user)) return { ok: false, reason: "invalid" };
-  if (!opportunitiesLeft(data)) return { ok: false, reason: "taken" };
+  const actor = opportunityActorOf(user);
+  const check = checkOpportunityRequest({
+    data, authorIsGM: Boolean(message.author?.isGM), ownActorId: actor?.id ?? null, actorId,
+    latestId: latestOppositionId(chatCards(), canvas?.scene?.id), messageId: message.id
+  });
+  if (!check.ok) return check;
   if (plotPointsOf(actor) < 1) return { ok: false, reason: "noPlotPoints" };
   const raising = choice?.kind === "raise";
   let result = null;
@@ -315,7 +324,7 @@ async function onUseOpportunityRequest({ messageId, choice, actorId }, userId) {
 /** Tells the player how it went (nothing when it worked: the card redraws). */
 function reportOpportunity(result) {
   if (result?.ok) return;
-  const key = { taken: "LEVERAGE.Opportunity.taken", noPlotPoints: "LEVERAGE.Roll.noPlotPoints" }[result?.reason] ?? "LEVERAGE.Opportunity.failed";
+  const key = { taken: "LEVERAGE.Opportunity.taken", expired: "LEVERAGE.Opportunity.expired", noPlotPoints: "LEVERAGE.Roll.noPlotPoints" }[result?.reason] ?? "LEVERAGE.Opportunity.failed";
   ui.notifications[result?.reason === "error" || !result ? "error" : "warn"](game.i18n.localize(key));
 }
 

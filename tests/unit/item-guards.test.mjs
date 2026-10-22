@@ -30,3 +30,9 @@ test("spent may go false to true (Train Up) but never back", () => {
   assert.deepEqual(protectedFieldsChanged(job(true), { system: { spent: true } }, player), ["system.spent"]);
   assert.deepEqual(protectedFieldsChanged(job(false), { system: { spent: false } }, player), ["system.spent"]);
 });
+
+test("an Asset's boost is Fixer-only (the Fixer's Opportunity write still passes)", () => {
+  assert.deepEqual(protectedFieldsChanged(asset, { system: { boost: 4 } }, player), ["system.boost"]);
+  assert.deepEqual(protectedFieldsChanged(asset, { "system.boost": 4 }, player), ["system.boost"]);
+  assert.deepEqual(protectedFieldsChanged(asset, { "system.boost": 1 }, gm), []);
+});
