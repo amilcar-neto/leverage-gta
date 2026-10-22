@@ -19,9 +19,9 @@ let saved = null;
 try {
   await login(page, env);
   saved = await page.evaluate(async () => {
-    const s = { wanted: game.settings.get("leverage-gta", "wanted"), job: game.settings.get("leverage-gta", "activeJob"), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
+    const s = { wanted: game.settings.get("leverage-gta", "wanted"), job: lvTestJob.snapshot(), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
     await game.settings.set("leverage-gta", "wanted", { city: "liberty", level: 3 });
-    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "" });
+    await lvTestJob.set({ name: "[TEST] Job", goal: "" });
     await game.settings.set("leverage-gta", "complications", [{ id: "c1", name: "[TEST] Alarm", die: 8 }]);
     ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary");
     const { openOppositionRoller } = await import(foundry.utils.getRoute("systems/leverage-gta/module/dice/opposition.mjs"));
@@ -90,7 +90,7 @@ try {
     foundry.applications.instances.get("leverage-opposition-roller")?.close();
     if (s) {
       await game.settings.set("leverage-gta", "wanted", s.wanted);
-      await game.settings.set("leverage-gta", "activeJob", s.job);
+      await lvTestJob.restore(s.job);
       await game.settings.set("leverage-gta", "complications", s.complications);
     }
   }, [FLAVOR, saved]).catch(() => {});

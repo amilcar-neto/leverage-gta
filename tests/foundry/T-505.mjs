@@ -98,17 +98,19 @@ async function prepare() {
 
 /** Snapshot of what the Fixer tools touch on every real Crew character, the settings and the chat. */
 const snapshot = () => page.evaluate(() => ({
-  settings: Object.fromEntries(["wanted", "activeJob", "globalTraits", "complications", "playersCanUnlock"].map((k) => [k, foundry.utils.deepClone(game.settings.get("leverage-gta", k))])),
+  settings: Object.fromEntries(["wanted", "globalTraits", "complications", "playersCanUnlock"].map((k) => [k, foundry.utils.deepClone(game.settings.get("leverage-gta", k))])),
   crew: game.actors.filter((a) => a.type === "crew" && !a.name.startsWith("[TEST]")).map((a) => ({
     id: a.id, pp: a.system.plotPoints.value, steps: a.system.money.steps, items: a.items.map((i) => i.toObject())
   })),
-  messages: game.messages.contents.map((m) => m.id)
+  messages: game.messages.contents.map((m) => m.id),
+  jobs: lvTestJob.snapshot()
 }));
 
 /** Puts the snapshot back and deletes every [TEST] document and the messages created since. */
 async function restore(snap) {
   await page.evaluate(async (s) => {
     for (const [k, v] of Object.entries(s.settings)) await game.settings.set("leverage-gta", k, v);
+    await lvTestJob.restore(s.jobs);
     for (const c of s.crew) {
       const actor = game.actors.get(c.id);
       if (!actor) continue;
@@ -146,7 +148,7 @@ try {
   await page.evaluate(prepare);
   await wait(500);
   const keys = await page.evaluate(() => Object.keys(game.leverage ?? {}).sort());
-  record("game.leverage exists with every group", keys.join() === "combat,job,jobTracker,money,openOppositionRoller,opposition,plotPoints,pool,rollPool,stars,traits", keys);
+  record("game.leverage exists with every group", keys.join() === "combat,job,jobTracker,money,openOppositionRoller,opposition,plotPoints,pool,rollPool,stars,table,traits", keys);
 
   /* ---- GM ---- */
   const gm = async (id) => {

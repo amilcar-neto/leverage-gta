@@ -246,10 +246,10 @@ console.log(traits.isLocked());   // false
 
 ## Job, cena e sessão (Mestre)
 
-`job.new(nome)` abre o Job (cada personagem recebe os Plot Points iniciais). `job.end({ name, total, shares })` paga a
+`job.new(nome)` cria um Item de mundo `job`, torna-o o ativo e dá os Plot Points iniciais a cada personagem. `job.get()` lê o Job ativo (`{ name, goal, complications, sceneTraits }`, como antes). `job.end({ name, total, shares })` paga a
 Equipe: `shares` é um objeto id da personagem para degraus, e sem ele o total é dividido por igual. Sem nome, ou com
 partes que somam mais que o total, avisa e não muda nada; uma parte que não cabe na escada de Grana também é avisada.
-`job.end` também limpa as Complications da mesa (os Traits globais ficam). `job.endScene()`
+`job.end` deixa o Job de mundo como Concluído (com o total) e liga o Job de cada ficha a ele; sem Job ativo, cria um Concluído para o histórico. `job.end` também limpa as Complications da mesa (os Traits globais ficam). `job.endScene()`
 remove os Assets de cena e limpa os Traits globais; Complications e Traços de Local ficam (passe `{ confirm: true }` para perguntar antes). `job.newSession()` devolve o Callback dos
 Jobs. `jobTracker.open()` abre o Rastreador.
 

@@ -36,7 +36,7 @@ const cardShot = async (page, id, name) => {
   const loc = page.locator(`#chat .chat-message[data-message-id="${id}"]`);
   if (await loc.count()) await loc.screenshot({ path: `tests/foundry/screenshots/playtest-card-${name}.png` });
 };
-const jobState = () => gm.evaluate((S) => ({ ...game.settings.get(S, "activeJob"), complications: game.settings.get(S, "complications"), sceneTraits: game.settings.get(S, "globalTraits") }), S);
+const jobState = () => gm.evaluate((S) => ({ ...lvTestJob.get(), complications: game.settings.get(S, "complications"), sceneTraits: game.settings.get(S, "globalTraits") }), S);
 
 await step("Sol creates a scene Asset (1 PP) with + Adicionar", async () => {
   await ensureSheet(rosa);

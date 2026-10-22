@@ -15,7 +15,7 @@ const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), 
 const S = "leverage-gta";
 const wait = (ms) => page.waitForTimeout(ms);
 const panel = page.locator("#leverage-scene-panel");
-const state = () => page.evaluate((s) => ({ traits: game.settings.get(s, "globalTraits"), complications: game.settings.get(s, "complications"), job: game.settings.get(s, "activeJob") }), S);
+const state = () => page.evaluate((s) => ({ traits: game.settings.get(s, "globalTraits"), complications: game.settings.get(s, "complications"), job: lvTestJob.get() }), S);
 let ids = null;
 let saved = null;
 let playerBrowser = null;
@@ -25,14 +25,14 @@ try {
   await login(page, env);
   const setup = await page.evaluate(async (s) => {
     const before = {
-      job: foundry.utils.deepClone(game.settings.get(s, "activeJob")),
+      job: lvTestJob.snapshot(),
       traits: foundry.utils.deepClone(game.settings.get(s, "globalTraits")),
       complications: foundry.utils.deepClone(game.settings.get(s, "complications")),
       collapsed: game.settings.get(s, "scenePanel.collapsed"),
       activeScene: game.scenes.active?.id ?? null
     };
     await game.settings.set(s, "scenePanel.collapsed", false);
-    await game.settings.set(s, "activeJob", { name: "", goal: "" });
+    await lvTestJob.set({ name: "", goal: "" });
     await game.settings.set(s, "globalTraits", []);
     await game.settings.set(s, "complications", []);
     const scene = await Scene.create({ name: "[TEST] L6 Scene" });
@@ -232,14 +232,14 @@ try {
   // ---- (5) End Job clears Complications, pays, creates Records
   const end = await page.evaluate(async ([crewId]) => {
     const ja = await import(foundry.utils.getRoute("systems/leverage-gta/module/applications/gm/job-actions.mjs"));
-    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] L6 Job", goal: "" });
+    await lvTestJob.set({ name: "[TEST] L6 Job", goal: "" });
     const crew = game.actors.get(crewId);
     const fake = [{ isGM: false, id: "fake", character: crew }];
     Object.defineProperty(game.users, "contents", { configurable: true, get: () => fake });
     let paid;
     try { paid = await ja.endJob({ name: "[TEST] L6 Record", total: 0, shares: { [crewId]: 0 } }); } finally { delete game.users.contents; }
     return {
-      paid, complications: game.settings.get("leverage-gta", "complications"), job: game.settings.get("leverage-gta", "activeJob"),
+      paid, complications: game.settings.get("leverage-gta", "complications"), job: lvTestJob.get(),
       records: crew.items.filter((i) => /L6 Record/.test(i.name)).length
     };
   }, [ids.crew]);
@@ -257,7 +257,7 @@ try {
     await page.evaluate(async ([s, before, made]) => {
       try { delete game.users.contents; } catch { /* not patched */ }
       if (before) {
-        await game.settings.set(s, "activeJob", before.job);
+        await lvTestJob.restore(before.job);
         await game.settings.set(s, "globalTraits", before.traits);
         await game.settings.set(s, "complications", before.complications);
         await game.settings.set(s, "scenePanel.collapsed", before.collapsed);

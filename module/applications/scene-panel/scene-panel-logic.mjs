@@ -16,7 +16,7 @@ function cleanList(list) {
  * Everything the strip draws. A global Trait has `place: ""` (the Fixer edits it in the strip); a Trait of a Location
  * carries the Location's name in `place` (read only here: it is edited on the Location sheet).
  * @param {object} input
- * @param {object} input.job `activeJob` setting value (only the goal is used).
+ * @param {object} input.job active Job `{name, goal}` (only the goal is used).
  * @param {object[]} input.globalTraits Traits that count in any scene.
  * @param {object[]} input.placeTraits Traits of the Locations of the viewed Scene (`{id, name, die, place}`).
  * @param {object[]} input.complications Complications of the table.

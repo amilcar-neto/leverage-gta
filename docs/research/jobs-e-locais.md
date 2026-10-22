@@ -171,7 +171,7 @@ export class HeistData extends foundry.abstract.TypeDataModel {
   }
 }
 
-// module/applications/gm/job-store.mjs (novo; unico ponto que conhece o armazenamento)
+// module/job-store.mjs (novo; unico ponto que conhece o armazenamento)
 export const activeHeist = () => game.items.find((i) => i.type === "heist" && i.system.status === "active") ?? null;
 export const readJob = () => normalizeJob(activeHeist()?.toObject().system ?? emptyJob()); // mesmo formato de hoje
 export async function saveJob(job) { const h = activeHeist(); if (h) await h.update({ "system.complications": job.complications, "system.sceneTraits": job.sceneTraits, "system.goal": job.goal, name: job.name }); }
@@ -301,7 +301,7 @@ Sugestão: nova **Fase 10 — Jobs como Itens e Locais ligados a Cenas**. Cada t
 
 ### Parte A. Job como Item de mundo
 
-- [ ] **J-01 Camada de armazenamento do Job.** Criar `module/applications/gm/job-store.mjs` com `readJob()`/`saveJob()`
+- [ ] **J-01 Camada de armazenamento do Job.** Criar `module/job-store.mjs` com `readJob()`/`saveJob()`
   (hoje sobre o setting `activeJob`), trocar as 4 leituras diretas (`scene-panel.mjs:67`, `tray.mjs:34`,
   `opposition-roller.mjs:127,166`) e as 5 escritas (`job-actions.mjs` x3, `job-tracker.mjs:109`, `card-handlers.mjs:133`) para
   usar só ela. *Pronto:* nenhum `readSetting("activeJob")`/`settings.set(…"activeJob"…)` fora do `job-store.mjs`; testes

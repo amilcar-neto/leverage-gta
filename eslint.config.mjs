@@ -30,5 +30,6 @@ export default [
       }
     },
     rules: { "no-unused-vars": ["error", { argsIgnorePattern: "^_" }] }
-  }
+  },
+  { files: ["tests/foundry/**"], languageOptions: { globals: { lvTestJob: "readonly" } } }
 ];

@@ -42,8 +42,8 @@ await step("GM builds scene, tokens, Job, stars, PP", async () => {
     await scene.view();
     // Job.
     await game.leverage.job.new("O Cofre do Moretti");
-    const job = game.settings.get(S, "activeJob");
-    await game.settings.set(S, "activeJob", {
+    const job = lvTestJob.get();
+    await lvTestJob.set({
       ...job, name: "O Cofre do Moretti: pegar o livro-caixa do cofre do segundo andar",
     });
     await game.settings.set(S, "complications", [{ id: "cx1", name: "Alarme Silencioso", die: 6 }, { id: "cx2", name: "Polícia a Caminho", die: 6 }]);
@@ -53,7 +53,7 @@ await step("GM builds scene, tokens, Job, stars, PP", async () => {
       const a = game.actors.getName(name);
       await a.update({ "system.plotPoints.value": 2 });
     }
-    return { scene: scene.id, job: game.settings.get(S, "activeJob").name, stars: game.leverage.stars.get() };
+    return { scene: scene.id, job: lvTestJob.get().name, stars: game.leverage.stars.get() };
   }, S);
 }, gm);
 

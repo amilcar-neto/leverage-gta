@@ -7,6 +7,7 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
+import { readJob } from "../../job-store.mjs";
 import { currentLocationTraits } from "../../scene-location.mjs";
 import { TABLE_LISTS } from "../../rules/table-entries.mjs";
 import { addTableEntry, readComplications, readGlobalTraits, removeTableEntry, setTableEntryDie } from "../../table-state.mjs";
@@ -78,7 +79,7 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       this.#focusInput ||= document.activeElement === input;
     }
     const view = buildScenePanel({
-      job: readSetting("activeJob", {}), globalTraits: readGlobalTraits(), placeTraits: currentLocationTraits(), complications: readComplications()
+      job: readJob(), globalTraits: readGlobalTraits(), placeTraits: currentLocationTraits(), complications: readComplications()
     });
     view.traits = withDiePicker(view.traits, this.#editing, LEVERAGE.dice);
     view.complications = withDiePicker(view.complications, this.#editing, LEVERAGE.dice);

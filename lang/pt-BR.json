@@ -187,6 +187,9 @@
           },
           "goal": {
             "label": "Objetivo"
+          },
+          "status": {
+            "label": "Status"
           }
         }
       },
@@ -290,9 +293,6 @@
       "thief": "Thief"
     },
     "Settings": {
-      "activeJob": {
-        "Name": "Job ativo"
-      },
       "cityScalesMenu": {
         "Label": "Editar escalas das cidades",
         "Name": "Escalas das cidades"
@@ -591,7 +591,9 @@
       "effectPlaceholder": "Nada escrito ainda.",
       "notesPlaceholder": "Sem anotações ainda.",
       "jobGoal": "Objetivo",
-      "jobGoalPlaceholder": "O que a equipe quer deste Job?"
+      "jobGoalPlaceholder": "O que a equipe quer deste Job?",
+      "jobStatus": "Status",
+      "payoutCrew": "Parte de cada personagem (degraus)"
     },
     "Roll": {
       "defaultFlavor": "rola a Pool",
@@ -626,7 +628,8 @@
       }
     },
     "Migration": {
-      "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar."
+      "failed": "Leverage: a migração dos dados do mundo falhou. Veja o console (F12) e faça backup do mundo antes de jogar.",
+      "unnamedJob": "Job sem nome"
     },
     "Socket": {
       "noGM": "Nenhum mestre conectado para processar esta ação."
@@ -655,7 +658,8 @@
           "one": "A Grana de {name} está cheia: {count} degrau da parte se perdeu.",
           "other": "A Grana de {name} está cheia: {count} degraus da parte se perderam."
         },
-        "openFailed": "Não foi possível abrir a janela. Veja o console."
+        "openFailed": "Não foi possível abrir a janela. Veja o console.",
+        "noPlannedJob": "Não há Job planejado. Crie um no diretório de Itens."
       },
       "Chat": {
         "speaker": "Mestre",
@@ -711,6 +715,16 @@
           "level": "Estrelas",
           "city": "Cidade",
           "confirm": "Definir"
+        },
+        "StartJob": {
+          "title": "Iniciar um Job planejado",
+          "pick": "Job planejado",
+          "confirm": "Iniciar"
+        },
+        "ReplaceJob": {
+          "title": "Trocar o Job ativo?",
+          "body": "\"{name}\" é o Job ativo. Iniciar outro devolve esse para planejado.",
+          "confirm": "Trocar"
         }
       }
     },
@@ -748,7 +762,6 @@
     "Tracker": {
       "title": "Rastreador do Job",
       "job": "Job",
-      "jobPlaceholder": "Nome do Job",
       "complications": "Complications",
       "crew": "Equipe",
       "noComplications": "Nenhuma Complication.",
@@ -763,7 +776,10 @@
       "money": "Grana",
       "plotPoints": "Plot Points",
       "goal": "Objetivo",
-      "goalPlaceholder": "O que a equipe quer deste Job?"
+      "goalPlaceholder": "O que a equipe quer deste Job?",
+      "noJob": "Nenhum Job ativo.",
+      "openJob": "Abrir a ficha do Job",
+      "startJob": "Iniciar"
     },
     "Api": {
       "noCrew": "Isso não é um personagem da Equipe.",
@@ -1085,6 +1101,11 @@
       "cancel": "Cancelar",
       "newTrait": "Novo Traço",
       "newComplication": "Nova Complication"
+    },
+    "JobStatus": {
+      "planned": "Planejado",
+      "active": "Ativo",
+      "done": "Concluído"
     }
   }
 }

@@ -34,6 +34,7 @@ leverage-gta/                       ← raiz do repositório = pasta do sistema 
 │   ├── enrichers.mjs               [[/pool …]] em diários e chat (opcional, fase final)
 │   ├── utils.mjs                   helpers pequenos e genéricos
 │   ├── scene-location.mjs          Locais da Cena vista, Traços de Local como Traços de cena, avisos de mudança
+│   ├── job-store.mjs               Única porta do Job (Item de mundo `job`): readJob, saveJob, createJob, startJob, ganchos de Item e visibilidade
 │   ├── table-state.mjs             Estado da mesa: Traits globais e Complications (única porta de leitura/escrita dos dois settings)
 │   ├── data/
 │   │   ├── fields.mjs              DieField e outros campos reutilizáveis
@@ -47,6 +48,7 @@ leverage-gta/                       ← raiz do repositório = pasta do sistema 
 │   ├── rules/
 │   │   ├── money.mjs               escada de Grana: degraus ↔ dados, preços, pagar, rolar
 │   │   ├── stars.mjs               escalas por cidade, Pool da polícia
+│   │   ├── jobs.mjs                Job de mundo: qual é o ativo, visibilidade, divisão do pagamento, dados da migração
 │   │   └── combat.mjs              dano (margem + arma), cobertura, colete, Wasted/Busted
 │   └── applications/
 │       ├── components/die.mjs      renderDie(): o único desenho de dado (helper Handlebars {{lvDie}})

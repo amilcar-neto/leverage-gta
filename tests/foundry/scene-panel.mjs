@@ -21,13 +21,13 @@ try {
   await login(page, env);
   saved = await page.evaluate(async (s) => {
     const before = {
-      job: foundry.utils.deepClone(game.settings.get(s, "activeJob")),
+      job: lvTestJob.snapshot(),
       traits: foundry.utils.deepClone(game.settings.get(s, "globalTraits")),
       complications: foundry.utils.deepClone(game.settings.get(s, "complications")),
       collapsed: game.settings.get(s, "scenePanel.collapsed")
     };
     await game.settings.set(s, "scenePanel.collapsed", false);
-    await game.settings.set(s, "activeJob", { name: "[TEST]", goal: "" });
+    await lvTestJob.set({ name: "[TEST]", goal: "" });
     await game.settings.set(s, "complications", [{ id: "tcx1", name: "[TEST] Cops on the way", die: 6 }]);
     await game.settings.set(s, "globalTraits", [{ id: "tst1", name: "[TEST] Dark Corners", die: 8 }]);
     return before;
@@ -74,7 +74,7 @@ try {
   await page.evaluate(async (s) => {
     await game.settings.set(s, "globalTraits", []);
     await game.settings.set(s, "complications", []);
-    await game.settings.set(s, "activeJob", { name: "", goal: "" });
+    await lvTestJob.set({ name: "", goal: "" });
   }, S);
   await page.waitForTimeout(800);
   record("empty state updates live", await panel.locator(".lv-sp.is-empty").count() === 1, await panel.innerText());
@@ -85,7 +85,7 @@ try {
   try {
     await page.evaluate(async ([s, before]) => {
       if (!before) return;
-      await game.settings.set(s, "activeJob", before.job);
+      await lvTestJob.restore(before.job);
       await game.settings.set(s, "globalTraits", before.traits);
       await game.settings.set(s, "complications", before.complications);
       await game.settings.set(s, "scenePanel.collapsed", before.collapsed);

@@ -184,9 +184,14 @@ dispara nada:
 
 Um **Job** é um golpe completo.
 
-- **Novo Job** (ferramentas do mestre): dá o nome, inicia o Job ativo, limpa as Complications antigas e dá os Plot
+- O Job é um **Item** do diretório de Itens (tipo Job). Ele tem estado **Planejado**, **Ativo** ou **Concluído**, objetivo, notas
+  e pagamento total. Só um fica ativo por vez. Um Job **Planejado** fica escondido dos jogadores na interface (diretório e ficha; o Foundry ainda entrega o dado ao navegador, então não é segredo forte); ao **iniciar** ele
+  passa a ser visível a todos (nome, objetivo e notas: não escreva segredos ali) e continua visível depois de concluído. Voltar um Job a Planejado
+  o esconde de novo. Crie os Jobs planejados no diretório e inicie-os pelo botão **Iniciar** do Rastreador. Novo Job e Iniciar pedem confirmação
+  quando já há um Job ativo (ele volta a Planejado).
+- **Novo Job** (ferramentas do mestre): cria o Job, o torna o ativo (o anterior volta a Planejado), limpa as Complications antigas e dá os Plot
   Points iniciais aos personagens que têm jogador.
-- **Rastreador do Job:** abre a janela com o nome e o objetivo do Job, as **Complications** (nome e dado; subir, descer,
+- **Rastreador do Job:** abre a janela com o Job ativo (clique no nome para abrir a ficha), o objetivo, as **Complications** (nome e dado; subir, descer,
   remover) e a **Equipe** (Vida, Colete, Grana e Plot Points de cada um, com − e +).
 
 ![Rastreador do Job](img/rastreador.png)
@@ -201,8 +206,8 @@ Complications valem em qualquer cena até o mestre removê-los. Todos veem; só 
 verde-água para criar um Trait e o **+** vermelho para criar uma Complication, clica no dado para trocá-lo (d4 a d12) e
 no **X** para remover. O lápis abre o Rastreador. Os Traços de um Local se editam na ficha do Local. A setinha à
 esquerda recolhe a faixa.
-- **Encerrar Job:** pede o nome, o rendimento total em degraus e a parte de cada um. Cria um Job no histórico de cada
-  ficha, soma a Grana, apaga os Assets de Job e limpa as Complications.
+- **Encerrar Job:** pede o nome, o rendimento total em degraus e a parte de cada um. O Job fica no diretório como Concluído, com o total pago e a parte de cada personagem (lista na ficha do Job), e cada
+  ficha ganha o Job no histórico (ligado a ele), soma a Grana, apaga os Assets de Job e limpa as Complications.
 - **Nova sessão:** devolve o **Callback** de todos os Jobs.
 - **Aba JOBS da ficha:** lista cada Job concluído com a parte do personagem. Marque o **Callback** para citar um Job
   (só marca e anuncia no chat; vale como um Plot Point gasto na rolagem, uma vez por Job por sessão, e a mesa aplica

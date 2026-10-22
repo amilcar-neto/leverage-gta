@@ -460,8 +460,9 @@ const job = {
    */
   new: (name) => jobActions.newJob(name),
   /**
-   * Ends the Job: pays the Crew, leaves a Job Item on each character, clears the active Job and the table's
-   * Complications (the global Traits stay until `endScene`). Fixer only.
+   * Ends the Job: pays the Crew, leaves a Record (Job Item) on each character and clears the table's Complications
+   * (the global Traits stay until `endScene`). The world Job stays in the Items directory as `done`, with the total
+   * payout and each character's share (`payout.crew`); with no active Job a done Job is created for the history. Fixer only.
    * @param {object} result
    * @param {string} result.name
    * @param {number} result.total Total payout in steps.

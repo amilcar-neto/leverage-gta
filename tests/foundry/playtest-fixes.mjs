@@ -19,7 +19,7 @@ try {
     const crew = await Actor.create({ name: "[TEST] Marco \"Bruto\" Silva da Costa Albuquerque Junior", type: "crew" });
     return { crew: crew.id };
   });
-  oldJob = await page.evaluate(() => foundry.utils.deepClone(game.settings.get("leverage-gta", "activeJob")));
+  oldJob = await page.evaluate(() => lvTestJob.snapshot());
 
   // 1. Blank Asset name
   await page.evaluate((id) => game.actors.get(id).sheet.render(true), ids.crew);
@@ -52,7 +52,7 @@ try {
   await page.evaluate((id) => game.actors.get(id).sheet.close(), ids.crew);
 
   // Goal + End Job dialog
-  await page.evaluate(() => game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "[TEST] Get the ledger" }));
+  await page.evaluate(() => lvTestJob.set({ name: "[TEST] Job", goal: "[TEST] Get the ledger" }));
   await page.waitForTimeout(800);
   await page.evaluate(() => { ui.controls.controls.leverage.tools.endJob.onChange(); });
   await page.locator(".lv-dialog form").waitFor({ timeout: 5000 });
@@ -68,7 +68,7 @@ try {
   await page.locator('.lv-dialog button[data-action="ok"]').click();
   await page.waitForTimeout(600);
   record("End Job blank name: dialog stays open and nothing changed", await page.locator(".lv-dialog form").count() === 1
-    && await page.evaluate(() => game.settings.get("leverage-gta", "activeJob").name === "[TEST] Job"));
+    && await page.evaluate(() => lvTestJob.get().name === "[TEST] Job"));
   await page.locator(".lv-dialog .header-control[data-action=close]").click();
   await page.waitForTimeout(500);
 
@@ -92,7 +92,7 @@ try {
   record("script ran without exceptions", false, String(error?.stack ?? error));
 } finally {
   await page.evaluate(async (args) => {
-    if (args.oldJob) await game.settings.set("leverage-gta", "activeJob", args.oldJob);
+    if (args.oldJob) await lvTestJob.restore(args.oldJob);
     for (const app of foundry.applications.instances.values()) if (app.id?.includes("tracker") || app.document?.name?.startsWith("[TEST]")) await app.close();
     await game.actors.get(args.ids?.crew)?.delete();
   }, { oldJob, ids }).catch(() => {});

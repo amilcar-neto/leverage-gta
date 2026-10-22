@@ -1,24 +1,9 @@
 /**
- * Pure helpers of the Job Tracker (docs/09): edits of the `activeJob` value `{ name, goal }`, and the stepper math of
- * the Crew rows. Complications and Traits are table state, see `rules/table-entries.mjs`. Nothing here touches Foundry
- * and nothing mutates its input; every function returns a new job.
+ * Pure helpers of the Job Tracker (docs/09): goal editing and the stepper math of the Crew rows. World Job rules are in
+ * `rules/jobs.mjs`; Complications and Traits are table state, see `rules/table-entries.mjs`. Nothing here touches Foundry
+ * and nothing mutates its input.
  */
-
-/**
- * Normalises a Job so its name and goal are strings. Other keys (old worlds kept lists here) are dropped.
- * @param {object} [job]
- * @returns {{name: string, goal: string}}
- */
-export function normalizeJob(job) {
-  return { name: String(job?.name ?? ""), goal: String(job?.goal ?? "") };
-}
-
-/**
- * @param {object} job
- * @param {string} name
- * @returns {{name: string, goal: string}} the Job with a new (trimmed) name
- */
-export const renameJob = (job, name) => ({ ...normalizeJob(job), name: String(name ?? "").trim() });
+import { normalizeJob } from "../../rules/jobs.mjs";
 
 /**
  * @param {object} job

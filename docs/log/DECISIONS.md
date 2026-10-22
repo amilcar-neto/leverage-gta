@@ -323,3 +323,33 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   7. O Rolador de oposição não ganhou grupo de Traits globais (só as Complications, como antes).
 - **Descartado:** manter o flag na Cena (pedia arrastar ou botão); ligar Complications ao Job (o mestre as carrega
   entre Jobs até remover).
+
+## Job como Item de mundo, tipo `job` único (J-01..J-07, 2026-10-22)
+
+- **Contexto:** executa a decisão do dono "Job enxuto" sobre `docs/research/jobs-e-locais.md` Parte A.
+- **Escolha:**
+  1. Um só tipo, `job`. O Item de mundo (`game.items`, sem Ator) é o Job do mestre; o embutido na ficha segue sendo o
+     Record por personagem (Callback, `spent`, `payout.share`, Training Up inalterados). Sem tipo `heist`.
+  2. Campos do Job: nome, `status` (`planned|active|done`), `goal`, `notes`, `payout.total`. `status` entrou no
+     esquema com inicial `planned`; Record antigo continua válido e o ignora. Sem Complications, Traços, NPCs, Locais.
+  3. Um `active` por vez: `startJob` põe os outros em `planned`; mudar o status à mão para `active` (cliente do
+     mestre) faz o mesmo. Se mesmo assim houver dois, vale o primeiro por `sort` e o console avisa uma vez.
+  4. Única porta: `module/job-store.mjs` (`readJob`, `saveJob`, `createJob`, `startJob`, ganchos).
+     `leverage.activeJobChanged` agora dispara em create/update/deleteItem de Job de mundo. `game.leverage.job.*` não mudou.
+  5. **Visibilidade (revista no review J):** o Job de mundo `planned` nasce com `ownership.default = NONE` (a trama futura
+     não vaza aos jogadores). Iniciar (`startJob`, ou trocar o status para `active` na ficha) sobe para OBSERVER, porque um
+     documento sem ao menos LIMITED não chega ao cliente do jogador; encerrar mantém OBSERVER; voltar a `planned` (inclusive
+     a demoção do ativo) volta a NONE. Regra pura em `rules/jobs.mjs` (`jobVisibility`). Um Job visível não guarda segredos
+     (nome, objetivo, notas e pagamento são lidos por todos; `docs/05` e `USO.md`). Testado com jogador: antes de iniciar ele não tem permissão LIMITED (fora do diretório, sem ficha); ao iniciar ganha OBSERVER ao vivo.
+     Limite do Foundry v14: o cliente do jogador recebe o documento mesmo com NONE (`game.items.get` o devolve), então o NONE esconde da
+     interface, não do console. Nada do Job planejado é segredo forte.
+     Um Record arrastado da ficha para o diretório de Itens vira Job de mundo limpo no `preCreateItem` (planned, NONE, sem
+     share/Callback/spent/vínculo); o `createJob` do sistema passa a opção `lvWorldJob` e não é normalizado.
+  6. `endJob`: o Job fica `done` com `payout.total` e o nome do diálogo, o Record de cada Crew leva
+     `flags.leverage-gta.jobUuid`, o chat usa `@UUID[Item.x]{nome}`. O Job de mundo guarda também a parte de cada Crew em `payout.crew` (`{actorUuid, name, share}`), mostrada na ficha do Job. Sem Job ativo (macro) cria um Job `done` para o histórico.
+  7. Migração 0.1.2: `activeJob` com nome ou objetivo vira Job `active` ("Job sem nome" se só houver objetivo) e o
+     setting é zerado; vazio não faz nada; pode rodar duas vezes. O setting segue registrado, sem uso.
+  8. Rastreador: o nome do Job virou botão que abre a ficha (renomear é na ficha); só o objetivo se edita ali.
+     "Novo Job" sempre aparece; "Iniciar" abre a lista dos planejados e fica desligado sem nenhum.
+- **Descartado:** tipo `heist` separado (a nota original); ownership LIMITED (jogador não leria o objetivo na faixa
+  da cena); pack de Jobs, ligações a NPCs/Locais/Cenas (J-08/J-09).

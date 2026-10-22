@@ -117,14 +117,24 @@ export class AssetSheet extends withProtectedFields(LeverageItemSheet) {
   }
 }
 
-/** Job: payout, callback and spent flags, rich notes. */
+/**
+ * Job. Embedded in a Crew sheet it is the Record (payout, callback and spent flags, rich notes). A world Job, the
+ * Fixer's own, shows status, goal, notes and the total payout instead.
+ */
 export class JobSheet extends withProtectedFields(LeverageItemSheet) {
   /** @override */
   static PARTS = partsFor("job");
 
   /** @override */
-  static DEFAULT_OPTIONS = { classes: ["job-sheet"], position: { width: 520, height: 480 } };
+  static DEFAULT_OPTIONS = { classes: ["job-sheet"], position: { width: 520, height: 580 } };
 
   /** @override */
   static RICH_FIELDS = ["notes"];
+
+  /** @override */
+  _prepareTypeContext(context) {
+    super._prepareTypeContext(context);
+    context.isRecord = this.document.isEmbedded;
+    context.statusChoices = LeverageItemSheet.choices(Object.keys(LEVERAGE.jobStatuses), (key) => t(LEVERAGE.jobStatuses[key].label));
+  }
 }

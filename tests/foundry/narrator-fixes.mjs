@@ -21,11 +21,11 @@ try {
   console.log("active layer:", await page.evaluate(() => canvas.activeLayer?.constructor?.name));
   await shot("01-controls");
 
-  savedJob = await page.evaluate(() => structuredClone(game.settings.get("leverage-gta", "activeJob")));
-  await page.evaluate(async () => { await game.settings.set("leverage-gta", "activeJob", { name: "", goal: "" }); });
+  savedJob = await page.evaluate(() => lvTestJob.snapshot());
+  await page.evaluate(async () => { await lvTestJob.set({ name: "", goal: "" }); });
   await page.evaluate(async () => { await game.leverage.jobTracker.open(); });
   await page.waitForTimeout(1200);
-  check("Tracker shows New Job button without a Job", (await page.locator("#leverage-job-tracker .lv-trk-start").count()) === 1);
+  check("Tracker shows New Job button without a Job", (await page.locator("#leverage-job-tracker [data-action=newJob]").count()) === 1);
   await shot("02-tracker-nojob");
   await page.evaluate(() => foundry.applications.instances.get("leverage-job-tracker")?.close());
 
@@ -96,7 +96,7 @@ try {
   await page.evaluate(async ({ job, scene }) => {
     for (const a of game.actors.filter((x) => x.name.startsWith("[TEST] "))) await a.delete();
     for (const s of game.scenes.filter((x) => x.name.startsWith("[TEST] "))) await s.delete();
-    if (job) await game.settings.set("leverage-gta", "activeJob", job);
+    if (job) await lvTestJob.restore(job);
     for (const m of game.messages.filter((x) => x.flags?.["leverage-gta"]?.roll?.opposition && Date.now() - x.timestamp < 300000)) await m.delete();
     if (scene) await game.scenes.get(scene)?.view();
   }, { job: savedJob, scene: prevSceneId }).catch((e) => console.log("cleanup", e.message));

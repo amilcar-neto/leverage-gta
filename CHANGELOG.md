@@ -4,6 +4,18 @@ Todas as mudanças importantes deste sistema ficam neste arquivo.
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa
 [versionamento semântico](https://semver.org/lang/pt-BR/).
 
+## [0.1.2] - 2026-10-22
+
+### Mudado
+- O Job ativo deixa de ser uma configuração escondida e passa a ser um Item de mundo do tipo Job, com estado
+  Planejado, Ativo ou Concluído, objetivo, notas e pagamento total. Um só fica ativo por vez; todos os jogadores o veem.
+- Rastreador: o nome do Job abre a ficha; botões Novo Job e Iniciar (lista dos planejados); estado "Nenhum Job ativo".
+- Encerrar Job mantém o Job no diretório como Concluído (com o total pago), liga o Job de cada ficha a ele e cita o Job
+  no chat com um link.
+
+### Migração
+- 0.1.2: o Job ativo guardado na configuração `activeJob` vira um Item Job ativo. Pode rodar duas vezes.
+
 ## [0.1.1] - 2026-10-21
 
 ### Mudado

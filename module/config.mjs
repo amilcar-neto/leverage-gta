@@ -210,6 +210,14 @@ export const LEVERAGE = Object.freeze({
   /** Opposition fallback when the GM has no dice (docs/02: 2d6). The only place that says "2d6". */
   defaultOppositionDice: Object.freeze([6, 6]),
   hooks: HOOKS,
+  /** Status of a world Job (docs/05): planned, the active one (only one at a time) and done. Labels are i18n keys. */
+  jobStatuses: Object.freeze({
+    planned: Object.freeze({ label: "LEVERAGE.JobStatus.planned" }),
+    active: Object.freeze({ label: "LEVERAGE.JobStatus.active" }),
+    done: Object.freeze({ label: "LEVERAGE.JobStatus.done" })
+  }),
+  /** Flag (under the system id) of a Record that holds the UUID of the world Job it came from. */
+  jobUuidFlag: "jobUuid",
   /** Item fields that only the Fixer changes once the Item exists (docs/05): an Asset's die and duration, a Job's payout share and spent flag. */
   protectedItemFields: Object.freeze({
     asset: Object.freeze(["system.die", "system.duration"]),

@@ -90,3 +90,9 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 
 ## L-06b: print do Rastreador (docs/USO.md)
 - **Baixa, aberto:** `docs/img/rastreador.png` (usado em `docs/USO.md`) pode estar desatualizado: o Rastreador agora só tem Objetivo e Complications, e Traits se criam na faixa da cena. Não foi regenerado; refazer o print quando der.
+
+## T-702: botões do mestre não respondem sem Cena vista (2026-10-22)
+
+- **O quê:** o Foundry v14 ignora cliques nas ferramentas da barra de controles quando `canvas.ready` é falso (nenhuma Cena vista). O T-702 falhava em "lock toggle" e no diálogo de estrelas por isso, não pelo Job (os controles não mudaram).
+- **Gravidade:** baixa (comportamento do núcleo; um mundo sem Cena vista não tem canvas).
+- **Resolvido:** o T-702 agora vê uma Cena antes de clicar. Nada a fazer pelo dono.

@@ -8,6 +8,8 @@
  */
 import { LEVERAGE } from "../../../config.mjs";
 import { buyAsset } from "./assets.mjs";
+import { isWorldJob } from "../../../rules/jobs.mjs";
+import { jobItemData } from "../../gm/job-actions.mjs";
 
 /** Mime prefix that tells `dragover` (which cannot read the payload) the type of the Item being dragged. */
 export const ITEM_MIME = "application/x-leverage-item-";
@@ -124,12 +126,27 @@ async function sortBefore(actor, item, target) {
   await actor.updateEmbeddedDocuments("Item", updates.map(({ target: t, update }) => ({ _id: t.id, ...update })));
 }
 
-/** Creation data for a copy of `item`, placed at the end of its list on `actor`. */
-function copyData(actor, item) {
+/**
+ * Source data for a copy of `item`. A world Job (the Fixer's, not embedded) becomes a proper Record, built the same
+ * way as when a Job ends (clean status, no share, link to the Job); anything else is a plain copy.
+ */
+function sourceData(item) {
+  if (isWorldJob(item)) {
+    const { name, system, uuid } = item;
+    const data = jobItemData(name, system.payout.total, 0, system.goal, uuid);
+    data.system.notes = system.notes;
+    return data;
+  }
   const data = item.toObject();
   delete data._id;
   delete data.folder;
   delete data.ownership;
+  return data;
+}
+
+/** Creation data for a copy of `item`, placed at the end of its list on `actor`. */
+function copyData(actor, item) {
+  const data = sourceData(item);
   const sorts = actor.items.filter((i) => i.type === item.type).map((i) => i.sort);
   data.sort = (sorts.length ? Math.max(...sorts) : 0) + CONST.SORT_INTEGER_DENSITY;
   return data;

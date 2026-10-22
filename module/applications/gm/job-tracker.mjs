@@ -1,6 +1,6 @@
 /**
  * Job Tracker (docs/09 "Rastreador do Job"), Fixer only: Job name and goal, the table's Complications and a Crew
- * overview (Life, Vest, Money, Plot Points with +/-). The Job (name, goal) lives in the world setting `activeJob`; the
+ * overview (Life, Vest, Money, Plot Points with +/-). The Job is the active world Job Item (`job-store.mjs`); the
  * Complications are table state (`table-state.mjs`, shared with the scene strip). Re-renders on
  * `leverage.activeJobChanged`, `leverage.tableStateChanged` and when a Crew actor changes.
  */
@@ -9,9 +9,10 @@ import { readSetting } from "../../data/fields.mjs";
 import { clampSteps } from "../../rules/money.mjs";
 import { renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
-import { crewActors, newJobDialog, readJob, writeJob } from "./job-actions.mjs";
+import { crewActors, newJobDialog, startJobDialog } from "./job-actions.mjs";
+import { activeJobItem, plannedJobs, readJob, saveJob } from "../../job-store.mjs";
 import { addTableEntry, readComplications, removeTableEntry, stepTableEntry } from "../../table-state.mjs";
-import { clampedAdd, renameJob, setJobGoal } from "./job-tracker-logic.mjs";
+import { clampedAdd, setJobGoal } from "./job-tracker-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -52,7 +53,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     tag: "div",
     window: { title: "LEVERAGE.Tracker.title", icon: "fa-solid fa-clipboard-list", resizable: true },
     position: { width: 600, height: "auto" },
-    actions: { newJob: () => newJobDialog(), add: JobTracker.#onAdd, remove: JobTracker.#onRemove, step: JobTracker.#onStep, adjust: JobTracker.#onAdjust }
+    actions: { newJob: () => newJobDialog(), startJob: () => startJobDialog(plannedJobs()), openJob: () => activeJobItem()?.sheet.render({ force: true }), add: JobTracker.#onAdd, remove: JobTracker.#onRemove, step: JobTracker.#onStep, adjust: JobTracker.#onAdjust }
   };
 
   /** @override */
@@ -64,9 +65,10 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
   async _prepareContext() {
     const job = readJob();
     return {
-      hasJob: Boolean(job.name),
+      hasJob: Boolean(activeJobItem()),
       name: job.name,
       goal: job.goal,
+      hasPlanned: plannedJobs().length > 0,
       complications: readComplications().map(entryRow),
       crew: crewActors().map(crewRow),
       rules: { life: Boolean(readSetting("houseRules.life", true)), money: Boolean(readSetting("houseRules.money", true)) }
@@ -92,8 +94,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
   _onRender(context, options) {
     super._onRender(context, options);
     const el = this.element;
-    el.querySelector('[name="jobName"]')?.addEventListener("change", (event) => this.#save(renameJob(readJob(), event.target.value)));
-    el.querySelector("[name=\"jobGoal\"]")?.addEventListener("change", (event) => this.#save(setJobGoal(readJob(), event.target.value)));
+    el.querySelector("[name=\"jobGoal\"]")?.addEventListener("change", (event) => this.#saveGoal(event.target.value));
     el.querySelector("[data-new-name]")?.addEventListener("keydown", (event) => {
       if (event.key !== "Enter") return;
       event.preventDefault();
@@ -108,10 +109,10 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     super._onClose(options);
   }
 
-  /** Writes the Job (GM only). */
-  async #save(job) {
+  /** Writes the goal of the active Job (GM only). */
+  async #saveGoal(goal) {
     if (!game.user.isGM) return ui.notifications.warn(t("LEVERAGE.GM.Warn.gmOnly"));
-    await writeJob(job);
+    await saveJob(setJobGoal(readJob(), goal));
   }
 
   /** Adds the Complication typed in the input. */

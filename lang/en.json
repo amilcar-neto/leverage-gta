@@ -187,6 +187,9 @@
           },
           "goal": {
             "label": "Goal"
+          },
+          "status": {
+            "label": "Status"
           }
         }
       },
@@ -290,9 +293,6 @@
       "thief": "Thief"
     },
     "Settings": {
-      "activeJob": {
-        "Name": "Active Job"
-      },
       "cityScalesMenu": {
         "Label": "Edit city scales",
         "Name": "City scales"
@@ -591,7 +591,9 @@
       "effectPlaceholder": "Nothing written yet.",
       "notesPlaceholder": "No notes yet.",
       "jobGoal": "Goal",
-      "jobGoalPlaceholder": "What does the Crew want from this Job?"
+      "jobGoalPlaceholder": "What does the Crew want from this Job?",
+      "jobStatus": "Status",
+      "payoutCrew": "Share of each character (steps)"
     },
     "Roll": {
       "defaultFlavor": "rolls the Pool",
@@ -626,7 +628,8 @@
       }
     },
     "Migration": {
-      "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing."
+      "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing.",
+      "unnamedJob": "Unnamed Job"
     },
     "Socket": {
       "noGM": "No GM is connected to process this action."
@@ -655,7 +658,8 @@
           "one": "{name}'s Money is full: {count} step of the share was lost.",
           "other": "{name}'s Money is full: {count} steps of the share were lost."
         },
-        "openFailed": "Could not open the window. See the console."
+        "openFailed": "Could not open the window. See the console.",
+        "noPlannedJob": "There is no planned Job. Create one in the Items directory."
       },
       "Chat": {
         "speaker": "GM",
@@ -711,6 +715,16 @@
           "level": "Stars",
           "city": "City",
           "confirm": "Set"
+        },
+        "StartJob": {
+          "title": "Start a planned Job",
+          "pick": "Planned Job",
+          "confirm": "Start"
+        },
+        "ReplaceJob": {
+          "title": "Replace the active Job?",
+          "body": "\"{name}\" is the active Job. Starting another one puts it back to planned.",
+          "confirm": "Replace"
         }
       }
     },
@@ -748,7 +762,6 @@
     "Tracker": {
       "title": "Job Tracker",
       "job": "Job",
-      "jobPlaceholder": "Job name",
       "complications": "Complications",
       "crew": "Crew",
       "noComplications": "No Complications.",
@@ -763,7 +776,10 @@
       "money": "Money",
       "plotPoints": "Plot Points",
       "goal": "Goal",
-      "goalPlaceholder": "What does the Crew want from this Job?"
+      "goalPlaceholder": "What does the Crew want from this Job?",
+      "noJob": "No active Job.",
+      "openJob": "Open the Job sheet",
+      "startJob": "Start"
     },
     "Api": {
       "noCrew": "That is not a Crew character.",
@@ -1085,6 +1101,11 @@
       "cancel": "Cancel",
       "newTrait": "New Trait",
       "newComplication": "New Complication"
+    },
+    "JobStatus": {
+      "planned": "Planned",
+      "active": "Active",
+      "done": "Done"
     }
   }
 }

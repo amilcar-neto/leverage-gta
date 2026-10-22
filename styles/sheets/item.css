@@ -362,3 +362,28 @@
   font-size: 13px;
 }
 
+
+/* ---- Job: share of each Crew character (read only) ---- */
+.leverage-gta.lv-item-sheet .lv-item-shares {
+  max-height: 96px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  list-style: none;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-share {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--lv-line, currentColor);
+  color: var(--lv-ink);
+  font-size: 16px;
+}
+
+.leverage-gta.lv-item-sheet .lv-item-share-name { flex: 1 1 0; min-width: 0; }
+
+.leverage-gta.lv-item-sheet .lv-item-share-steps { flex: none; font-weight: 700; font-variant-numeric: tabular-nums; }

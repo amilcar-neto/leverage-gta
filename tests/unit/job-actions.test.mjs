@@ -44,3 +44,8 @@ test("assetIdsOf and usedCallbackIds pick the right Items", () => {
   assert.deepEqual(assetIdsOf(items, "job"), ["b"]);
   assert.deepEqual(usedCallbackIds(items), ["d"]);
 });
+
+test("jobItemData links the Record to its world Job by a flag", () => {
+  const data = jobItemData("Heist", 6, 2, "", "Item.abc");
+  assert.deepEqual(data.flags, { "leverage-gta": { jobUuid: "Item.abc" } });
+});

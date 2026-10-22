@@ -12,7 +12,7 @@ const results = [];
 const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), detail: ok ? "" : JSON.stringify(detail) });
 const wait = (ms) => page.waitForTimeout(ms);
 const app = "#leverage-job-tracker";
-const job = () => page.evaluate(() => game.settings.get("leverage-gta", "activeJob"));
+const job = () => page.evaluate(() => lvTestJob.get());
 const complications = () => page.evaluate(() => game.settings.get("leverage-gta", "complications"));
 let saved = null;
 let actorId = null;
@@ -20,8 +20,8 @@ let actorId = null;
 try {
   await login(page, env);
   const setup = await page.evaluate(async () => {
-    const s = { job: foundry.utils.deepClone(game.settings.get("leverage-gta", "activeJob")), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
-    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "" });
+    const s = { job: lvTestJob.snapshot(), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
+    await lvTestJob.set({ name: "[TEST] Job", goal: "" });
     await game.settings.set("leverage-gta", "complications", []);
     const actor = await Actor.create({ name: "[TEST] Crew", type: "crew", ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER } });
     const { JobTracker } = await import(foundry.utils.getRoute("systems/leverage-gta/module/applications/gm/job-tracker.mjs"));
@@ -33,12 +33,16 @@ try {
   await page.locator(app).waitFor({ timeout: 8000 });
   await wait(500);
   record("window has the system root class", await page.locator(`${app}.leverage-gta .window-title`).count() === 1);
-  record("Job name shown", await page.locator(`${app} [name="jobName"]`).inputValue() === "[TEST] Job");
+  record("Job name shown", (await page.locator(`${app} .lv-trk-jobname-text`).textContent()).trim() === "[TEST] Job");
 
-  await page.locator(`${app} [name="jobName"]`).fill("[TEST] Renamed");
-  await page.locator(`${app} [name="jobName"]`).blur();
+  await page.locator(`${app} [name="jobGoal"]`).fill("[TEST] Goal");
+  await page.locator(`${app} [name="jobGoal"]`).blur();
   await wait(500);
-  record("Job name saved", (await job()).name === "[TEST] Renamed", await job());
+  record("Job goal saved to the Job Item", (await job()).goal === "[TEST] Goal", await job());
+  await page.locator(`${app} [data-action="openJob"]`).click();
+  await wait(800);
+  record("Clicking the Job name opens its sheet", await page.locator(".lv-item-sheet.job-sheet").count() === 1);
+  await page.evaluate(() => game.items.find((i) => i.type === "job" && !i.parent && i.system.status === "active")?.sheet.close());
 
   await page.locator(`${app} [data-new-name]`).fill("[TEST] Alarm");
   await page.locator(`${app} [data-action="add"]`).click();
@@ -95,7 +99,7 @@ try {
   await page.evaluate(async ([s, id]) => {
     foundry.applications.instances.get("leverage-job-tracker")?.close();
     if (s) {
-      await game.settings.set("leverage-gta", "activeJob", s.job);
+      await lvTestJob.restore(s.job);
       await game.settings.set("leverage-gta", "complications", s.complications);
     }
     if (id) await game.actors.get(id)?.delete();

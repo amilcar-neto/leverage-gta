@@ -101,6 +101,39 @@ export async function login(page, env) {
   await page.click('button[name="join"]');
   await page.waitForFunction(() => window.game?.ready === true, null, { timeout: 90000 });
   await page.waitForTimeout(1500);
+  await installJobHelpers(page);
+}
+
+/**
+ * Defines `window.lvTestJob` in the page, the test stand-in of the old `activeJob` setting now that the active Job is a
+ * world Item: `get()` reads `{name, goal}` of the active Job; `snapshot()` remembers the status of every world Job;
+ * `set({name, goal})` makes a new active Job (the others go back to planned; an empty name leaves none active);
+ * `restore(snapshot)` deletes the Jobs created since and puts the statuses back.
+ * @param {import("playwright").Page} page
+ */
+export async function installJobHelpers(page) {
+  await page.evaluate(() => {
+    const worldJobs = () => game.items.filter((i) => i.type === "job" && !i.parent);
+    window.lvTestJob = {
+      get: () => {
+        const job = worldJobs().find((i) => i.system.status === "active");
+        return job ? { name: job.name, goal: job.system.goal } : { name: "", goal: "" };
+      },
+      snapshot: () => worldJobs().map((i) => ({ id: i.id, status: i.system.status })),
+      set: async ({ name = "", goal = "" } = {}) => {
+        const active = worldJobs().filter((i) => i.system.status === "active");
+        if (active.length) await Item.updateDocuments(active.map((i) => ({ _id: i.id, "system.status": "planned" })));
+        if (name) await Item.create({ name, type: "job", system: { status: "active", goal }, ownership: { default: 2 } }, { lvWorldJob: true });
+      },
+      restore: async (snapshot = []) => {
+        const keep = new Set(snapshot.map((e) => e.id));
+        const extra = worldJobs().filter((i) => !keep.has(i.id)).map((i) => i.id);
+        if (extra.length) await Item.deleteDocuments(extra);
+        const updates = snapshot.filter((e) => game.items.get(e.id)?.system.status !== e.status).map((e) => ({ _id: e.id, "system.status": e.status }));
+        if (updates.length) await Item.updateDocuments(updates);
+      }
+    };
+  });
 }
 
 /**

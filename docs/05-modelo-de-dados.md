@@ -84,21 +84,28 @@ Ao entrar na Pool soma **d6** (`CONFIG.LEVERAGE.specialtyDie`).
 | `purchased` | Boolean | Comprado com Grana (para relatórios) |
 
 ### `job`
+Um tipo só, dois papéis. O Item **de mundo** (diretório de Itens, `game.items`, sem dono Ator) é o **Job do mestre**; o Item **embutido** na ficha de um Crew é o **Record** daquele Job (copiado ao encerrar). `status` só vale no Job de mundo; o Record o ignora.
+
 | Campo | Tipo | Notas |
 | --- | --- | --- |
-| `payout.total` | Integer ≥ 0 | Degraus que o Job rendeu à Equipe |
-| `payout.share` | Integer ≥ 0 | Degraus que este personagem recebeu (coluna `$`) |
-| `callbackUsed` | Boolean | Callback usado nesta sessão (o mestre zera em "Nova sessão") |
-| `spent` | Boolean | Gasto em evolução: não pode mais callback; aparece riscado com SPENT |
+| `status` | `planned · active · done` | Só no Job de mundo. Um `active` por vez (iniciar um põe os outros em `planned`). Record antigo recebe `planned` e ignora |
+| `goal` | String | Objetivo, uma linha (no Job de mundo e no Record) |
+| `payout.total` | Integer ≥ 0 | Degraus que o Job rendeu à Equipe (gravado ao encerrar) |
+| `payout.share` | Integer ≥ 0 | Só no Record: degraus que este personagem recebeu (coluna `$`) |
+| `payout.crew` | Array de `{ actorUuid, name, share }` | Só no Job de mundo: a parte de cada Crew, gravada ao encerrar. Vazio antes de encerrar |
+| `callbackUsed` | Boolean | Só no Record. Callback usado nesta sessão (o mestre zera em "Nova sessão") |
+| `spent` | Boolean | Só no Record. Gasto em evolução: não pode mais callback; aparece riscado com SPENT |
 | `sort` | (do Foundry) | ordem na lista |
 | `notes` | HTML | Cliente, alvo, resumo |
+
+O Record guarda a ligação ao Job de mundo em `flags.leverage-gta.jobUuid`. O Job de mundo `planned` nasce com `ownership.default = NONE` (a trama futura não vaza aos jogadores). Iniciar (`active`) sobe para OBSERVER (sem isso o Item nem chega ao cliente do jogador); encerrar mantém OBSERVER; voltar a `planned` volta a NONE. Quando visíveis, nome, objetivo, notas e pagamento são lidos por todos, então o Job **não guarda segredos**; só o mestre edita. O Job **não** guarda Complications nem Traits (são da mesa, `module/table-state.mjs`).
 
 ## Configurações de mundo com dados (detalhes em `docs/09`)
 
 - `wanted`: `{ city: "liberty", level: 0..5 }`
 - `cityScales`: `[{ id, name, levels: [[8,6],[10,6],[12,6],[12,12],[12,12,8]] }, …]` (padrão: as três cidades)
 - `prices`: `[{ id, label, dice: [6] }, …]` (padrão: tabela de `docs/02`)
-- `activeJob`: `{ name, goal }`. O Job é só nome e objetivo (vira Item numa fase seguinte).
+- `activeJob`: **aposentado** na 0.1.2 (o Job ativo é o Item de mundo `job` com `status: active`). O setting continua registrado só para a migração 0.1.2 ler e zerar; nada mais o lê.
 - `globalTraits` e `complications`: `[{ id, name, die }]` cada um, estado da mesa independente do Job e da Cena (começam em d6). Acesso só por `module/table-state.mjs`. Os Traços de uma cena vêm do Lugar (`system.scene` + `system.traits`), não de flag. Migração 0.1.1: `activeJob.complications` -> `complications`, `activeJob.sceneTraits` -> `globalTraits`; os flags de Traços da Cena foram descartados.
 - `playersCanUnlock`: Boolean (padrão `true`). A trava de cada ficha fica no flag do ator `flags.leverage-gta.sheetUnlocked` (ausente = travada).
 

@@ -1,9 +1,12 @@
 /**
  * World migration runner. Each entry in {@link MIGRATIONS} upgrades world data up to its `version`.
- * 0.1.0 was the first release (nothing to migrate); 0.1.1 moves the Job's Complications and scene Traits to the table state.
+ * 0.1.0 was the first release (nothing to migrate); 0.1.1 moves the Job's Complications and scene Traits to the table state;
+ * 0.1.2 turns the hidden `activeJob` setting into a world Job Item.
  */
 import { LEVERAGE, SYSTEM_ID } from "./config.mjs";
 import { logger } from "./logger.mjs";
+import { createJob, worldJobs } from "./job-store.mjs";
+import { legacyJobData } from "./rules/jobs.mjs";
 import { migrateTableState } from "./rules/table-entries.mjs";
 
 /**
@@ -31,11 +34,29 @@ export async function migrateTableStateWorld() {
 }
 
 /**
+ * 0.1.2: the active Job stopped being the hidden `activeJob` setting and became a world Item of type `job` with status
+ * `active`. A setting that holds a name or a goal creates that Item (an active Job is visible to the players) and is
+ * then cleared; an empty setting changes nothing, so a second run does nothing.
+ * @returns {Promise<void>}
+ */
+export async function migrateActiveJobWorld() {
+  const data = legacyJobData(game.settings.get(SYSTEM_ID, "activeJob"), game.i18n.localize("LEVERAGE.Migration.unnamedJob"));
+  if (!data) return;
+  const duplicate = worldJobs().some((i) => i.system.status === "active" && i.name === data.name);
+  if (!duplicate) await createJob({ ...data, status: "active" });
+  await game.settings.set(SYSTEM_ID, "activeJob", { name: "", goal: "" });
+  logger.info(`Migration 0.1.2: the active Job "${data.name}" is now a Job Item.`);
+}
+
+/**
  * Ordered migrations. Add `{ version: "0.2.0", run: async () => {...} }` to upgrade data from an older world.
  * Schema-level fixes of a single document belong in that DataModel's static `migrateData` instead.
  * @type {{version: string, run: () => Promise<void>}[]}
  */
-export const MIGRATIONS = [{ version: "0.1.1", run: migrateTableStateWorld }];
+export const MIGRATIONS = [
+  { version: "0.1.1", run: migrateTableStateWorld },
+  { version: "0.1.2", run: migrateActiveJobWorld }
+];
 
 /**
  * Compares two dotted numeric versions ("0.1.0" vs "0.10.2"). Missing parts count as 0.

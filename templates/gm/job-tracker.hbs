@@ -23,19 +23,23 @@
 </section>
 {{/inline}}
 <div class="lv-trk">
-  {{#if hasJob}}
-  <section class="lv-trk-sec">
-    <label class="lv-trk-title" for="lv-trk-job-name">{{localize "LEVERAGE.Tracker.job"}}</label>
-    <input type="text" id="lv-trk-job-name" class="lv-trk-input" name="jobName" maxlength="80" value="{{name}}" placeholder="{{localize "LEVERAGE.Tracker.jobPlaceholder"}}">
+  <section class="lv-trk-sec lv-trk-job">
+    {{#if hasJob}}
+    <h3 class="lv-trk-title">{{localize "LEVERAGE.Tracker.job"}}</h3>
+    <button type="button" class="lv-trk-jobname" data-action="openJob" title="{{name}} · {{localize "LEVERAGE.Tracker.openJob"}}">
+      <span class="lv-trk-jobname-text">{{name}}</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+    </button>
     <label class="lv-trk-title" for="lv-trk-job-goal">{{localize "LEVERAGE.Tracker.goal"}}</label>
     <input type="text" id="lv-trk-job-goal" class="lv-trk-input" name="jobGoal" maxlength="200" value="{{goal}}" title="{{goal}}" placeholder="{{localize "LEVERAGE.Tracker.goalPlaceholder"}}">
+    {{else}}
+    <h3 class="lv-trk-title">{{localize "LEVERAGE.Tracker.job"}}</h3>
+    <p class="lv-trk-empty">{{localize "LEVERAGE.Tracker.noJob"}}</p>
+    {{/if}}
+    <div class="lv-trk-jobbtns">
+      <button type="button" class="lv-config-btn{{#unless hasJob}} lv-config-btn--primary{{/unless}}" data-action="newJob"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{localize "LEVERAGE.GM.Tool.newJob"}}</button>
+      <button type="button" class="lv-config-btn" data-action="startJob"{{#unless hasPlanned}} disabled{{/unless}}><i class="fa-solid fa-play" aria-hidden="true"></i> {{localize "LEVERAGE.Tracker.startJob"}}</button>
+    </div>
   </section>
-
-  {{else}}
-  <section class="lv-trk-sec lv-trk-nojob">
-    <button type="button" class="lv-config-btn lv-config-btn--primary lv-trk-start" data-action="newJob"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{localize "LEVERAGE.GM.Tool.newJob"}}</button>
-  </section>
-  {{/if}}
   {{> entries rows=complications title="LEVERAGE.Tracker.complications" empty="LEVERAGE.Tracker.noComplications" placeholder="LEVERAGE.Tracker.newComplication"}}
 
   <section class="lv-trk-sec">

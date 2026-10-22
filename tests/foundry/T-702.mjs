@@ -15,6 +15,7 @@ const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), 
 const wait = (ms) => page.waitForTimeout(ms);
 const S = "leverage-gta";
 let saved = null;
+let jobSnap = null;
 let snap = [];
 let msgsBefore = [];
 const tool = (name) => page.locator(`button.tool[data-tool="${name}"]`);
@@ -28,8 +29,11 @@ const actorState = (id) => page.evaluate((i) => {
 
 try {
   await login(page, env);
+  // Core ignores scene-control clicks while no Scene is viewed (`canvas.ready` is false), so view one first (client-side only).
+  await page.evaluate(async () => { if (!canvas.ready) await game.scenes.contents.find((sc) => sc.name !== "Foundry Virtual Tabletop")?.view(); });
+  await page.waitForFunction(() => canvas.ready, null, { timeout: 15000 });
   const setup = await page.evaluate(async (s) => {
-    const saved = Object.fromEntries(["playersCanUnlock", "wanted", "activeJob"].map((k) => [k, foundry.utils.deepClone(game.settings.get(s, k))]));
+    const saved = Object.fromEntries(["playersCanUnlock", "wanted"].map((k) => [k, foundry.utils.deepClone(game.settings.get(s, k))]));
     const crew = game.actors.filter((a) => a.type === "crew");
     const others = crew.filter((a) => a.items.size > 0 && game.users.some((u) => !u.isGM && a.testUserPermission(u, "OWNER"))).length; // other played Crew with Items would be touched: skip then
     const snap = crew.map((a) => [a.id, a.system.plotPoints.value, a.system.money.steps]);
@@ -42,9 +46,10 @@ try {
       { name: "[TEST] Job asset", type: "asset", system: { duration: "job" } },
       { name: "[TEST] Old job", type: "job", system: { callbackUsed: true } }
     ]);
-    return { saved, others, id: actor.id, snap, msgs, jobPP: game.settings.get(s, "jobStartPlotPoints") };
+    return { saved, job: lvTestJob.snapshot(), others, id: actor.id, snap, msgs, jobPP: game.settings.get(s, "jobStartPlotPoints") };
   }, S);
   saved = setup.saved;
+  jobSnap = setup.job;
   snap = setup.snap;
   msgsBefore = setup.msgs;
   const alone = setup.others === 0;
@@ -116,12 +121,13 @@ try {
     await dialog.locator('button[data-action="ok"]').click();
     await wait(1000);
     const startPP = Number(setup.jobPP);
-    record("New Job sets activeJob", (await setting("activeJob")).name === "[TEST] Heist", await setting("activeJob"));
+    const activeJob = () => page.evaluate(() => lvTestJob.get());
+    record("New Job creates the active world Job", (await activeJob()).name === "[TEST] Heist", await activeJob());
     record("New Job keeps PP above the minimum (no sum)", (await actorState(setup.id)).pp === Math.max(2, startPP), await actorState(setup.id));
     const unplayed = await page.evaluate(() => game.actors.find((a) => a.name === "[TEST] Unplayed").system.plotPoints.value);
     record("New Job does not touch unplayed Crew", unplayed === 1, unplayed);
     await page.evaluate((id) => game.actors.get(id).update({ "system.plotPoints.value": 0 }), setup.id);
-    await page.evaluate(() => game.settings.set("leverage-gta", "activeJob", { ...game.settings.get("leverage-gta", "activeJob"), name: "" }));
+    await page.evaluate(() => lvTestJob.set({}));
     await tool("newJob").click();
     await dialog.waitFor({ timeout: 5000 });
     await dialog.locator('input[name="name"]').fill("[TEST] Heist");
@@ -136,12 +142,15 @@ try {
     await dialog.locator(`input[name="share-${setup.id}"]`).fill("2");
     await page.screenshot({ path: `${SHOTS}/T-702-endjob.png` });
     await dialog.locator('button[data-action="ok"]').click();
-    await page.waitForFunction(() => game.settings.get("leverage-gta", "activeJob").name === "", null, { timeout: 8000 }).catch(() => {});
+    await page.waitForFunction(() => lvTestJob.get().name === "", null, { timeout: 8000 }).catch(() => {});
     await wait(500);
     const end = await actorState(setup.id);
     const jobItem = end.items.find((i) => i.name === "[TEST] Heist");
     record("End Job: job Item, Money, Job Assets gone", jobItem?.payout.share === 2 && end.steps === 6 && !end.items.some((i) => i.name === "[TEST] Job asset"), end);
-    record("End Job clears activeJob", (await setting("activeJob")).name === "");
+    const done = await page.evaluate(() => { const j = game.items.find((i) => i.type === "job" && !i.parent && i.name === "[TEST] Heist" && i.system.status === "done"); return j && { total: j.system.payout.total }; });
+    record("End Job: no active Job; the world Job stays as done with the total", (await activeJob()).name === "" && done?.total === 2, done);
+    const linked = await page.evaluate((id) => { const rec = game.actors.get(id).items.find((i) => i.name === "[TEST] Heist"); const j = rec && fromUuidSync(rec.getFlag("leverage-gta", "jobUuid") ?? ""); return j?.type === "job" && !j.parent; }, setup.id);
+    record("End Job: the Record links back to the world Job", linked === true, linked);
   } else {
     record(`destructive tools skipped (${setup.others} other Crew with Items)`, true);
   }
@@ -151,7 +160,8 @@ try {
   record("run", false, err.message.split("\n").slice(0, 6).join(" | "));
   await page.screenshot({ path: `${SHOTS}/T-702-failure.png` }).catch(() => {});
 } finally {
-  await page.evaluate(async ([s, saved, snap, before]) => {
+  await page.evaluate(async ([s, saved, snap, before, jobs]) => {
+    await lvTestJob.restore(jobs);
     for (const a of game.actors.filter((x) => x.name.startsWith("[TEST]"))) await a.delete();
     for (const [id, pp, steps] of snap) {
       const a = game.actors.get(id);
@@ -163,7 +173,7 @@ try {
     const msgs = game.messages.filter((m) => !before.includes(m.id)).map((m) => m.id);
     if (msgs.length) await ChatMessage.deleteDocuments(msgs);
     if (saved) for (const [k, v] of Object.entries(saved)) await game.settings.set(s, k, v);
-  }, [S, saved, snap, msgsBefore]).catch(() => {});
+  }, [S, saved, snap, msgsBefore, jobSnap]).catch(() => {});
 }
 for (const r of results) console.log(`${r.ok ? "PASS" : "FAIL"} ${r.name}${r.detail ? ` ${r.detail}` : ""}`);
 await browser.close();

@@ -23,7 +23,7 @@ await step("world overview", async () => {
   const info = await gm.evaluate(() => ({
     actors: game.actors.map((a) => `${a.type}:${a.name}`),
     scene: game.scenes.active?.name,
-    job: game.settings.get("leverage-gta", "activeJob"),
+    job: lvTestJob.get(),
     users: game.users.map((u) => `${u.name}:${u.role}:${u.character?.name}`)
   }));
   await shot(gm, "gm-table");

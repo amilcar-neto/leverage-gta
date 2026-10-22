@@ -11,6 +11,7 @@ import {
 import { currentViewedLocations, locationTraitEntries } from "../../scene-location.mjs";
 import { isValidDie } from "../../dice/die.mjs";
 import { readSetting } from "../../data/fields.mjs";
+import { readJob } from "../../job-store.mjs";
 import { poolText } from "../../rules/stars.mjs";
 import { readComplications } from "../../table-state.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
@@ -174,7 +175,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
       },
       locations: sources.locations.map((l) => ({ name: l.name, sources: withState(l.sources, this.#picked) })),
       complications: withState(sources.complications, this.#picked),
-      job: readSetting("activeJob", { name: "" }).name,
+      job: readJob().name,
       pool: {
         count: dice.length, empty: !dice.length,
         dice: dice.map((d) => renderDie({ die: d.die, value: d.die, size: PREVIEW_DIE, title: `${d.label} · d${d.die}` })),

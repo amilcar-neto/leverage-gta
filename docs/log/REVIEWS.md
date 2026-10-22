@@ -91,3 +91,10 @@ Um resumo por revisão: tarefa ou fase, veredito, defeitos encontrados, o que fo
   no Foundry (L6-migration.mjs, passa 2x, `activeJob` fica só com name/goal). Nits feitos (chaves órfãs, API `game.leverage.table.*`).
 - Ficou: Rolador de oposição não oferece Traits globais (só Complications); print docs/img/rastreador.png desatualizado (ISSUES).
 - playtest-play/finale falham (botões do HUD não achados + crash do navegador): inconclusivo, registrado.
+
+## 2026-10-22 — Job como Item de mundo (J-01..J-07, J-10, R-FJ)
+- 2 bloqueiam: docs/05 corrompido (arquivo colado no meio da tabela) e divisão do pagamento por Crew esquecida (agora
+  `payout.crew` no Job de mundo, lista na ficha). 5 deveria: Jobs planejados vazavam trama (agora NONE até iniciar; no v14 o
+  NONE esconde só da interface, registrado), drag do Job para a ficha, T-702 (clique ignorado sem Cena vista: era do teste),
+  `demoteOthers` sem catch, confirmação/duplo clique em Novo Job. Bug real achado no teste: `startJobDialog` nunca iniciava.
+- Passam no Foundry real: J-flow, J-migration, T-703, phase1, T-702. Ficou: scene-panel.mjs (seletor v14 obsoleto).

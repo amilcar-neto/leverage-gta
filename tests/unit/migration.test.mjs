@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { compareVersions, pendingMigrations, migrateWorld, migrateTableStateWorld, MIGRATIONS } from "../../module/migration.mjs";
+import { compareVersions, pendingMigrations, migrateWorld, migrateTableStateWorld, migrateActiveJobWorld, MIGRATIONS } from "../../module/migration.mjs";
 
 test("compareVersions orders numerically, not lexically", () => {
   assert.ok(compareVersions("0.10.0", "0.9.9") > 0);
@@ -127,4 +127,51 @@ test("0.1.1 leaves a clean world alone", async () => {
   await migrateTableStateWorld();
   assert.equal(writes, 0);
   assert.deepEqual(store.complications, []);
+});
+
+test("0.1.2 is registered after 0.1.1", () => {
+  assert.deepEqual(pendingMigrations("0.1.0", "0.1.2").map((m) => m.version), ["0.1.1", "0.1.2"]);
+  assert.deepEqual(pendingMigrations("0.1.1", "0.1.2").map((m) => m.version), ["0.1.2"]);
+  assert.deepEqual(pendingMigrations("", "0.1.2"), []);
+});
+
+/** Fake world for 0.1.2: the `activeJob` setting and the world Items. */
+function jobWorld(activeJob, items = []) {
+  const store = { activeJob };
+  const created = [];
+  globalThis.CONST = { DOCUMENT_OWNERSHIP_LEVELS: { NONE: 0, OBSERVER: 2 } };
+  globalThis.Item = { create: async (data) => { created.push(data); items.push({ type: "job", name: data.name, system: data.system }); } };
+  globalThis.game = {
+    user: { isGM: true }, i18n: { localize: (k) => k },
+    settings: { get: (_s, k) => store[k], set: async (_s, k, v) => { store[k] = v; } },
+    items: Object.assign(items, { contents: items })
+  };
+  return { store, created };
+}
+
+test("0.1.2 turns the saved active Job into an active world Job and clears the setting", async () => {
+  const { store, created } = jobWorld({ name: "Heist", goal: "Ledger" });
+  await migrateActiveJobWorld();
+  assert.equal(created.length, 1);
+  assert.deepEqual(created[0].system, { status: "active", goal: "Ledger" });
+  assert.equal(created[0].ownership.default, 2);
+  assert.deepEqual(store.activeJob, { name: "", goal: "" });
+});
+
+test("0.1.2 is idempotent and leaves a world without an active Job alone", async () => {
+  const { created, store } = jobWorld({ name: "Heist", goal: "" });
+  await migrateActiveJobWorld();
+  await migrateActiveJobWorld();
+  assert.equal(created.length, 1);
+  const empty = jobWorld({ name: "", goal: "" });
+  await migrateActiveJobWorld();
+  assert.equal(empty.created.length, 0);
+  assert.equal(store.activeJob.name, "");
+});
+
+test("0.1.2 does not duplicate an active Job with the same name that already exists", async () => {
+  const { created, store } = jobWorld({ name: "Heist", goal: "" }, [{ type: "job", name: "Heist", system: { status: "active" } }]);
+  await migrateActiveJobWorld();
+  assert.equal(created.length, 0);
+  assert.equal(store.activeJob.name, "");
 });

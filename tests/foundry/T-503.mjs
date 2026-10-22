@@ -30,7 +30,7 @@ const snapshot = (arg) => {
   const el = document.querySelector(`.chat-message[data-message-id="${arg.messageId}"]`);
   const roll = msg.getFlag("leverage-gta", "roll");
   return {
-    roll, pp: game.actors.get(arg.actorId).system.plotPoints.value, job: game.settings.get("leverage-gta", "activeJob"), complications: game.settings.get("leverage-gta", "complications"),
+    roll, pp: game.actors.get(arg.actorId).system.plotPoints.value, job: lvTestJob.get(), complications: game.settings.get("leverage-gta", "complications"),
     total: el?.querySelector(".lv-roll-total-num")?.textContent.trim(),
     notes: [...(el?.querySelectorAll(".lv-roll-note") ?? [])].map((n) => n.textContent.trim()),
     ones: Boolean(el?.querySelector(".lv-roll-ones")),
@@ -58,8 +58,8 @@ try {
     const own = await make(player.id, actor);
     const viaGM = await make(game.user.id, second);
     const forged = await make(rival.id, victim);
-    const saved = { job: foundry.utils.deepClone(game.settings.get("leverage-gta", "activeJob")), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
-    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "" });
+    const saved = { job: lvTestJob.snapshot(), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
+    await lvTestJob.set({ name: "[TEST] Job", goal: "" });
     await game.settings.set("leverage-gta", "complications", []);
     ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary");
     return {
@@ -176,7 +176,7 @@ try {
     await game.users.getName("[TEST] Player")?.delete();
     await game.users.getName("[TEST] Rival")?.delete();
     if (saved) {
-      await game.settings.set("leverage-gta", "activeJob", saved.job);
+      await lvTestJob.restore(saved.job);
       await game.settings.set("leverage-gta", "complications", saved.complications);
     }
   }, savedJob).catch(() => {});

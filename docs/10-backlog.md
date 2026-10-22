@@ -148,7 +148,7 @@ Ajustes do dono em `docs/log/DECISIONS.md` (última seção) valem sobre as nota
 - [x] **L-01..L-06 Lugar escolhe a Cena** (L-01..L-06 feitas em 2026-10-21/22) (campo `scene` no Ator `location`, seletor na ficha; sem flag na Cena, sem
   arrastar, sem "Criar mapa"). L-06: remover Traços por flag da Cena e criar Traço/Complication globais pelo HUD do
   mestre. Ver DECISIONS (2026-10-21) + `jobs-e-locais.md` Parte B + R-FL. *Dep:* nenhuma.
-- [ ] **J-01..J-07, J-10, R-FJ Job como Item de mundo, tipo `job` único**, sem J-08/J-09 (`jobs-e-locais.md`, Parte A,
+- [x] **J-01..J-07, J-10, R-FJ Job como Item de mundo, tipo `job` único**, sem J-08/J-09 (`jobs-e-locais.md`, Parte A,
   com tipo único e Job enxuto: só nome, status, objetivo, notas e pagamento; Complications ficam globais e Traços na Cena, ver DECISIONS). *Dep:* nenhuma.
 - [ ] **T-1001..T-1016, R-F10, R-FINAL-2 Cortex Prime** (`docs/research/cortex-prime-upgrade.md`), com o fluxo do dono:
   card inativo + janela Escolher dados + lançar no card; resumido mostra só o decidido, expandido mostra tudo.

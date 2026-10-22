@@ -8,7 +8,8 @@ import { readSetting } from "../../data/fields.mjs";
 import { escapeHtml, requireGM, resolveActor } from "../components/common.mjs";
 import { t, tn } from "../components/i18n.mjs";
 import { isAnswer, requireTextField } from "../components/dialog-guard.mjs";
-import { normalizeJob } from "./job-tracker-logic.mjs";
+import { jobLink, payoutCrew } from "../../rules/jobs.mjs";
+import { activeJobItem, createJob, readJob, saveJob, startJob } from "../../job-store.mjs";
 import { clearComplications, clearGlobalTraits, readGlobalTraits } from "../../table-state.mjs";
 
 /* -------------------------------------------- */
@@ -56,10 +57,13 @@ export const toSteps = (value) => Math.max(0, Math.trunc(Number(value) || 0));
  * @param {number} total Steps the whole Crew was paid.
  * @param {number} share Steps for this character.
  * @param {string} [goal] Goal of the Job (copied from the active Job).
- * @returns {{name: string, type: "job", system: {goal: string, payout: {total: number, share: number}}}}
+ * @param {string} [jobUuid] UUID of the world Job this Record comes from (stored in a flag).
+ * @returns {{name: string, type: "job", system: {goal: string, payout: {total: number, share: number}}, flags?: object}}
  */
-export function jobItemData(name, total, share, goal = "") {
-  return { name, type: "job", system: { goal: String(goal ?? "").trim(), payout: { total: toSteps(total), share: toSteps(share) } } };
+export function jobItemData(name, total, share, goal = "", jobUuid = "") {
+  const data = { name, type: "job", system: { goal: String(goal ?? "").trim(), payout: { total: toSteps(total), share: toSteps(share) } } };
+  if (jobUuid) data.flags = { [SYSTEM_ID]: { [LEVERAGE.jobUuidFlag]: jobUuid } };
+  return data;
 }
 
 /**
@@ -106,20 +110,8 @@ function say(html) {
   return ChatMessage.create({ content: `<p class="lv-gm-note">${html}</p>`, speaker: { alias: t("LEVERAGE.GM.Chat.speaker") } });
 }
 
-/**
- * Reads the active Job (a normalised copy: name and goal). Its Complications are table state: `readComplications()`.
- * @returns {{name: string, goal: string}}
- */
-export const readJob = () => normalizeJob(readSetting("activeJob", emptyJob()));
-
-/**
- * Saves the Job (name and goal) to the world setting. GM only.
- * @param {object} job
- * @returns {Promise<void>}
- */
-export async function writeJob(job) {
-  await game.settings.set(SYSTEM_ID, "activeJob", normalizeJob(job));
-}
+/** The active Job `{name, goal}` and its saver live in `job-store.mjs`; re-exported for the API. */
+export { readJob, saveJob };
 
 /** Whether the Money house rule is on. */
 const moneyRuleOn = () => Boolean(readSetting("houseRules.money", true));
@@ -225,8 +217,24 @@ export async function endScene({ confirm = true } = {}) {
 }
 
 /**
- * Starts a Job: sets the active Job, clears the old Complications and raises each character to at least `jobStartPlotPoints`
- * Plot Points (the book: everybody has 1 to start the Job; Plot Points left over are kept, never added on top).
+ * Makes a world Job the active one (the others go back to planned), clears the old Complications and raises each
+ * character to at least `jobStartPlotPoints` Plot Points (the book: everybody has 1 to start the Job; Plot Points left
+ * over are kept, never added on top).
+ * @param {Item} item A world Job.
+ * @returns {Promise<boolean>} false when the user is not the GM
+ */
+export async function startPlannedJob(item) {
+  if (!requireGM()) return false;
+  await startJob(item);
+  await clearComplications();
+  const each = toSteps(readSetting("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints));
+  if (each) await Promise.all(crewActors().map((a) => a.addPlotPoints(Math.max(0, each - (a.system.plotPoints?.value ?? 0)))));
+  await say(t("LEVERAGE.GM.Chat.newJob", { name: jobLink(item.uuid, item.name), pp: tn("LEVERAGE.GM.Chat.plotPointCount", each) }));
+  return true;
+}
+
+/**
+ * Creates a world Job and starts it (see `startPlannedJob`).
  * @param {string} name
  * @param {string} [goal] Optional goal shown in the Tracker, the Scene Panel and the Job sheet.
  * @returns {Promise<boolean>} false when the name is empty or the user is not the GM
@@ -235,27 +243,87 @@ export async function newJob(name, goal = "") {
   if (!requireGM()) return false;
   const job = freshJob(name, goal);
   if (!job.name) return false;
-  await writeJob(job);
-  await clearComplications();
-  const each = toSteps(readSetting("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints));
-  if (each) await Promise.all(crewActors().map((a) => a.addPlotPoints(Math.max(0, each - (a.system.plotPoints?.value ?? 0)))));
-  await say(t("LEVERAGE.GM.Chat.newJob", { name: escapeHtml(job.name), pp: tn("LEVERAGE.GM.Chat.plotPointCount", each) }));
-  return true;
+  return startPlannedJob(await createJob(job));
+}
+
+/** True while a Job dialog is open or being applied: a second click on "New Job" / "Start" does nothing. */
+let jobDialogBusy = false;
+
+/**
+ * Runs a Job dialog flow once at a time (guards against a double click opening two dialogs and starting two Jobs).
+ * @param {() => Promise<boolean>} flow
+ * @returns {Promise<boolean>} false when another dialog flow is already running
+ */
+async function onceAtATime(flow) {
+  if (jobDialogBusy) return false;
+  jobDialogBusy = true;
+  try {
+    return await flow();
+  } finally {
+    jobDialogBusy = false;
+  }
+}
+
+/**
+ * Asks before the active Job is put back to planned by starting another one. Nothing to ask when no Job is active.
+ * @returns {Promise<boolean>} whether to go on
+ */
+async function confirmReplaceActive() {
+  const active = activeJobItem();
+  if (!active) return true;
+  return Boolean(await foundry.applications.api.DialogV2.confirm({
+    classes: ["leverage-gta", "lv-dialog"],
+    window: { title: t("LEVERAGE.GM.Dialog.ReplaceJob.title") },
+    content: `<p>${t("LEVERAGE.GM.Dialog.ReplaceJob.body", { name: escapeHtml(active.name) })}</p>`,
+    yes: { label: t("LEVERAGE.GM.Dialog.ReplaceJob.confirm") },
+    rejectClose: false
+  }));
+}
+
+/**
+ * Dialog that picks one of the planned Jobs, then starts it.
+ * @param {Item[]} planned Planned world Jobs.
+ * @returns {Promise<boolean>}
+ */
+export function startJobDialog(planned) {
+  return onceAtATime(() => pickAndStart(planned));
+}
+
+/** Body of `startJobDialog`. */
+async function pickAndStart(planned) {
+  if (!requireGM()) return false;
+  if (!planned.length) return ui.notifications.info(t("LEVERAGE.GM.Warn.noPlannedJob")) ?? false;
+  const options = planned.map((j, i) => `<option value="${j.id}"${i ? "" : " selected"}>${escapeHtml(j.name)}</option>`).join("");
+  const answer = await foundry.applications.api.DialogV2.prompt({
+    classes: ["leverage-gta", "lv-dialog"],
+    window: { title: t("LEVERAGE.GM.Dialog.StartJob.title") },
+    position: { width: 380 },
+    rejectClose: false,
+    content: `<div class="lv-dlg"><label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.StartJob.pick")}</span>
+      <select name="job">${options}</select></label></div>`,
+    ok: { label: t("LEVERAGE.GM.Dialog.StartJob.confirm"), callback: (_event, button) => ({ id: button.form.elements.job.value }) }
+  });
+  const item = isAnswer(answer) ? game.items.get(answer.id) : null;
+  return item && await confirmReplaceActive() ? startPlannedJob(item) : false;
 }
 
 /** Dialog asking the name of a new Job, then starts it. */
-export async function newJobDialog() {
+export function newJobDialog() {
+  return onceAtATime(askNewJob);
+}
+
+/** Body of `newJobDialog`. */
+async function askNewJob() {
   if (!requireGM()) return false;
-  const current = readJob();
   const answer = await foundry.applications.api.DialogV2.prompt({
     classes: ["leverage-gta", "lv-dialog"],
     window: { title: t("LEVERAGE.GM.Dialog.NewJob.title") },
     position: { width: 380 },
     rejectClose: false,
     content: `<div class="lv-dlg"><label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.NewJob.name")}</span>
-      <input type="text" name="name" autofocus maxlength="80" value="${escapeHtml(current.name)}"></label>
+      <input type="text" name="name" autofocus maxlength="80"></label>
       <label class="lv-dlg-field"><span>${t("LEVERAGE.GM.Dialog.NewJob.goal")}</span>
-      <input type="text" name="goal" maxlength="200" value="${escapeHtml(current.goal)}" placeholder="${escapeHtml(t("LEVERAGE.GM.Dialog.NewJob.goalPlaceholder"))}"></label></div>`,
+      <input type="text" name="goal" maxlength="200" placeholder="${escapeHtml(t("LEVERAGE.GM.Dialog.NewJob.goalPlaceholder"))}"></label></div>`,
     render: (_event, dialog) => requireTextField(dialog, "name", "LEVERAGE.GM.Warn.jobNameRequired"),
     ok: {
       label: t("LEVERAGE.GM.Dialog.NewJob.confirm"),
@@ -265,7 +333,7 @@ export async function newJobDialog() {
       }
     }
   });
-  return isAnswer(answer) && answer.name ? newJob(answer.name, answer.goal) : false;
+  return isAnswer(answer) && answer.name && await confirmReplaceActive() ? newJob(answer.name, answer.goal) : false;
 }
 
 /**
@@ -281,8 +349,9 @@ export function checkJobResult({ name, total, shares }, ids) {
 }
 
 /**
- * Ends the Job: creates a `job` Item with the payout on each character, adds the share to their Money, deletes
- * their `job` Assets, clears the active Job and its Complications. Nothing changes when the name is empty or the shares add up to more
+ * Ends the Job: the world Job stays in the directory as `done` with the total payout and the share of each character (`payout.crew`), and each character gets a Record
+ * (a `job` Item linked to it by a flag) with their share. Adds the share to their Money, deletes their `job` Assets and
+ * clears the Complications. Without an active Job (a macro) a done Job is created for the history. Nothing changes when the name is empty or the shares add up to more
  * than the total. A share that does not fit in a character's Money ladder is reported in a warning.
  * @param {{name: string, total: number, shares: Record<string, number>}} result `shares` by Crew actor id.
  * @returns {Promise<number>} characters paid (0 when refused)
@@ -296,11 +365,12 @@ export async function endJob({ name, total, shares }) {
     return 0;
   }
   name = name.trim();
-  const goal = readJob().goal;
+  const job = activeJobItem() ?? await createJob({ name, status: "done" });
+  const goal = job.system.goal;
   let paid = 0;
   for (const actor of crew) {
     const share = toSteps(shares?.[actor.id]);
-    await actor.createEmbeddedDocuments("Item", [jobItemData(name, total, share, goal)]);
+    await actor.createEmbeddedDocuments("Item", [jobItemData(name, total, share, goal, job.uuid)]);
     if (share && moneyRuleOn()) {
       const added = await actor.money.add(share);
       if (added < share) ui.notifications.warn(tn("LEVERAGE.GM.Warn.shareDidNotFit", share - added, { name: actor.name }));
@@ -309,9 +379,9 @@ export async function endJob({ name, total, shares }) {
     if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
     paid += 1;
   }
-  await writeJob(emptyJob());
+  await job.update({ name, "system.status": "done", "system.payout.total": toSteps(total), "system.payout.crew": payoutCrew(crew, shares) });
   await clearComplications();
-  await say(t("LEVERAGE.GM.Chat.endJob", { name: escapeHtml(name), total: toSteps(total) }));
+  await say(t("LEVERAGE.GM.Chat.endJob", { name: jobLink(job.uuid, name), total: toSteps(total) }));
   return paid;
 }
 

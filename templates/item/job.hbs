@@ -1,22 +1,47 @@
 <div class="lv-item-body">
+  {{#unless isRecord}}
+  <label class="lv-item-field">
+    <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.jobStatus"}}</span>
+    <span class="lv-item-select">
+      <select name="system.status" {{disabled readonly}}>{{selectOptions statusChoices selected=system.status}}</select>
+    </span>
+  </label>
+  {{/unless}}
   <label class="lv-item-field">
     <span class="lv-item-lbl lv-ellipsis">{{localize "LEVERAGE.ItemSheet.jobGoal"}}</span>
     <input type="text" class="lv-item-input" name="system.goal" maxlength="200" value="{{system.goal}}" title="{{system.goal}}" placeholder="{{localize "LEVERAGE.ItemSheet.jobGoalPlaceholder"}}" {{disabled readonly}}>
   </label>
-  <div class="lv-item-row">
+  {{#if isRecord}}
+    <div class="lv-item-row">
+      <label class="lv-item-field">
+        <span class="lv-item-lbl lv-ellipsis">{{localize "LEVERAGE.ItemSheet.payoutTotal"}}</span>
+        <input type="number" class="lv-item-input" name="system.payout.total" value="{{system.payout.total}}" min="0" step="1" {{disabled readonly}}>
+      </label>
+      <label class="lv-item-field">
+        <span class="lv-item-lbl lv-ellipsis">{{localize "LEVERAGE.ItemSheet.payoutShare"}}</span>
+        <input type="number" class="lv-item-input" name="system.payout.share" value="{{system.payout.share}}" min="0" step="1" {{#if readonly}}disabled{{else}}{{#unless canEditProtected}}disabled{{/unless}}{{/if}}>
+      </label>
+    </div>
+    <div class="lv-item-checks">
+      <label class="lv-item-check"><input type="checkbox" name="system.callbackUsed" {{checked system.callbackUsed}} {{disabled readonly}}><span>{{localize "LEVERAGE.ItemSheet.callbackUsed"}}</span></label>
+      <label class="lv-item-check"><input type="checkbox" name="system.spent" {{checked system.spent}} {{#if readonly}}disabled{{else}}{{#unless canEditProtected}}disabled{{/unless}}{{/if}}><span>{{localize "LEVERAGE.ItemSheet.spent"}}</span></label>
+    </div>
+  {{else}}
     <label class="lv-item-field">
       <span class="lv-item-lbl lv-ellipsis">{{localize "LEVERAGE.ItemSheet.payoutTotal"}}</span>
       <input type="number" class="lv-item-input" name="system.payout.total" value="{{system.payout.total}}" min="0" step="1" {{disabled readonly}}>
     </label>
-    <label class="lv-item-field">
-      <span class="lv-item-lbl lv-ellipsis">{{localize "LEVERAGE.ItemSheet.payoutShare"}}</span>
-      <input type="number" class="lv-item-input" name="system.payout.share" value="{{system.payout.share}}" min="0" step="1" {{#if readonly}}disabled{{else}}{{#unless canEditProtected}}disabled{{/unless}}{{/if}}>
-    </label>
-  </div>
-  <div class="lv-item-checks">
-    <label class="lv-item-check"><input type="checkbox" name="system.callbackUsed" {{checked system.callbackUsed}} {{disabled readonly}}><span>{{localize "LEVERAGE.ItemSheet.callbackUsed"}}</span></label>
-    <label class="lv-item-check"><input type="checkbox" name="system.spent" {{checked system.spent}} {{#if readonly}}disabled{{else}}{{#unless canEditProtected}}disabled{{/unless}}{{/if}}><span>{{localize "LEVERAGE.ItemSheet.spent"}}</span></label>
-  </div>
+    <div class="lv-item-field">
+      <span class="lv-item-lbl lv-ellipsis">{{localize "LEVERAGE.ItemSheet.payoutCrew"}}</span>
+      <ul class="lv-item-shares lv-scroll">
+        {{#each system.payout.crew}}
+        <li class="lv-item-share"><span class="lv-item-share-name lv-ellipsis" title="{{name}}">{{name}}</span><span class="lv-item-share-steps">{{share}}</span></li>
+        {{else}}
+        <li class="lv-item-share lv-item-empty">&mdash;</li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
   <div class="lv-item-field lv-item-grow">
     <span class="lv-item-lbl">{{localize "LEVERAGE.ItemSheet.jobNotes"}}</span>
     {{#if canEdit}}<prose-mirror class="lv-item-rich" name="system.notes" value="{{source.notes}}" document-uuid="{{item.uuid}}" toggled="true">{{#if enriched.notes}}{{{enriched.notes}}}{{else}}<p class="lv-item-empty">{{localize "LEVERAGE.ItemSheet.notesPlaceholder"}}</p>{{/if}}</prose-mirror>
