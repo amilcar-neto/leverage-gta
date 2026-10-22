@@ -76,6 +76,11 @@ Em ambos, crie a mensagem de chat com o card e as `flags` de `docs/05`.
 - **Dificuldade:** presets 2d4 (Very Easy), 2d6 (Easy), 2d8 (Challenging), 2d10 (Hard), 2d12 (Very Hard) em
   `LEVERAGE.difficulties`. A oposição do Fixer é **automática** por padrão (`rules.oppositionChoice = "auto"`: 2 maiores,
   sem janela); `"choose"` abre a janela para o mestre. Empate no total é do Fixer. Hitches do Fixer são Opportunities.
+  O Rolador tem a linha DIFICULDADE (Muito fácil 2d4 ... Muito difícil 2d12); os dados dela somam aos Traços/fontes
+  escolhidos. Fácil (2d6) é o padrão e não soma nada: é a oposição "nenhuma" que já vale quando nada é escolhido.
+  O card do Fixer guarda `total`, `effectDie` (maior dado sobrando, d4 se nada sobra), `hitches` e `opportunities`
+  (= hitches, `opportunitiesUsed: 0`) em `flags.leverage-gta.roll`; hitches nunca entram no total. Gastar Opportunities é a T-1010.
+  `rules.oppositionChoice = "choose"` ainda resolve automático (ver ISSUES).
 - Opcional: card de **disputa** (`versus` em `docs/05`) que liga a rolagem do jogador a um card do Fixer por `messageId`, mostra
   a margem, quem venceu e o sucesso heroico (+5 = +1 passo de efeito).
 

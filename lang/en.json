@@ -640,7 +640,19 @@
       "tag": {
         "scene": "Scene",
         "complication": "Complication"
-      }
+      },
+      "effect": "Effect",
+      "hitch": "Hitch",
+      "totalPaid": "Total +PP",
+      "hitchesOne": "{count} hitch",
+      "hitchesMany": "{count} hitches",
+      "botch": "Botch",
+      "pendingBadge": "Waiting for dice choice",
+      "chooseButton": "Choose dice",
+      "chooseTip": "Pick the two dice for the total and the effect die",
+      "chooseUnavailable": "The choose dice window is not available.",
+      "expandTip": "Show the whole roll",
+      "collapseTip": "Show only the result"
     },
     "Migration": {
       "failed": "Leverage: the world data migration failed. Check the console (F12) and back up your world before playing.",
@@ -772,7 +784,9 @@
       "clear": "Clear",
       "label": "Description",
       "labelPlaceholder": "What is the opposition doing?",
-      "roll": "Roll"
+      "roll": "Roll",
+      "difficulty": "Difficulty",
+      "opportunities": "{count} Opportunities"
     },
     "Tracker": {
       "title": "Job Tracker",
@@ -1128,6 +1142,33 @@
       "challenging": "Challenging",
       "hard": "Hard",
       "veryHard": "Very Hard"
+    },
+    "Resolve": {
+      "title": "Choose dice",
+      "total": "Total",
+      "totalPaid": "Total +PP",
+      "effect": "Effect",
+      "hitch": "Hitch",
+      "maxTotal": "Max total",
+      "maxEffect": "Max effect",
+      "offer": "+1 PP: add to total",
+      "offerBuy": "+1 PP",
+      "offerNo": "No",
+      "pp": "PP",
+      "spent": "Spent",
+      "botch": "Botch",
+      "confirm": "Roll to card",
+      "cancel": "Cancel",
+      "versusBeat": "Beats by {n}",
+      "versusFail": "Fails by {n}",
+      "missing": {
+        "label": "Missing: {what}",
+        "total": "total",
+        "effect": "effect"
+      },
+      "forbidden": "Only the character's player can choose these dice.",
+      "notPending": "This roll was already resolved.",
+      "invalid": "Invalid dice choice."
     }
   }
 }

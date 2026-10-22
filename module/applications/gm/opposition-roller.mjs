@@ -1,12 +1,12 @@
 /**
  * Opposition roller (docs/08 "Oposição", docs/09): the Fixer picks the opposition dice and rolls them. Sources: loose
- * dice (d4..d12 counters), "no opposition" (the default pool), the police Pool for the current stars, a gang, the selected NPC,
+ * dice (d4..d12 counters), a test difficulty (2d4..2d12; Easy = "no opposition"), "no opposition" (the default pool), the police Pool for the current stars, a gang, the selected NPC,
  * the Traits of a location and the Complications of the active Job. The roll itself is `rollOpposition`
  * (dice/opposition.mjs), which posts the "FIXER" card. State lives here (client only) and is never saved.
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import {
-  complicationSources, emptyCounts, gangDice, looseDice, npcSources, pickedDice, policeCity, policeDice, rollOpposition, stepCount
+  BASELINE_DIFFICULTY, complicationSources, difficultyDice, emptyCounts, gangDice, looseDice, npcSources, pickedDice, policeCity, policeDice, rollOpposition, stepCount
 } from "../../dice/opposition.mjs";
 import { currentViewedLocations, locationTraitEntries } from "../../scene-location.mjs";
 import { isValidDie } from "../../dice/die.mjs";
@@ -62,7 +62,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     position: { width: 460, height: "auto" },
     actions: {
       step: OppositionRoller.#onStep, noOpposition: OppositionRoller.#onNoOpposition, togglePolice: OppositionRoller.#onTogglePolice,
-      toggleGang: OppositionRoller.#onToggleGang, useNpcGang: OppositionRoller.#onUseNpcGang, toggle: OppositionRoller.#onToggle,
+      toggleGang: OppositionRoller.#onToggleGang, useNpcGang: OppositionRoller.#onUseNpcGang, toggle: OppositionRoller.#onToggle, difficulty: OppositionRoller.#onDifficulty,
       clear: OppositionRoller.#onClear, roll: OppositionRoller.#onRoll
     }
   };
@@ -94,6 +94,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   #police = false;
   #gang = { on: false, size: 3, die: 6 };
   #picked = new Set();
+  #difficulty = BASELINE_DIFFICULTY;
   #label = "";
   /** A roll is in flight (a double click or Enter + click must not post two cards). */
   #rolling = false;
@@ -146,6 +147,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     const label = (key) => t(`LEVERAGE.Opposition.${key}`);
     const groups = [sources.npcSources, ...sources.locations.map((l) => l.sources), sources.complications];
     const parts = [
+      ["difficulty", difficultyDice(this.#difficulty, label("difficulty"))],
       ["manual", looseDice(this.#counts, label("dieLabel"))],
       ["police", this.#police && this.#starsOn() ? policeDice(city, stars, label("police"), scales) : []],
       ["gang", this.#gang.on ? gangDice(this.#gang.size, this.#gang.die, label("gang")) : []],
@@ -163,6 +165,9 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     const dieOptions = LEVERAGE.dice.map((value) => ({ value, selected: value === this.#gang.die }));
     const npcGang = sources.npc?.system.gang;
     return {
+      difficulties: LEVERAGE.difficulties.map((d) => ({
+        key: d.key, label: t(`LEVERAGE.Difficulty.${d.key}`), dice: `${d.dice}d${d.size}`, on: d.key === this.#difficulty
+      })),
       counters: LEVERAGE.dice.map((die) => ({
         die, count: this.#counts[die],
         html: renderDie({ die, value: die, size: COUNTER_DIE, muted: this.#counts[die] === 0 })
@@ -271,12 +276,18 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     this.render();
   }
 
+  static #onDifficulty(event, target) {
+    this.#difficulty = target.dataset.key;
+    this.render();
+  }
+
   /** "No opposition": the Pool is exactly `LEVERAGE.defaultOppositionDice` (docs/02). */
   static #onNoOpposition() {
     this.#counts = LEVERAGE.defaultOppositionDice.reduce((counts, die) => stepCount(counts, die, 1), emptyCounts());
     this.#police = false;
     this.#gang = { ...this.#gang, on: false };
     this.#picked.clear();
+    this.#difficulty = BASELINE_DIFFICULTY;
     this.render();
   }
 
@@ -308,6 +319,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     this.#police = false;
     this.#gang = { ...this.#gang, on: false };
     this.#picked.clear();
+    this.#difficulty = BASELINE_DIFFICULTY;
     this.render();
   }
 

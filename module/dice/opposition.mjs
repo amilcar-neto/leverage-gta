@@ -9,6 +9,7 @@ import { isValidDie } from "./die.mjs";
 import { policePool } from "../rules/stars.mjs";
 import { t } from "../applications/components/i18n.mjs";
 import { buildRollData, evaluateDice } from "./roll-core.mjs";
+import { autoSelection, summarize } from "./prime-math.mjs";
 
 /** `kind` of the entries of an opposition roll. */
 export const OPPOSITION_KIND = "opposition";
@@ -150,6 +151,22 @@ export function pickedDice(groups, picked) {
   return groups.flat().filter((s) => picked.has(s.key)).map((s) => entry(s.key, s.label, s.die));
 }
 
+/** Difficulty that adds nothing by itself: Easy is the "no opposition" 2d6 the roll falls back to when nothing is chosen. */
+export const BASELINE_DIFFICULTY = "easy";
+
+/**
+ * Dice of a test difficulty (Cortex Prime, `LEVERAGE.difficulties`). The baseline difficulty (Easy, "no opposition")
+ * gives no dice of its own: it is the 2d6 used when nothing else is chosen, so the default roll is unchanged.
+ * @param {string} key Difficulty key.
+ * @param {string} label Chip name of its dice.
+ * @returns {OppositionDie[]}
+ */
+export function difficultyDice(key, label) {
+  const level = LEVERAGE.difficulties.find((d) => d.key === key);
+  if (!level || key === BASELINE_DIFFICULTY) return [];
+  return Array.from({ length: level.dice }, (_, i) => entry(`diff.${i}`, label, level.size));
+}
+
 /**
  * Normalises what `rollOpposition` receives: die sizes or `{die, label}` objects. Invalid dice are dropped; an empty
  * result is "no opposition" (2d6) and a single die is completed with one more d6 (docs/01: the Fixer rolls at least
@@ -170,7 +187,9 @@ export function normalizeDice(dice, defaultLabel) {
 
 /**
  * Roll data of an opposition card: a Pool roll without an actor, plus `opposition: true` and the `source` (which
- * shortcuts built the Pool; free text, for the card and macros).
+ * shortcuts built the Pool; free text, for the card and macros). The Fixer resolves automatically (docs/08): the two
+ * highest dice that are not hitches make the total, the biggest die left is the effect die (d4 if none), a tie is the
+ * Fixer's. Every hitch (a 1) is an Opportunity (`opportunities`, `opportunitiesUsed: 0`).
  * @param {object} input
  * @param {OppositionDie[]} input.dice
  * @param {number[]} input.values Face of each die.
@@ -181,7 +200,15 @@ export function normalizeDice(dice, defaultLabel) {
  * @returns {object}
  */
 export function buildOppositionData({ dice, values, name, flavor, source = "", npcUuid = "" }) {
-  const data = { ...buildRollData({ entries: dice, values, actorName: name, flavor }), opposition: true, source };
+  const base = buildRollData({ entries: dice, values, actorName: name, flavor });
+  const selection = autoSelection(base.entries);
+  const sum = summarize(base.entries, selection);
+  const entries = base.entries.map((e, i) => ({ ...e, kept: selection.total.includes(i), effect: selection.effect.includes(i) }));
+  const data = {
+    ...base, entries, keptCount: selection.total.length, total: sum.total, effectDie: sum.effectFaces,
+    selection: { total: selection.total, effect: selection.effect }, hitches: sum.hitches, botch: sum.botch,
+    opportunities: sum.hitches, opportunitiesUsed: 0, opposition: true, source
+  };
   return npcUuid ? { ...data, npcUuid } : data;
 }
 

@@ -2,7 +2,7 @@ import "./helpers/foundry-stub.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  buildOppositionData, policeCity, complicationSources, emptyCounts, gangDice, locationSources, looseDice, normalizeDice, npcSources,
+  buildOppositionData, difficultyDice, policeCity, complicationSources, emptyCounts, gangDice, locationSources, looseDice, normalizeDice, npcSources,
   pickedDice, policeDice, stepCount
 } from "../../module/dice/opposition.mjs";
 import { rollCardContext } from "../../module/applications/chat/roll-card.mjs";
@@ -119,4 +119,33 @@ test("the opposition card remembers the NPC it came from", () => {
   const dice = [{ ref: "a", label: "x", die: 6, kind: "opposition" }];
   assert.equal(buildOppositionData({ dice, values: [3], name: "FIXER", flavor: "", npcUuid: "Actor.n1" }).npcUuid, "Actor.n1");
   assert.equal("npcUuid" in buildOppositionData({ dice, values: [3], name: "FIXER", flavor: "" }), false);
+});
+
+test("difficulty dice: 2dX from the config; Easy adds nothing (it is the 2d6 fallback)", () => {
+  assert.deepEqual(difficultyDice("hard", "Diff").map((d) => d.die), [10, 10]);
+  assert.deepEqual(difficultyDice("veryEasy", "Diff").map((d) => d.die), [4, 4]);
+  assert.deepEqual(difficultyDice("easy", "Diff"), []);
+  assert.deepEqual(difficultyDice("nope", "Diff"), []);
+  assert.equal(new Set(difficultyDice("veryHard", "Diff").map((d) => d.ref)).size, 2);
+});
+
+test("Fixer resolves automatically: total, effect die, hitches become opportunities", () => {
+  const { dice } = normalizeDice([8, 6, 6, 4, 12], "Opp");
+  const data = buildOppositionData({ dice, values: [7, 1, 5, 1, 3], name: "FIXER", flavor: "" });
+  assert.equal(data.v, 2);
+  assert.equal(data.status, "resolved");
+  assert.equal(data.total, 12);
+  assert.equal(data.effectDie, 12);
+  assert.equal(data.hitches, 2);
+  assert.equal(data.opportunities, 2);
+  assert.equal(data.opportunitiesUsed, 0);
+  assert.deepEqual(data.entries.map((e) => e.effect), [false, false, false, false, true]);
+});
+
+test("Fixer effect die is d4 when nothing is left, and a botch totals 0", () => {
+  const two = normalizeDice([8, 6], "Opp").dice;
+  const plain = buildOppositionData({ dice: two, values: [4, 2], name: "F", flavor: "" });
+  assert.deepEqual([plain.total, plain.effectDie, plain.opportunities], [6, 4, 0]);
+  const botch = buildOppositionData({ dice: two, values: [1, 1], name: "F", flavor: "" });
+  assert.deepEqual([botch.total, botch.botch, botch.opportunities], [0, true, 2]);
 });

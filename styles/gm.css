@@ -46,6 +46,7 @@
 .leverage-gta .lv-opp-count { min-width: 20px; text-align: center; font-family: var(--lv-font-display); font-size: 18px; line-height: 1; }
 
 /* Shortcut chips */
+.leverage-gta .lv-opp-difficulties { display: flex; flex-wrap: wrap; gap: 6px; }
 .leverage-gta .lv-opp-shortcuts,
 .leverage-gta .lv-opp-gang { display: flex; align-items: center; gap: 6px; }
 

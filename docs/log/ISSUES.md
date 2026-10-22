@@ -96,3 +96,7 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - **O quê:** o Foundry v14 ignora cliques nas ferramentas da barra de controles quando `canvas.ready` é falso (nenhuma Cena vista). O T-702 falhava em "lock toggle" e no diálogo de estrelas por isso, não pelo Job (os controles não mudaram).
 - **Gravidade:** baixa (comportamento do núcleo; um mundo sem Cena vista não tem canvas).
 - **Resolvido:** o T-702 agora vê uma Cena antes de clicar. Nada a fazer pelo dono.
+
+## T-1009: oppositionChoice "choose" ainda automatico
+- Gravidade: baixa. O modo `choose` nao abre janela: o card do Fixer sai resolvido (2 maiores, efeito automatico).
+- Como fazer depois: em `rollOpposition`, com `rules.oppositionChoice = "choose"`, montar o roll como pending (`buildRollData` com `mode: "prime"`) e abrir `openResolveDice` para o mestre. Precisa confirmar que a janela aceita card de oposicao (sem ator) e que `opposition`/`source` sobrevivem a confirmacao. Nada exigido do dono.

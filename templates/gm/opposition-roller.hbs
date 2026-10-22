@@ -11,6 +11,17 @@
 {{/inline}}
 <div class="lv-opp">
   <section class="lv-opp-sec">
+    <h3 class="lv-opp-title">{{localize "LEVERAGE.Opposition.difficulty"}}</h3>
+    <div class="lv-opp-difficulties">
+      {{#each difficulties}}
+      <button type="button" class="lv-opp-chip{{#if on}} is-on{{/if}}" data-action="difficulty" data-key="{{key}}" aria-pressed="{{on}}" title="{{label}} · {{dice}}">
+        <span class="lv-opp-chip-name">{{label}}</span><span class="lv-opp-chip-dice">{{dice}}</span>
+      </button>
+      {{/each}}
+    </div>
+  </section>
+
+  <section class="lv-opp-sec">
     <h3 class="lv-opp-title">{{localize "LEVERAGE.Opposition.dice"}}</h3>
     <div class="lv-opp-counters">
       {{#each counters}}
