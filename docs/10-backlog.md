@@ -147,7 +147,7 @@ Ajustes do dono em `docs/log/DECISIONS.md` (última seção) valem sobre as nota
   sheet-structure, T-303, T-307-lock, T-401, T-505, T-702) para o comportamento atual. *Dep:* nenhuma.
 - [ ] **L-01..L-05 Local ligado à Cena por flag** (`docs/research/jobs-e-locais.md`, Parte B + R-FL). *Dep:* nenhuma.
 - [ ] **J-01..J-07, J-10, R-FJ Job como Item de mundo, tipo `job` único**, sem J-08/J-09 (`jobs-e-locais.md`, Parte A,
-  com o ajuste de tipo único e campos enxutos). *Dep:* nenhuma.
+  com tipo único e Job enxuto: só nome, status, objetivo, notas e pagamento; Complications ficam globais e Traços na Cena, ver DECISIONS). *Dep:* nenhuma.
 - [ ] **T-1001..T-1016, R-F10, R-FINAL-2 Cortex Prime** (`docs/research/cortex-prime-upgrade.md`), com o fluxo do dono:
   card inativo + janela Escolher dados + lançar no card; resumido mostra só o decidido, expandido mostra tudo.
   Ajustar T-1005..T-1007 a esse fluxo. *Dep:* J-04 (para `versus`/Opportunities usarem o Job novo).

@@ -253,3 +253,15 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
 - **Local ligado à Cena por flag: aprovado** como em `jobs-e-locais.md` (Parte B).
 - **Painel único do mestre: rejeitado.** Não implementar o P1.2 de `REVIEW-USABILIDADE.md`.
 - **Scripts antigos de `tests/foundry` com `traitsLocked`: atualizar** (tarefa T-1100).
+
+## Job enxuto: sem Traços de cena nem Complications dentro dele (dono, 2026-10-21)
+
+- **Contexto:** o dono lembrou que Job = o trampo da sessão; Traços e Complications parecem coisa de cena/lugar.
+- **Escolha:** o Item `job` de mundo guarda só nome, status (planned/active/done), objetivo, notas e pagamento (total e
+  parte de cada Crew no fim). **Traços de cena** ficam na Cena (flag, como já está desde o commit 601cfeb).
+  **Complications** continuam globais da mesa (setting de mundo, como hoje), sem ficar no Job; `endJob` segue limpando.
+- **Efeito no backlog:** J-01 vira camada só de nome/objetivo do Job ativo; J-05 migra só nome e objetivo; J-03 e J-07 sem
+  listas de Complications/Traços; o Rastreador continua mostrando as Complications a partir do estado global.
+  Substitui o campo `complications`/`sceneTraits` do esquema em `jobs-e-locais.md` A.4-1.
+- **Descartado:** Complications dentro do Job (somem do histórico só por não estarem lá); Complications na Cena (um mapa
+  abriga várias cenas narrativas, e a Complication vale entre cenas).
