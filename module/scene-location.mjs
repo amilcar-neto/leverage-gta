@@ -3,9 +3,10 @@
  * token on the Scene also counts. Pure functions plus two small readers of the Foundry globals (read lazily, so node
  * tests can import this file).
  */
-import { LEVERAGE, SYSTEM_ID } from "./config.mjs";
+import { LEVERAGE } from "./config.mjs";
 import { isValidDie } from "./dice/die.mjs";
-import { cleanEntries } from "./applications/gm/job-tracker-logic.mjs";
+import { cleanEntries } from "./rules/table-entries.mjs";
+import { readGlobalTraits } from "./table-state.mjs";
 
 /**
  * The Locations of a Scene: those whose `system.scene` is the Scene's UUID, then those with a token on it, no repeats.
@@ -49,14 +50,22 @@ export function locationTraitEntries(locations, isValid) {
 }
 
 /**
- * Scene Traits in play: those of the ACTIVE Scene (flag) plus those of the Locations of the VIEWED Scene.
- * (Transitional: the flag Traits go away with task L-06.)
- * @param {object[]} [flagTraits] Traits stored on a Scene flag
+ * Scene Traits in play: the global Traits (any scene) plus those of the Locations of the VIEWED Scene.
+ * @param {object[]} [globalTraits] Traits the Fixer keeps for the whole table
  * @param {object[]} locations
  * @param {(die: number) => boolean} isValid
  * @returns {{id: string, name: string, die: number}[]}
  */
-export const mergeSceneTraits = (flagTraits, locations, isValid) => [...cleanEntries(flagTraits), ...locationTraitEntries(locations, isValid)];
+export const mergeSceneTraits = (globalTraits, locations, isValid) => [...cleanEntries(globalTraits), ...locationTraitEntries(locations, isValid)];
+
+/**
+ * Trait dice of Locations, each marked with the name of its Location (`place`), for the scene strip.
+ * @param {object[]} locations
+ * @param {(die: number) => boolean} isValid
+ * @returns {{id: string, name: string, die: number, place: string}[]}
+ */
+export const locationTraitsWithPlace = (locations, isValid) =>
+  locations.flatMap((loc) => locationTraitEntries([loc], isValid).map((e) => ({ ...e, place: String(loc.name ?? "") })));
 
 /** The Scene being viewed by this client. */
 export const viewedScene = () => globalThis.canvas?.scene ?? globalThis.game?.scenes?.current ?? null;
@@ -69,16 +78,18 @@ export function currentViewedLocations() {
 
 /** @returns {{id: string, name: string, die: number}[]} Every Scene Trait in play now (see `mergeSceneTraits`). */
 export function currentSceneTraits() {
-  const flag = globalThis.game?.scenes?.active?.getFlag(SYSTEM_ID, LEVERAGE.sceneTraitsFlag);
-  return mergeSceneTraits(flag, currentViewedLocations(), isValidDie);
+  return mergeSceneTraits(readGlobalTraits(), currentViewedLocations(), isValidDie);
 }
+
+/** @returns {{id: string, name: string, die: number, place: string}[]} Traits of the Locations of the viewed Scene, with the Location's name. */
+export const currentLocationTraits = () => locationTraitsWithPlace(currentViewedLocations(), isValidDie);
 
 /**
  * Tells the open windows (scene strip, Pool menu, opposition roller) that the Locations in view may have changed:
- * a Location was edited, a Location token came or went, or a Scene changed (those hooks are in `gm/scene-traits.mjs`; `canvasReady` is heard by each window). Call once from `ready`.
+ * a Location was edited or deleted, or a Location token came or went. A change of the viewed Scene is heard by each window through `canvasReady`. Call once from `ready`.
  */
 export function registerSceneLocationHooks() {
-  const notify = () => Hooks.callAll(LEVERAGE.hooks.activeJobChanged);
+  const notify = () => Hooks.callAll(LEVERAGE.hooks.tableStateChanged);
   const isLocation = (actor) => actor?.type === "location";
   const viewedUuid = () => viewedScene()?.uuid ?? null;
   /** True when the Location points at (or has a token on) the viewed Scene. */

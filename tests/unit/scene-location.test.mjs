@@ -1,6 +1,7 @@
+import "./helpers/foundry-stub.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { locationTraitEntries, mergeSceneTraits, viewedLocations } from "../../module/scene-location.mjs";
+import { locationTraitEntries, locationTraitsWithPlace, mergeSceneTraits, viewedLocations } from "../../module/scene-location.mjs";
 
 const loc = (id, scene = "") => ({ id, type: "location", system: { scene, traits: [] } });
 const scene = { uuid: "Scene.a" };
@@ -47,7 +48,12 @@ test("locationTraitEntries: repeated names get distinct ids; same name on two Lo
   assert.equal(new Set(all.map((e) => e.id)).size, 2);
 });
 
-test("mergeSceneTraits: flag Traits first, then Location Traits", () => {
-  const merged = mergeSceneTraits([{ id: "f", name: "Flag", die: 6 }], [withTraits([{ name: "Loc", die: 8 }])], ok);
-  assert.deepEqual(merged.map((e) => e.name), ["Flag", "Loc"]);
+test("mergeSceneTraits: global Traits first, then Location Traits", () => {
+  const merged = mergeSceneTraits([{ id: "f", name: "Global", die: 6 }], [withTraits([{ name: "Loc", die: 8 }])], ok);
+  assert.deepEqual(merged.map((e) => e.name), ["Global", "Loc"]);
+});
+
+test("locationTraitsWithPlace: each Trait carries the name of its Location", () => {
+  const entries = locationTraitsWithPlace([{ ...withTraits([{ name: "Fog", die: 8 }]), name: "Docks" }], ok);
+  assert.deepEqual(entries.map((e) => [e.name, e.place]), [["Fog", "Docks"]]);
 });

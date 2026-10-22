@@ -98,7 +98,7 @@ async function prepare() {
 
 /** Snapshot of what the Fixer tools touch on every real Crew character, the settings and the chat. */
 const snapshot = () => page.evaluate(() => ({
-  settings: Object.fromEntries(["wanted", "activeJob", "playersCanUnlock"].map((k) => [k, foundry.utils.deepClone(game.settings.get("leverage-gta", k))])),
+  settings: Object.fromEntries(["wanted", "activeJob", "globalTraits", "complications", "playersCanUnlock"].map((k) => [k, foundry.utils.deepClone(game.settings.get("leverage-gta", k))])),
   crew: game.actors.filter((a) => a.type === "crew" && !a.name.startsWith("[TEST]")).map((a) => ({
     id: a.id, pp: a.system.plotPoints.value, steps: a.system.money.steps, items: a.items.map((i) => i.toObject())
   })),
@@ -233,22 +233,22 @@ try {
   const downCards = await page.evaluate((ids) => game.messages.contents.filter((m) => !ids.includes(m.id) && m.getFlag("leverage-gta", "down")).map((m) => m.getFlag("leverage-gta", "down")), known);
   record("[gm] combat: damage line and a BUSTED card (flag down {kind,name})", downCards.length === 1 && downCards[0].kind === "busted" && downCards[0].name === "[TEST] Macro", downCards);
 
-  // Scene Traits of the active Job are valid refs, and the "too many" warning names the kind in the user's language.
+  // Global Traits (table state) are valid refs, and the "too many" warning names the kind in the user's language.
   const scene = await page.evaluate(async () => {
     const warns = [];
     const real = ui.notifications.warn;
     ui.notifications.warn = (m) => warns.push(m);
     const actor = game.actors.getName("[TEST] Macro");
-    const job = game.settings.get("leverage-gta", "activeJob");
-    await game.settings.set("leverage-gta", "activeJob", { ...job, sceneTraits: [{ id: "testscene", name: "[TEST] Fog", die: 10 }] });
+    const traits = foundry.utils.deepClone(game.settings.get("leverage-gta", "globalTraits"));
+    await game.settings.set("leverage-gta", "globalTraits", [...traits, { id: "testscene", name: "[TEST] Fog", die: 10 }]);
     const card = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "roles.thief", "scene:testscene"] });
     const unknown = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "roles.thief", "scene:nope"] });
     const twice = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "attributes.alertness", "roles.thief"] });
-    await game.settings.set("leverage-gta", "activeJob", job);
+    await game.settings.set("leverage-gta", "globalTraits", traits);
     ui.notifications.warn = real;
     return { faces: card?.getFlag("leverage-gta", "roll").entries.map((e) => e.faces), kinds: card?.getFlag("leverage-gta", "roll").entries.map((e) => e.kind), unknown, twice, warns };
   });
-  record("[gm] rollPool accepts scene:<id> from the active Job", scene.faces?.join() === "8,8,10" && scene.kinds[2] === "scene" && scene.unknown === null, scene);
+  record("[gm] rollPool accepts scene:<id> of a global Trait", scene.faces?.join() === "8,8,10" && scene.kinds[2] === "scene" && scene.unknown === null, scene);
   record("[gm] rollPool refuses two Attributes with a localized kind", scene.twice === null && scene.warns.length === 2 && !scene.warns.some((w) => w.includes("{kind}") || w.includes("attribute")), scene.warns);
 
   await reset(4, 1);

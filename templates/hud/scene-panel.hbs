@@ -1,3 +1,21 @@
+{{#*inline "entry"}}
+{{#if place}}
+<span class="lv-sp-chip lv-sp-chip--trait lv-sp-chip--place" data-tooltip="{{name}} · {{place}}"><i class="fa-solid fa-location-dot" aria-hidden="true"></i>{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name">{{name}}</span><span class="lv-sp-place">{{place}}</span></span>
+{{else if @root.isGM}}
+<span class="lv-sp-chip lv-sp-chip--{{kind}}{{#if editing}} is-editing{{/if}}" data-entry data-list="{{list}}" data-id="{{id}}" data-tooltip="{{name}}">
+  {{#if editing}}
+  <span class="lv-sp-picker">{{#each choices}}{{{lvDie die die=die size=@root.dieSize action="setDie" pressed=pressed label=label}}}{{/each}}</span>
+  <span class="lv-sp-name lv-sp-name--picking">{{name}}</span>
+  {{else}}
+  {{{lvDie die die=die size=@root.dieSize action="editDie" label=(localize "LEVERAGE.ScenePanel.editDie")}}}
+  <span class="lv-sp-name">{{name}}</span>
+  {{/if}}
+  <button type="button" class="lv-sp-x" data-action="removeEntry" aria-label="{{localize "LEVERAGE.Tracker.remove"}}" data-tooltip="{{localize "LEVERAGE.Tracker.remove"}}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+</span>
+{{else}}
+<span class="lv-sp-chip lv-sp-chip--{{kind}}" data-tooltip="{{name}}">{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name">{{name}}</span></span>
+{{/if}}
+{{/inline}}
 {{#if show}}
 <div class="lv-sp{{#if collapsed}} is-collapsed{{/if}}{{#if empty}} is-empty{{/if}}">
   <button type="button" class="lv-sp-toggle" data-action="toggleCollapsed" aria-expanded="{{#if collapsed}}false{{else}}true{{/if}}"
@@ -12,15 +30,25 @@
     <span class="lv-sp-chip lv-sp-chip--goal" data-tooltip="{{goal}}"><i class="fa-solid fa-bullseye" aria-hidden="true"></i><span class="lv-sp-name">{{goal}}</span></span>
     {{/if}}
 
-    {{#each sceneTraits}}
-    <{{@root.chipTag}} class="lv-sp-chip lv-sp-chip--trait" {{#if @root.isGM}}type="button" data-action="openTracker" {{/if}}data-tooltip="{{name}}">{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name">{{name}}</span></{{@root.chipTag}}>
-    {{/each}}
+    {{#each traits}}{{> entry kind="trait" list="globalTraits"}}{{/each}}
+    {{#each complications}}{{> entry kind="complication" list="complications"}}{{/each}}
 
-    {{#each complications}}
-    <{{@root.chipTag}} class="lv-sp-chip lv-sp-chip--complication" {{#if @root.isGM}}type="button" data-action="openTracker" {{/if}}data-tooltip="{{name}}">{{{lvDie die die=die size=@root.dieSize}}}<span class="lv-sp-name">{{name}}</span></{{@root.chipTag}}>
-    {{/each}}
-
-    {{#if isGM}}<button type="button" class="lv-sp-edit" data-action="openTracker" aria-label="{{localize "LEVERAGE.ScenePanel.edit"}}" data-tooltip="{{localize "LEVERAGE.ScenePanel.edit"}}"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>{{/if}}
+    {{#if isGM}}
+    {{#if adding}}
+    <span class="lv-sp-chip lv-sp-add lv-sp-chip--{{#if adding.isTrait}}trait{{else}}complication{{/if}}">
+      <input type="text" class="lv-sp-add-input" maxlength="80" placeholder="{{adding.placeholder}}" value="{{adding.draft}}" aria-label="{{adding.placeholder}}">
+      <button type="button" class="lv-sp-x" data-action="confirmAdd" aria-label="{{localize "LEVERAGE.Tracker.add"}}" data-tooltip="{{localize "LEVERAGE.Tracker.add"}}"><i class="fa-solid fa-check" aria-hidden="true"></i></button>
+      <button type="button" class="lv-sp-x" data-action="cancelAdd" aria-label="{{localize "LEVERAGE.ScenePanel.cancel"}}" data-tooltip="{{localize "LEVERAGE.ScenePanel.cancel"}}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    </span>
+    {{/if}}
+    <span class="lv-sp-controls">
+    {{#unless adding}}
+    <button type="button" class="lv-sp-plus lv-sp-plus--trait" data-action="startAdd" data-list="globalTraits" aria-label="{{localize "LEVERAGE.ScenePanel.addTrait"}}" data-tooltip="{{localize "LEVERAGE.ScenePanel.addTrait"}}"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+    <button type="button" class="lv-sp-plus lv-sp-plus--complication" data-action="startAdd" data-list="complications" aria-label="{{localize "LEVERAGE.ScenePanel.addComplication"}}" data-tooltip="{{localize "LEVERAGE.ScenePanel.addComplication"}}"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+    {{/unless}}
+    <button type="button" class="lv-sp-edit" data-action="openTracker" aria-label="{{localize "LEVERAGE.ScenePanel.edit"}}" data-tooltip="{{localize "LEVERAGE.ScenePanel.edit"}}"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
+    </span>
+    {{/if}}
   </div>
   {{/unless}}
 </div>

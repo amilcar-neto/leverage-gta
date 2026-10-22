@@ -12,6 +12,7 @@ import { currentViewedLocations, locationTraitEntries } from "../../scene-locati
 import { isValidDie } from "../../dice/die.mjs";
 import { readSetting } from "../../data/fields.mjs";
 import { poolText } from "../../rules/stars.mjs";
+import { readComplications } from "../../table-state.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
 import { renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
@@ -23,7 +24,7 @@ const COUNTER_DIE = LEVERAGE.dieGeometry.uses.oppositionCounter;
 const PREVIEW_DIE = LEVERAGE.dieGeometry.uses.oppositionPreview;
 
 /** Settings that change what the roller shows. */
-const WATCHED_SETTINGS = new Set(["wanted", "cityScales", "activeJob", "houseRules.stars"].map((key) => `${SYSTEM_ID}.${key}`));
+const WATCHED_SETTINGS = new Set(["wanted", "cityScales", "houseRules.stars"].map((key) => `${SYSTEM_ID}.${key}`));
 
 /** First selected token actor of the type, or null. */
 function selectedActor(type) {
@@ -134,7 +135,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
     const locations = sceneLocations().map((actor) => ({ name: actor.name, sources: locationPickables(actor) }));
     return {
       npc, npcSources: npc ? npcSources(npc.system, names) : [], locations,
-      complications: complicationSources(readSetting("activeJob", { complications: [] }))
+      complications: complicationSources(readComplications())
     };
   }
 
@@ -194,6 +195,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
       ["targetToken", Hooks.on("targetToken", () => this.#onSelectionChanged())],
       ["canvasReady", Hooks.on("canvasReady", refresh)],
       [LEVERAGE.hooks.activeJobChanged, Hooks.on(LEVERAGE.hooks.activeJobChanged, refresh)],
+      [LEVERAGE.hooks.tableStateChanged, Hooks.on(LEVERAGE.hooks.tableStateChanged, refresh)],
       ["updateSetting", Hooks.on("updateSetting", (setting) => WATCHED_SETTINGS.has(setting.key) && refresh())],
       ["updateActor", Hooks.on("updateActor", (actor) => actor.id === this.#npcId && refresh())]
     ];

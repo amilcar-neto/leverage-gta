@@ -61,21 +61,21 @@ export function resolveNextOne(data) {
 
 /**
  * Creates a Complication (a d6) or raises an existing one by one step (d6, d8, d10, d12; a d12 stays).
- * @param {{name?: string, complications?: {id: string, name: string, die: number}[]}} job `activeJob` setting value.
+ * @param {{id: string, name: string, die: number}[]} complications The table's Complications (`complications` setting).
  * @param {{id?: string|null, name?: string}} choice `id` of an existing Complication to raise, else a new one by `name`.
  * @param {() => string} newId Id generator for a new Complication.
- * @returns {{job: object, complication: {id: string, name: string, die: number}}|null} null for an empty name or unknown id
+ * @returns {{list: {id: string, name: string, die: number}[], complication: {id: string, name: string, die: number}}|null} the new list; null for an empty name or unknown id
  */
-export function applyComplication(job, choice, newId) {
-  const list = job?.complications ?? [];
+export function applyComplication(complications, choice, newId) {
+  const list = complications ?? [];
   if (choice.id) {
     const found = list.find((c) => c.id === choice.id);
     if (!found) return null;
     const complication = { ...found, die: stepUp(found.die) };
-    return { job: { ...job, complications: list.map((c) => (c.id === found.id ? complication : c)) }, complication };
+    return { list: list.map((c) => (c.id === found.id ? complication : c)), complication };
   }
   const name = String(choice.name ?? "").trim();
   if (!name) return null;
   const complication = { id: newId(), name, die: LEVERAGE.complicationDie };
-  return { job: { ...job, name: job?.name ?? "", complications: [...list, complication] }, complication };
+  return { list: [...list, complication], complication };
 }

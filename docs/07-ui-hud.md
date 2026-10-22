@@ -68,22 +68,26 @@ Alvo visual: `reference/mockups/png/hud-sidebar-open.png`, `hud-sidebar-collapse
   `onChange` do setting via `leverage.hudChanged`), com o mesmo pulso dos PP principais. Jogador não vê o painel.
 - Lógica pura em `hud-logic.mjs` (`plotPointRows`, `clampTablePoints`, `changedKeys`).
 
-## Faixa da cena (Traços de cena e Complications)
+## Faixa da cena (Traits, Traços de Lugar e Complications)
 
 Não faz parte do bloco do HUD: é uma faixa compacta e pública, logo abaixo do seletor de cenas do Foundry
 (`#scene-navigation`), alinhada à borda esquerda dele e no mesmo z-index do HUD (sobre a cena, sob as janelas).
 
-- **Traços de cena** pertencem à **cena ativa**: ficam no flag `flags.leverage-gta.sceneTraits` do documento Scene
-  (lista `{ id, name, die }`). Mudar a cena ativa muda os Traços mostrados. O mestre edita no Rastreador do Job; os
-  jogadores só leem.
-- **Complications** são do Job (`activeJob.complications`) e **compartilhadas entre cenas**.
+- **Traits globais** (setting `globalTraits`) e **Complications** (setting `complications`) são estado da mesa:
+  valem em qualquer cena, independentes do Job, até o mestre remover. Só o mestre cria, troca o dado e remove.
+- **Traços de Lugar**: os Traços dos Locais ligados à Cena vista (campo Cena do Local) entram na mesma faixa, com
+  ícone de pino e o nome do Local; sem X e sem edição de dado (edita-se na ficha do Local).
 - Cada item é um chip `[dado] nome` (borda verde-água para Traço, vermelha para Complication). Nome longo vira
-  reticências + tooltip. Para o mestre o chip e o lápis abrem o Rastreador do Job. O objetivo do Job aparece como um
-  chip com ícone de alvo, quando existe.
+  reticências + tooltip. O objetivo do Job aparece como um chip com ícone de alvo, quando existe.
+- **Edição do mestre**, na própria faixa: dois botões **+** (borda verde-água para Trait, vermelha para Complication)
+  abrem uma linha com campo de nome (Enter confirma, Esc cancela; o texto digitado e o foco sobrevivem a
+  atualizações da faixa); o dado do chip é um botão que troca o chip por d4..d12 para escolher (o dado atual fica em
+  destaque e o nome do chip continua visível); o **X** remove. O lápis abre o Rastreador do Job. Os dois **+** e o lápis
+  ficam num grupo único que nunca quebra de linha separado; o ícone de cada **+** tem a cor da sua lista.
 - Aba de recolher (por cliente): recolhida mostra só as contagens. Sem nada para mostrar fica só a aba, discreta, sem
   frase de ajuda.
-- Atualiza em tempo real (`updateScene` do flag e `leverage.activeJobChanged`). Mundos antigos: os Traços que estavam
-  em `activeJob.sceneTraits` migram para a cena ativa na primeira abertura do mestre.
+- Atualiza em tempo real (`leverage.tableStateChanged`, `leverage.activeJobChanged` e `canvasReady`). Mundos antigos:
+  a migração 0.1.1 move `activeJob.complications` e `activeJob.sceneTraits` para os settings da mesa.
 - Não há mais lista de Traços de NPCs/lugares nem a opção `scenePanel.showActorTraits`: o mestre consulta as fichas.
 
 ## Qualidade

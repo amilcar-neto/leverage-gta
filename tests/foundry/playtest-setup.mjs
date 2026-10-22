@@ -45,9 +45,9 @@ await step("GM builds scene, tokens, Job, stars, PP", async () => {
     const job = game.settings.get(S, "activeJob");
     await game.settings.set(S, "activeJob", {
       ...job, name: "O Cofre do Moretti: pegar o livro-caixa do cofre do segundo andar",
-      complications: [{ id: "cx1", name: "Alarme Silencioso", die: 6 }, { id: "cx2", name: "Polícia a Caminho", die: 6 }],
-      sceneTraits: [{ id: "st1", name: "Holofote Quebrado", die: 8 }, { id: "st2", name: "Chuva Forte", die: 6 }]
     });
+    await game.settings.set(S, "complications", [{ id: "cx1", name: "Alarme Silencioso", die: 6 }, { id: "cx2", name: "Polícia a Caminho", die: 6 }]);
+    await game.settings.set(S, "globalTraits", [{ id: "st1", name: "Holofote Quebrado", die: 8 }, { id: "st2", name: "Chuva Forte", die: 6 }]);
     await game.leverage.stars.set(1, "liberty");
     for (const name of ["Marisol \"Sol\" Quintero", "Marco \"Bruto\" Silva"]) {
       const a = game.actors.getName(name);

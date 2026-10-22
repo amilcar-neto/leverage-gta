@@ -3,8 +3,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { checkJobResult, freshJob, evenSplit, toSteps, jobItemData, assetIdsOf, usedCallbackIds } from "../../module/applications/gm/job-actions.mjs";
 
-test("freshJob drops Complications and scene Traits and trims the name", () => {
-  assert.deepEqual(freshJob("  Bank  "), { name: "Bank", goal: "", complications: [], sceneTraits: [] });
+test("freshJob has only a name and a goal, and trims the name", () => {
+  assert.deepEqual(freshJob("  Bank  "), { name: "Bank", goal: "" });
   assert.equal(freshJob(null).name, "");
 });
 

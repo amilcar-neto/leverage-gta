@@ -1,16 +1,41 @@
 /**
  * World migration runner. Each entry in {@link MIGRATIONS} upgrades world data up to its `version`.
- * 0.1.0 is the first release, so the list is empty: the runner only records the system version.
+ * 0.1.0 was the first release (nothing to migrate); 0.1.1 moves the Job's Complications and scene Traits to the table state.
  */
-import { SYSTEM_ID } from "./config.mjs";
+import { LEVERAGE, SYSTEM_ID } from "./config.mjs";
 import { logger } from "./logger.mjs";
+import { migrateTableState } from "./rules/table-entries.mjs";
+
+/**
+ * 0.1.1: Complications and Traits stopped belonging to the Job and to the Scene. `activeJob.complications` joins the
+ * `complications` setting, `activeJob.sceneTraits` joins `globalTraits`, and the per-Scene flag Traits are dropped
+ * (owner's decision: a scene's own Traits come from its Location now). Safe to run twice: entries join by id.
+ * @returns {Promise<void>}
+ */
+export async function migrateTableStateWorld() {
+  const get = (key) => game.settings.get(SYSTEM_ID, key);
+  const next = migrateTableState({ activeJob: get("activeJob"), globalTraits: get("globalTraits"), complications: get("complications") });
+  if (next.changed) {
+    await game.settings.set(SYSTEM_ID, "globalTraits", next.globalTraits);
+    await game.settings.set(SYSTEM_ID, "complications", next.complications);
+    await game.settings.set(SYSTEM_ID, "activeJob", next.activeJob);
+  }
+  let dropped = 0;
+  for (const scene of game.scenes ?? []) {
+    const old = scene.getFlag(SYSTEM_ID, LEVERAGE.legacySceneTraitsFlag);
+    if (old === undefined) continue;
+    dropped += Array.isArray(old) ? old.length : 0;
+    await scene.unsetFlag(SYSTEM_ID, LEVERAGE.legacySceneTraitsFlag);
+  }
+  if (dropped) logger.info(`Migration 0.1.1: dropped ${dropped} per-Scene Trait(s) (replaced by Location Traits).`);
+}
 
 /**
  * Ordered migrations. Add `{ version: "0.2.0", run: async () => {...} }` to upgrade data from an older world.
  * Schema-level fixes of a single document belong in that DataModel's static `migrateData` instead.
  * @type {{version: string, run: () => Promise<void>}[]}
  */
-export const MIGRATIONS = [];
+export const MIGRATIONS = [{ version: "0.1.1", run: migrateTableStateWorld }];
 
 /**
  * Compares two dotted numeric versions ("0.1.0" vs "0.10.2"). Missing parts count as 0.

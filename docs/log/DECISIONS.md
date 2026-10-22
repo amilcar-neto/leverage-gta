@@ -303,3 +303,23 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   3. Atualiza em tempo real para todos, com o mesmo pulso de hoje. Jogadores podem esconder pelas configurações de cliente.
 - **Efeito:** `docs/07` (seção Plot Points e "Mestre") passa a descrever isso; tarefa T-1101 no backlog.
 - **Descartado:** dar ao Fixer uma reserva com limite (bank do Prime); a pile do Prime já equivale ao marcador.
+
+## Traits e Complications globais da mesa; Traços por flag da Cena descartados (L-06, dono, 2026-10-21)
+
+- **Contexto:** executa a decisão "Traits e Complications globais no HUD do mestre; Lugar escolhe a Cena".
+- **Escolha:**
+  1. Dois settings escondidos, `globalTraits` e `complications` (`[{ id, name, die }]`), lidos e escritos só por
+     `module/table-state.mjs` (escritas em fila, só o mestre). Aviso novo: `leverage.tableStateChanged` (o
+     `activeJobChanged` ficou só para nome e objetivo do Job; telas que mostram os dois ouvem os dois).
+  2. O `activeJob` guarda só `{ name, goal }`. Descartados: `activeJob.complications` e `activeJob.sceneTraits`.
+  3. **Descartados por decisão do dono:** os Traços por flag da Cena (`flags.leverage-gta.sceneTraits`). A migração
+     0.1.1 apaga o flag das Cenas e **não** o converte. Já `activeJob.sceneTraits` virou `globalTraits` e
+     `activeJob.complications` virou `complications` (junta por id, sem repetir; pode rodar duas vezes).
+  4. Referências de Pool não mudam: `scene:<id>` (Trait global ou de Lugar) e o prefixo `job.` das Complications no
+     rolador de oposição, para não quebrar macros. `game.leverage.job.get()` continua devolvendo `complications` e
+     `sceneTraits` (globais mais Lugares da Cena vista).
+  5. `Encerrar cena` limpa os Traits globais; `Novo Job` e `Encerrar Job` limpam as Complications.
+  6. Rastreador do Job: só a lista de Complications (visível mesmo sem Job); Traits se criam na faixa da cena.
+  7. O Rolador de oposição não ganhou grupo de Traits globais (só as Complications, como antes).
+- **Descartado:** manter o flag na Cena (pedia arrastar ou botão); ligar Complications ao Job (o mestre as carrega
+  entre Jobs até remover).

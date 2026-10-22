@@ -52,7 +52,7 @@ try {
   await page.evaluate((id) => game.actors.get(id).sheet.close(), ids.crew);
 
   // Goal + End Job dialog
-  await page.evaluate(() => game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "[TEST] Get the ledger", complications: [], sceneTraits: [] }));
+  await page.evaluate(() => game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "[TEST] Get the ledger" }));
   await page.waitForTimeout(800);
   await page.evaluate(() => { ui.controls.controls.leverage.tools.endJob.onChange(); });
   await page.locator(".lv-dialog form").waitFor({ timeout: 5000 });

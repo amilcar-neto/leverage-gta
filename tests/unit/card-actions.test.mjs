@@ -42,23 +42,22 @@ test("ones: resolving marks them one at a time", () => {
 });
 
 test("new Complication is a d6; raising goes d6 d8 d10 d12 and stops", () => {
-  const made = applyComplication({ name: "Heist", complications: [] }, { name: "  Alarm  " }, () => "abc");
+  const made = applyComplication([], { name: "  Alarm  " }, () => "abc");
   assert.deepEqual(made.complication, { id: "abc", name: "Alarm", die: 6 });
-  assert.equal(made.job.name, "Heist");
-  let job = made.job;
+  let list = made.list;
   const dice = [];
   for (let i = 0; i < 5; i++) {
-    const r = applyComplication(job, { id: "abc" }, () => "x");
-    job = r.job;
+    const r = applyComplication(list, { id: "abc" }, () => "x");
+    list = r.list;
     dice.push(r.complication.die);
   }
   assert.deepEqual(dice, [8, 10, 12, 12, 12]);
-  assert.equal(job.complications.length, 1);
+  assert.equal(list.length, 1);
 });
 
 test("Complication rejects an empty name and an unknown id", () => {
-  assert.equal(applyComplication({ complications: [] }, { name: "  " }, () => "a"), null);
-  assert.equal(applyComplication({ complications: [] }, { id: "nope" }, () => "a"), null);
+  assert.equal(applyComplication([], { name: "  " }, () => "a"), null);
+  assert.equal(applyComplication([], { id: "nope" }, () => "a"), null);
 });
 
 test("card context: PP spent note shown, warning gone once every 1 is resolved", () => {

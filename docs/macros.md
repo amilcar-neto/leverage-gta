@@ -32,6 +32,7 @@ no servidor de testes (o VPS, veja `docs/13-ambiente-de-teste.md`): se você mud
 | Plot Points | `plotPoints.get/add/spend/give` |
 | Trava de Traços (Mestre) | `traits.lock/unlock/isLocked` |
 | Job (Mestre) | `job.get/new/end/newSession/endScene`, `jobTracker.open()` |
+| Traits e Complications da mesa | leitura: `table.get()`. Só o Mestre altera: `table.addTrait/addComplication/remove/clear` |
 | Combate (Mestre) | `combat.applyDamage({ target, margin, weaponDie, cover, byPolice })`, `combat.down(actor, { byPolice })` |
 
 ## Rolagem
@@ -49,7 +50,7 @@ Referências aceitas:
 | `item:<id>` | Specialty, Asset ou Talent com dado |
 | `item:<id>:d8` / `item:<id>:d4` | Distinction usada a favor (d8) ou contra (d4) |
 | `money` | o maior dado da Grana (regra da casa) |
-| `scene:<id>` | Traço de cena do Job ativo (`game.leverage.job.get().sceneTraits`) |
+| `scene:<id>` | Traço de cena: Trait global da mesa ou Traço de um Local da Cena vista (ids em `game.leverage.job.get().sceneTraits`) |
 | `d6` ou `6` | dado avulso (pode repetir) |
 
 <!-- teste: ambos id=roll -->
@@ -248,14 +249,14 @@ console.log(traits.isLocked());   // false
 `job.new(nome)` abre o Job (cada personagem recebe os Plot Points iniciais). `job.end({ name, total, shares })` paga a
 Equipe: `shares` é um objeto id da personagem para degraus, e sem ele o total é dividido por igual. Sem nome, ou com
 partes que somam mais que o total, avisa e não muda nada; uma parte que não cabe na escada de Grana também é avisada.
-`job.endScene()`
-remove os Assets de cena (passe `{ confirm: true }` para perguntar antes). `job.newSession()` devolve o Callback dos
+`job.end` também limpa as Complications da mesa (os Traits globais ficam). `job.endScene()`
+remove os Assets de cena e limpa os Traits globais; Complications e Traços de Local ficam (passe `{ confirm: true }` para perguntar antes). `job.newSession()` devolve o Callback dos
 Jobs. `jobTracker.open()` abre o Rastreador.
 
 <!-- teste: gm id=job-new -->
 ```js
 await game.leverage.job.new("Assalto ao banco");
-console.log(game.leverage.job.get());   // { name, complications, sceneTraits }
+console.log(game.leverage.job.get());   // { name, goal, complications, sceneTraits }
 ```
 
 <!-- teste: gm id=job-end -->
@@ -267,6 +268,23 @@ await game.leverage.job.end({ name: "Assalto ao banco", total: 6 });
 ```js
 await game.leverage.job.endScene();
 await game.leverage.job.newSession();
+```
+
+## Traits e Complications da mesa (Mestre)
+
+`table.get()` devolve `{ traits, complications }` (cópias das listas `{ id, name, die }`; qualquer um lê). Só o Mestre
+muda: `table.addTrait(nome)` e `table.addComplication(nome)` criam em d6, `table.remove(id)` apaga um Trait ou uma
+Complication pelo id, `table.clear()` esvazia as duas listas (`table.clear("traits")` ou `table.clear("complications")`
+esvazia só uma). Os ids dos Traits servem em `scene:<id>` na Pool.
+
+<!-- teste: gm id=table-state -->
+```js
+await game.leverage.table.addTrait("Neblina");
+await game.leverage.table.addComplication("Sirenes");
+const { traits, complications } = game.leverage.table.get();
+console.log(traits, complications);
+await game.leverage.table.remove(traits.at(-1).id);
+await game.leverage.table.clear("complications");
 ```
 
 ## Hook `leverage.ready`

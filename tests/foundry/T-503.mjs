@@ -30,7 +30,7 @@ const snapshot = (arg) => {
   const el = document.querySelector(`.chat-message[data-message-id="${arg.messageId}"]`);
   const roll = msg.getFlag("leverage-gta", "roll");
   return {
-    roll, pp: game.actors.get(arg.actorId).system.plotPoints.value, job: game.settings.get("leverage-gta", "activeJob"),
+    roll, pp: game.actors.get(arg.actorId).system.plotPoints.value, job: game.settings.get("leverage-gta", "activeJob"), complications: game.settings.get("leverage-gta", "complications"),
     total: el?.querySelector(".lv-roll-total-num")?.textContent.trim(),
     notes: [...(el?.querySelectorAll(".lv-roll-note") ?? [])].map((n) => n.textContent.trim()),
     ones: Boolean(el?.querySelector(".lv-roll-ones")),
@@ -58,8 +58,9 @@ try {
     const own = await make(player.id, actor);
     const viaGM = await make(game.user.id, second);
     const forged = await make(rival.id, victim);
-    const saved = game.settings.get("leverage-gta", "activeJob");
-    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", complications: [] });
+    const saved = { job: foundry.utils.deepClone(game.settings.get("leverage-gta", "activeJob")), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
+    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "" });
+    await game.settings.set("leverage-gta", "complications", []);
     ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary");
     return {
       actorId: actor.id, secondId: second.id, victimId: victim.id, rivalId: rival.id, victimUuid: victim.uuid, actorUuid: actor.uuid,
@@ -149,7 +150,7 @@ try {
   record("GM sees the COMPLICATION button", s.buttons.includes("complication"), s);
   await complicate(ids.own, "[TEST] Alarm");
   s = await page.evaluate(snapshot, arg(ids.own));
-  record("new Complication: d6 in activeJob", s.job.complications.length === 1 && s.job.complications[0].name === "[TEST] Alarm" && s.job.complications[0].die === 6, s.job);
+  record("new Complication: d6 in the table state", s.complications.length === 1 && s.complications[0].name === "[TEST] Alarm" && s.complications[0].die === 6, s.complications);
   record("player got 1 PP, the 1 is resolved, warning and button gone",
     s.pp === ppBefore + 1 && s.roll.complicationsResolved.join() === "4" && !s.ones && !s.buttons.includes("complication"), s);
   await page.evaluate((i) => document.querySelector(`.chat-message[data-message-id="${i}"]`)?.scrollIntoView(), ids.own);
@@ -158,7 +159,7 @@ try {
   await page.screenshot({ path: `${SHOTS}/T-503-card.png`, clip: { x: box.x, y: box.y, width: box.width, height: box.height } });
   await complicate(ids.viaGM, "");
   s = await page.evaluate(snapshot, arg(ids.viaGM, ids.secondId));
-  record("existing Complication raised d6 to d8, no new one", s.job.complications.length === 1 && s.job.complications[0].die === 8, s.job);
+  record("existing Complication raised d6 to d8, no new one", s.complications.length === 1 && s.complications[0].die === 8, s.complications);
 
   record("no system errors in console", log.own().length === 0 && playerLog.own().length === 0, [...log.own(), ...playerLog.own()]);
 } catch (err) {
@@ -174,7 +175,10 @@ try {
     for (const a of test) await a.delete();
     await game.users.getName("[TEST] Player")?.delete();
     await game.users.getName("[TEST] Rival")?.delete();
-    if (saved) await game.settings.set("leverage-gta", "activeJob", saved);
+    if (saved) {
+      await game.settings.set("leverage-gta", "activeJob", saved.job);
+      await game.settings.set("leverage-gta", "complications", saved.complications);
+    }
   }, savedJob).catch(() => {});
 }
 for (const r of results) console.log(`${r.ok ? "PASS" : "FAIL"} ${r.name}${r.detail ? ` ${r.detail}` : ""}`);

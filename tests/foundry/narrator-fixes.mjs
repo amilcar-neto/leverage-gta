@@ -22,7 +22,7 @@ try {
   await shot("01-controls");
 
   savedJob = await page.evaluate(() => structuredClone(game.settings.get("leverage-gta", "activeJob")));
-  await page.evaluate(async () => { await game.settings.set("leverage-gta", "activeJob", { name: "", goal: "", complications: [] }); });
+  await page.evaluate(async () => { await game.settings.set("leverage-gta", "activeJob", { name: "", goal: "" }); });
   await page.evaluate(async () => { await game.leverage.jobTracker.open(); });
   await page.waitForTimeout(1200);
   check("Tracker shows New Job button without a Job", (await page.locator("#leverage-job-tracker .lv-trk-start").count()) === 1);

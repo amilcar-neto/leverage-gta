@@ -31,6 +31,7 @@ import { addToSheetPool } from "./applications/actor/parts/tray.mjs";
 import * as controls from "./applications/gm/controls.mjs";
 import * as damage from "./applications/chat/damage.mjs";
 import { currentSceneTraits } from "./scene-location.mjs";
+import { addTableEntry, clearComplications, clearGlobalTraits, readComplications, readGlobalTraits, removeTableEntry } from "./table-state.mjs";
 import * as jobActions from "./applications/gm/job-actions.mjs";
 import * as starsActions from "./applications/gm/stars-actions.mjs";
 
@@ -186,7 +187,7 @@ const cityScales = () => getCityScales();
  * @param {object} request
  * @param {Actor|string} request.actor A Crew actor, its UUID or its id. Players may roll only their own.
  * @param {(string|number)[]} request.refs References: `attributes.agility`, `roles.thief`, `item:<id>`,
- *   `item:<id>:d8|d4` (Distinction), `money`, `scene:<id>` (Scene Trait: a Trait of the active Scene or of a Location of the viewed Scene), `d6` or just `6` (loose die).
+ *   `item:<id>:d8|d4` (Distinction), `money`, `scene:<id>` (Scene Trait: a global Trait the Fixer keeps for the table, or a Trait of a Location of the viewed Scene), `d6` or just `6` (loose die).
  * @param {string} [request.flavor] Action description on the card.
  * @returns {Promise<ChatMessage|null>} the card, or null when the Pool is not valid (a warning says why)
  */
@@ -447,8 +448,11 @@ const traits = {
 };
 
 const job = {
-  /** @returns {{name: string, complications: object[], sceneTraits?: object[]}} The active Job (a copy). */
-  get: () => jobActions.readJob(),
+  /**
+   * @returns {{name: string, goal: string, complications: object[], sceneTraits: object[]}} The active Job (a copy), the table's
+   *   Complications and the Scene Traits in play (global Traits plus those of the viewed Scene's Locations): their ids go after `scene:` in a Pool.
+   */
+  get: () => ({ ...jobActions.readJob(), complications: readComplications(), sceneTraits: currentSceneTraits() }),
   /**
    * Starts a Job: new active Job, each character gets the starting Plot Points. Fixer only.
    * @param {string} name
@@ -456,7 +460,8 @@ const job = {
    */
   new: (name) => jobActions.newJob(name),
   /**
-   * Ends the Job: pays the Crew, leaves a Job Item on each character, clears the active Job. Fixer only.
+   * Ends the Job: pays the Crew, leaves a Job Item on each character, clears the active Job and the table's
+   * Complications (the global Traits stay until `endScene`). Fixer only.
    * @param {object} result
    * @param {string} result.name
    * @param {number} result.total Total payout in steps.
@@ -471,11 +476,43 @@ const job = {
   /** New session: gives every Job its Callback back. Fixer only. @returns {Promise<number>} Jobs reset */
   newSession: () => jobActions.newSession(),
   /**
-   * End of scene: removes scene Assets from the Crew. Fixer only.
+   * End of scene: removes scene Assets from the Crew and clears the global Traits (Complications and Location Traits stay). Fixer only.
    * @param {{confirm?: boolean}} [options] `confirm: true` asks first (default false in macros).
    * @returns {Promise<number|null>} Assets removed
    */
   endScene: ({ confirm = false } = {}) => jobActions.endScene({ confirm })
+};
+
+const TABLE_KEYS = Object.freeze({ trait: "globalTraits", complication: "complications" });
+
+/** Table state the Fixer keeps (global Traits and Complications). Every call is Fixer only; reads are open. */
+const table = {
+  /** @returns {{traits: object[], complications: object[]}} Copies of the global Traits and the Complications. */
+  get: () => ({ traits: readGlobalTraits(), complications: readComplications() }),
+  /** Adds a global Trait (starts at d6). Fixer only. @param {string} name @returns {Promise<boolean>} */
+  addTrait: async (name) => fixerOnly() && addTableEntry(TABLE_KEYS.trait, name),
+  /** Adds a Complication (starts at d6). Fixer only. @param {string} name @returns {Promise<boolean>} */
+  addComplication: async (name) => fixerOnly() && addTableEntry(TABLE_KEYS.complication, name),
+  /**
+   * Removes a global Trait or a Complication by id. Fixer only.
+   * @param {string} id
+   * @returns {Promise<boolean>} true when something was removed
+   */
+  async remove(id) {
+    if (!fixerOnly()) return false;
+    const key = readGlobalTraits().some((e) => e.id === id) ? TABLE_KEYS.trait : TABLE_KEYS.complication;
+    return removeTableEntry(key, id);
+  },
+  /**
+   * Empties a list. Fixer only.
+   * @param {"traits"|"complications"} [which] omit to empty both
+   * @returns {Promise<void>}
+   */
+  async clear(which) {
+    if (!fixerOnly()) return;
+    if (which !== "complications") await clearGlobalTraits();
+    if (which !== "traits") await clearComplications();
+  }
 };
 
 const jobTracker = {
@@ -508,10 +545,10 @@ const combat = {
 /**
  * The object behind `game.leverage`.
  * @type {{rollPool: Function, pool: object, opposition: Function, openOppositionRoller: Function, money: object, stars: object,
- *   plotPoints: object, traits: object, job: object, jobTracker: object, combat: object}}
+ *   plotPoints: object, traits: object, job: object, table: object, jobTracker: object, combat: object}}
  */
 export const api = Object.freeze({
-  rollPool, pool, opposition, openOppositionRoller, money, stars, plotPoints, traits, job, jobTracker, combat
+  rollPool, pool, opposition, openOppositionRoller, money, stars, plotPoints, traits, job, table, jobTracker, combat
 });
 
 /** Publishes `game.leverage` and the socket action of `money.transfer` (call from the `setup` hook). */

@@ -75,6 +75,8 @@ function registerWorldSettings() {
   hiddenWorld("trainingCosts", new (fields().ObjectField)(), { ...LEVERAGE.defaultTrainingCosts },
     notify("trainingCostsChanged"));
   hiddenWorld("activeJob", new (fields().ObjectField)(), emptyJob(), notify("activeJobChanged"));
+  hiddenWorld("globalTraits", new (fields().ArrayField)(new (fields().ObjectField)()), [], notify("tableStateChanged"));
+  hiddenWorld("complications", new (fields().ArrayField)(new (fields().ObjectField)()), [], notify("tableStateChanged"));
   hiddenWorld("tablePlotPoints", new (fields().NumberField)({ integer: true, min: 0, nullable: false, initial: 0 }), 0,
     notify("hudChanged"));
   game.settings.register(SYSTEM_ID, "systemMigrationVersion", {

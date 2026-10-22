@@ -23,51 +23,42 @@ try {
 
 let saved;
 try {
-  saved = await page.evaluate(() => game.settings.get("leverage-gta", "activeJob"));
+  saved = await page.evaluate(() => foundry.utils.deepClone(game.settings.get("leverage-gta", "globalTraits")));
   const id = await page.evaluate(async () => {
     const actor = await Actor.create({
       name: "[TEST] Scene", type: "crew",
       system: { attributes: { agility: { die: 10 } }, roles: { thief: { die: 10 } } }
     });
-    await game.settings.set("leverage-gta", "activeJob", {
-      name: "[TEST] Job", complications: [], sceneTraits: [{ id: "st1", name: "[TEST] Dark alley", die: 8 }]
-    });
+    await game.settings.set("leverage-gta", "globalTraits", [{ id: "st1", name: "[TEST] Dark alley", die: 8 }]);
     await actor.sheet.render({ force: true });
     await new Promise((r) => setTimeout(r, 1500));
     return actor.id;
   });
-  const items = () => page.evaluate((s) => [...document.querySelectorAll(`${s} .lv-pool-menu-item`)].map((el) => ({
-    text: el.textContent.trim(), die: el.querySelector(".lv-die-num")?.textContent.trim(),
-    color: getComputedStyle(el.querySelector(".lv-die")).getPropertyValue("--lv-die-color") || getComputedStyle(el.querySelector(".lv-die")).color
-  })), sheet);
-  const open = async () => { await page.click(`${sheet} [data-action="addDie"]`); await wait(300); };
+  const builder = ".lv-pool-builder";
+  const items = () => page.evaluate((s) => [...document.querySelectorAll(`${s} .lv-pb-chip[data-kind="scene"], ${s} .lv-pb-chip[data-ref^="scene:"]`)].map((el) => ({
+    ref: el.dataset.ref, text: el.textContent.trim().replace(/\s+/g, " "), die: el.querySelector(".lv-die-num")?.textContent.trim()
+  })), builder);
+  const open = async () => { await page.click(`${sheet} [data-action="addDie"]`); await page.locator(`${builder} .lv-pb-chip`).first().waitFor({ timeout: 5000 }); await wait(300); };
 
   await open();
   let list = await items();
-  record("menu lists the Scene Trait with name and die", list.some((i) => /Dark alley/.test(i.text) && i.die === "8"), list);
-  const d8 = list.find((i) => i.text.endsWith("d8") && !/Dark/.test(i.text));
-  const scene = list.find((i) => /Dark alley/.test(i.text));
-  record("Scene Trait die has the colour of its die size", d8 && scene && d8.color === scene.color, { d8, scene });
+  record("Pool builder lists the global Trait with name and die", list.some((i) => /Dark alley/i.test(i.text) && i.ref === "scene:st1" && i.die === "8"), list);
   await page.screenshot({ path: `${SHOTS}/T-pending-menu.png` });
 
-  // the Job changes while the sheet is open: the menu follows
-  await page.keyboard.press("Escape");
-  await page.evaluate(() => game.settings.set("leverage-gta", "activeJob", {
-    name: "[TEST] Job", complications: [], sceneTraits: [{ id: "st2", name: "[TEST] Rooftop", die: 6 }]
-  }));
-  await wait(600);
-  await open();
+  // the table state changes while the builder is open: it follows
+  await page.evaluate(() => game.settings.set("leverage-gta", "globalTraits", [{ id: "st2", name: "[TEST] Rooftop", die: 6 }]));
+  await wait(800);
   list = await items();
-  record("menu follows the active Job", list.some((i) => /Rooftop/.test(i.text) && i.die === "6") && !list.some((i) => /Dark alley/.test(i.text)), list);
+  record("builder follows the global Traits", list.some((i) => /Rooftop/i.test(i.text) && i.die === "6") && !list.some((i) => /Dark alley/i.test(i.text)), list);
 
-  // picking it puts a chip in the Pool; a Job change drops it
-  await page.locator(`${sheet} .lv-pool-menu-item`).filter({ hasText: /Rooftop/ }).click();
+  // picking it puts a chip in the Pool; removing the Trait drops it
+  await page.locator(`${builder} .lv-pb-chip[data-ref="scene:st2"]`).click();
   await wait(400);
-  const chip = () => page.locator(`${sheet} .lv-tray-chips .lv-chip[data-pool-ref="scene:st2"]`).count();
+  const chip = () => page.locator(`${sheet} .lv-tray [data-pool-ref="scene:st2"]`).count();
   record("Scene Trait chip is in the Pool", (await chip()) === 1);
-  await page.evaluate(() => game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", complications: [], sceneTraits: [] }));
-  await wait(600);
-  record("chip leaves the Pool when the Job drops the Trait", (await chip()) === 0);
+  await page.evaluate(() => game.settings.set("leverage-gta", "globalTraits", []));
+  await wait(800);
+  record("chip leaves the Pool when the Trait is removed", (await chip()) === 0);
 
   // roll with a Scene Trait through the sheet
   record("no system errors in console", log.own().length === 0, log.own());
@@ -77,7 +68,7 @@ try {
   await page.screenshot({ path: `${SHOTS}/T-pending-failure.png` }).catch(() => {});
 } finally {
   await page.evaluate(async ([saved, system]) => {
-    if (saved) await game.settings.set(system, "activeJob", saved);
+    if (saved) await game.settings.set(system, "globalTraits", saved);
     for (const a of game.actors.filter((x) => x.name.startsWith("[TEST]"))) { await a.sheet.close(); await a.delete(); }
   }, [saved, SYSTEM]).catch(() => {});
 }

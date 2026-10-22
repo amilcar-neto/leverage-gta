@@ -45,3 +45,5 @@ Uma seção por sessão de trabalho, a mais nova embaixo.
 ## 2026-10-21 20:23 — Fase 10 (decisões do dono)
 - Iniciada. Ordem: T-1100, L-01..L-06, T-1101, J-01.., depois Cortex Prime.
 - Pausada pelo dono. Onda 1 (L-01..L-05, T-1101) escrita, sem revisão nem commit; T-1100 em andamento.
+
+## 2026-10-22 00:17 — retomada (L-06 correções)

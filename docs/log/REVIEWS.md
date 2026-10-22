@@ -84,3 +84,10 @@ Um resumo por revisão: tarefa ou fase, veredito, defeitos encontrados, o que fo
   glifos, rolagem, CSS duplicado). Tudo corrigido; Grana do grupo e PP/Mesa compartilham classes e largura (240px).
 - Tester (2ª passada): tudo passou no Foundry real. Falha conhecida: T-505 (`scene:<id>` do Job); some com a L-06.
 - Sobra pequena: `locationSources` em `module/dice/opposition.mjs` ficou sem uso (só testado).
+
+## 2026-10-22 — L-06 (Traits e Complications globais)
+- 0 bloqueia, 4 deveria: Complication do card do 1 fora da fila de escrita; re-render apagava texto digitado e roubava foco;
+  migração 0.1.1 só testada em unidade; controles do mestre quebravam em duas linhas. Todos corrigidos; novo teste de migração
+  no Foundry (L6-migration.mjs, passa 2x, `activeJob` fica só com name/goal). Nits feitos (chaves órfãs, API `game.leverage.table.*`).
+- Ficou: Rolador de oposição não oferece Traits globais (só Complications); print docs/img/rastreador.png desatualizado (ISSUES).
+- playtest-play/finale falham (botões do HUD não achados + crash do navegador): inconclusivo, registrado.

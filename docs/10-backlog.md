@@ -145,7 +145,7 @@ Ajustes do dono em `docs/log/DECISIONS.md` (última seção) valem sobre as nota
 
 - [x] **T-1100 Atualizar os scripts de `tests/foundry`** que ainda gravam `traitsLocked` (phase1, sheet-states,
   sheet-structure, T-303, T-307-lock, T-401, T-505, T-702) para o comportamento atual. *Dep:* nenhuma.
-- [ ] **L-01..L-06 Lugar escolhe a Cena** (L-01..L-05 feitas em 2026-10-21; falta L-06) (campo `scene` no Ator `location`, seletor na ficha; sem flag na Cena, sem
+- [x] **L-01..L-06 Lugar escolhe a Cena** (L-01..L-06 feitas em 2026-10-21/22) (campo `scene` no Ator `location`, seletor na ficha; sem flag na Cena, sem
   arrastar, sem "Criar mapa"). L-06: remover Traços por flag da Cena e criar Traço/Complication globais pelo HUD do
   mestre. Ver DECISIONS (2026-10-21) + `jobs-e-locais.md` Parte B + R-FL. *Dep:* nenhuma.
 - [ ] **J-01..J-07, J-10, R-FJ Job como Item de mundo, tipo `job` único**, sem J-08/J-09 (`jobs-e-locais.md`, Parte A,

@@ -18,8 +18,8 @@ const INTERACTIVE = "button, input, textarea, select, a, prose-mirror, [contente
 /** Hook announcing a Pool the player wants to roll. Payload: `{ actor, sheet, refs, entries }`. */
 export const ROLL_REQUESTED_HOOK = LEVERAGE.hooks.rollRequested;
 
-/** Hook fired when the active Job changes (its Scene Traits feed the Pool builder window). */
-const ACTIVE_JOB_HOOK = LEVERAGE.hooks.activeJobChanged;
+/** Hook fired when the table state changes (global Traits and Location Traits feed the Pool builder window). */
+const TABLE_STATE_HOOK = LEVERAGE.hooks.tableStateChanged;
 
 /** The Pool builder module, loaded on first use (it needs the Foundry application classes, so unit tests never import it). */
 let builder = null;
@@ -29,8 +29,6 @@ const pools = new WeakMap();
 
 /** Whether the Money house rule is on (safe before settings are ready). */
 const moneyEnabled = () => Boolean(readSetting("houseRules.money", true));
-
-/** Scene Traits (`{id, name, die}`): those of the active Scene plus the Traits of the viewed Scene's Locations. */
 
 /**
  * The Pool of a sheet, created on first use. Other tasks (roll, macros) read it through this.
@@ -144,11 +142,11 @@ function onEnter(sheet, event) {
  */
 export function attach(sheet, signal) {
   sheet.element.addEventListener("keydown", (event) => onEnter(sheet, event), { signal });
-  const hookId = Hooks.on(ACTIVE_JOB_HOOK, () => {
+  const hookId = Hooks.on(TABLE_STATE_HOOK, () => {
     if (sheet.rendered) refresh(sheet);
   });
   signal.addEventListener("abort", () => {
-    Hooks.off(ACTIVE_JOB_HOOK, hookId);
+    Hooks.off(TABLE_STATE_HOOK, hookId);
     builder?.closePoolBuilder(sheet);
     pools.delete(sheet);
   });

@@ -98,7 +98,8 @@ Ao entrar na Pool soma **d6** (`CONFIG.LEVERAGE.specialtyDie`).
 - `wanted`: `{ city: "liberty", level: 0..5 }`
 - `cityScales`: `[{ id, name, levels: [[8,6],[10,6],[12,6],[12,12],[12,12,8]] }, …]` (padrão: as três cidades)
 - `prices`: `[{ id, label, dice: [6] }, …]` (padrão: tabela de `docs/02`)
-- `activeJob`: `{ name, goal, complications: [{ id, name, die }] }` (as Complications valem para todas as cenas). Os Traços de cena ficam no flag `flags.leverage-gta.sceneTraits` da cena ativa: `[{ id, name, die }]`. `readJob()` junta as duas fontes.
+- `activeJob`: `{ name, goal }`. O Job é só nome e objetivo (vira Item numa fase seguinte).
+- `globalTraits` e `complications`: `[{ id, name, die }]` cada um, estado da mesa independente do Job e da Cena (começam em d6). Acesso só por `module/table-state.mjs`. Os Traços de uma cena vêm do Lugar (`system.scene` + `system.traits`), não de flag. Migração 0.1.1: `activeJob.complications` -> `complications`, `activeJob.sceneTraits` -> `globalTraits`; os flags de Traços da Cena foram descartados.
 - `playersCanUnlock`: Boolean (padrão `true`). A trava de cada ficha fica no flag do ator `flags.leverage-gta.sheetUnlocked` (ausente = travada).
 
 ## Flags de mensagens de chat (`flags.leverage-gta.*`)

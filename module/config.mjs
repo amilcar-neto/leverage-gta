@@ -29,6 +29,7 @@ const HOOKS = Object.freeze({
   houseRulesChanged: "leverage.houseRulesChanged",
   traitsLockedChanged: "leverage.traitsLockedChanged",
   activeJobChanged: "leverage.activeJobChanged",
+  tableStateChanged: "leverage.tableStateChanged",
   starsChanged: "leverage.starsChanged",
   hudChanged: "leverage.hudChanged",
   rollRequested: "leverage.rollRequested",
@@ -216,9 +217,9 @@ export const LEVERAGE = Object.freeze({
   }),
   /** Largest gang an NPC (or the opposition roller) can bring. */
   gangMax: 12,
-  /** Flag (on the Scene, under the system id) holding the Scene Traits of that Scene. */
-  sceneTraitsFlag: "sceneTraits",
-  /** Scene strip (Scene Traits + Complications under the Foundry scene navigation): gap under it (px). */
+  /** Old Scene flag of the per-Scene Traits (dropped in 0.1.1; the migration removes it from the Scenes). */
+  legacySceneTraitsFlag: "sceneTraits",
+  /** Scene strip (global Traits, Location Traits and Complications under the Foundry scene navigation): gap under it (px). */
   scenePanel: Object.freeze({ gapPx: 6 }),
   /** Most loose dice of one size in the opposition roller. */
   looseDiceMax: 12,

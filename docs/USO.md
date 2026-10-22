@@ -76,7 +76,7 @@ A bandeja **POOL** fica no rodapé da ficha.
 - Dados **mantidos** têm borda acesa; os **1** aparecem em vermelho (*1 · Fora*); os demais ficam apagados.
 - **+1 PP · Manter o 3º dado** (só o dono, nunca o mestre): gasta 1 PP e soma o próximo maior dado. Dá para repetir.
   Só aparece no card **mais recente** do personagem e enquanto sobra dado; sem Plot Points o botão fica apagado.
-- **Mestre · Complication** (só o mestre, quando há um 1): cria ou sobe uma Complication no Job ativo e **dá 1 Plot
+- **Mestre · Complication** (só o mestre, quando há um 1): cria ou sobe uma Complication da mesa e **dá 1 Plot
   Point** ao jogador. É escolha do mestre, não é automático.
 - Dado de **Grana** na Pool faz a Grana descer 1 degrau, e Distinction d4 dá +1 PP; o card avisa de ambos.
 
@@ -137,7 +137,7 @@ Trocar de cidade zera as estrelas (a Equipe saiu de lá) e também aparece no ch
   pela **cobertura** (divide o dano pela metade, arredondando para baixo), tira primeiro do **Colete** e depois da
   **Vida**. Está em `docs/02-regras-da-casa.md` e vale só em luta de verdade; discussões e golpes seguem o livro.
 - **Desistir** antes de rolar (Give In): a pessoa sai com uma Complication leve (*Bloodied d6*) e ganha 1 PP. É
-  manual: o mestre cria a Complication no Rastreador e usa **Dar Plot Point**.
+  manual: o mestre cria a Complication na faixa da cena e usa **Dar Plot Point**.
 - **Recuperar:** cena de descanso devolve metade da Vida máxima, um dia entre golpes devolve tudo, tratamento médico
   custa d4 de Grana e devolve tudo. No diálogo **Pagar**, **Hospital** paga e devolve toda a Vida, e os itens de
   **colete** pagam e colocam o colete novo, cheio. Cena de descanso e dia entre golpes (`restScene()`, `restDay()` no
@@ -186,20 +186,23 @@ Um **Job** é um golpe completo.
 
 - **Novo Job** (ferramentas do mestre): dá o nome, inicia o Job ativo, limpa as Complications antigas e dá os Plot
   Points iniciais aos personagens que têm jogador.
-- **Rastreador do Job:** abre a janela com o nome do Job, as **Complications** (nome e dado; subir, descer, remover), os
-  **Traços de cena** e a **Equipe** (Vida, Colete, Grana e Plot Points de cada um, com − e +).
+- **Rastreador do Job:** abre a janela com o nome e o objetivo do Job, as **Complications** (nome e dado; subir, descer,
+  remover) e a **Equipe** (Vida, Colete, Grana e Plot Points de cada um, com − e +).
 
 ![Rastreador do Job](img/rastreador.png)
 
-- **Encerrar cena:** apaga os Assets de cena da Equipe (com confirmação) e limpa os Traços da cena ativa.
+- **Encerrar cena:** apaga os Assets de cena da Equipe (com confirmação) e limpa os Traits globais.
 
 ### Faixa da cena
 
-Logo abaixo do seletor de cenas fica uma faixa com os **Traços da cena ativa** (borda verde-água) e as
-**Complications** do Job (borda vermelha, valem em todas as cenas). Todos veem. O mestre clica num chip (ou no lápis)
-para abrir o Rastreador e editar; os Traços de cada cena ficam guardados nela. A setinha à esquerda recolhe a faixa.
+Logo abaixo do seletor de cenas fica uma faixa com os **Traits globais** (borda verde-água), os **Traços dos Locais da
+cena vista** (com o ícone de pino e o nome do Local) e as **Complications** (borda vermelha). Traits globais e
+Complications valem em qualquer cena até o mestre removê-los. Todos veem; só o mestre edita. O mestre usa o **+**
+verde-água para criar um Trait e o **+** vermelho para criar uma Complication, clica no dado para trocá-lo (d4 a d12) e
+no **X** para remover. O lápis abre o Rastreador. Os Traços de um Local se editam na ficha do Local. A setinha à
+esquerda recolhe a faixa.
 - **Encerrar Job:** pede o nome, o rendimento total em degraus e a parte de cada um. Cria um Job no histórico de cada
-  ficha, soma a Grana e apaga os Assets de Job.
+  ficha, soma a Grana, apaga os Assets de Job e limpa as Complications.
 - **Nova sessão:** devolve o **Callback** de todos os Jobs.
 - **Aba JOBS da ficha:** lista cada Job concluído com a parte do personagem. Marque o **Callback** para citar um Job
   (só marca e anuncia no chat; vale como um Plot Point gasto na rolagem, uma vez por Job por sessão, e a mesa aplica

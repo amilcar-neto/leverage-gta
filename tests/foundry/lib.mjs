@@ -109,7 +109,7 @@ export async function login(page, env) {
  *  - /join: `input[name="adminPassword"]` + the submit button that sits next to it
  *    (text "Voltar à Configuração" / "Return to Setup"); it deactivates the world and lands on `<route>/setup`.
  *  - setup, Worlds tab: `li[data-package-id="<world id>"] a[data-action="worldLaunch"]` (hidden until hover, so it is clicked via DOM).
- *  - a tour overlay may cover setup: exit with `a.step-button.exit` first.
+ *  - a tour overlay may cover setup: exit with `a.step-button.exit, a.step-button[data-action="exit"]` first.
  * Afterwards /join lists the users again; call login() next.
  */
 export async function relaunchWorld(page, env) {
@@ -151,11 +151,11 @@ export async function relaunchWorld(page, env) {
   throw new Error("relaunchWorld: world did not reach the join screen within 90s");
 }
 
-/** Exits the Foundry tour overlays ("Backups Overview"...) that cover setup and swallow clicks (`a.step-button.exit`). */
+/** Exits the Foundry tour overlays ("Backups Overview"...) that cover setup and swallow clicks (`a.step-button.exit, a.step-button[data-action="exit"]`). */
 async function dismissTours(page) {
   await page.waitForSelector("li[data-package-id]", { state: "attached", timeout: 30000 });
   for (let i = 0; i < 4; i++) {
-    const exit = page.locator("a.step-button.exit").first();
+    const exit = page.locator('a.step-button.exit, a.step-button[data-action="exit"]').first();
     if (!(await exit.isVisible({ timeout: 1500 }).catch(() => false))) break;
     await exit.click();
     await page.waitForTimeout(500);
@@ -165,6 +165,7 @@ async function dismissTours(page) {
 /** Buttons of the dialogs Foundry shows when a world launches: data migration, backup, and plain confirmations. */
 const LAUNCH_DIALOG_BUTTONS = [
   /Iniciar Migra|Begin Migration|Start Migration/i,
+  /^\s*Backup\s*$/i,
   /Pular|Skip|N[aã]o|No Backup|Sem Backup/i,
   /^\s*(Sim|Yes|Confirmar|Confirm|OK)\s*$/i
 ];
@@ -182,7 +183,7 @@ async function confirmLaunchDialogs(page) {
     for (const pattern of LAUNCH_DIALOG_BUTTONS) {
       const button = page.locator(".application button, dialog button").filter({ hasText: pattern }).first();
       if (await button.isVisible({ timeout: 400 }).catch(() => false)) {
-        await button.click().catch(() => {});
+        await button.click({ timeout: 2500 }).catch(() => {});
         clicked = true;
         break;
       }

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { compareVersions, pendingMigrations, migrateWorld, MIGRATIONS } from "../../module/migration.mjs";
+import { compareVersions, pendingMigrations, migrateWorld, migrateTableStateWorld, MIGRATIONS } from "../../module/migration.mjs";
 
 test("compareVersions orders numerically, not lexically", () => {
   assert.ok(compareVersions("0.10.0", "0.9.9") > 0);
@@ -41,17 +41,19 @@ function fakeFoundry({ stored, current = "0.3.0", failSet = false }) {
 
 test("migrateWorld saves each step, then the current version", async () => {
   const calls = fakeFoundry({ stored: "0.1.0" });
+  const real = MIGRATIONS.splice(0);
   MIGRATIONS.push({ version: "0.2.0", run: async () => {} });
   try {
     assert.equal(await migrateWorld(), true);
   } finally {
-    MIGRATIONS.length = 0;
+    MIGRATIONS.splice(0, MIGRATIONS.length, ...real);
   }
   assert.deepEqual(calls.sets, ["0.2.0", "0.3.0"]);
 });
 
 test("migrateWorld on failure notifies, keeps the last good version and does not throw", async () => {
   const calls = fakeFoundry({ stored: "0.1.0" });
+  const real = MIGRATIONS.splice(0);
   MIGRATIONS.push({ version: "0.2.0", run: async () => {} }, {
     version: "0.3.0", run: async () => { throw new Error("boom"); }
   });
@@ -61,7 +63,7 @@ test("migrateWorld on failure notifies, keeps the last good version and does not
     assert.equal(await migrateWorld(), false);
   } finally {
     console.error = origError;
-    MIGRATIONS.length = 0;
+    MIGRATIONS.splice(0, MIGRATIONS.length, ...real);
   }
   assert.deepEqual(calls.sets, ["0.2.0"]);
   assert.deepEqual(calls.errors, ["LEVERAGE.Migration.failed"]);
@@ -77,4 +79,52 @@ test("migrateWorld never overwrites a newer stored version (downgrade)", async (
     console.warn = origWarn;
   }
   assert.deepEqual(calls.sets, []);
+});
+
+test("0.1.1 is registered: it runs for a world saved at 0.1.0 and not for a fresh one", () => {
+  assert.deepEqual(pendingMigrations("0.1.0", "0.1.1").map((m) => m.version), ["0.1.1"]);
+  assert.deepEqual(pendingMigrations("", "0.1.1"), []);
+  assert.deepEqual(pendingMigrations("0.1.1", "0.1.1"), []);
+});
+
+/** Fake world with settings and Scenes for the 0.1.1 migration. */
+function tableWorld({ activeJob, globalTraits = [], complications = [], flagged = [] }) {
+  const store = { activeJob, globalTraits, complications };
+  const unset = [];
+  globalThis.game = {
+    user: { isGM: true },
+    settings: { get: (_s, k) => store[k], set: async (_s, k, v) => { store[k] = v; } },
+    scenes: flagged.map((id) => ({ id, getFlag: () => [{ id: "x" }], unsetFlag: async (_s, k) => { unset.push([id, k]); } }))
+  };
+  return { store, unset };
+}
+
+test("0.1.1 moves the Job's Complications and scene Traits to the table lists and drops the Scene flags", async () => {
+  const { store, unset } = tableWorld({
+    activeJob: { name: "Heist", goal: "Ledger", complications: [{ id: "c1", name: "Alarm", die: 8 }], sceneTraits: [{ id: "t1", name: "Fog", die: 6 }] },
+    complications: [{ id: "c0", name: "Heat", die: 6 }], flagged: ["s1", "s2"]
+  });
+  await migrateTableStateWorld();
+  assert.deepEqual(store.activeJob, { name: "Heist", goal: "Ledger" });
+  assert.deepEqual(store.complications.map((c) => c.id), ["c0", "c1"]);
+  assert.deepEqual(store.globalTraits.map((c) => c.id), ["t1"]);
+  assert.deepEqual(unset, [["s1", "sceneTraits"], ["s2", "sceneTraits"]]);
+});
+
+test("0.1.1 can run twice without duplicating entries", async () => {
+  const job = { name: "J", complications: [{ id: "c1", name: "Alarm", die: 8 }], sceneTraits: [] };
+  const { store } = tableWorld({ activeJob: job });
+  await migrateTableStateWorld();
+  store.activeJob = job;
+  await migrateTableStateWorld();
+  assert.equal(store.complications.length, 1);
+});
+
+test("0.1.1 leaves a clean world alone", async () => {
+  const { store } = tableWorld({ activeJob: { name: "J", goal: "" } });
+  let writes = 0;
+  globalThis.game.settings.set = async () => { writes += 1; };
+  await migrateTableStateWorld();
+  assert.equal(writes, 0);
+  assert.deepEqual(store.complications, []);
 });

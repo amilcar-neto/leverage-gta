@@ -676,7 +676,8 @@
         "jobCount": {
           "one": "{count} Job",
           "other": "{count} Jobs"
-        }
+        },
+        "endSceneTraits": "Traços de cena limpos: {count}."
       },
       "Dialog": {
         "PlotPoint": {
@@ -749,13 +750,10 @@
       "job": "Job",
       "jobPlaceholder": "Nome do Job",
       "complications": "Complications",
-      "sceneTraits": "Traços de cena",
       "crew": "Equipe",
       "noComplications": "Nenhuma Complication.",
-      "noSceneTraits": "Nenhum Traço de cena.",
       "noCrew": "Nenhum personagem na Equipe.",
       "newComplication": "Nova Complication",
-      "newSceneTrait": "Novo Traço de cena",
       "add": "Adicionar",
       "remove": "Remover",
       "raise": "Subir",
@@ -1070,12 +1068,9 @@
       "talentsAssets": "Talents e Assets"
     },
     "ScenePanel": {
-      "title": "Cena",
       "expand": "Mostrar a faixa da cena",
       "collapse": "Recolher a faixa da cena",
       "edit": "Editar no Rastreador do Job",
-      "sceneTraits": "Traços de cena",
-      "complications": "Complications",
       "traitsCount": {
         "one": "{count} Traço",
         "other": "{count} Traços"
@@ -1084,7 +1079,12 @@
         "one": "{count} Complication",
         "other": "{count} Complications"
       },
-      "goal": "Objetivo"
+      "addTrait": "Adicionar um Traço",
+      "addComplication": "Adicionar uma Complication",
+      "editDie": "Mudar o dado",
+      "cancel": "Cancelar",
+      "newTrait": "Novo Traço",
+      "newComplication": "Nova Complication"
     }
   }
 }

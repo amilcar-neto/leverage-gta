@@ -3,7 +3,7 @@
  * Pure logic: references (docs/04) are turned into dice by an injected `resolve` function, so this file has no
  * Foundry dependency and runs in node tests.
  *
- * Reference forms: `attributes.agility`, `roles.thief`, `item:<id>`, `item:<id>:d8|d4`, `money`, `scene:<id>` (Scene Trait of the active Job), `d6`.
+ * Reference forms: `attributes.agility`, `roles.thief`, `item:<id>`, `item:<id>:d8|d4`, `money`, `scene:<id>` (Scene Trait: a global Trait or a Trait of a Location of the viewed Scene), `d6`.
  */
 import { LEVERAGE } from "../config.mjs";
 import { isValidDie } from "./die.mjs";
@@ -74,7 +74,7 @@ function resolveItem(actor, { id, size }) {
  * @param {object} actor
  * @param {string} ref
  * @param {{moneyEnabled?: boolean, sceneTraits?: {id: string, name: string, die: number}[], includePooled?: boolean}} [options]
- *   `moneyEnabled` is the house rule switch (default on); `sceneTraits` are the Scene Traits in play (active Scene flag plus Locations of the viewed Scene).
+ *   `moneyEnabled` is the house rule switch (default on); `sceneTraits` are the Scene Traits in play (the global Traits plus those of the Locations of the viewed Scene).
  * @returns {ResolvedTrait|null} null when the reference means nothing (deleted item, no money, bad shape).
  */
 export function resolvePoolRef(actor, ref, { moneyEnabled = true, sceneTraits = [] } = {}) {
@@ -304,7 +304,7 @@ function traitMenuEntries(actor, group, inPool, includePooled) {
 
 /**
  * Everything the "+ DIE" button can add, grouped by kind in `LEVERAGE.poolMenuGroups` order, empty groups left out:
- * loose dice (always, they may repeat), Money (rule on, wallet not empty), Scene Traits of the active Job, then the
+ * loose dice (always, they may repeat), Money (rule on, wallet not empty), Scene Traits (global and of the viewed Scene's Locations), then the
  * actor's Assets, Specialties, Distinctions, Talents that carry a die, Attributes and Roles. What is already in the
  * Pool is not offered again, unless `includePooled` is set (the Pool builder window shows them marked `pooled`).
  * @param {object} actor Duck-typed (`system`, `items` iterable).

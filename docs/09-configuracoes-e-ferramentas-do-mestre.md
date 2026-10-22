@@ -15,7 +15,9 @@
 | `cityScales` | Menu → app `CityScalesConfig` | 3 cidades de `docs/02` | Editar cidades e a Pool de cada estrela |
 | `prices` | Menu → app `PriceListConfig` | tabela de `docs/02` | Editar preços em dados |
 | `trainingCosts` | Menu (ou dentro do Price list) | do livro | Custo em Jobs de cada evolução |
-| `activeJob` | Object | vazio | Job atual e suas Complications (escondido; usado pelo Rastreador) |
+| `activeJob` | Object | vazio | `{ name, goal }` do Job atual (escondido; Rastreador e faixa da cena) |
+| `globalTraits` | Array | `[]` | Traits globais da mesa, `[{ id, name, die }]`: valem em qualquer cena até o mestre remover (escondido; faixa da cena) |
+| `complications` | Array | `[]` | Complications da mesa, `[{ id, name, die }]`, independentes do Job e da cena (escondido; faixa da cena, Rastreador, card do 1, Rolador de oposição). As duas listas são lidas e escritas só por `module/table-state.mjs`; mudar uma avisa `leverage.tableStateChanged` |
 | `systemMigrationVersion` | String | — | Escondido |
 
 ## Configurações de cliente
@@ -39,10 +41,10 @@ Um grupo próprio "Leverage" (ícone de estrela/distintivo) nos controles de cen
 | **Jogadores podem destravar fichas** | toggle | Liga/desliga `playersCanUnlock` (desligado = fichas travadas à força); avisa no chat |
 | **Nível de procurado** | botão | Popover com 0–5 estrelas e a cidade |
 | **Rolador de oposição** | botão | Abre o rolador (`docs/08`) |
-| **Rastreador do Job** | botão | App com: nome do Job, Complications (nome + dado, subir/descer/remover), Traços da cena ativa (guardados no flag da cena), visão da Equipe (Vida, Colete, Grana, PP de cada um, com +/−) |
-| **Encerrar cena** | botão | Apaga Assets `scene` de todos os personagens (com confirmação e resumo no chat) e limpa os Traços da cena ativa |
-| **Novo Job** | botão | Define o Job ativo, leva cada um a pelo menos `jobStartPlotPoints` PP (quem tem mais mantém; o livro dá 1 a todos no início), limpa Complications antigas |
-| **Encerrar Job** | botão | Diálogo: nome, rendimento total em degraus, divisão por personagem → cria item `job` em cada ficha, soma Grana, apaga Assets `job` |
+| **Rastreador do Job** | botão | App com: nome e objetivo do Job, Complications da mesa (nome + dado, subir/descer/remover), visão da Equipe (Vida, Colete, Grana, PP de cada um, com +/−) |
+| **Encerrar cena** | botão | Apaga Assets `scene` de todos os personagens (com confirmação e resumo no chat) e limpa os Traits globais (`globalTraits`) |
+| **Novo Job** | botão | Define o Job ativo, leva cada um a pelo menos `jobStartPlotPoints` PP (quem tem mais mantém; o livro dá 1 a todos no início), limpa as Complications da mesa |
+| **Encerrar Job** | botão | Diálogo: nome, rendimento total em degraus, divisão por personagem → cria item `job` em cada ficha, soma Grana, apaga Assets `job` e limpa as Complications |
 | **Nova sessão** | botão | Zera `callbackUsed` de todos os Jobs |
 | **Dar Plot Point** | botão | Escolhe personagem(ns) e dá 1 PP |
 

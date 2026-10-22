@@ -676,7 +676,8 @@
         "jobCount": {
           "one": "{count} Job",
           "other": "{count} Jobs"
-        }
+        },
+        "endSceneTraits": "Scene Traits cleared: {count}."
       },
       "Dialog": {
         "PlotPoint": {
@@ -749,13 +750,10 @@
       "job": "Job",
       "jobPlaceholder": "Job name",
       "complications": "Complications",
-      "sceneTraits": "Scene Traits",
       "crew": "Crew",
       "noComplications": "No Complications.",
-      "noSceneTraits": "No scene Traits.",
       "noCrew": "No Crew characters.",
       "newComplication": "New Complication",
-      "newSceneTrait": "New scene Trait",
       "add": "Add",
       "remove": "Remove",
       "raise": "Raise",
@@ -1070,12 +1068,9 @@
       "talentsAssets": "Talents and Assets"
     },
     "ScenePanel": {
-      "title": "Scene",
       "expand": "Show the scene strip",
       "collapse": "Collapse the scene strip",
       "edit": "Edit in the Job Tracker",
-      "sceneTraits": "Scene Traits",
-      "complications": "Complications",
       "traitsCount": {
         "one": "{count} Trait",
         "other": "{count} Traits"
@@ -1084,7 +1079,12 @@
         "one": "{count} Complication",
         "other": "{count} Complications"
       },
-      "goal": "Goal"
+      "addTrait": "Add a Trait",
+      "addComplication": "Add a Complication",
+      "editDie": "Change the die",
+      "cancel": "Cancel",
+      "newTrait": "New Trait",
+      "newComplication": "New Complication"
     }
   }
 }

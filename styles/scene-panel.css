@@ -1,4 +1,4 @@
-/* Scene strip: Scene Traits of the active scene + shared Complications, one compact wrapping band beside Foundry's scene
+/* Scene strip: global Traits + Traits of the viewed scene's Locations + Complications, one compact wrapping band beside Foundry's scene
    navigation bar (corner written by scene-panel.mjs), at the HUD's z-index (over the scene, under windows). */
 #leverage-scene-panel {
   position: fixed;
@@ -100,3 +100,74 @@
   pointer-events: auto;
 }
 #leverage-scene-panel .lv-sp-edit:hover { color: var(--lv-ink); }
+
+/* Trait of a Location: pin icon and the Location's name after the Trait name (read only here) */
+#leverage-scene-panel .lv-sp-chip--place { max-width: 280px; }
+#leverage-scene-panel .lv-sp-chip--place > i { flex: none; color: var(--lv-teal-ink); font-size: 12px; }
+#leverage-scene-panel .lv-sp-place {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--lv-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The die is a button for the Fixer: it opens the die picker (the chip shows d4..d12 in place of the name) */
+#leverage-scene-panel .lv-sp-chip button.lv-die { flex: none; border-radius: 4px; }
+#leverage-scene-panel .lv-sp-chip button.lv-die:hover { filter: brightness(1.15); }
+#leverage-scene-panel .lv-sp-chip.is-editing { gap: 2px; max-width: none; }
+
+/* Remove / confirm / cancel inside a chip */
+#leverage-scene-panel .lv-sp-x {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  color: var(--lv-muted);
+  font-size: 11px;
+}
+#leverage-scene-panel .lv-sp-x:hover { color: var(--lv-ink); background: var(--lv-line); }
+
+/* Fixer controls: one nowrap group so the two + and the pencil never separate when the strip wraps */
+#leverage-scene-panel .lv-sp-controls { display: inline-flex; flex: none; flex-wrap: nowrap; align-items: center; gap: 4px; }
+
+/* Die picker: the current die is full and ringed, the others dimmed; the chip name stays visible after the dice */
+#leverage-scene-panel .lv-sp-picker { display: inline-flex; flex: none; gap: 2px; }
+#leverage-scene-panel .lv-sp-picker .lv-die { opacity: 0.5; }
+#leverage-scene-panel .lv-sp-picker .lv-die:hover { opacity: 1; }
+#leverage-scene-panel .lv-sp-picker .lv-die[aria-pressed="true"] { opacity: 1; outline: 2px solid var(--lv-ink); outline-offset: 1px; }
+#leverage-scene-panel .lv-sp-name--picking { max-width: 120px; margin-inline-start: 4px; }
+
+/* Add buttons (Fixer only): one per list, edged and tinted in the list's color */
+#leverage-scene-panel .lv-sp-plus {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  background: var(--lv-panel);
+  border: 1px solid var(--lv-line);
+  border-radius: 4px;
+  color: var(--lv-muted);
+  font-size: 12px;
+  pointer-events: auto;
+}
+#leverage-scene-panel .lv-sp-plus--trait { border-color: var(--lv-teal-ink); border-left-width: 3px; color: var(--lv-teal-ink); }
+#leverage-scene-panel .lv-sp-plus--complication { border-color: var(--lv-danger); border-left-width: 3px; color: var(--lv-danger); }
+#leverage-scene-panel .lv-sp-plus--trait:hover { background: color-mix(in srgb, var(--lv-teal-ink) 22%, var(--lv-panel)); color: var(--lv-teal-ink); }
+#leverage-scene-panel .lv-sp-plus--complication:hover { background: color-mix(in srgb, var(--lv-danger) 22%, var(--lv-panel)); color: var(--lv-danger); }
+
+/* New entry row */
+#leverage-scene-panel .lv-sp-add { padding-inline-start: 8px; gap: 4px; }
+#leverage-scene-panel .lv-sp-add-input {
+  width: 160px;
+  min-width: 0;
+  height: 24px;
+  padding: 0 6px;
+  background: var(--lv-bg-b);
+  border: 1px solid var(--lv-line);
+  border-radius: 3px;
+  color: var(--lv-ink);
+  font-size: 13px;
+}
+#leverage-scene-panel .lv-sp-add-input:focus { border-color: var(--lv-header); outline: 0; box-shadow: none; }

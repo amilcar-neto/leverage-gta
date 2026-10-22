@@ -285,7 +285,7 @@ if (from <= 5) {
     const btn = gm.locator(`#chat .chat-message[data-message-id="${got}"] [data-action=complication]`);
     if (!(await btn.count())) throw new Error("GM has no Complication button on a card with 1s");
     const ppBefore = (await state(rosa, SOL)).pp;
-    const jobBefore = await gm.evaluate((S) => game.settings.get(S, "activeJob").complications.map((c) => `${c.name} d${c.die}`), S);
+    const jobBefore = await gm.evaluate((S) => game.settings.get(S, "complications").map((c) => `${c.name} d${c.die}`), S);
     await btn.click();
     await gm.waitForTimeout(1500);
     const dialog = await gm.evaluate(() => [...document.querySelectorAll(".application.dialog, dialog")].map((d) => d.innerText.slice(0, 200)));
@@ -303,9 +303,9 @@ if (from <= 6) {
     await shot(gm, "gm-tracker-before");
     const rows = () => gm.evaluate(() => [...document.querySelectorAll(".lv-trk-sec")].slice(1, 3).map((s) => [...s.querySelectorAll(".lv-trk-row .lv-trk-name")].map((n) => n.textContent)));
     const before = await rows();
-    await gm.locator('.lv-trk [data-action=step][data-list=complications][data-delta="1"]').first().click();
+    await gm.locator('.lv-trk [data-action=step][data-delta="1"]').first().click();
     await gm.waitForTimeout(600);
-    await gm.locator('.lv-trk [data-action=remove][data-list=complications]').last().click();
+    await gm.locator('.lv-trk [data-action=remove]').last().click();
     await gm.waitForTimeout(800);
     await shot(gm, "gm-tracker-after");
     await shot(rosa, "sol-sees-updated-panel");

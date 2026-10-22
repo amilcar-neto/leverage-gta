@@ -9,20 +9,20 @@ import { escapeHtml, requireGM, resolveActor } from "../components/common.mjs";
 import { t, tn } from "../components/i18n.mjs";
 import { isAnswer, requireTextField } from "../components/dialog-guard.mjs";
 import { normalizeJob } from "./job-tracker-logic.mjs";
-import { readSceneTraits, writeSceneTraits } from "./scene-traits.mjs";
+import { clearComplications, clearGlobalTraits, readGlobalTraits } from "../../table-state.mjs";
 
 /* -------------------------------------------- */
 /*  Pure helpers                                */
 /* -------------------------------------------- */
 
-/** An empty active Job (no name, no Complications, no scene Traits). Scene Traits are never stored in the setting. */
-export const emptyJob = () => ({ name: "", goal: "", complications: [], sceneTraits: [] });
+/** An empty active Job (no name, no goal). Complications and Traits are table state, not part of the Job. */
+export const emptyJob = () => ({ name: "", goal: "" });
 
 /**
- * State of a freshly started Job: the old Complications and scene Traits are gone.
+ * State of a freshly started Job.
  * @param {string} name
  * @param {string} [goal] What the Crew wants from this Job (optional).
- * @returns {{name: string, goal: string, complications: [], sceneTraits: []}}
+ * @returns {{name: string, goal: string}}
  */
 export function freshJob(name, goal = "") {
   return { ...emptyJob(), name: String(name ?? "").trim(), goal: String(goal ?? "").trim() };
@@ -107,21 +107,18 @@ function say(html) {
 }
 
 /**
- * Reads the active Job (a normalised copy: every list exists, every entry is valid). Complications come from the
- * world setting (shared by every scene); `sceneTraits` come from the active Scene.
+ * Reads the active Job (a normalised copy: name and goal). Its Complications are table state: `readComplications()`.
+ * @returns {{name: string, goal: string}}
  */
-export const readJob = () => ({ ...normalizeJob(foundry.utils.deepClone(readSetting("activeJob", emptyJob()))), sceneTraits: readSceneTraits() });
+export const readJob = () => normalizeJob(readSetting("activeJob", emptyJob()));
 
 /**
- * Saves a Job the way `readJob` reads it: the Job (name, goal, Complications) to the world setting and
- * `sceneTraits` to the active Scene. GM only; the setting never keeps scene Traits.
+ * Saves the Job (name and goal) to the world setting. GM only.
  * @param {object} job
  * @returns {Promise<void>}
  */
 export async function writeJob(job) {
-  const { sceneTraits, ...stored } = job;
-  await game.settings.set(SYSTEM_ID, "activeJob", stored);
-  if (Array.isArray(sceneTraits)) await writeSceneTraits(sceneTraits);
+  await game.settings.set(SYSTEM_ID, "activeJob", normalizeJob(job));
 }
 
 /** Whether the Money house rule is on. */
@@ -201,8 +198,7 @@ export async function newSession() {
 }
 
 /**
- * End of scene: deletes every `scene` Asset of the Crew (after a confirmation) and clears the scene Traits of the
- * active Job when that field exists.
+ * End of scene: deletes every `scene` Asset of the Crew (after a confirmation) and clears the global Traits.
  * @param {{confirm?: boolean}} [options] `confirm: false` skips the dialog (macros).
  * @returns {Promise<number|null>} Assets removed, or null when cancelled
  */
@@ -220,14 +216,16 @@ export async function endScene({ confirm = true } = {}) {
     if (!yes) return null;
   }
   for (const { actor, ids } of targets) if (ids.length) await actor.deleteEmbeddedDocuments("Item", ids);
-  await writeSceneTraits([]);
+  const traitsCleared = readGlobalTraits().length;
+  await clearGlobalTraits();
   const detail = targets.filter((x) => x.ids.length).map((x) => `${escapeHtml(x.actor.name)} (${x.ids.length})`).join(", ");
-  await say(t("LEVERAGE.GM.Chat.endScene", { count: total }) + (detail ? ` ${detail}` : ""));
+  await say(t("LEVERAGE.GM.Chat.endScene", { count: total }) + (detail ? ` ${detail}` : "")
+    + (traitsCleared ? ` ${t("LEVERAGE.GM.Chat.endSceneTraits", { count: traitsCleared })}` : ""));
   return total;
 }
 
 /**
- * Starts a Job: sets the active Job (no old Complications) and raises each character to at least `jobStartPlotPoints`
+ * Starts a Job: sets the active Job, clears the old Complications and raises each character to at least `jobStartPlotPoints`
  * Plot Points (the book: everybody has 1 to start the Job; Plot Points left over are kept, never added on top).
  * @param {string} name
  * @param {string} [goal] Optional goal shown in the Tracker, the Scene Panel and the Job sheet.
@@ -238,6 +236,7 @@ export async function newJob(name, goal = "") {
   const job = freshJob(name, goal);
   if (!job.name) return false;
   await writeJob(job);
+  await clearComplications();
   const each = toSteps(readSetting("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints));
   if (each) await Promise.all(crewActors().map((a) => a.addPlotPoints(Math.max(0, each - (a.system.plotPoints?.value ?? 0)))));
   await say(t("LEVERAGE.GM.Chat.newJob", { name: escapeHtml(job.name), pp: tn("LEVERAGE.GM.Chat.plotPointCount", each) }));
@@ -283,7 +282,7 @@ export function checkJobResult({ name, total, shares }, ids) {
 
 /**
  * Ends the Job: creates a `job` Item with the payout on each character, adds the share to their Money, deletes
- * their `job` Assets and clears the active Job. Nothing changes when the name is empty or the shares add up to more
+ * their `job` Assets, clears the active Job and its Complications. Nothing changes when the name is empty or the shares add up to more
  * than the total. A share that does not fit in a character's Money ladder is reported in a warning.
  * @param {{name: string, total: number, shares: Record<string, number>}} result `shares` by Crew actor id.
  * @returns {Promise<number>} characters paid (0 when refused)
@@ -311,6 +310,7 @@ export async function endJob({ name, total, shares }) {
     paid += 1;
   }
   await writeJob(emptyJob());
+  await clearComplications();
   await say(t("LEVERAGE.GM.Chat.endJob", { name: escapeHtml(name), total: toSteps(total) }));
   return paid;
 }

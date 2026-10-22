@@ -1,6 +1,6 @@
 /**
  * T-504 check: opposition roller and the Fixer card, in the real Foundry. Sets `wanted` (Liberty City, 3 stars) and
- * `activeJob` (one Complication), builds 2d6 + police + Complication in the roller, rolls, checks the card and the
+ * the table `complications` (one Complication), builds 2d6 + police + Complication in the roller, rolls, checks the card and the
  * flags, then deletes the message and restores both settings. Run after `npm run deploy`.
  * Exit codes: 0 pass, 1 fail, 2 not available.
  */
@@ -19,9 +19,10 @@ let saved = null;
 try {
   await login(page, env);
   saved = await page.evaluate(async () => {
-    const s = { wanted: game.settings.get("leverage-gta", "wanted"), job: game.settings.get("leverage-gta", "activeJob") };
+    const s = { wanted: game.settings.get("leverage-gta", "wanted"), job: game.settings.get("leverage-gta", "activeJob"), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
     await game.settings.set("leverage-gta", "wanted", { city: "liberty", level: 3 });
-    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", complications: [{ id: "c1", name: "[TEST] Alarm", die: 8 }] });
+    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "" });
+    await game.settings.set("leverage-gta", "complications", [{ id: "c1", name: "[TEST] Alarm", die: 8 }]);
     ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary");
     const { openOppositionRoller } = await import(foundry.utils.getRoute("systems/leverage-gta/module/dice/opposition.mjs"));
     await openOppositionRoller();
@@ -66,7 +67,7 @@ try {
   record("flags: opposition, source, no actor", f?.opposition === true && f.source === "manual+police+picked" && f.actorUuid === "", f);
   const eligible = f.entries.filter((e) => !e.one).map((e) => e.result).sort((a, b) => b - a);
   record("total is the two highest non-1 dice", f.total === (eligible[0] ?? 0) + (eligible[1] ?? 0), f);
-  record("card headed FIXER, no portrait, red accent", r.name === "FIXER" && r.mug === 0 && r.accent, r);
+  record("card headed FIXER, no portrait, red accent", /^(FIXER|MESTRE)$/.test(r.name) && r.mug === 0 && r.accent, r);
   record("card has no Plot Point or Complication buttons and no ones warning (APPLY DAMAGE is T-602)", r.buttons === 0 && !r.ones, r);
   record("card shows 5 dice and a total", r.cardDice === 5 && r.total === String(f.total), r);
   record("roller stays open after rolling", await page.locator(app).count() === 1);
@@ -90,6 +91,7 @@ try {
     if (s) {
       await game.settings.set("leverage-gta", "wanted", s.wanted);
       await game.settings.set("leverage-gta", "activeJob", s.job);
+      await game.settings.set("leverage-gta", "complications", s.complications);
     }
   }, [FLAVOR, saved]).catch(() => {});
 }

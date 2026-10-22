@@ -132,12 +132,12 @@ export function locationSources(traits, fallback) {
 }
 
 /**
- * Selectable Complications of the active Job.
- * @param {{complications?: {id: string, name: string, die: number}[]}} job
+ * Selectable Complications of the table (keys keep the `job.` prefix, so saved macros still work).
+ * @param {{id: string, name: string, die: number}[]} complications
  * @returns {{key: string, label: string, die: number}[]}
  */
-export function complicationSources(job) {
-  return (job?.complications ?? []).map((c) => ({ key: `job.${c.id}`, label: c.name, die: c.die })).filter((s) => isValidDie(s.die));
+export function complicationSources(complications) {
+  return (complications ?? []).map((c) => ({ key: `job.${c.id}`, label: c.name, die: c.die })).filter((s) => isValidDie(s.die));
 }
 
 /**

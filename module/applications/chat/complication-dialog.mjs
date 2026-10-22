@@ -31,7 +31,7 @@ function buildContent(complications) {
 
 /**
  * Opens the dialog.
- * @param {{id: string, name: string, die: number}[]} complications Complications of the active Job.
+ * @param {{id: string, name: string, die: number}[]} complications Complications of the table.
  * @returns {Promise<{id: string|null, name: string}|null>} the choice, or null when cancelled / nothing valid chosen
  */
 export async function promptComplication(complications) {

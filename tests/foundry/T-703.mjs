@@ -13,15 +13,17 @@ const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), 
 const wait = (ms) => page.waitForTimeout(ms);
 const app = "#leverage-job-tracker";
 const job = () => page.evaluate(() => game.settings.get("leverage-gta", "activeJob"));
+const complications = () => page.evaluate(() => game.settings.get("leverage-gta", "complications"));
 let saved = null;
 let actorId = null;
 
 try {
   await login(page, env);
   const setup = await page.evaluate(async () => {
-    const s = game.settings.get("leverage-gta", "activeJob");
-    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", complications: [], sceneTraits: [] });
-    const actor = await Actor.create({ name: "[TEST] Crew", type: "crew" });
+    const s = { job: foundry.utils.deepClone(game.settings.get("leverage-gta", "activeJob")), complications: foundry.utils.deepClone(game.settings.get("leverage-gta", "complications")) };
+    await game.settings.set("leverage-gta", "activeJob", { name: "[TEST] Job", goal: "" });
+    await game.settings.set("leverage-gta", "complications", []);
+    const actor = await Actor.create({ name: "[TEST] Crew", type: "crew", ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER } });
     const { JobTracker } = await import(foundry.utils.getRoute("systems/leverage-gta/module/applications/gm/job-tracker.mjs"));
     await new JobTracker().render({ force: true });
     return { s, id: actor.id };
@@ -38,23 +40,23 @@ try {
   await wait(500);
   record("Job name saved", (await job()).name === "[TEST] Renamed", await job());
 
-  await page.locator(`${app} [data-new-name="complications"]`).fill("[TEST] Alarm");
-  await page.locator(`${app} [data-action="add"][data-list="complications"]`).click();
+  await page.locator(`${app} [data-new-name]`).fill("[TEST] Alarm");
+  await page.locator(`${app} [data-action="add"]`).click();
   await wait(500);
-  let j = await job();
-  record("Complication added as d6", j.complications.length === 1 && j.complications[0].die === 6, j);
-  await page.locator(`${app} [data-action="step"][data-list="complications"][data-delta="1"]`).click();
+  let j = await complications();
+  record("Complication added as d6", j.length === 1 && j[0].die === 6, j);
+  await page.locator(`${app} [data-action="step"][data-delta="1"]`).click();
   await wait(500);
-  record("Complication raised to d8", (await job()).complications[0].die === 8, await job());
-  await page.locator(`${app} [data-action="step"][data-list="complications"][data-delta="-1"]`).click();
+  record("Complication raised to d8", (await complications())[0].die === 8, await complications());
+  await page.locator(`${app} [data-action="step"][data-delta="-1"]`).click();
   await wait(500);
-  record("Complication lowered to d6", (await job()).complications[0].die === 6, await job());
+  record("Complication lowered to d6", (await complications())[0].die === 6, await complications());
 
-  await page.locator(`${app} [data-new-name="sceneTraits"]`).fill("[TEST] Fog");
-  await page.locator(`${app} [data-new-name="sceneTraits"]`).press("Enter");
+  await page.locator(`${app} [data-new-name]`).fill("[TEST] Fog");
+  await page.locator(`${app} [data-new-name]`).press("Enter");
   await wait(500);
-  j = await job();
-  record("scene Trait added with Enter", j.sceneTraits.length === 1 && j.sceneTraits[0].name === "[TEST] Fog", j);
+  j = await complications();
+  record("second Complication added with Enter", j.length === 2 && j[1].name === "[TEST] Fog", j);
 
   const row = `${app} [data-actor-id="${actorId}"]`;
   const pp0 = await page.evaluate((id) => game.actors.get(id).system.plotPoints.value, actorId);
@@ -79,11 +81,12 @@ try {
   }, app);
   record("no button overflows", !overflow);
 
-  await page.locator(`${app} [data-action="remove"][data-list="complications"]`).click();
-  await page.locator(`${app} [data-action="remove"][data-list="sceneTraits"]`).click();
+  await page.locator(`${app} [data-action="remove"]`).first().click();
+  await wait(300);
+  await page.locator(`${app} [data-action="remove"]`).first().click();
   await wait(500);
-  j = await job();
-  record("Complication and scene Trait removed", j.complications.length === 0 && j.sceneTraits.length === 0, j);
+  j = await complications();
+  record("Complications removed", j.length === 0, j);
   record("no system errors in console", log.own().length === 0, log.own());
 } catch (err) {
   record("run", false, err.message.split("\n").slice(0, 6).join(" | "));
@@ -91,7 +94,10 @@ try {
 } finally {
   await page.evaluate(async ([s, id]) => {
     foundry.applications.instances.get("leverage-job-tracker")?.close();
-    if (s) await game.settings.set("leverage-gta", "activeJob", s);
+    if (s) {
+      await game.settings.set("leverage-gta", "activeJob", s.job);
+      await game.settings.set("leverage-gta", "complications", s.complications);
+    }
     if (id) await game.actors.get(id)?.delete();
   }, [saved, actorId]).catch(() => {});
 }

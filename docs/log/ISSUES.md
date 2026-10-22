@@ -87,3 +87,6 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 ## Traços de cena: Cena ativa x Cena vista (transitório, até a L-06)
 
 - Os Traços por flag vêm da Cena ATIVA; os Traços de Local vêm da Cena VISTA (canvas). Se o mestre vê uma Cena que não é a ativa, as duas fontes divergem. Gravidade baixa. Some na L-06, que remove os Traços por flag.
+
+## L-06b: print do Rastreador (docs/USO.md)
+- **Baixa, aberto:** `docs/img/rastreador.png` (usado em `docs/USO.md`) pode estar desatualizado: o Rastreador agora só tem Objetivo e Complications, e Traits se criam na faixa da cena. Não foi regenerado; refazer o print quando der.

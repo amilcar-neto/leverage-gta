@@ -1,14 +1,17 @@
 /**
- * Scene strip: a compact public band right under Foundry's scene navigation. It lists the Scene Traits of the ACTIVE
- * Scene (a flag on the Scene) and the Complications of the Job (shared by every scene), plus the Job goal. Everyone
- * sees it; chips open the Job Tracker for the Fixer. Collapsible per client. A frameless `ApplicationV2` appended to
- * `#interface` at the HUD's z-index (over the scene, under windows).
+ * Scene strip: a compact public band right under Foundry's scene navigation. It lists the table's global Traits and
+ * Complications (state the Fixer keeps, `table-state.mjs`), the Traits of the Locations of the viewed Scene (read
+ * only, marked with the Location's name) and the Job goal. Everyone sees it; the Fixer adds, removes and changes the
+ * die of global Traits and Complications right in the strip. Collapsible per client. A frameless `ApplicationV2`
+ * appended to `#interface` at the HUD's z-index (over the scene, under windows).
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
-import { currentSceneTraits } from "../../scene-location.mjs";
+import { currentLocationTraits } from "../../scene-location.mjs";
+import { TABLE_LISTS } from "../../rules/table-entries.mjs";
+import { addTableEntry, readComplications, readGlobalTraits, removeTableEntry, setTableEntryDie } from "../../table-state.mjs";
 import { t, tn } from "../components/i18n.mjs";
-import { buildScenePanel } from "./scene-panel-logic.mjs";
+import { buildScenePanel, withDiePicker } from "./scene-panel-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -18,7 +21,10 @@ const NAV_IDS = Object.freeze(["scene-navigation-viewed", "scene-navigation-expa
 const DIE_SIZE = LEVERAGE.dieGeometry.uses.scenePanel;
 
 /** Hooks that keep the panel current. */
-const REFRESH_HOOKS = Object.freeze([LEVERAGE.hooks.activeJobChanged, LEVERAGE.hooks.hudChanged, "canvasReady"]);
+const REFRESH_HOOKS = Object.freeze([LEVERAGE.hooks.activeJobChanged, LEVERAGE.hooks.tableStateChanged, LEVERAGE.hooks.hudChanged, "canvasReady"]);
+
+/** Lists the Fixer can add to from the strip, with the i18n key of the input placeholder. */
+const ADD_PLACEHOLDER = Object.freeze({ globalTraits: "LEVERAGE.ScenePanel.newTrait", complications: "LEVERAGE.ScenePanel.newComplication" });
 
 export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   /** @override */
@@ -27,7 +33,11 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     tag: "aside",
     classes: ["leverage-gta"],
     window: { frame: false, positioned: false },
-    actions: { toggleCollapsed: ScenePanel.#onToggle, openTracker: ScenePanel.#onOpenTracker }
+    actions: {
+      toggleCollapsed: ScenePanel.#onToggle, openTracker: ScenePanel.#onOpenTracker,
+      startAdd: ScenePanel.#onStartAdd, confirmAdd: ScenePanel.#onConfirmAdd, cancelAdd: ScenePanel.#onCancelAdd,
+      removeEntry: ScenePanel.#onRemove, editDie: ScenePanel.#onEditDie, setDie: ScenePanel.#onSetDie
+    }
   };
 
   /** @override */
@@ -44,6 +54,14 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   #hooks = [];
+  /** List being added to (`globalTraits` / `complications`) or null. */
+  #adding = null;
+  /** Id of the entry whose die picker is open, or null. */
+  #editing = null;
+  /** What the Fixer has typed in the open add row, kept across re-renders. */
+  #draft = "";
+  /** Whether the add input must take focus after the next render (it just opened, or it had focus before). */
+  #focusInput = false;
   #observer = null;
   #observed = null;
   #onResize = () => this.updatePosition();
@@ -54,12 +72,22 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   /** @override */
   async _prepareContext() {
     const isGM = game.user.isGM;
-    const view = buildScenePanel({ job: readSetting("activeJob", {}), sceneTraits: currentSceneTraits() });
+    const input = this.element?.querySelector(".lv-sp-add-input");
+    if (input) {
+      this.#draft = input.value;
+      this.#focusInput ||= document.activeElement === input;
+    }
+    const view = buildScenePanel({
+      job: readSetting("activeJob", {}), globalTraits: readGlobalTraits(), placeTraits: currentLocationTraits(), complications: readComplications()
+    });
+    view.traits = withDiePicker(view.traits, this.#editing, LEVERAGE.dice);
+    view.complications = withDiePicker(view.complications, this.#editing, LEVERAGE.dice);
     const collapsed = Boolean(readSetting("scenePanel.collapsed", false));
     const toggle = t(collapsed ? "LEVERAGE.ScenePanel.expand" : "LEVERAGE.ScenePanel.collapse");
     return {
-      ...view, isGM, collapsed, dieSize: DIE_SIZE, toggleLabel: toggle, chipTag: isGM ? "button" : "span",
+      ...view, isGM, collapsed, dieSize: DIE_SIZE, toggleLabel: toggle,
       show: Boolean(readSetting("scenePanel.show", true)),
+      adding: this.#adding && { list: this.#adding, placeholder: t(ADD_PLACEHOLDER[this.#adding]), draft: this.#draft, isTrait: this.#adding === "globalTraits" },
       summary: this.#summary(view)
     };
   }
@@ -84,12 +112,48 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   async _onFirstRender() {
     this.#hooks = REFRESH_HOOKS.map((name) => [name, Hooks.on(name, () => this.refresh())]);
     window.addEventListener("resize", this.#onResize);
+    document.addEventListener("pointerdown", this.#onOutside, true);
   }
 
   /** @override */
   async _onRender() {
     this.#bindHud();
     this.updatePosition();
+    const input = this.element.querySelector(".lv-sp-add-input");
+    input?.addEventListener("keydown", (event) => this.#onAddKey(event));
+    if (input && this.#focusInput) {
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+    this.#focusInput = false;
+  }
+
+  /** Enter confirms the new entry, Escape drops it. */
+  #onAddKey(event) {
+    if (event.key === "Enter") { event.preventDefault(); this.#confirmAdd(); }
+    else if (event.key === "Escape") { event.stopPropagation(); this.#closeAdd(); }
+  }
+
+  /** A press outside the open die picker closes it. */
+  #onOutside = (event) => {
+    if (this.#editing && !event.target.closest?.(".lv-sp-chip.is-editing")) {
+      this.#editing = null;
+      this.refresh();
+    }
+  };
+
+  async #confirmAdd() {
+    const list = this.#adding;
+    const name = this.element.querySelector(".lv-sp-add-input")?.value;
+    this.#closeAdd();
+    if (list) await addTableEntry(list, name);
+  }
+
+  #closeAdd() {
+    this.#adding = null;
+    this.#draft = "";
+    this.#focusInput = false;
+    this.render({ force: true });
   }
 
   /** @override */
@@ -98,6 +162,7 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     this.#observer = null;
     this.#observed = null;
     window.removeEventListener("resize", this.#onResize);
+    document.removeEventListener("pointerdown", this.#onOutside, true);
     for (const [name, id] of this.#hooks) Hooks.off(name, id);
     this.#hooks = [];
     if (ScenePanel.#instance === this) ScenePanel.#instance = null;
@@ -125,6 +190,48 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #onToggle() {
     await game.settings.set(SYSTEM_ID, "scenePanel.collapsed", !readSetting("scenePanel.collapsed", false));
+  }
+
+  static #onStartAdd(event, target) {
+    if (!game.user.isGM || !(target.dataset.list in TABLE_LISTS)) return;
+    this.#adding = target.dataset.list;
+    this.#draft = "";
+    this.#focusInput = true;
+    this.#editing = null;
+    this.render({ force: true });
+  }
+
+  static #onConfirmAdd() {
+    return this.#confirmAdd();
+  }
+
+  static #onCancelAdd() {
+    this.#closeAdd();
+  }
+
+  /** The list and id of the chip a control sits in. */
+  static #entryOf(target) {
+    const { list, id } = target.closest("[data-entry]")?.dataset ?? {};
+    return list in TABLE_LISTS ? { list, id } : null;
+  }
+
+  static #onRemove(event, target) {
+    const entry = ScenePanel.#entryOf(target);
+    return entry && removeTableEntry(entry.list, entry.id);
+  }
+
+  static #onEditDie(event, target) {
+    const entry = ScenePanel.#entryOf(target);
+    if (!entry || !game.user.isGM) return;
+    this.#editing = this.#editing === entry.id ? null : entry.id;
+    this.render({ force: true });
+  }
+
+  static async #onSetDie(event, target) {
+    const entry = ScenePanel.#entryOf(target);
+    this.#editing = null;
+    if (entry) await setTableEntryDie(entry.list, entry.id, Number(target.dataset.die));
+    this.render({ force: true });
   }
 
   static async #onOpenTracker() {

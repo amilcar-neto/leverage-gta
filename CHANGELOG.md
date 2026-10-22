@@ -4,6 +4,18 @@ Todas as mudanças importantes deste sistema ficam neste arquivo.
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa
 [versionamento semântico](https://semver.org/lang/pt-BR/).
 
+## [0.1.1] - 2026-10-21
+
+### Mudado
+- Traits e Complications passam a ser estado global da mesa: o mestre cria, troca o dado e remove direto na faixa da
+  cena; valem em qualquer cena e independem do Job. Os Traços específicos de uma cena vêm do Lugar.
+- O Job guarda só nome e objetivo. Encerrar cena limpa os Traits globais; Novo Job e Encerrar Job limpam as Complications.
+- A faixa da cena marca os Traços de Lugar (ícone de pino e nome do Local).
+
+### Removido
+- Traços por Cena guardados em flag (decisão do dono). Mundos antigos: a migração 0.1.1 move as Complications e os
+  Traços de cena do Job para a mesa e apaga o flag.
+
 ## [0.1.0] - 2026-10-21
 
 Primeira versão jogável, para Foundry VTT v14.

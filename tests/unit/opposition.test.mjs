@@ -54,8 +54,8 @@ test("NPC sources: traits, attributes and roles with a die; blank names fall bac
 
 test("location and Complication sources", () => {
   assert.deepEqual(locationSources([{ name: "Dark Corners", die: 8 }, { name: "", die: 6 }], "Trait").map((s) => s.label), ["Dark Corners", "Trait"]);
-  const job = { complications: [{ id: "a", name: "Alarm", die: 6 }, { id: "b", name: "Bad", die: 99 }] };
-  assert.deepEqual(complicationSources(job), [{ key: "job.a", label: "Alarm", die: 6 }]);
+  const complications = [{ id: "a", name: "Alarm", die: 6 }, { id: "b", name: "Bad", die: 99 }];
+  assert.deepEqual(complicationSources(complications), [{ key: "job.a", label: "Alarm", die: 6 }]);
   assert.deepEqual(complicationSources(undefined), []);
 });
 

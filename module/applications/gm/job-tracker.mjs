@@ -1,7 +1,8 @@
 /**
- * Job Tracker (docs/09 "Rastreador do Job"), Fixer only: Job name, Complications, scene Traits and a Crew overview
- * (Life, Vest, Money, Plot Points with +/-). The Job lives in the world setting `activeJob`; only the GM writes it.
- * Re-renders on `leverage.activeJobChanged` and when a Crew actor changes.
+ * Job Tracker (docs/09 "Rastreador do Job"), Fixer only: Job name and goal, the table's Complications and a Crew
+ * overview (Life, Vest, Money, Plot Points with +/-). The Job (name, goal) lives in the world setting `activeJob`; the
+ * Complications are table state (`table-state.mjs`, shared with the scene strip). Re-renders on
+ * `leverage.activeJobChanged`, `leverage.tableStateChanged` and when a Crew actor changes.
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
@@ -9,20 +10,25 @@ import { clampSteps } from "../../rules/money.mjs";
 import { renderDie } from "../components/die.mjs";
 import { t } from "../components/i18n.mjs";
 import { crewActors, newJobDialog, readJob, writeJob } from "./job-actions.mjs";
-import { addEntry, clampedAdd, removeEntry, renameJob, setJobGoal, stepEntry } from "./job-tracker-logic.mjs";
+import { addTableEntry, readComplications, removeTableEntry, stepTableEntry } from "../../table-state.mjs";
+import { clampedAdd, renameJob, setJobGoal } from "./job-tracker-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /** Die size in the lists and in the Money cell. */
 const DIE_SIZE = LEVERAGE.dieGeometry.uses.tracker;
 
-/** Hooks that refresh the tracker: the active Job changed, the house rules (which cells the Crew rows show) changed. */
+/** Hooks that refresh the tracker: the Job or the table state changed, the house rules (which cells the Crew rows show) changed. */
 const JOB_HOOK = LEVERAGE.hooks.activeJobChanged;
+const TABLE_HOOK = LEVERAGE.hooks.tableStateChanged;
+
+/** The list the tracker edits. */
+const LIST = "complications";
 const RULES_HOOK = LEVERAGE.hooks.houseRulesChanged;
 
-/** Template data of one Complication / scene Trait row. */
-const entryRow = (list) => (e) => ({
-  id: e.id, list, name: e.name, die: e.die,
+/** Template data of one Complication row. */
+const entryRow = (e) => ({
+  id: e.id, name: e.name, die: e.die,
   html: renderDie({ die: e.die, value: e.die, size: DIE_SIZE, title: `d${e.die}` }),
   canUp: e.die < 12, canDown: e.die > 4
 });
@@ -61,8 +67,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
       hasJob: Boolean(job.name),
       name: job.name,
       goal: job.goal,
-      complications: job.complications.map(entryRow("complications")),
-      sceneTraits: job.sceneTraits.map(entryRow("sceneTraits")),
+      complications: readComplications().map(entryRow),
       crew: crewActors().map(crewRow),
       rules: { life: Boolean(readSetting("houseRules.life", true)), money: Boolean(readSetting("houseRules.money", true)) }
     };
@@ -75,6 +80,7 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     const onActor = (actor) => actor?.type === "crew" && refresh();
     this.#hooks = [
       [JOB_HOOK, Hooks.on(JOB_HOOK, refresh)],
+      [TABLE_HOOK, Hooks.on(TABLE_HOOK, refresh)],
       [RULES_HOOK, Hooks.on(RULES_HOOK, refresh)],
       ["updateActor", Hooks.on("updateActor", onActor)],
       ["createActor", Hooks.on("createActor", onActor)],
@@ -88,13 +94,11 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     const el = this.element;
     el.querySelector('[name="jobName"]')?.addEventListener("change", (event) => this.#save(renameJob(readJob(), event.target.value)));
     el.querySelector("[name=\"jobGoal\"]")?.addEventListener("change", (event) => this.#save(setJobGoal(readJob(), event.target.value)));
-    for (const input of el.querySelectorAll("[data-new-name]")) {
-      input.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter") return;
-        event.preventDefault();
-        this.#addFrom(input.dataset.newName);
-      });
-    }
+    el.querySelector("[data-new-name]")?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      this.#addFromInput();
+    });
   }
 
   /** @override */
@@ -110,26 +114,27 @@ export class JobTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     await writeJob(job);
   }
 
-  /** Adds the entry typed in the input of `list`. */
-  async #addFrom(list) {
-    const input = this.element.querySelector(`[data-new-name="${list}"]`);
-    const next = addEntry(readJob(), list, input?.value, () => foundry.utils.randomID());
+  /** Adds the Complication typed in the input. */
+  async #addFromInput() {
+    const input = this.element.querySelector("[data-new-name]");
+    const name = input?.value;
     if (input) input.value = "";
-    await this.#save(next);
+    if (!game.user.isGM) return ui.notifications.warn(t("LEVERAGE.GM.Warn.gmOnly"));
+    await addTableEntry(LIST, name);
   }
 
   /* ---------------------------------------------------------------- actions */
 
-  static #onAdd(event, target) {
-    return this.#addFrom(target.dataset.list);
+  static #onAdd() {
+    return this.#addFromInput();
   }
 
   static #onRemove(event, target) {
-    return this.#save(removeEntry(readJob(), target.dataset.list, target.dataset.id));
+    return removeTableEntry(LIST, target.dataset.id);
   }
 
   static #onStep(event, target) {
-    return this.#save(stepEntry(readJob(), target.dataset.list, target.dataset.id, Number(target.dataset.delta)));
+    return stepTableEntry(LIST, target.dataset.id, Number(target.dataset.delta));
   }
 
   /** Crew +/- buttons: `data-field` is life, vest, money or pp. */
