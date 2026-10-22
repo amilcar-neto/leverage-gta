@@ -14,45 +14,70 @@ Alvo visual do card: `reference/mockups/png/roll-chat-card.png`. Bandeja: rodap�
   (`docs/09`), para quem recebeu um dado de outro jogador ou do cenário.
 - Clicar num chip da bandeja tira ele da Pool (Distinction: alterna d8 → d4 → fora).
 - **ROLL** fica desabilitado (com tooltip) até haver Attribute e Role. Atalho: Enter com a ficha focada.
-- O contador "N dice · keep 2" acompanha.
+- O contador acompanha: "N dice" mais a dica "choose 2 + effect" (modo `prime`) ou "N dice · keep 2" (modo `classic`).
 - Depois de rolar, a Pool limpa (configuração de cliente para manter, padrão: limpar).
 
 ## Ao rolar
 
+Dois modos, pela configuração `rules.rollMode` (mundo). Decisões em `docs/log/DECISIONS.md` ("Cortex Prime"); a matemática
+pura está em `module/dice/prime-math.mjs`.
+
+**Modo `prime` (Cortex Prime)**
+
 1. Avalie cada dado com a classe `Roll` do Foundry (um termo por dado, para o Dice So Nice e para o histórico).
-2. Separe os **1s**: não contam.
-3. **Mantidos:** os dois maiores entre os que não são 1. Se só sobrar um, total = ele; se nenhum, total = 0.
-4. Se entrou **Distinction d4**: o personagem **ganha 1 PP** na hora (registrado no card).
-5. Se entrou **Grana**: o personagem **desce 1 degrau** (registrado no card).
-6. Crie a mensagem de chat com o card e as `flags` de `docs/05`.
+2. Hitches: dados que tiraram **1** não contam, não entram no total e não podem ser o dado de efeito.
+3. O card entra no chat **inativo** (`status: "pending"`): sem total, sem dados marcados, sem efeito. Quem rolou recebe a
+   janela **Escolher dados** (uma por mensagem; não há escolha automática inicial).
+4. O jogador escolhe **2 dados** para o total (quaisquer dois, não só os maiores) e **1 dado** para o efeito, e lança no
+   card. Só então ele vale (`status: "resolved"`). Dado extra no total custa **1 PP** cada e **não** pode ser o efeito.
+   Atalhos na janela: **Máx. total** (2 maiores; o maior que sobrar é o efeito) e **Máx. efeito** (maior dado, por faces,
+   vira efeito; os 2 maiores do resto no total). Eles só preenchem a escolha; o jogador confirma.
+5. Sem dado sobrando, o efeito é **d4**. Pool de 1 dado: o total é o dado. Só hitches: **botch**, total 0.
+6. Fechar a janela sem confirmar **não** resolve nada: o card segue inativo e tem o botão **Escolher dados**.
+7. Se entrou **Distinction d4**: o personagem ganha 1 PP (registrado no card). Se entrou **Grana**: desce 1 degrau.
+8. Sucesso heroico (`rules.heroicSuccess`): superar a dificuldade por 5 ou mais sobe o efeito 1 passo a cada 5.
+
+**Modo `classic` (rede de segurança):** rolagem imediata e resolvida (`status: "resolved"`), os dois maiores entre os que
+não são 1 (um só: total = ele; nenhum: 0), sem dado de efeito. Mesmas regras de PP (+1 dado) e Grana.
+
+Em ambos, crie a mensagem de chat com o card e as `flags` de `docs/05`.
 
 ## O card
 
 - **Topo preto:** retrato pequeno (mugshot), nome em Anton com contorno, `flavor` (descrição da ação) em cinza.
 - **Chips dos Traços:** nome + tamanho do dado na cor do dado.
 - **Dados:** o mesmo componente da ficha (`renderDie`), 50 px, **com o resultado dentro**:
-  - Mantidos: cor cheia, borda acesa branca, legenda "KEPT".
-  - 1s: borda vermelha, opacidade 0,75, legenda "1 · OUT".
+  - Total: cor cheia, borda acesa branca, legenda "TOTAL" (modo `classic`: "KEPT"); efeito: legenda "EFFECT"; pago com PP:
+    "TOTAL +PP".
+  - Hitches: borda vermelha, opacidade 0,75, legenda "HITCH" (modo `classic`: "1 · OUT").
   - Os outros: opacidade 0,45, legenda com o tamanho ("d8").
   - Ordem: a mesma da Pool (Attribute, Role, depois os opcionais).
-- **TOTAL** grande + explicação curta ("2 highest kept · 9 + 6").
-- **Aviso de 1s** (caixa tracejada vermelha) quando houver 1s ainda não resolvidos.
+- **Pendente (modo `prime`):** card inativo, dados sem marcação, sem TOTAL, botão **Escolher dados** (só o dono).
+- **Resumido (resolvido, padrão):** só o decidido: os 2 dados do total, a soma e o dado de efeito (dX). **Expandido** (clique no
+  card): a rolagem inteira, com todos os dados, hitches e dados pagos com PP.
+- **Aviso de hitches** (caixa tracejada vermelha) enquanto houver hitches não resolvidos; **BOTCH** quando todos os dados são 1.
 - **Botões:**
-  - **"+1 PP · KEEP 3RD DIE"** (só o dono, enquanto tiver PP e houver dado não mantido que não seja 1): gasta 1 PP,
-    marca o próximo maior como mantido, atualiza total e card. Pode repetir.
+  - **"Escolher dados"**: reabre a janela (só o dono, enquanto o card estiver pendente).
+  - **"+1 PP · KEEP 3RD DIE"** (modo `classic`; só o dono, enquanto tiver PP e houver dado não mantido que não seja 1): gasta
+    1 PP, marca o próximo maior como mantido, atualiza total e card. Pode repetir. No modo `prime` o PP é gasto na janela.
   - **"GM · COMPLICATION"** (só o mestre, por 1 não resolvido): abre um mini-diálogo (nome da Complication, nova ou
     subir uma existente do Job ativo), cria/sobe no Rastreador do Job e **dá 1 PP** ao jogador. Marca o 1 como
     resolvido.
 - O card é atualizado editando a própria mensagem (o dono e o mestre têm permissão; use socket se o jogador não
   puder atualizar a mensagem diretamente).
+- **Mockup:** o `roll-chat-card.png` cobre o card clássico. Pendente, resumido, expandido e a janela não têm PNG: derivam do
+  mesmo estilo e ganham prints de referência na T-1016.
 
 ## Oposição (rolagem do mestre)
 
 - **Rolador de oposição** (controle do mestre): escolha rápida de dados (d4…d12, com contadores), atalhos:
   "2d6 (nenhuma oposição)", "Polícia (estrelas atuais)", "Gangue: N × dX", "NPC selecionado", Traços do Local e
   Complicações do Job ativo. Gera o mesmo card, com cabeçalho "FIXER" e cor de destaque vermelha discreta.
-- Opcional: card de **disputa** que liga a rolagem do jogador à do mestre e mostra quem venceu e se foi
-  Extraordinary Success (+5). Registre a escolha.
+- **Dificuldade:** presets 2d4 (Very Easy), 2d6 (Easy), 2d8 (Challenging), 2d10 (Hard), 2d12 (Very Hard) em
+  `LEVERAGE.difficulties`. A oposição do Fixer é **automática** por padrão (`rules.oppositionChoice = "auto"`: 2 maiores,
+  sem janela); `"choose"` abre a janela para o mestre. Empate no total é do Fixer. Hitches do Fixer são Opportunities.
+- Opcional: card de **disputa** (`versus` em `docs/05`) que liga a rolagem do jogador a um card do Fixer por `messageId`, mostra
+  a margem, quem venceu e o sucesso heroico (+5 = +1 passo de efeito).
 
 ## Tiroteio (regra da casa "Vida")
 

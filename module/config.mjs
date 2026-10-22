@@ -244,8 +244,24 @@ export const LEVERAGE = Object.freeze({
   stars: Object.freeze({ min: 0, max: 5, defaultCity: "liberty", starsPerSilenceDie: 2 }),
   /** Winning a contest by this much or more is an Extraordinary Success. */
   extraordinaryMargin: 5,
-  /** Dice kept from a Pool by default. */
+  /** Dice kept from a Pool by default (`classic` mode and the Fixer's opposition). */
   keepDefault: 2,
+  /** Cortex Prime rolling (docs/08): how many dice make the total, the effect die when none is left, heroic steps. */
+  prime: Object.freeze({
+    totalDice: 2, effectDice: 1, defaultEffectDie: 4, heroicStep: 5, paidDiceCost: 1
+  }),
+  /** `rules.rollMode` values: `prime` = the player chooses the dice; `classic` = automatic, two highest. */
+  rollModes: Object.freeze(["prime", "classic"]),
+  /** `rules.oppositionChoice` values: the Fixer's dice are chosen automatically or by the Fixer in the window. */
+  oppositionChoices: Object.freeze(["auto", "choose"]),
+  /** Test difficulties (Cortex Prime): `dice` dice of `size` (labels `LEVERAGE.Difficulty.<key>`). */
+  difficulties: Object.freeze([
+    Object.freeze({ key: "veryEasy", dice: 2, size: 4 }),
+    Object.freeze({ key: "easy", dice: 2, size: 6 }),
+    Object.freeze({ key: "challenging", dice: 2, size: 8 }),
+    Object.freeze({ key: "hard", dice: 2, size: 10 }),
+    Object.freeze({ key: "veryHard", dice: 2, size: 12 })
+  ]),
   /** Role keys plus "open" (a Talent that belongs to no single Role). */
   talentRoles: Object.freeze([...ROLE_KEYS, "open"]),
   /** Sections of the "+ DIE" menu, in display order (each is a `Sheet.Tray.menuGroup.<key>` label). */

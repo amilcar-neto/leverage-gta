@@ -1,6 +1,7 @@
 import "./helpers/foundry-stub.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { normalizeRoll } from "../../module/dice/roll-core.mjs";
 import { buildRollData, poolFormula, rollEffects, rollableEntries, rollValues } from "../../module/dice/roll-handler.mjs";
 import { dieContext, rollCardContext } from "../../module/applications/chat/roll-card.mjs";
 
@@ -82,4 +83,37 @@ test("card buttons follow permission and state", () => {
 test("die with a Money entry renders as money", () => {
   const html = dieContext({ ref: "money", label: "Money", kind: "money", faces: 12, result: 7, kept: true, one: false }, t).html;
   assert.match(html, /lv-die--money/);
+});
+
+test("classic roll data is v2, resolved, with hitches and no effect die", () => {
+  const data = buildRollData({ entries: pool, values: [9, 6, 1, 5] });
+  assert.deepEqual([data.v, data.status, data.effectDie, data.hitches, data.botch], [2, "resolved", null, 1, false]);
+  assert.deepEqual(data.selection, { total: [0, 1], effect: [] });
+  assert.deepEqual(data.entries.map((x) => [x.effect, x.paid]), [[false, false], [false, false], [false, false], [false, false]]);
+  assert.equal(buildRollData({ entries: pool, values: [1, 1, 1, 1] }).botch, true);
+});
+
+test("prime roll data is pending: no total, no kept dice, no selection", () => {
+  const data = buildRollData({ entries: pool, values: [9, 6, 1, 5], mode: "prime" });
+  assert.deepEqual([data.v, data.status, data.total, data.keptCount, data.selection, data.effectDie], [2, "pending", null, 0, null, null]);
+  assert.ok(data.entries.every((x) => !x.kept));
+  assert.equal(data.hitches, 1);
+  assert.equal(data.entries[2].one, true);
+  assert.equal(data.distinctionPP, 0);
+});
+
+test("normalizeRoll reads old cards as v1 resolved and leaves v2 alone", () => {
+  const old = {
+    entries: [{ faces: 8, result: 5, kept: true, one: false }, { faces: 6, result: 1, kept: false, one: true }],
+    keptCount: 1, total: 5
+  };
+  const n = normalizeRoll(old);
+  assert.deepEqual([n.v, n.status, n.effectDie, n.hitches, n.botch], [1, "resolved", null, 1, false]);
+  assert.deepEqual(n.selection, { total: [0], effect: [] });
+  assert.equal(n.entries[0].effect, false);
+  assert.equal(n.total, 5);
+  assert.equal(old.v, undefined);
+  const v2 = buildRollData({ entries: pool, values: [9, 6, 1, 5] });
+  assert.equal(normalizeRoll(v2), v2);
+  assert.equal(normalizeRoll(null), null);
 });

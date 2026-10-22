@@ -6,7 +6,7 @@
  */
 import { SYSTEM_ID } from "../config.mjs";
 import { logger } from "../logger.mjs";
-import { buildRollData, evaluateDice, poolFormula, rollValues } from "./roll-core.mjs";
+import { buildRollData, evaluateDice, isRollMode, poolFormula, rollValues } from "./roll-core.mjs";
 import { afterMoneyRoll } from "../rules/money.mjs";
 import { ROLL_REQUESTED_HOOK, poolOf, syncRows } from "../applications/actor/parts/tray.mjs";
 
@@ -52,6 +52,12 @@ async function applyEffects(actor, data) {
   if (effects.moneySteps !== null) await actor.money.set(effects.moneySteps);
 }
 
+/** The world's roll mode (`rules.rollMode`); an unknown value falls back to `classic`. */
+function currentRollMode() {
+  const mode = game.settings.get(SYSTEM_ID, "rules.rollMode");
+  return isRollMode(mode) ? mode : "classic";
+}
+
 /** Empties the sheet's Pool unless the client setting keeps it. */
 async function clearPoolAfterRoll(sheet) {
   if (!sheet || game.settings.get(SYSTEM_ID, "pool.keepAfterRoll")) return;
@@ -77,7 +83,7 @@ export async function rollPoolFor({ actor, sheet, entries, flavor }) {
     const { roll, values } = await evaluateDice(rollable.map((e) => e.die), rollable.map((e) => e.kind));
     const data = buildRollData({
       entries: rollable, values, actorUuid: actor.uuid, actorName: actor.name, actorImg: actor.img,
-      flavor: flavor ?? game.i18n.localize("LEVERAGE.Roll.defaultFlavor")
+      flavor: flavor ?? game.i18n.localize("LEVERAGE.Roll.defaultFlavor"), mode: currentRollMode()
     });
     // The card first: if posting fails nothing was spent or earned. The effects follow once the card exists.
     const message = await roll.toMessage({

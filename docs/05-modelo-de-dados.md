@@ -107,6 +107,7 @@ O Record guarda a ligação ao Job de mundo em `flags.leverage-gta.jobUuid`. O J
 - `prices`: `[{ id, label, dice: [6] }, …]` (padrão: tabela de `docs/02`)
 - `activeJob`: **aposentado** na 0.1.2 (o Job ativo é o Item de mundo `job` com `status: active`). O setting continua registrado só para a migração 0.1.2 ler e zerar; nada mais o lê.
 - `globalTraits` e `complications`: `[{ id, name, die }]` cada um, estado da mesa independente do Job e da Cena (começam em d6). Acesso só por `module/table-state.mjs`. Os Traços de uma cena vêm do Lugar (`system.scene` + `system.traits`), não de flag. Migração 0.1.1: `activeJob.complications` -> `complications`, `activeJob.sceneTraits` -> `globalTraits`; os flags de Traços da Cena foram descartados.
+- `rules.rollMode` (`"classic"` por enquanto, `"prime"` depois da T-1006), `rules.oppositionChoice` (`"auto"` ou `"choose"`, padrão `auto`), `rules.heroicSuccess` (Boolean, padrão `true`): rolagem Cortex Prime (docs/08).
 - `playersCanUnlock`: Boolean (padrão `true`). A trava de cada ficha fica no flag do ator `flags.leverage-gta.sheetUnlocked` (ausente = travada).
 
 ## Flags de mensagens de chat (`flags.leverage-gta.*`)
@@ -115,12 +116,19 @@ O Record guarda a ligação ao Job de mundo em `flags.leverage-gta.jobUuid`. O J
 
 ```js
 {
+  v: 2,                             // versão dos dados; ausente = card antigo (normalizeRoll lê como v 1)
+  status: "pending" | "resolved",   // pending: card inativo, sem total; resolved: vale (v1 sempre resolved)
   actorUuid, actorName, actorImg,   // vazios no card de oposição (cabeçalho "FIXER")
   flavor,                           // descrição da ação (subtítulo)
-  entries: [{ ref, label, kind, faces, result, kept, one }],   // na ordem em que aparecem
+  entries: [{ ref, label, kind, faces, result, kept, one, effect, paid }],   // na ordem em que aparecem
+  // kept = está no total; one = hitch (tirou 1); effect = é o dado de efeito; paid = comprado com PP (está no total)
   // kind: "attribute" | "role" | "specialty" | "asset" | "talent" | "distinction" | "money" | "scene" | "die"
   //       | "opposition" (dados do card do Mestre)
-  keptCount: 2, total, ppSpent: 0,
+  selection: { total: [0, 1], effect: [2] } | null,  // índices escolhidos; null enquanto pending
+  keptCount: 2, total,              // total é null enquanto pending
+  effectDie: 8 | null,              // tamanho do dado de efeito (4 se nada sobrou); null em pending e em cards classic/v1
+  hitches: 1, botch: false,         // quantos 1; botch = todos os dados são 1 (total 0)
+  ppSpent: 0,
   distinctionPP: 0,          // PP ganhos por d4 de Distinction nesta rolagem
   complicationsResolved: [], // índices de 1s já transformados em Complication pelo mestre
   money: false,              // se um dado de Grana entrou (desconta 1 degrau ao rolar)
@@ -128,13 +136,24 @@ O Record guarda a ligação ao Job de mundo em `flags.leverage-gta.jobUuid`. O J
   // só no card de oposição:
   opposition: true,
   source: "manual+police+gang+picked",  // atalhos usados, separados por "+"; "none" = sem oposição; "macro" = API
-  damage: { /* DamageRecord */ }        // gravado depois de APLICAR DANO (dano.mjs)
+  opportunities: 0, opportunitiesUsed: 0,  // hitches do Fixer (uso na tarefa T-1010)
+  damage: { /* DamageRecord */ },       // gravado depois de APLICAR DANO (dano.mjs)
+
+  // opcional, só em Pool de jogador resolvida contra um card do Fixer:
+  versus: { messageId, difficulty, margin, outcome: "success" | "fail" | "heroic", effectDie }
 }
 ```
 
-Regras do card: só a rolagem **mais recente** da personagem no chat pode manter outro dado ("+1 PP"), e só o jogador
-dono (o Mestre não conta como dono). Os Plot Points e a Grana da rolagem só são aplicados depois que a mensagem existe.
-Não existe campo `versus`: o dano liga o card de oposição à rolagem anterior mais próxima de uma personagem.
+Os campos de antes (`kept`, `one`, `keptCount`, `total`, `ppSpent`, `distinctionPP`, `complicationsResolved`) mantêm o
+significado; os novos só se somam. `normalizeRoll(data)` (`module/dice/roll-core.mjs`) lê qualquer versão: card antigo vira
+`v: 1`, `status: "resolved"`, `effect/paid: false`, `effectDie: null`, `hitches` contados dos 1s e `selection` dos `kept`.
+Modo `classic` (`rules.rollMode`): `v: 2`, resolvido na hora, `selection.effect` vazio e `effectDie: null`.
+
+Regras do card: um card `pending` não vale nada (sem total, sem PP gasto, sem dano) até o dono confirmar a escolha na janela
+"Escolher dados" (2 dados no total, 1 de efeito, dados pagos com PP à parte; hitch nunca é escolhido; dado pago nunca é
+efeito). Só a rolagem **mais recente** da personagem no chat pode gastar PP em mais um dado, e só o jogador dono (o Mestre
+não conta como dono). Os Plot Points e a Grana da rolagem só são aplicados depois que a mensagem existe. O `versus` liga
+cards só por `messageId` explícito; sem ele, o dano liga o card de oposição à rolagem anterior mais próxima de uma personagem.
 
 `DamageRecord` (uma rodada de dano): `targetUuid, targetName, margin, weaponDie, weaponRoll, raw, cover, damage,
 absorbed, lifeLost, life, vest, lifeMax, down, kind` (`"wasted"`, `"busted"` ou `null`).

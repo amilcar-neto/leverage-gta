@@ -357,6 +357,21 @@
         "show": {
           "Name": "Show scene panel"
         }
+      },
+      "rules": {
+        "rollMode": {
+          "Name": "Roll mode",
+          "prime": "Cortex Prime (player chooses the dice)",
+          "classic": "Classic (two highest, automatic)"
+        },
+        "oppositionChoice": {
+          "Name": "Fixer's dice",
+          "auto": "Automatic (two highest)",
+          "choose": "Fixer chooses in a window"
+        },
+        "heroicSuccess": {
+          "Name": "Heroic success (+1 effect step per 5)"
+        }
       }
     },
     "Chat": {
@@ -1106,6 +1121,13 @@
       "planned": "Planned",
       "active": "Active",
       "done": "Done"
+    },
+    "Difficulty": {
+      "veryEasy": "Very Easy",
+      "easy": "Easy",
+      "challenging": "Challenging",
+      "hard": "Hard",
+      "veryHard": "Very Hard"
     }
   }
 }

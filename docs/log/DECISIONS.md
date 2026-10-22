@@ -353,3 +353,29 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
      "Novo Job" sempre aparece; "Iniciar" abre a lista dos planejados e fica desligado sem nenhum.
 - **Descartado:** tipo `heist` separado (a nota original); ownership LIMITED (jogador não leria o objetivo na faixa
   da cena); pack de Jobs, ligações a NPCs/Locais/Cenas (J-08/J-09).
+
+## Cortex Prime: rolagem com escolha dos dados (T-1001, 2026-10-22)
+
+- **Contexto:** o dono aprovou o Cortex Prime com fluxo próprio (seção "Decisões do dono sobre as pendências"). Este registro
+  fixa o que a nota `docs/research/cortex-prime-upgrade.md` deixava em aberto e corrige o que ela dizia sobre escolha automática.
+- **Escolha:**
+  1. **Dois modos** (`rules.rollMode`, mundo): `prime` (o jogador escolhe) e `classic` (rede de segurança: rolagem imediata e
+     resolvida, 2 maiores, sem dado de efeito, como na 0.1.x). O padrão fica `classic` até a janela existir (a T-1006 troca para `prime`).
+  2. **Card pendente inativo.** No modo `prime`, ROLL posta o card com `status: "pending"`, sem total, sem dados marcados e
+     sem dado de efeito, e abre a janela "Escolher dados" só para quem rolou. Nada vale (PP gasto, dano, oposição) até
+     `status: "resolved"`. Fechar a janela sem confirmar mantém o card inativo, com o botão "Escolher dados". Não há escolha
+     automática inicial.
+  3. **Atalho, não regra:** `autoSelection` só preenche a janela (botões "Máx. total" e "Máx. efeito"); o jogador ainda confirma.
+  4. **Card resumido e expandido.** Resolvido, o card mostra só o decidido (2 dados do total, soma, dado de efeito). Um clique
+     expande a rolagem inteira (todos os dados, hitches, dados pagos com PP).
+  5. **Oposição do Fixer:** automática por padrão (`rules.oppositionChoice = "auto"`, 2 maiores, sem janela); `choose` abre a
+     janela para o mestre. Empate no total é do Fixer.
+  6. **Sucesso heroico** (`rules.heroicSuccess`, padrão ligado): +1 passo no dado de efeito a cada 5 de margem.
+  7. **`versus` opcional** no card, ligado só por `messageId` explícito (substitui "não existe campo versus" de `docs/05`).
+  8. **Sem mockup novo.** O PNG `roll-chat-card.png` não cobre pendente/resumido/expandido nem a janela. Derivar da linguagem
+     do card atual (topo preto, chips, dados com resultado) e gerar prints de referência no fim (T-1016). Não inventar outro estilo.
+  9. **Dado pago com PP** entra no total além dos 2 e não pode ser dado de efeito; hitch não se seleciona nem vira efeito;
+     pool de 1 dado = total é o dado, efeito d4; só 1s = botch, total 0.
+- **Descartado:** escolha automática inicial com `status: pending` valendo (nota original); diálogo modal antes do card;
+  apagar e repostar a mensagem.
+- **T-1003:** `buildRollData` ganhou `mode` (padrão `classic`); a oposição do Fixer segue chamando sem `mode` (resolvida, 2 maiores).

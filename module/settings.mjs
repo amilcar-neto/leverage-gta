@@ -32,6 +32,14 @@ function worldNumber(key, fallback) {
   });
 }
 
+/** Registers a visible world String with fixed choices; each choice is labeled `LEVERAGE.Settings.<key>.<choice>`. */
+function worldChoice(key, choices, fallback) {
+  game.settings.register(SYSTEM_ID, key, {
+    ...labels(key), scope: "world", config: true, type: String, default: fallback,
+    choices: Object.fromEntries(choices.map((c) => [c, `LEVERAGE.Settings.${key}.${c}`]))
+  });
+}
+
 /** Registers a hidden world setting holding structured data. */
 function hiddenWorld(key, type, fallback, onChange) {
   game.settings.register(SYSTEM_ID, key, {
@@ -66,6 +74,10 @@ function registerWorldSettings() {
   worldNumber("moneyStart", LEVERAGE.money.startSteps);
   worldNumber("jobStartPlotPoints", LEVERAGE.jobStartPlotPoints);
   worldBoolean("playersCanUnlock", true, notify("traitsLockedChanged"));
+  // Cortex Prime rolling (docs/08). "classic" until the choose-dice window exists (T-1006 switches it to "prime").
+  worldChoice("rules.rollMode", LEVERAGE.rollModes, "classic");
+  worldChoice("rules.oppositionChoice", LEVERAGE.oppositionChoices, "auto");
+  worldBoolean("rules.heroicSuccess", true);
   hiddenWorld("wanted", new (fields().ObjectField)(), { city: LEVERAGE.stars.defaultCity, level: LEVERAGE.stars.min },
     notify("starsChanged"));
   hiddenWorld("cityScales", new (fields().ArrayField)(new (fields().ObjectField)()),

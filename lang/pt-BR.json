@@ -357,6 +357,21 @@
         "show": {
           "Name": "Mostrar painel da cena"
         }
+      },
+      "rules": {
+        "rollMode": {
+          "Name": "Modo de rolagem",
+          "prime": "Cortex Prime (o jogador escolhe os dados)",
+          "classic": "Clássico (dois maiores, automático)"
+        },
+        "oppositionChoice": {
+          "Name": "Dados do Fixer",
+          "auto": "Automático (dois maiores)",
+          "choose": "O Fixer escolhe numa janela"
+        },
+        "heroicSuccess": {
+          "Name": "Sucesso heroico (+1 passo de efeito a cada 5)"
+        }
       }
     },
     "Chat": {
@@ -1106,6 +1121,13 @@
       "planned": "Planejado",
       "active": "Ativo",
       "done": "Concluído"
+    },
+    "Difficulty": {
+      "veryEasy": "Muito fácil",
+      "easy": "Fácil",
+      "challenging": "Desafiador",
+      "hard": "Difícil",
+      "veryHard": "Muito difícil"
     }
   }
 }
