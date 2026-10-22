@@ -285,6 +285,12 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   no HUD do mestre. Substitui `jobs-e-locais.md` B.4 itens 1, 3 e 4.
 - **Descartado:** flag na Cena (exigia arrastar ou botão); Lugar como Item (migração sem ganho).
 
+## Local não nasce OBSERVER (2026-10-21)
+
+- **Contexto:** o Local nascia com `ownership.default = OBSERVER` para os jogadores lerem os Traços.
+- **Escolha:** removido. Jogadores leem os Traços por `game.actors` (todo ator de mundo está lá), sem permissão. OBSERVER vazava Notas do mestre e Locais ocultos. Quem quiser que o jogador abra a ficha dá a permissão na mão.
+- **Também:** o id do Traço do Local na Pool é `<idDoLocal>-<slug>-<n>` (estável ao reordenar; apagar ou renomear faz a referência deixar de resolver, com aviso "referência desconhecida"). O Rolador de oposição usa o mesmo id nas escolhas.
+
 ## Plot Points no HUD: de todos os jogadores e do narrador (dono, 2026-10-21)
 
 - **Contexto:** o HUD mostra só os PP do próprio personagem; o mestre vê o token selecionado, e o grupo todo só no Rastreador.

@@ -75,3 +75,12 @@ Um resumo por revisão: tarefa ou fase, veredito, defeitos encontrados, o que fo
 - Nit: `normalizeDice` tem a linha `if (list.length === 1) list.push(...)` duplicada (opposition.mjs:164-165). `stars.set(n, outraCidade)` com estrelas em 0 posta "de 0 para 0 A Equipe saiu para…" (linha inútil). Card de fiança não paga diz "Fiança: d6 (0 degrau(s)…pago(s))" — melhor "Fiança: d6 (não paga)". Com a ficha no canto, o HUD cobre o botão ⋮ do cabeçalho da ficha e as estrelas ficam sobre o Booking Card (troca aceitável, mas feio). Pagar > Hospital com Vida cheia (ou colete igual e cheio) cobra mesmo assim. Diálogo "Novo Asset" do jogador não diz qual dado ele vai receber. Local vazio: "Adicione com + ADD." mas o botão diz "+ ADICIONAR". Dica do "+ Job" promete "rendimento e a divisão", mas o jogador não pode editar a parte (campo protegido).
 - Risco: trocar a cidade no diálogo zera estrelas sem confirmação (um clique errado apaga o nível; dá para repor à mão). Jogador ainda cria Signature Asset (d8) de graça pelo "+ ADD" (decisão registrada; vale avisar o mestre no USO).
 - Limpeza: atores, usuários, token e mensagens `[TEST] RV2/RV3` apagados; estrelas (Liberty, 0), Job ativo e trava voltaram ao estado inicial. Prints só no scratchpad desta revisão (nada novo no repositório).
+
+## 2026-10-21 — Fase 10, onda 1 (L-01..L-05, T-1101, T-1100)
+- **Lugar por Cena:** 1 bloqueia (ids de Traço por posição: Pool/rolador apontavam para o Traço errado ao reordenar) e 7 deveria.
+  Corrigido: id estável por nome, `currentSceneTraits()` único (inclui macro `rollPool`), hooks filtrados, Lugar não nasce
+  OBSERVER (vazava Notas do mestre; DECISIONS). Ficou: Traços por flag (Cena ativa) x de Lugar (Cena vista) até a L-06.
+- **PP no HUD:** 0 bloqueia, 9 deveria (clique duplo perdia passo, camada invertida, re-render demais, aria-label sem nome,
+  glifos, rolagem, CSS duplicado). Tudo corrigido; Grana do grupo e PP/Mesa compartilham classes e largura (240px).
+- Tester (2ª passada): tudo passou no Foundry real. Falha conhecida: T-505 (`scene:<id>` do Job); some com a L-06.
+- Sobra pequena: `locationSources` em `module/dice/opposition.mjs` ficou sem uso (só testado).

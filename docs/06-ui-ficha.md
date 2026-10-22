@@ -63,5 +63,5 @@ Mesma linguagem visual, mais simples (não há mockup; siga a ficha da Equipe):
   do cabeçalho, a barra com **ROLAR COMO OPOSIÇÃO** e o tamanho da Pool. Corpo: Traços, Arma, **Capangas**
   (tamanho × dado), Notas; Attributes/Roles só para Foil/Agent. Sem textos de ajuda: só rótulos, ícones e controles.
 - **Local:** **banner** da imagem do lugar (ou parede de grade de mapa com ícone), etiqueta LOCAL, nome sobre o
-  banner e cidade (ícone + seleção). Corpo: Traços, **NPCs** ligados (só o mestre; arrastar da barra lateral, clicar
+  banner, cidade (ícone + seleção) e **Cena** (seletor com as Cenas do mundo; vazio = nenhuma). Corpo: Traços, **NPCs** ligados (só o mestre; arrastar da barra lateral, clicar
   abre a ficha, X desliga) e Notas.

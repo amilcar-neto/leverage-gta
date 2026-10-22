@@ -7,10 +7,12 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
-import { getCityScales, readWanted } from "../../world-state.mjs";
+import { getCityScales, readTablePlotPoints, readWanted, stepTablePlotPoints } from "../../world-state.mjs";
 import { setLevel } from "../gm/stars-actions.mjs";
 import { t, tn } from "../components/i18n.mjs";
-import { hudPermissions, moneyView, nextStarLevel, partyRows, pickFocusActor, showParty, starsView } from "./hud-logic.mjs";
+import {
+  changedKeys, hudPermissions, moneyView, nextStarLevel, partyRows, pickFocusActor, plotPointRows, showParty, starsView, touchesPartyLists
+} from "./hud-logic.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -44,6 +46,8 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
       payMoney: LeverageHud.#onPay,
       spendPlotPoint: LeverageHud.#onSpendPlotPoint,
       gainPlotPoint: LeverageHud.#onGainPlotPoint,
+      stepPlayerPoints: LeverageHud.#onStepPlayerPoints,
+      stepTablePoints: LeverageHud.#onStepTablePoints,
       toggleMinimized: LeverageHud.#onToggleMinimized,
       toggleParty: LeverageHud.#onToggleParty,
       collapseParty: LeverageHud.#onCollapseParty
@@ -69,6 +73,9 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** Plot Points shown at the last render, per character (a change pulses the number). */
   #lastPp = { id: null, value: null };
+
+  /** Plot Points of the Fixer's list at the last render, by key (`table` or an actor id). */
+  #lastGmPp = {};
 
   /** @type {[string, number][]} Hooks added by this instance, removed on close. */
   #hooks = [];
@@ -109,6 +116,7 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
       money: this.#moneyContext(actor, can, minimized, isGM),
       plotPoints: this.#plotPointsContext(actor, can, minimized, isGM),
       party: this.#partyContext(minimized, isGM),
+      gmPoints: this.#gmPointsContext(minimized, isGM),
       minimizeLabel: t(minimized ? "LEVERAGE.HUD.expand" : "LEVERAGE.HUD.minimize")
     };
   }
@@ -167,6 +175,31 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
       canSpend: can.spendPlotPoints, canGain: can.gainPlotPoints,
       tip: actor ? t("LEVERAGE.HUD.plotPointsTip", { value }) : t("LEVERAGE.HUD.noCharacter"),
       spendLabel: t("LEVERAGE.HUD.spendPlotPoint"), gainLabel: t("LEVERAGE.HUD.gainPlotPoint")
+    };
+  }
+
+  /** The Fixer's list of every player's Plot Points plus the table counter "Mesa" (docs/07). */
+  #gmPointsContext(minimized, isGM) {
+    const show = Boolean(isGM && !minimized && readSetting("hud.showPlotPoints", true));
+    if (!show) {
+      this.#lastGmPp = {};
+      return { show };
+    }
+    const rows = plotPointRows(this.#partyActors());
+    const table = readTablePlotPoints();
+    const current = { table, ...Object.fromEntries(rows.map((r) => [r.id, r.value])) };
+    const pulsing = changedKeys(this.#lastGmPp, current);
+    this.#lastGmPp = current;
+    return {
+      show, table: {
+        value: table, pulse: pulsing.has("table"), canLower: table > 0, label: t("LEVERAGE.HUD.table"),
+        lowerLabel: t("LEVERAGE.HUD.tableLower"), raiseLabel: t("LEVERAGE.HUD.tableRaise")
+      },
+      rows: rows.map((r) => ({
+        ...r, pulse: pulsing.has(r.id),
+        lowerLabel: t("LEVERAGE.HUD.playerLower", { name: r.name }), raiseLabel: t("LEVERAGE.HUD.playerRaise", { name: r.name })
+      })),
+      title: t("LEVERAGE.HUD.playersPoints")
     };
   }
 
@@ -249,13 +282,19 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** Re-renders when the focused character, the controlled token, the user's character or a setting changes. */
   #watchWorld() {
-    const ifFocus = (actor) => {
-      const party = game.user.isGM && actor?.type === "crew" && readSetting("hud.showPartyMoney", false);
-      if (party || (actor?.id && actor.id === this.focusActor?.id)) this.refresh();
+    const isFocus = (actor) => Boolean(actor?.id && actor.id === this.focusActor?.id);
+    const isListed = (actor) => game.user.isGM && actor?.type === "crew";
+    const ifFocus = (actor) => { if (isFocus(actor) || isListed(actor)) this.refresh(); };
+    const onActorUpdate = (actor, changes) => {
+      if (isFocus(actor) || (isListed(actor) && touchesPartyLists(changes))) this.refresh();
     };
-    const onUser = (user, changes) => { if (user.id === game.user.id && "character" in changes) this.refresh(); };
+    const onUser = (user, changes) => {
+      if (!("character" in changes)) return;
+      if (user.id === game.user.id || (game.user.isGM && !user.isGM)) this.refresh();
+    };
     this.#hooks.push(
-      ["updateActor", Hooks.on("updateActor", ifFocus)],
+      ["updateActor", Hooks.on("updateActor", onActorUpdate)],
+      ["createActor", Hooks.on("createActor", ifFocus)],
       ["deleteActor", Hooks.on("deleteActor", ifFocus)],
       ["updateUser", Hooks.on("updateUser", onUser)],
       ...REFRESH_HOOKS.map((name) => [name, Hooks.on(name, () => this.refresh())])
@@ -299,6 +338,18 @@ export class LeverageHud extends HandlebarsApplicationMixin(ApplicationV2) {
   static async #onGainPlotPoint() {
     const actor = this.focusActor;
     if (actor && game.user.isGM) await game.leverage.plotPoints.add(actor, 1);
+  }
+
+  /** Fixer: gives or takes 1 Plot Point of a player's character (the "-" and "+" of his list). */
+  static async #onStepPlayerPoints(event, target) {
+    const actor = game.actors.get(target.dataset.actorId);
+    if (!game.user.isGM || !actor) return;
+    await game.leverage.plotPoints.add(actor, Number(target.dataset.delta) < 0 ? -1 : 1);
+  }
+
+  /** Fixer: steps the table counter. */
+  static async #onStepTablePoints(event, target) {
+    if (game.user.isGM) await stepTablePlotPoints(Number(target.dataset.delta) < 0 ? -1 : 1);
   }
 
   /** Fixer: shows or hides the party Money list. */

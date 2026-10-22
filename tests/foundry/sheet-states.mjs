@@ -64,10 +64,7 @@ try { await login(page, env); } catch (err) {
 }
 
 const failures = [];
-let original = true;
 try {
-  original = await page.evaluate(() => game.settings.get("leverage-gta", "traitsLocked"));
-  await page.evaluate(() => game.settings.set("leverage-gta", "traitsLocked", true));
   await page.evaluate(build);
   await wait(1800);
   // Pool as in the mockup: Agility + Thief + Safecracking + Old Docks Loyalty (d8).
@@ -89,17 +86,16 @@ try {
   await shot("jobs");
 
   await page.click(`${sheet} [data-action="folderTab"][data-tab="background"]`);
-  await page.evaluate(() => game.settings.set("leverage-gta", "traitsLocked", false));
+  await page.evaluate(() => game.actors.getName("[TEST] Rosa Delgado").setFlag("leverage-gta", "sheetUnlocked", true));
   await wait(1000);
   await shot("unlocked");
 } catch (err) {
   failures.push(err.message.split("\n").slice(0, 4).join(" | "));
   await page.screenshot({ path: `${SHOTS}/F3-failure.png` }).catch(() => {});
 } finally {
-  await page.evaluate(async (orig) => {
-    await game.settings.set("leverage-gta", "traitsLocked", orig);
+  await page.evaluate(async () => {
     for (const a of game.actors.filter((x) => x.name.startsWith("[TEST]"))) { await a.sheet.close(); await a.delete(); }
-  }, original).catch(() => {});
+  }).catch(() => {});
 }
 console.log(failures.length ? `FAIL ${failures.join(" ; ")}` : "PASS screenshots saved");
 console.log(`CONSOLE own: ${JSON.stringify(log.own())}`);

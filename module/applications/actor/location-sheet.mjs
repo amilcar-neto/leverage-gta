@@ -66,6 +66,8 @@ export class LocationSheet extends LeverageActorSheet {
     const current = cities.find((c) => c.selected);
     const TextEditor = foundry.applications.ux.TextEditor.implementation;
     return Object.assign(context, {
+      scenes: this.#sceneOptions(system.scene),
+      sceneName: this.#visibleSceneName(system.scene),
       canManage: this.canManage,
       hasImage: hasRealPortrait(actor.img),
       cities,
@@ -77,6 +79,18 @@ export class LocationSheet extends LeverageActorSheet {
       notesField: system.schema.fields.notes,
       notesHtml: await TextEditor.enrichHTML(system.notes, { relativeTo: actor, secrets: actor.isOwner })
     });
+  }
+
+  /** The Scenes of the world as select options (`selected` marks the stored one; a deleted Scene is not listed). */
+  #sceneOptions(current) {
+    return (game.scenes?.contents ?? []).map((scene) => ({ uuid: scene.uuid, name: scene.name, selected: scene.uuid === current }))
+      .sort((a, b) => a.name.localeCompare(b.name, game.i18n.lang));
+  }
+
+  /** Name of the linked Scene for read-only viewers: empty when it was deleted or the user cannot see it. */
+  #visibleSceneName(uuid) {
+    const scene = uuid ? fromUuidSync(uuid) : null;
+    return scene && (game.user.isGM || scene.visible) ? scene.name : "";
   }
 
   /** Template row of an NPC. */
@@ -111,11 +125,12 @@ export class LocationSheet extends LeverageActorSheet {
     el.addEventListener("dragover", (event) => this.#onDragOverPeople(event), { signal });
     el.addEventListener("dragleave", (event) => event.target.closest?.(".lv-loc-drop")?.classList.remove("is-over"), { signal });
     el.addEventListener("drop", (event) => this.#onDropNpc(event), { signal });
-    const refresh = () => this.rendered && this.render({ parts: ["people"] });
-    for (const name of ["createToken", "deleteToken"]) {
+    const watch = (names, refresh) => names.forEach((name) => {
       const id = Hooks.on(name, refresh);
       signal.addEventListener("abort", () => Hooks.off(name, id));
-    }
+    });
+    watch(["createToken", "deleteToken"], () => this.rendered && this.render({ parts: ["people"] }));
+    watch(["createScene", "updateScene", "deleteScene"], () => this.rendered && this.render({ parts: ["header"] }));
   }
 
   /** @override */

@@ -131,6 +131,9 @@ redimensionada; as listas internas rolam, a ficha não.
 - **Grana:** `$` verde + dados verde-dinheiro (maior à direita). Clique esquerdo abre **Pagar**, direito abre **Emprestar** (dono ou
   mestre). Sem dinheiro: `$` e um dado tracejado "0". Sempre visível.
 - **Plot Points:** ficha de cassino amarela + número, botões − e +. Sempre visível, mesmo com 0.
+- **Painel de PP do mestre:** só no HUD do mestre, abaixo dos Plot Points dele: linha "Mesa" (contador do narrador, sem
+  limite) e uma linha por jogador, cada uma com − valor +. Mesma largura, calha e altura de linha do painel de Grana do
+  grupo (5 linhas e depois rola, com a barra reservada); nome com reticências e dica.
 - **Ficaram fora do HUD de propósito:** Vida e Colete (moram na ficha e no token), assets temporários (moram na
   ficha; ir ao HUD no meio da montagem da Pool era ruim), arma.
 

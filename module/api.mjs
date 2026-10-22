@@ -30,6 +30,7 @@ import { requireGM, resolveActor } from "./applications/components/common.mjs";
 import { addToSheetPool } from "./applications/actor/parts/tray.mjs";
 import * as controls from "./applications/gm/controls.mjs";
 import * as damage from "./applications/chat/damage.mjs";
+import { currentSceneTraits } from "./scene-location.mjs";
 import * as jobActions from "./applications/gm/job-actions.mjs";
 import * as starsActions from "./applications/gm/stars-actions.mjs";
 
@@ -185,7 +186,7 @@ const cityScales = () => getCityScales();
  * @param {object} request
  * @param {Actor|string} request.actor A Crew actor, its UUID or its id. Players may roll only their own.
  * @param {(string|number)[]} request.refs References: `attributes.agility`, `roles.thief`, `item:<id>`,
- *   `item:<id>:d8|d4` (Distinction), `money`, `scene:<id>` (Scene Trait of the active Job), `d6` or just `6` (loose die).
+ *   `item:<id>:d8|d4` (Distinction), `money`, `scene:<id>` (Scene Trait: a Trait of the active Scene or of a Location of the viewed Scene), `d6` or just `6` (loose die).
  * @param {string} [request.flavor] Action description on the card.
  * @returns {Promise<ChatMessage|null>} the card, or null when the Pool is not valid (a warning says why)
  */
@@ -193,7 +194,7 @@ async function rollPool({ actor, refs, flavor } = {}) {
   const doc = ownedCrew(actor);
   if (!doc) return null;
   const moneyEnabled = moneyRuleOn();
-  const sceneTraits = jobActions.readJob().sceneTraits;
+  const sceneTraits = currentSceneTraits();
   const check = checkPoolRefs(refs, (ref) => resolvePoolRef(doc, ref, { moneyEnabled, sceneTraits }));
   if (!check.ok) return warn(check) ?? null;
   return rollPoolFor({ actor: doc, entries: check.entries, flavor });

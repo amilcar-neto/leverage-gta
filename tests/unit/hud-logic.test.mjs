@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { hudPermissions, moneyView, nextStarLevel, pickFocusActor, starsView } from "../../module/applications/hud/hud-logic.mjs";
+import { changedKeys, touchesPartyLists, hudPermissions, moneyView, nextStarLevel, pickFocusActor, plotPointRows, starsView } from "../../module/applications/hud/hud-logic.mjs";
+import { clampTablePoints } from "../../module/rules/plot-points.mjs";
 import { poolText } from "../../module/rules/stars.mjs";
 
 test("focus actor: player prefers his character, the Fixer the selected token", () => {
@@ -40,4 +41,35 @@ test("permissions: Fixer everything, owner his own, others look only", () => {
   assert.deepEqual(hudPermissions({ isGM: false, isOwner: true, hasActor: true }), { money: true, spendPlotPoints: true, gainPlotPoints: false, stars: false });
   assert.deepEqual(hudPermissions({ isGM: false, isOwner: false, hasActor: true }), { money: false, spendPlotPoints: false, gainPlotPoints: false, stars: false });
   assert.deepEqual(hudPermissions({ isGM: false, isOwner: true, hasActor: false }), { money: false, spendPlotPoints: false, gainPlotPoints: false, stars: false });
+});
+
+test("plot point rows: sorted by name, value defaults to 0, minus disabled at 0", () => {
+  const rows = plotPointRows([
+    { id: "b", name: "Vic", system: { plotPoints: { value: 2 } } },
+    { id: "a", name: "Claude", system: {} }
+  ]);
+  assert.deepEqual(rows.map((r) => r.id), ["a", "b"]);
+  assert.deepEqual(rows.map((r) => r.value), [0, 2]);
+  assert.deepEqual(rows.map((r) => r.canLower), [false, true]);
+});
+
+test("table counter: never below 0, no upper limit, bad values count as 0", () => {
+  assert.equal(clampTablePoints(0, -1), 0);
+  assert.equal(clampTablePoints(3, 1), 4);
+  assert.equal(clampTablePoints(500, 1), 501);
+  assert.equal(clampTablePoints(undefined, 1), 1);
+  assert.equal(clampTablePoints(2.7), 2);
+});
+
+test("changed keys: only known keys with a different value pulse", () => {
+  assert.deepEqual([...changedKeys({ a: 1, b: 2 }, { a: 1, b: 3, c: 9 })], ["b"]);
+});
+
+test("touchesPartyLists: only Plot Points, Money, name and ownership matter", () => {
+  assert.equal(touchesPartyLists({ system: { plotPoints: { value: 2 } } }), true);
+  assert.equal(touchesPartyLists({ "system.money.steps": 3 }), true);
+  assert.equal(touchesPartyLists({ name: "A" }), true);
+  assert.equal(touchesPartyLists({ ownership: { x: 3 } }), true);
+  assert.equal(touchesPartyLists({ system: { notes: "x" }, img: "a.png" }), false);
+  assert.equal(touchesPartyLists(undefined), false);
 });

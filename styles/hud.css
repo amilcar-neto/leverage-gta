@@ -110,17 +110,34 @@
 #leverage-hud .lv-hud-money .lv-die--empty { --die-stroke: var(--lv-money-die); }
 #leverage-hud .lv-hud-money:focus-visible { outline: 2px solid var(--lv-select); outline-offset: 2px; }
 
-/* Party Money (Fixer, optional): compact lines under his own Money. Rows scroll after a few, with the gutter reserved. */
-#leverage-hud .lv-hud-party {
+/* Fixer panels (party Money, Plot Points): same width, gutter, list and row. Lists scroll after 5 rows, gutter reserved. */
+#leverage-hud .lv-hud-panel {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 2px;
-  min-width: 200px;
-  max-width: 280px;
+  box-sizing: border-box;
+  width: 240px;
   padding: 4px 8px;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 4px;
+}
+#leverage-hud .lv-hud-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 160px; /* exactly 5 rows of 32px, then it scrolls */
+  pointer-events: auto;
+}
+#leverage-hud .lv-hud-panel-row { display: flex; align-items: center; gap: 6px; margin: 0; box-sizing: border-box; height: 32px; min-height: 32px; }
+#leverage-hud .lv-hud-panel-name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--lv-ink);
 }
 #leverage-hud .lv-hud-party-head {
   display: flex;
@@ -134,25 +151,6 @@
   color: var(--lv-muted);
 }
 #leverage-hud .lv-hud-party-head i { font-size: 9px; }
-#leverage-hud .lv-hud-party-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  max-height: 150px;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  pointer-events: auto;
-}
-#leverage-hud .lv-hud-party-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 30px; }
-#leverage-hud .lv-hud-party-name {
-  flex: 1 1 0;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 13px;
-  color: var(--lv-ink);
-}
 #leverage-hud .lv-hud-party-dice { display: flex; flex: none; gap: 2px; }
 #leverage-hud .lv-hud-party-dice .lv-die { flex: none; --die-stroke: var(--die-fill); }
 #leverage-hud .lv-hud-party-dice .lv-die--empty { --die-stroke: var(--lv-money-die); }
@@ -215,4 +213,15 @@
 @media (prefers-reduced-motion: reduce) {
   #leverage-hud { transition: none; }
   #leverage-hud .lv-hud-pp-value.is-pulse { animation: none; }
+}
+
+/* Fixer's Plot Points: the table counter plus one line per player (panel classes above). */
+#leverage-hud .lv-hud-gmpp-table { border-bottom: 1px solid var(--lv-shade-45); padding-bottom: 2px; height: 30px; min-height: 30px; }
+#leverage-hud .lv-hud-gmpp-table .lv-hud-panel-name { font-family: var(--lv-font-display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--lv-muted); }
+#leverage-hud .lv-hud-round--sm { width: 22px; height: 22px; border-width: 1.5px; pointer-events: auto; }
+#leverage-hud .lv-hud-round--sm svg { width: 14px; height: 14px; stroke-width: 4.5; }
+#leverage-hud .lv-hud-gmpp-value { flex: none; min-width: 26px; text-align: center; font-size: 22px; line-height: 1; color: var(--lv-pp); }
+#leverage-hud .lv-hud-gmpp-value.is-pulse { animation: lv-hud-pulse 0.5s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  #leverage-hud .lv-hud-gmpp-value.is-pulse { animation: none; }
 }

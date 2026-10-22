@@ -152,20 +152,26 @@
 .leverage-gta.location-sheet div.lv-loc-name { white-space: nowrap; }
 
 /* City: a tag-like label plus the select */
-.leverage-gta.location-sheet .lv-loc-city {
+.leverage-gta.location-sheet .lv-loc-city,
+.leverage-gta.location-sheet .lv-loc-scene {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-.leverage-gta.location-sheet .lv-loc-city-icon { flex: none; color: var(--loc-accent); font-size: 16px; }
+.leverage-gta.location-sheet .lv-loc-city-icon,
+.leverage-gta.location-sheet .lv-loc-scene-icon { flex: none; color: var(--loc-accent); font-size: 16px; }
 
-.leverage-gta.location-sheet .lv-loc-city-select {
+.leverage-gta.location-sheet .lv-loc-city-select,
+.leverage-gta.location-sheet .lv-loc-scene-select {
   flex: 0 1 240px;
   min-width: 0;
   height: 28px;
   padding: 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid var(--lv-muted-2);
   border-radius: 3px;
@@ -173,8 +179,10 @@
   font-size: 15px;
 }
 
-.leverage-gta.location-sheet .lv-loc-city-select:focus { border-color: var(--lv-header); outline: none; }
-.leverage-gta.location-sheet .lv-loc-city-value { font-size: 16px; font-weight: 700; }
+.leverage-gta.location-sheet .lv-loc-city-select:focus,
+.leverage-gta.location-sheet .lv-loc-scene-select:focus { border-color: var(--lv-header); outline: none; }
+.leverage-gta.location-sheet .lv-loc-city-value,
+.leverage-gta.location-sheet .lv-loc-scene-value { font-size: 16px; font-weight: 700; }
 
 /* ---- Trait list ---- */
 .leverage-gta.location-sheet .lv-loc-list {

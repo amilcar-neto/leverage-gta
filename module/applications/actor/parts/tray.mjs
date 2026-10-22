@@ -8,7 +8,7 @@
  */
 import { LEVERAGE } from "../../../config.mjs";
 import { DicePool, poolMenuGroups, resolvePoolRef } from "../../../dice/pool.mjs";
-import { readSceneTraits } from "../../gm/scene-traits.mjs";
+import { currentSceneTraits } from "../../../scene-location.mjs";
 import { readSetting } from "../../../data/fields.mjs";
 import { t } from "../../components/i18n.mjs";
 
@@ -30,8 +30,7 @@ const pools = new WeakMap();
 /** Whether the Money house rule is on (safe before settings are ready). */
 const moneyEnabled = () => Boolean(readSetting("houseRules.money", true));
 
-/** Scene Traits of the active Scene (`{id, name, die}`), empty when there is none. */
-const sceneTraits = readSceneTraits;
+/** Scene Traits (`{id, name, die}`): those of the active Scene plus the Traits of the viewed Scene's Locations. */
 
 /**
  * The Pool of a sheet, created on first use. Other tasks (roll, macros) read it through this.
@@ -41,7 +40,7 @@ const sceneTraits = readSceneTraits;
 export function poolOf(sheet) {
   let pool = pools.get(sheet);
   if (!pool) {
-    pool = new DicePool((ref) => resolvePoolRef(sheet.actor, ref, { moneyEnabled: moneyEnabled(), sceneTraits: sceneTraits() }));
+    pool = new DicePool((ref) => resolvePoolRef(sheet.actor, ref, { moneyEnabled: moneyEnabled(), sceneTraits: currentSceneTraits() }));
     pools.set(sheet, pool);
   }
   return pool;
@@ -181,7 +180,7 @@ export async function addToSheetPool(actor, ref) {
 function builderSource(sheet) {
   const pool = poolOf(sheet);
   return {
-    groups: () => poolMenuGroups(sheet.actor, (ref) => pool.has(ref), { moneyEnabled: moneyEnabled(), sceneTraits: sceneTraits(), includePooled: true }),
+    groups: () => poolMenuGroups(sheet.actor, (ref) => pool.has(ref), { moneyEnabled: moneyEnabled(), sceneTraits: currentSceneTraits(), includePooled: true }),
     tray: () => trayContext(pool, t),
     pick: (ref) => { pool.toggle(ref); refresh(sheet); },
     remove: (ref) => { pool.cycle(ref); refresh(sheet); },

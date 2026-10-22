@@ -177,7 +177,8 @@ try {
 
   // Lock: as a non-GM with Traits locked the sheet is read-only (no delete button, fields disabled); unlocked it is editable
   const readOnly = await page.evaluate(async ({ actorId, id }) => {
-    const item = game.actors.get(actorId).items.get(id);
+    const actor = game.actors.get(actorId);
+    const item = actor.items.get(id);
     const frame = async () => {
       await item.sheet.close();
       await item.sheet.render({ force: true });
@@ -185,12 +186,12 @@ try {
       const el = item.sheet.element;
       return { disabled: [...el.querySelectorAll("input, select, textarea")].filter((n) => !n.disabled).length, del: Boolean(el.querySelector("[data-action=deleteItem]")), seal: el.querySelector(".lv-lock-seal")?.classList.contains("is-locked") };
     };
-    await game.settings.set("leverage-gta", "traitsLocked", true);
+    await actor.unsetFlag("leverage-gta", "sheetUnlocked");
     Object.defineProperty(game.user, "isGM", { value: false, configurable: true });
     const locked = await frame();
     await item.sheet.close();
     delete game.user.isGM;
-    await game.settings.set("leverage-gta", "traitsLocked", false);
+    await actor.setFlag("leverage-gta", "sheetUnlocked", true);
     return { locked };
   }, { actorId: state.actorId, id: state.ids.talent });
   record("locked + non-GM: fields disabled, no delete, seal locked",

@@ -7,6 +7,7 @@ import { LEVERAGE, SYSTEM_ID } from "./module/config.mjs";
 import { logger } from "./module/logger.mjs";
 import { registerSettings } from "./module/settings.mjs";
 import { migrateWorld } from "./module/migration.mjs";
+import { registerSceneLocationHooks } from "./module/scene-location.mjs";
 import { registerDieHelper } from "./module/applications/components/die.mjs";
 import * as actorModels from "./module/data/actor/_module.mjs";
 import * as itemModels from "./module/data/item/_module.mjs";
@@ -86,6 +87,7 @@ Hooks.once("ready", async () => {
   await migrateWorld();
   await migrateSceneTraits();
   registerSceneTraitHooks();
+  registerSceneLocationHooks();
   registerSocket();
   registerHud();
   registerScenePanel();

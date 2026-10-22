@@ -1,9 +1,9 @@
 /**
  * T-307 check: the Trait lock on the crew sheet, seen by a PLAYER in the real Foundry.
  * The GM browser prepares a [TEST] crew actor and a [TEST] Player user; a second browser logs in as that player,
- * opens the sheet and checks that, with `traitsLocked` on, the Trait lists have no "+ ADD" / X, the dice ladders do
+ * opens the sheet and checks that, with the sheet locked (actor flag `sheetUnlocked` absent), the Trait lists have no "+ ADD" / X, the dice ladders do
  * not change, and the seal is visible; and that with the lock off the controls appear and work.
- * Creates only [TEST] documents and deletes them at the end; restores the setting. Run after `npm run deploy`.
+ * Creates only [TEST] documents and deletes them at the end; nothing else to restore. Run after `npm run deploy`.
  * Exit codes: 0 pass, 1 fail, 2 not available.
  */
 import { requireEnv, openBrowser, collectConsole, login, SHOTS } from "./lib.mjs";
@@ -14,7 +14,6 @@ const log = collectConsole(page);
 const results = [];
 const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), detail: ok ? "" : JSON.stringify(detail) });
 let playerBrowser = null;
-let wasLocked = true;
 
 /** GM page: creates the actor, its Trait items and the player user; returns the actor id. */
 async function prepare() {
@@ -81,15 +80,14 @@ try {
 }
 
 try {
-  wasLocked = await page.evaluate(() => game.settings.get("leverage-gta", "traitsLocked"));
   await page.evaluate(prepare);
-  await page.evaluate(() => game.settings.set("leverage-gta", "traitsLocked", true));
+  await page.evaluate(() => game.settings.set("leverage-gta", "playersCanUnlock", true)); // the lock is per sheet; absent flag = locked
 
   playerBrowser = await openBrowser(env, { secondary: true });
   const pp = playerBrowser.page;
   const playerLog = collectConsole(pp);
   await login(pp, { ...env, FOUNDRY_USER: "[TEST] Player", FOUNDRY_PASSWORD: "" });
-  await pp.waitForFunction(() => game.settings.get("leverage-gta", "traitsLocked") === true, null, { timeout: 10000 });
+  await pp.waitForFunction(() => game.actors.getName("[TEST] Lock")?.getFlag("leverage-gta", "sheetUnlocked") !== true, null, { timeout: 10000 });
 
   const locked = await pp.evaluate(measure);
   console.log(JSON.stringify(locked));
@@ -103,11 +101,11 @@ try {
   await pp.screenshot({ path: `${SHOTS}/T-307-locked.png` });
 
   const gm = await page.evaluate(measure, { settle: 500 });
-  record("GM sees the real lock state in the seal, with a different tooltip", /is-locked/.test(gm.seal?.cls ?? "") && gm.seal.title && gm.seal.title !== locked.seal.title, { gm: gm.seal, player: locked.seal });
+  record("GM sees the real lock state in the seal (no tooltip since the seal became a button)", /is-locked/.test(gm.seal?.cls ?? ""), { gm: gm.seal, player: locked.seal });
   record("GM keeps every control while locked", gm.addButtons.join() === "1,1,1" && gm.xButtons === 3 && gm.ladderButtons > 0, gm);
 
-  await page.evaluate(() => game.settings.set("leverage-gta", "traitsLocked", false));
-  await pp.waitForFunction(() => game.settings.get("leverage-gta", "traitsLocked") === false, null, { timeout: 10000 });
+  await page.evaluate(() => game.actors.getName("[TEST] Lock").setFlag("leverage-gta", "sheetUnlocked", true));
+  await pp.waitForFunction(() => game.actors.getName("[TEST] Lock")?.getFlag("leverage-gta", "sheetUnlocked") === true, null, { timeout: 10000 });
   const open = await pp.evaluate(measure);
   record("unlocked: + ADD in all three Trait lists", open.addButtons.join() === "1,1,1", open.addButtons);
   record("unlocked: X on each Trait row", open.xButtons === 3, open.xButtons);
@@ -124,11 +122,10 @@ try {
   await page.screenshot({ path: `${SHOTS}/T-307-failure.png` }).catch(() => {});
 } finally {
   await playerBrowser?.browser.close().catch(() => {});
-  await page.evaluate(async (locked) => {
-    await game.settings.set("leverage-gta", "traitsLocked", locked);
+  await page.evaluate(async () => {
     for (const a of game.actors.filter((x) => x.name.startsWith("[TEST]"))) { await a.sheet.close(); await a.delete(); }
     for (const u of game.users.filter((x) => x.name.startsWith("[TEST]"))) await u.delete();
-  }, wasLocked).catch(() => {});
+  }).catch(() => {});
 }
 for (const r of results) console.log(`${r.ok ? "PASS" : "FAIL"} ${r.name}${r.detail ? ` ${r.detail}` : ""}`);
 await browser.close();

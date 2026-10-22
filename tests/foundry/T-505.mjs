@@ -98,7 +98,7 @@ async function prepare() {
 
 /** Snapshot of what the Fixer tools touch on every real Crew character, the settings and the chat. */
 const snapshot = () => page.evaluate(() => ({
-  settings: Object.fromEntries(["wanted", "activeJob", "traitsLocked"].map((k) => [k, foundry.utils.deepClone(game.settings.get("leverage-gta", k))])),
+  settings: Object.fromEntries(["wanted", "activeJob", "playersCanUnlock"].map((k) => [k, foundry.utils.deepClone(game.settings.get("leverage-gta", k))])),
   crew: game.actors.filter((a) => a.type === "crew" && !a.name.startsWith("[TEST]")).map((a) => ({
     id: a.id, pp: a.system.plotPoints.value, steps: a.system.money.steps, items: a.items.map((i) => i.toObject())
   })),

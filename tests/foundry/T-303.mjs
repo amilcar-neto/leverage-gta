@@ -26,7 +26,7 @@ async function exercise() {
   out.blankHasPoolAction = Boolean(el().querySelector('.lv-roles [data-key="thief"] [data-action="togglePool"]'));
   out.litBlank = dice("roles", "thief").filter((d) => !d.classList.contains("lv-die--muted")).length;
   out.attrPoolAction = el().querySelector('.lv-attributes [data-key="agility"] [data-action="togglePool"]')?.dataset.poolRef;
-  await game.settings.set("leverage-gta", "traitsLocked", false);
+  await actor.setFlag("leverage-gta", "sheetUnlocked", true);
   await wait(500);
   dice("attributes", "agility")[3].click(); // d10
   await wait(600);
@@ -48,12 +48,12 @@ async function exercise() {
   const col = el().querySelector(".lv-col--left").getBoundingClientRect();
   const last = el().querySelector(".lv-roles").getBoundingClientRect();
   out.bottomGap = Math.round(col.bottom - last.bottom);
-  await game.settings.set("leverage-gta", "traitsLocked", true);
+  await actor.unsetFlag("leverage-gta", "sheetUnlocked");
   await wait(800);
   out.lockedButtons = el().querySelectorAll(".lv-ladder button.lv-die").length;
   out.lockedTitle = dice("attributes", "agility")[0]?.title;
   out.lockedCursor = getComputedStyle(dice("attributes", "agility")[0]).cursor;
-  await game.settings.set("leverage-gta", "traitsLocked", false);
+  await actor.setFlag("leverage-gta", "sheetUnlocked", true);
   return out;
 }
 
@@ -75,8 +75,8 @@ try {
   record("click sets Attribute, same die keeps it", m.agility === 10 && m.agilityAfterSame === 10, m);
   record("Role set then cleared by clicking current", m.thief === 8 && m.thiefCleared === null, m);
   record("no scrollbar, no dead space", !m.rolesScrolls && m.bottomGap <= 48, m);
-  // The test user is a GM, who always passes the lock (docs/06: only non-GM users are blocked), so dice stay buttons; the tooltip must still say locked.
-  record("locked (as GM): dice still editable, tooltip says locked", m.lockedButtons > 0 && /trav|lock/i.test(m.lockedTitle ?? ""), m);
+  // The test user is a GM, who always passes the lock (docs/06: only non-GM users are blocked), so dice stay buttons (the die tooltip is just the die size).
+  record("locked (as GM): dice still editable", m.lockedButtons > 0, m);
   record("no system errors in console", log.own().length === 0, log.own());
 } catch (err) {
   record("run", false, err.message.split("\n").slice(0, 6).join(" | "));

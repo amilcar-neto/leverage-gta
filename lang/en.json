@@ -829,7 +829,9 @@
       "people": "NPCs",
       "emptyPeople": "No NPCs",
       "linkNpc": "Link to this place",
-      "notes": "Notes"
+      "notes": "Notes",
+      "scene": "Scene",
+      "noScene": "No scene"
     },
     "Money": {
       "cost": "Cost",
@@ -1053,7 +1055,13 @@
         "other": "{count} stars · police roll {pool}"
       },
       "moneyCap": "Grana",
-      "ppCap": "PP"
+      "ppCap": "PP",
+      "table": "Table",
+      "playersPoints": "Players' Plot Points",
+      "tableLower": "Lower the table counter",
+      "tableRaise": "Raise the table counter",
+      "playerLower": "Take a Plot Point from {name}",
+      "playerRaise": "Give a Plot Point to {name}"
     },
     "Packs": {
       "crewExample": "Example Crew",

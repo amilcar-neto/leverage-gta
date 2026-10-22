@@ -74,7 +74,7 @@ function resolveItem(actor, { id, size }) {
  * @param {object} actor
  * @param {string} ref
  * @param {{moneyEnabled?: boolean, sceneTraits?: {id: string, name: string, die: number}[], includePooled?: boolean}} [options]
- *   `moneyEnabled` is the house rule switch (default on); `sceneTraits` are the Scene Traits of the active Job.
+ *   `moneyEnabled` is the house rule switch (default on); `sceneTraits` are the Scene Traits in play (active Scene flag plus Locations of the viewed Scene).
  * @returns {ResolvedTrait|null} null when the reference means nothing (deleted item, no money, bad shape).
  */
 export function resolvePoolRef(actor, ref, { moneyEnabled = true, sceneTraits = [] } = {}) {

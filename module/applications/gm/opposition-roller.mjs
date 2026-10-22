@@ -6,8 +6,10 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import {
-  complicationSources, emptyCounts, gangDice, locationSources, looseDice, npcSources, pickedDice, policeCity, policeDice, rollOpposition, stepCount
+  complicationSources, emptyCounts, gangDice, looseDice, npcSources, pickedDice, policeCity, policeDice, rollOpposition, stepCount
 } from "../../dice/opposition.mjs";
+import { currentViewedLocations, locationTraitEntries } from "../../scene-location.mjs";
+import { isValidDie } from "../../dice/die.mjs";
 import { readSetting } from "../../data/fields.mjs";
 import { poolText } from "../../rules/stars.mjs";
 import { getCityScales, readWanted } from "../../world-state.mjs";
@@ -33,13 +35,14 @@ function tokenNpc() {
   return selectedActor("npc") ?? [...(game.user?.targets ?? [])].map((token) => token.actor).find((actor) => actor?.type === "npc") ?? null;
 }
 
-/** Locations of the moment: the selected one, else those with a token on the current scene. */
+/** Locations of the moment: the selected one, else those of the viewed Scene (field `scene` or a token on it). */
 function sceneLocations() {
   const selected = selectedActor("location");
-  if (selected) return [selected];
-  const actors = (canvas?.scene?.tokens ?? []).map((token) => token.actor).filter((actor) => actor?.type === "location");
-  return [...new Map(actors.map((actor) => [actor.id, actor])).values()];
+  return selected ? [selected] : currentViewedLocations();
 }
+
+/** Selectable dice of a Location. The key holds the stable Trait id, so a pick survives reordering and never crosses Traits. */
+const locationPickables = (actor) => locationTraitEntries([actor], isValidDie).map((e) => ({ key: `loc.${e.id}`, label: e.name, die: e.die }));
 
 /** Template data of one selectable source. */
 const withState = (sources, picked) => sources.map((s) => ({
@@ -128,7 +131,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
   #sources() {
     const npc = this.#npcActor();
     const names = this.#names();
-    const locations = sceneLocations().map((actor) => ({ name: actor.name, sources: locationSources(actor.system.traits, names.trait) }));
+    const locations = sceneLocations().map((actor) => ({ name: actor.name, sources: locationPickables(actor) }));
     return {
       npc, npcSources: npc ? npcSources(npc.system, names) : [], locations,
       complications: complicationSources(readSetting("activeJob", { complications: [] }))
@@ -190,6 +193,7 @@ export class OppositionRoller extends HandlebarsApplicationMixin(ApplicationV2) 
       ["controlToken", Hooks.on("controlToken", () => this.#onSelectionChanged())],
       ["targetToken", Hooks.on("targetToken", () => this.#onSelectionChanged())],
       ["canvasReady", Hooks.on("canvasReady", refresh)],
+      [LEVERAGE.hooks.activeJobChanged, Hooks.on(LEVERAGE.hooks.activeJobChanged, refresh)],
       ["updateSetting", Hooks.on("updateSetting", (setting) => WATCHED_SETTINGS.has(setting.key) && refresh())],
       ["updateActor", Hooks.on("updateActor", (actor) => actor.id === this.#npcId && refresh())]
     ];

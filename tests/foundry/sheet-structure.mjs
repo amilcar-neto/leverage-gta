@@ -13,8 +13,7 @@ const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), 
 
 /** Runs in the page: opens the sheet and measures everything. */
 async function inspectSheet() {
-  await game.settings.set("leverage-gta", "traitsLocked", true); // the default; other checks may have left it off
-  const actor = await Actor.create({ name: "[TEST] Crew", type: "crew" });
+  const actor = await Actor.create({ name: "[TEST] Crew", type: "crew" }); // new sheets start locked (no `sheetUnlocked` flag)
   await actor.sheet.render({ force: true });
   await new Promise((r) => setTimeout(r, 1500));
   await document.fonts.ready;
@@ -43,16 +42,16 @@ async function inspectSheet() {
   return out;
 }
 
-/** Runs in the page: flips the lock setting and reads the seal back. */
+/** Runs in the page: flips the sheet's own lock flag and reads the seal back. */
 async function toggleLock() {
   const actor = game.actors.getName("[TEST] Crew");
-  const key = "traitsLocked";
-  const before = game.settings.get("leverage-gta", key);
-  await game.settings.set("leverage-gta", key, !before);
+  const flag = "sheetUnlocked";
+  const before = !actor.getFlag("leverage-gta", flag); // true = locked
+  await actor.setFlag("leverage-gta", flag, before);
   await new Promise((r) => setTimeout(r, 800));
   const seal = actor.sheet.element.querySelector(".lv-lock-seal");
   const res = { before, text: seal.textContent.trim(), cls: seal.className, parts: actor.sheet.element.querySelectorAll("[data-application-part]").length };
-  await game.settings.set("leverage-gta", key, before);
+  await actor.setFlag("leverage-gta", flag, !before);
   await new Promise((r) => setTimeout(r, 800));
   res.back = actor.sheet.element.querySelector(".lv-lock-seal").textContent.trim();
   return res;
@@ -83,7 +82,7 @@ try {
   record("layer: .lv-panel-head is ours (yellow, Anton)", m.head.bg === "rgb(216, 194, 74)" && /Anton/.test(m.head.font), m.head);
   record("layer: button.lv-xbtn is ours (20px, no border)", m.xbtn.w === "20px" && m.xbtn.border === "0px" && m.xbtn.bg === "rgba(0, 0, 0, 0)", m.xbtn);
   const t = await page.evaluate(toggleLock);
-  record("seal follows the setting", t.cls.includes("is-unlocked") === t.before && t.text !== t.back && t.parts === 9, t);
+  record("seal follows the sheet lock flag", t.cls.includes("is-unlocked") === t.before && t.text !== t.back && t.parts === 9, t);
   record("no system errors in console", log.own().length === 0, log.own());
   console.log(`LAYERS: ${m.layers.join(" | ")}`);
 } catch (err) {

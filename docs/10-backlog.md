@@ -143,9 +143,9 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
 
 Ajustes do dono em `docs/log/DECISIONS.md` (última seção) valem sobre as notas de pesquisa.
 
-- [ ] **T-1100 Atualizar os scripts de `tests/foundry`** que ainda gravam `traitsLocked` (phase1, sheet-states,
+- [x] **T-1100 Atualizar os scripts de `tests/foundry`** que ainda gravam `traitsLocked` (phase1, sheet-states,
   sheet-structure, T-303, T-307-lock, T-401, T-505, T-702) para o comportamento atual. *Dep:* nenhuma.
-- [ ] **L-01..L-06 Lugar escolhe a Cena** (campo `scene` no Ator `location`, seletor na ficha; sem flag na Cena, sem
+- [ ] **L-01..L-06 Lugar escolhe a Cena** (L-01..L-05 feitas em 2026-10-21; falta L-06) (campo `scene` no Ator `location`, seletor na ficha; sem flag na Cena, sem
   arrastar, sem "Criar mapa"). L-06: remover Traços por flag da Cena e criar Traço/Complication globais pelo HUD do
   mestre. Ver DECISIONS (2026-10-21) + `jobs-e-locais.md` Parte B + R-FL. *Dep:* nenhuma.
 - [ ] **J-01..J-07, J-10, R-FJ Job como Item de mundo, tipo `job` único**, sem J-08/J-09 (`jobs-e-locais.md`, Parte A,
@@ -153,5 +153,5 @@ Ajustes do dono em `docs/log/DECISIONS.md` (última seção) valem sobre as nota
 - [ ] **T-1001..T-1016, R-F10, R-FINAL-2 Cortex Prime** (`docs/research/cortex-prime-upgrade.md`), com o fluxo do dono:
   card inativo + janela Escolher dados + lançar no card; resumido mostra só o decidido, expandido mostra tudo.
   Ajustar T-1005..T-1007 a esse fluxo. *Dep:* J-04 (para `versus`/Opportunities usarem o Job novo).
-- [ ] **T-1101 PP no HUD do mestre:** linha com os PP de cada jogador (− / +) e contador "Mesa" do narrador (setting de
+- [x] **T-1101 PP no HUD do mestre:** linha com os PP de cada jogador (− / +) e contador "Mesa" do narrador (setting de
   mundo, em tempo real, sem limite); atualizar `docs/07`. Ver DECISIONS (2026-10-21). *Dep:* nenhuma.

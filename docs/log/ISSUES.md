@@ -83,3 +83,7 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
 - **Baixa, aberto:** ficha Local mostra "Nenhum NPC" mesmo com NPCs no cenário; não há ligação automática.
 - **Baixa, aberto:** Rastreador do Job sem Job ativo mostra campos vazios e nenhum botão de iniciar.
 - Scripts antigos que gravam `traitsLocked` (desatualizados): phase1, sheet-states, sheet-structure, T-303, T-307-lock, T-401, T-505, T-702.
+
+## Traços de cena: Cena ativa x Cena vista (transitório, até a L-06)
+
+- Os Traços por flag vêm da Cena ATIVA; os Traços de Local vêm da Cena VISTA (canvas). Se o mestre vê uma Cena que não é a ativa, as duas fontes divergem. Gravidade baixa. Some na L-06, que remove os Traços por flag.

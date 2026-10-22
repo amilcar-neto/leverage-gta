@@ -18,9 +18,17 @@
         {{#each cities}}<option value="{{id}}"{{#if selected}} selected{{/if}}>{{name}}</option>{{/each}}
       </select>
     </label>
+    <label class="lv-loc-scene">
+      <i class="fa-solid fa-map lv-loc-scene-icon" aria-hidden="true"></i>
+      <select class="lv-loc-scene-select" name="system.scene" aria-label="{{localize 'LEVERAGE.LocationSheet.scene'}}">
+        <option value="">{{localize "LEVERAGE.LocationSheet.noScene"}}</option>
+        {{#each scenes}}<option value="{{uuid}}"{{#if selected}} selected{{/if}}>{{name}}</option>{{/each}}
+      </select>
+    </label>
     {{else}}
     <div class="lv-loc-name lv-hud lv-ellipsis{{nameSize}}" title="{{actor.name}}">{{actor.name}}</div>
     {{#if cityName}}<div class="lv-loc-city"><i class="fa-solid fa-city lv-loc-city-icon" aria-hidden="true"></i><span class="lv-loc-city-value lv-ellipsis" title="{{cityName}}">{{cityName}}</span></div>{{/if}}
+    {{#if sceneName}}<div class="lv-loc-scene"><i class="fa-solid fa-map lv-loc-scene-icon" aria-hidden="true"></i><span class="lv-loc-scene-value lv-ellipsis" title="{{sceneName}}">{{sceneName}}</span></div>{{/if}}
     {{/if}}
   </div>
 </header>

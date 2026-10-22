@@ -46,6 +46,7 @@ Itens permitidos: `distinction` (máx. 3), `talent`, `specialty`, `asset`, `job`
 | `traits` | Array de `{ name, die }` | DARK CORNERS d8, ON FIRE d8… |
 | `city` | String | id de cidade das escalas de estrelas (opcional) |
 | `npcs` | Array de String | UUIDs de NPCs ligados ao local (só o mestre vê; arrastar da barra lateral para a ficha) |
+| `scene` | String (UUID de Cena) | `DocumentUUIDField` tipo Scene, vazio por padrão. Quando essa Cena está sendo vista, os Traços do Local entram no painel de cena, na Pool e no Rolador de oposição (união, sem repetir, com os Locais que têm token na Cena). Não nasce OBSERVER: os jogadores leem os Traços por `game.actors`; abrir a ficha exige dar permissão ao Local. O id de cada Traço na Pool é `<idDoLocal>-<slug do nome>-<n>` (n = ordem entre nomes iguais), estável ao reordenar |
 | `notes` | HTML | |
 
 ## Items

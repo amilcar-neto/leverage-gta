@@ -36,7 +36,7 @@ ainda não foi testada com o módulo ativo.)
 1. Em **Worlds**, crie um mundo escolhendo o sistema *Leverage: Liberty City* e entre nele.
 2. Em **Actors**, crie um ator do tipo **Crew** (a Equipe, os personagens dos jogadores). Os outros tipos são **NPC**
    (Extra, Foil, Mark, Agent) e **Location** (Local, com Traços e uma cidade). A cidade do Local é só
-   informativa. A cidade atual da mesa é uma só (a do Nível de procurado): ela vale para as estrelas do HUD e para o
+   informativa. O campo **Cena** do Local liga os Traços dele à Cena escolhida: enquanto ela é vista, os Traços aparecem no painel de cena, na Pool e no Rolador de oposição. A cidade atual da mesa é uma só (a do Nível de procurado): ela vale para as estrelas do HUD e para o
    atalho *Polícia* do Rolador de oposição.
 3. Dê a cada jogador a posse (**Owner**) do seu personagem e, em **Configure Players**, escolha o personagem de cada
    usuário. O HUD usa esse personagem.

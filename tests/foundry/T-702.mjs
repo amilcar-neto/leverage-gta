@@ -29,7 +29,7 @@ const actorState = (id) => page.evaluate((i) => {
 try {
   await login(page, env);
   const setup = await page.evaluate(async (s) => {
-    const saved = Object.fromEntries(["traitsLocked", "wanted", "activeJob"].map((k) => [k, foundry.utils.deepClone(game.settings.get(s, k))]));
+    const saved = Object.fromEntries(["playersCanUnlock", "wanted", "activeJob"].map((k) => [k, foundry.utils.deepClone(game.settings.get(s, k))]));
     const crew = game.actors.filter((a) => a.type === "crew");
     const others = crew.filter((a) => a.items.size > 0 && game.users.some((u) => !u.isGM && a.testUserPermission(u, "OWNER"))).length; // other played Crew with Items would be touched: skip then
     const snap = crew.map((a) => [a.id, a.system.plotPoints.value, a.system.money.steps]);
@@ -63,14 +63,14 @@ try {
   record("9 buttons rendered", (await page.locator('button.tool[data-tool="traitsLock"], button.tool[data-tool="wanted"], button.tool[data-tool="opposition"], button.tool[data-tool="tracker"], button.tool[data-tool="endScene"], button.tool[data-tool="newJob"], button.tool[data-tool="endJob"], button.tool[data-tool="newSession"], button.tool[data-tool="givePlotPoint"]').count()) === 9);
 
   // Trait lock toggle.
-  const before = await setting("traitsLocked");
+  const before = await setting("playersCanUnlock");
   await tool("traitsLock").click();
   await wait(1000);
-  record("lock toggle flips the setting", (await setting("traitsLocked")) === !before, before);
+  record("lock toggle flips the setting", (await setting("playersCanUnlock")) === !before, before);
   record("lock toggle reflects state", (await tool("traitsLock").getAttribute("aria-pressed")) === String(!before));
   await tool("traitsLock").click();
   await wait(800);
-  record("lock toggle back", (await setting("traitsLocked")) === before);
+  record("lock toggle back", (await setting("playersCanUnlock")) === before);
 
   // Wanted level.
   await tool("wanted").click();

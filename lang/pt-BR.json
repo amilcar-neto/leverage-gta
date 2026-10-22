@@ -829,7 +829,9 @@
       "people": "NPCs",
       "emptyPeople": "Nenhum NPC",
       "linkNpc": "Ligar a este local",
-      "notes": "Notas"
+      "notes": "Notas",
+      "scene": "Cena",
+      "noScene": "Nenhuma cena"
     },
     "Money": {
       "cost": "Custo",
@@ -1053,7 +1055,13 @@
         "other": "{count} estrelas · rolagem da polícia {pool}"
       },
       "moneyCap": "Grana",
-      "ppCap": "PP"
+      "ppCap": "PP",
+      "table": "Mesa",
+      "playersPoints": "Plot Points dos jogadores",
+      "tableLower": "Diminuir o contador da Mesa",
+      "tableRaise": "Aumentar o contador da Mesa",
+      "playerLower": "Tirar um Plot Point de {name}",
+      "playerRaise": "Dar um Plot Point a {name}"
     },
     "Packs": {
       "crewExample": "Equipe de exemplo",

@@ -36,17 +36,17 @@
   {{/if}}
 
   {{#if party.show}}
-  <section class="lv-hud-party{{#if party.collapsed}} is-collapsed{{/if}}" aria-label="{{party.title}}">
+  <section class="lv-hud-panel lv-hud-party{{#if party.collapsed}} is-collapsed{{/if}}" aria-label="{{party.title}}">
     <button type="button" class="lv-hud-party-head" data-action="collapseParty" aria-expanded="{{#if party.collapsed}}false{{else}}true{{/if}}"
       data-tooltip="{{party.collapseLabel}}">
       <span class="lv-hud-party-title">{{party.title}} · {{party.count}}</span>
       <i class="fa-solid {{#if party.collapsed}}fa-chevron-down{{else}}fa-chevron-up{{/if}}" aria-hidden="true"></i>
     </button>
     {{#unless party.collapsed}}
-    <ul class="lv-hud-party-list">
+    <ul class="lv-hud-panel-list lv-scroll">
       {{#each party.rows as |r|}}
-      <li class="lv-hud-party-row" data-tooltip="{{r.name}} · {{r.steps}}">
-        <span class="lv-hud-party-name">{{r.name}}</span>
+      <li class="lv-hud-panel-row">
+        <span class="lv-hud-panel-name" data-tooltip="{{r.name}} · {{r.steps}}">{{r.name}}</span>
         <span class="lv-hud-party-dice">
           {{#if r.empty}}{{{lvDie 0 die=4 size=party.dieSize money=true empty=true}}}
           {{else}}{{#each r.dice as |d|}}{{{lvDie d die=d size=party.dieSize money=true}}}{{/each}}{{/if}}
@@ -75,5 +75,32 @@
     <svg class="lv-hud-chip" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><text x="12" y="15.4" text-anchor="middle" class="lv-hud-chip-text">{{localize "LEVERAGE.HUD.ppCap"}}</text></svg>
     <span class="lv-hud-text lv-hud-pp-value{{#if plotPoints.pulse}} is-pulse{{/if}}"{{#if plotPoints.canGain}} data-action="gainPlotPoint" role="button" tabindex="0" aria-label="{{plotPoints.gainLabel}}"{{/if}}>{{plotPoints.value}}</span>
   </div>
+  {{/if}}
+
+  {{#if gmPoints.show}}
+  <section class="lv-hud-panel lv-hud-gmpp" aria-label="{{gmPoints.title}}">
+    <div class="lv-hud-panel-row lv-hud-gmpp-table">
+      <span class="lv-hud-panel-name" data-tooltip="{{gmPoints.table.label}}">{{gmPoints.table.label}}</span>
+      <button type="button" class="lv-hud-round lv-hud-round--sm" data-action="stepTablePoints" data-delta="-1"
+        aria-label="{{gmPoints.table.lowerLabel}}" data-tooltip="{{gmPoints.table.lowerLabel}}" {{#unless gmPoints.table.canLower}}disabled{{/unless}}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+      <span class="lv-hud-text lv-hud-gmpp-value{{#if gmPoints.table.pulse}} is-pulse{{/if}}">{{gmPoints.table.value}}</span>
+      <button type="button" class="lv-hud-round lv-hud-round--sm" data-action="stepTablePoints" data-delta="1"
+        aria-label="{{gmPoints.table.raiseLabel}}" data-tooltip="{{gmPoints.table.raiseLabel}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></button>
+    </div>
+    {{#if gmPoints.rows.length}}
+    <ul class="lv-hud-panel-list lv-scroll">
+      {{#each gmPoints.rows as |r|}}
+      <li class="lv-hud-panel-row">
+        <span class="lv-hud-panel-name" data-tooltip="{{r.name}}">{{r.name}}</span>
+        <button type="button" class="lv-hud-round lv-hud-round--sm" data-action="stepPlayerPoints" data-actor-id="{{r.id}}" data-delta="-1"
+          aria-label="{{r.lowerLabel}}" data-tooltip="{{r.lowerLabel}}" {{#unless r.canLower}}disabled{{/unless}}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+        <span class="lv-hud-text lv-hud-gmpp-value{{#if r.pulse}} is-pulse{{/if}}">{{r.value}}</span>
+        <button type="button" class="lv-hud-round lv-hud-round--sm" data-action="stepPlayerPoints" data-actor-id="{{r.id}}" data-delta="1"
+          aria-label="{{r.raiseLabel}}" data-tooltip="{{r.raiseLabel}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></button>
+      </li>
+      {{/each}}
+    </ul>
+    {{/if}}
+  </section>
   {{/if}}
 </div>

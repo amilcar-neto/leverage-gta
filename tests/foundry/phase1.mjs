@@ -138,7 +138,7 @@ try {
     await crew.update({ ownership: { [player.id]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER } });
     // clean slate: remove Distinctions created earlier; traits unlocked for the first part
     await crew.deleteEmbeddedDocuments("Item", crew.items.filter((i) => i.type === "distinction").map((i) => i.id));
-    await game.settings.set("leverage-gta", "traitsLocked", false);
+    await crew.setFlag("leverage-gta", "sheetUnlocked", true);
   });
   const playerBrowser = await openBrowser(env, { secondary: true });
   const pp = playerBrowser.page;
@@ -193,8 +193,8 @@ try {
     });
     await pp.screenshot({ path: `${SHOTS}/F1-player-cap.png` });
 
-    await page.evaluate(() => game.settings.set("leverage-gta", "traitsLocked", true));
-    await pp.waitForFunction(() => game.settings.get("leverage-gta", "traitsLocked") === true, null, { timeout: 10000 }).catch(() => {});
+    await page.evaluate(() => game.actors.getName("[TEST] Crew").unsetFlag("leverage-gta", "sheetUnlocked"));
+    await pp.waitForFunction(() => !game.actors.getName("[TEST] Crew")?.getFlag("leverage-gta", "sheetUnlocked"), null, { timeout: 10000 }).catch(() => {});
     await checkPlayer("player: lock on - cannot edit Attribute dice (one warning, value unchanged)", async () => {
       const crew = game.actors.getName("[TEST] Crew");
       window.__warns.length = 0;
@@ -229,8 +229,8 @@ try {
     });
     await pp.screenshot({ path: `${SHOTS}/F1-player-locked.png` });
 
-    await page.evaluate(() => game.settings.set("leverage-gta", "traitsLocked", false));
-    await pp.waitForFunction(() => game.settings.get("leverage-gta", "traitsLocked") === false, null, { timeout: 10000 }).catch(() => {});
+    await page.evaluate(() => game.actors.getName("[TEST] Crew").setFlag("leverage-gta", "sheetUnlocked", true));
+    await pp.waitForFunction(() => game.actors.getName("[TEST] Crew")?.getFlag("leverage-gta", "sheetUnlocked") === true, null, { timeout: 10000 }).catch(() => {});
     await checkPlayer("player: lock off - Attribute edit allowed again", async () => {
       const crew = game.actors.getName("[TEST] Crew");
       await crew.update({ "system.attributes.agility.die": 10 });
@@ -241,13 +241,12 @@ try {
   await playerBrowser.browser.close();
   await page.evaluate(async () => {
     await game.users.getName("[TEST] Player")?.delete();
-    await game.settings.set("leverage-gta", "traitsLocked", true);
   });
 
   await check("settings: main keys readable with expected types/defaults", () => {
     const want = {
       "houseRules.stars": "boolean", "houseRules.life": "boolean", "houseRules.money": "boolean",
-      lifeBase: "number", moneyStart: "number", jobStartPlotPoints: "number", traitsLocked: "boolean",
+      lifeBase: "number", moneyStart: "number", jobStartPlotPoints: "number", playersCanUnlock: "boolean",
       wanted: "object", cityScales: "array", prices: "array", trainingCosts: "object", activeJob: "object",
       "hud.showStars": "boolean", "hud.showMoney": "boolean", "hud.showPlotPoints": "boolean",
       "hud.minimized": "boolean", "pool.keepAfterRoll": "boolean", debug: "boolean", systemMigrationVersion: "string"

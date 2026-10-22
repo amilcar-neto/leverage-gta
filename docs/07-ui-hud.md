@@ -56,6 +56,18 @@ Alvo visual: `reference/mockups/png/hud-sidebar-open.png`, `hud-sidebar-collapse
 - Sempre visível, inclusive com 0.
 - Animação curta (pulso) quando o valor muda, para o jogador perceber que ganhou um PP.
 
+## Plot Points de todos e Mesa (só mestre)
+
+- Painel compacto abaixo dos PP principais (some minimizado ou com `hud.showPlotPoints` desligado): linha **"Mesa"**
+  (contador do narrador, `[-] n [+]`) e, abaixo, uma linha por personagem de jogador (mesma lista da Grana do grupo):
+  nome com reticências + `[-] n [+]`. Linhas de altura fixa (32 px, painel de 230 px); mais de 5 linhas (160 px) rolam, com a calha reservada.
+  Sem textos de ajuda, só rótulos curtos.
+- **Mesa** é o setting de mundo `tablePlotPoints` (Number, inteiro, mínimo 0, sem limite), só um marcador (não é
+  reserva do Fixer). `-` e `+` mudam de 1 em 1; o `-` apaga em 0.
+- `-`/`+` de um jogador usam `game.leverage.plotPoints.add` (mínimo 0). Atualiza em tempo real (`updateActor` e o
+  `onChange` do setting via `leverage.hudChanged`), com o mesmo pulso dos PP principais. Jogador não vê o painel.
+- Lógica pura em `hud-logic.mjs` (`plotPointRows`, `clampTablePoints`, `changedKeys`).
+
 ## Faixa da cena (Traços de cena e Complications)
 
 Não faz parte do bloco do HUD: é uma faixa compacta e pública, logo abaixo do seletor de cenas do Foundry

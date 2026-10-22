@@ -6,7 +6,7 @@
  */
 import { LEVERAGE, SYSTEM_ID } from "../../config.mjs";
 import { readSetting } from "../../data/fields.mjs";
-import { readSceneTraits } from "../gm/scene-traits.mjs";
+import { currentSceneTraits } from "../../scene-location.mjs";
 import { t, tn } from "../components/i18n.mjs";
 import { buildScenePanel } from "./scene-panel-logic.mjs";
 
@@ -54,7 +54,7 @@ export class ScenePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   /** @override */
   async _prepareContext() {
     const isGM = game.user.isGM;
-    const view = buildScenePanel({ job: readSetting("activeJob", {}), sceneTraits: readSceneTraits() });
+    const view = buildScenePanel({ job: readSetting("activeJob", {}), sceneTraits: currentSceneTraits() });
     const collapsed = Boolean(readSetting("scenePanel.collapsed", false));
     const toggle = t(collapsed ? "LEVERAGE.ScenePanel.expand" : "LEVERAGE.ScenePanel.collapse");
     return {

@@ -88,3 +88,49 @@ export function partyRows(actors) {
 export function showParty({ isGM, enabled, minimized, moneyRule }) {
   return Boolean(isGM && enabled && !minimized && moneyRule);
 }
+
+/**
+ * Plot Points lines of the player characters, for the Fixer's list (docs/07 "Plot Points de todos").
+ * Sorted by name; `canLower` is false at 0 (the "-" is disabled).
+ * @param {{id: string, name: string, system?: {plotPoints?: {value?: number}}}[]} actors Player characters.
+ * @returns {{id: string, name: string, value: number, canLower: boolean}[]}
+ */
+export function plotPointRows(actors) {
+  return actors
+    .map((actor) => {
+      const value = actor.system?.plotPoints?.value ?? 0;
+      return { id: actor.id, name: actor.name, value, canLower: value > 0 };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Keys of an actor update that the Fixer's HUD lists show (Plot Points, Money, name, ownership). */
+const LIST_KEYS = ["system.plotPoints", "system.money", "name", "ownership"];
+
+/**
+ * Whether an actor update touches something the Fixer's HUD lists show. Accepts nested or flattened diffs.
+ * @param {object} changes The `changes` argument of `updateActor`.
+ * @returns {boolean}
+ */
+export function touchesPartyLists(changes = {}) {
+  const flat = {};
+  const walk = (obj, prefix) => {
+    for (const [key, val] of Object.entries(obj ?? {})) {
+      const path = prefix ? `${prefix}.${key}` : key;
+      flat[path] = true;
+      if (val && typeof val === "object" && !Array.isArray(val)) walk(val, path);
+    }
+  };
+  walk(changes, "");
+  return LIST_KEYS.some((key) => key in flat || Object.keys(flat).some((path) => path.startsWith(`${key}.`)));
+}
+
+/**
+ * Which Plot Point values changed since the last render (these pulse). Missing earlier values never pulse.
+ * @param {Record<string, number>} previous Last values by key.
+ * @param {Record<string, number>} current Values now by key.
+ * @returns {Set<string>} keys that changed
+ */
+export function changedKeys(previous, current) {
+  return new Set(Object.keys(current).filter((k) => k in previous && previous[k] !== current[k]));
+}

@@ -33,6 +33,7 @@ leverage-gta/                       ← raiz do repositório = pasta do sistema 
 │   ├── socket.mjs                  ações que precisam do mestre (estrelas, transferências de Grana)
 │   ├── enrichers.mjs               [[/pool …]] em diários e chat (opcional, fase final)
 │   ├── utils.mjs                   helpers pequenos e genéricos
+│   ├── scene-location.mjs          Locais da Cena vista, Traços de Local como Traços de cena, avisos de mudança
 │   ├── data/
 │   │   ├── fields.mjs              DieField e outros campos reutilizáveis
 │   │   ├── actor/  crew.mjs  npc.mjs  location.mjs  _module.mjs
@@ -100,7 +101,7 @@ leverage-gta/                       ← raiz do repositório = pasta do sistema 
 | `item:<id>` | um Item do ator (Specialty, Asset, Talent que dá dado) |
 | `item:<id>:d8` / `item:<id>:d4` | uma Distinction e o modo escolhido |
 | `money` | o maior dado de Grana (regra da casa) |
-| `scene:<id>` | um Traço de cena da cena ativa (flag `sceneTraits` do Scene; ver `applications/gm/scene-traits.mjs`); `rollPool` e a bandeja aceitam |
+| `scene:<id>` | um Traço de cena: flag `sceneTraits` da Cena ativa (`applications/gm/scene-traits.mjs`) ou Traço de um Local da Cena vista (`scene-location.mjs`, id `<idDoLocal>-<slug>-<n>`); `currentSceneTraits()` junta os dois; `rollPool` e a bandeja aceitam |
 | `d6` | um dado avulso |
 
 API pública (`game.leverage`), documentada com JSDoc e exemplos em `docs/macros.md` (crie):
