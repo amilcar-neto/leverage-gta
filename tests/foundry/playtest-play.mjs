@@ -1,10 +1,10 @@
 /**
  * Playtest stage 2: plays the Job "O Cofre do Moretti" with the GM and two players in separate browsers.
  * Run playtest-setup.mjs first (it resets the table). Data stays in the world.
- * Usage: node tests/foundry/playtest-play.mjs [fromAct]  (acts 1..6; default 1)
+ * Usage: node tests/foundry/playtest-play.mjs [fromAct] [toAct]  (acts 1..6; default 1..6; slice it, see `to` below)
  */
 import { requireEnv } from "./lib.mjs";
-import { setCounter, openTable, shot, step, report, S, itemId, addDie, chips, pressRoll, rollFlag, closeApps } from "./playtest-lib.mjs";
+import { useClassicRolls, setCounter, openTable, shot, step, report, S, itemId, addDie, chips, pressRoll, rollFlag, closeApps } from "./playtest-lib.mjs";
 
 const env = requireEnv();
 const ROSA = "Jogadora Rosa";
@@ -13,10 +13,14 @@ const SOL = "Marisol \"Sol\" Quintero";
 const BRUTO = "Marco \"Bruto\" Silva";
 setCounter(20);
 const from = Number(process.argv[2] ?? 1);
+// Optional last act: `node playtest-play.mjs 1 2` plays acts 1-2 only. The three Chromium instances crash together after
+// roughly eight minutes of play (cumulative; software WebGL x3 plus screenshots), so a full run is done in slices.
+const to = Number(process.argv[3] ?? 6);
 const table = await openTable(env, [ROSA, MARCO]);
 const gm = table.gm.page;
 const rosa = table.players[ROSA].page;
 const marco = table.players[MARCO].page;
+const restoreMode = await useClassicRolls(gm);
 
 const chatCardShot = async (page, id, name) => {
   await page.evaluate((i) => { ui.sidebar.changeTab?.("chat", "primary"); document.querySelector(`#chat .chat-message[data-message-id="${i}"]`)?.scrollIntoView(); }, id);
@@ -39,7 +43,7 @@ const ensureSheet = async (page) => {
 const ensureChat = async (page) => { await page.evaluate(() => { ui.sidebar.expand?.(); ui.sidebar.changeTab?.("chat", "primary"); }); await page.waitForTimeout(700); };
 
 // ACT 1: Sol talks her way past the guards.
-if (from <= 1) {
+if (from <= 1 && 1 <= to) {
   await step("Act1 Sol builds the Pool with clicks and + DIE", async () => {
     await ensureSheet(rosa);
     await rosa.locator('.crew-sheet [data-action=togglePool][data-pool-ref="attributes.alertness"]').click();
@@ -54,12 +58,12 @@ if (from <= 1) {
     return await chips(rosa);
   }, rosa);
 
-  await step("Act1 Sol + DIE menu screenshot", async () => {
+  await step("Act1 Sol + DIE opens the Pool builder (screenshot)", async () => {
     await rosa.locator(".crew-sheet [data-action=addDie]").click();
-    await rosa.locator(".lv-pool-menu").waitFor();
-    await shot(rosa, "sol-plus-die-menu");
-    const names = await rosa.evaluate(() => ({ headers: [...document.querySelectorAll(".lv-pool-menu-header")].map((h) => h.textContent), names: [...document.querySelectorAll(".lv-pool-menu-name")].map((n) => n.textContent) }));
-    await rosa.keyboard.press("Escape");
+    await rosa.locator(".lv-pool-builder .lv-pb-chip").first().waitFor();
+    await shot(rosa, "sol-plus-die-builder");
+    const names = await rosa.evaluate(() => ({ tabs: [...document.querySelectorAll(".lv-pb-tab-name")].map((h) => h.textContent), names: [...document.querySelectorAll(".lv-pb-chip-name")].map((n) => n.textContent) }));
+    await rosa.locator('.lv-pool-builder [data-action="done"]').click();
     await rosa.waitForTimeout(300);
     return names;
   }, rosa);
@@ -94,19 +98,20 @@ if (from <= 1) {
 }
 
 // ACT 2: Bruto kicks the door with Grana in the Pool; GM rolls police at stars.
-if (from <= 2) {
-  await step("Act2 Bruto builds Pool: Strength+Hitter+Brawling+Tire Iron+Grana", async () => {
+if (from <= 2 && 2 <= to) {
+  await step("Act2 Bruto builds Pool: Strength+Hitter+Brawling+Tool Roll+Grana", async () => {
     await ensureSheet(marco);
     await marco.locator('.crew-sheet [data-pool-ref="attributes.strength"]').first().click();
     await marco.locator('.crew-sheet [data-pool-ref="roles.hitter"]').first().click();
     const spec = await itemId(marco, BRUTO, "Brawling");
     await marco.locator(`.crew-sheet [data-pool-ref="item:${spec}"]`).first().click();
-    await addDie(marco, "Tire Iron");
+    await addDie(marco, "Tool Roll");
     await addDie(marco, "Heavy Hitter");
     await marco.locator(".crew-sheet [data-action=addDie]").click();
-    await marco.locator(".lv-pool-menu").waitFor();
-    const menu = await marco.evaluate(() => [...document.querySelectorAll(".lv-pool-menu-name")].map((n) => n.textContent));
-    await marco.locator(".lv-pool-menu-item", { hasText: /Grana|Money/i }).first().click().catch(() => marco.keyboard.press("Escape"));
+    await marco.locator(".lv-pool-builder .lv-pb-chip").first().waitFor();
+    const menu = await marco.evaluate(() => [...document.querySelectorAll(".lv-pb-chip-name")].map((n) => n.textContent));
+    await marco.locator('.lv-pool-builder .lv-pb-chip[data-kind="money"]').first().click();
+    await marco.locator('.lv-pool-builder [data-action="done"]').click();
     await marco.waitForTimeout(400);
     await shot(marco, "bruto-pool-built");
     return { chips: await chips(marco), menuHadMoney: menu.some((m) => /grana|money|\$/i.test(m)) };
@@ -139,7 +144,7 @@ if (from <= 2) {
 }
 
 // ACT 3: Damage, stars, Grana payment.
-if (from <= 3) {
+if (from <= 3 && 3 <= to) {
   await step("Act3 Bruto fails: weak Pool (Intelligence + Mastermind) vs gang d8s", async () => {
     await ensureSheet(marco);
     await marco.locator(".crew-sheet [data-action=clearPool]").click().catch(() => {});
@@ -218,7 +223,7 @@ if (from <= 3) {
 }
 
 // ACT 4: Plot Points.
-if (from <= 4) {
+if (from <= 4 && 4 <= to) {
   await step("Act4 Sol keeps a third die for 1 PP (card button)", async () => {
     await ensureChat(rosa);
     const id = await rosa.evaluate(() => game.messages.contents.filter((m) => m.getFlag("leverage-gta", "roll")?.actorName?.includes("Sol")).at(-1)?.id);
@@ -265,7 +270,7 @@ if (from <= 4) {
 }
 
 // ACT 5: Complications.
-if (from <= 5) {
+if (from <= 5 && 5 <= to) {
   await step("Act5 Sol rolls many d4 to get a 1", async () => {
     await closeApps(gm, /dialog|give/i);
     await ensureSheet(rosa);
@@ -295,7 +300,7 @@ if (from <= 5) {
 }
 
 // ACT 6: tracker, scene Asset, end scene, end Job.
-if (from <= 6) {
+if (from <= 6 && 6 <= to) {
   await step("Act6 GM opens the Job tracker, raises and removes a Complication", async () => {
     await gm.locator('[data-tool="tracker"]').first().click();
     await gm.waitForSelector(".lv-trk", { timeout: 8000 });
@@ -327,5 +332,6 @@ if (from <= 6) {
 }
 
 console.log(JSON.stringify({ own: { gm: table.gm.log.own(), rosa: table.players[ROSA].log.own(), marco: table.players[MARCO].log.own() }, other: { gm: table.gm.log.other().slice(0, 5) } }));
+await restoreMode();
 await table.close();
 process.exit(report.every((r) => r.ok) ? 0 : 1);

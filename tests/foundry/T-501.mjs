@@ -78,7 +78,7 @@ try {
   await clickRef(`item:${ids.Safecracking}`);
   await clickRef(`item:${ids["Old Docks Loyalty"]}:d8`);
   t = await tray();
-  record("mockup pool: 4 dice, keep 2", /^4 (dice|dados) · (keep|mantém) 2$/.test(t.count), t.count);
+  record("mockup pool: 4 dice (Prime: no keep 2)", /^4 (dice|dados)( · (keep|mantém) 2)?$/.test(t.count), t.count);
   record("chips in order with dice", JSON.stringify(t.chips.map((c) => [c.kind, c.name.toUpperCase(), c.die]))
     === JSON.stringify([["attribute", "AGILITY", "10"], ["role", "THIEF", "10"], ["specialty", "SAFECRACKING", "6"], ["distinction", "OLD DOCKS LOYALTY", "8"]]), t.chips);
   record("optional chips are dashed, required solid", t.chips.map((c) => c.optional).join() === "false,false,true,true", t.chips);
@@ -108,12 +108,14 @@ try {
   t = await tray();
   record("Distinction chip click again: out of the Pool", !t.chips.some((c) => c.kind === "distinction"), t.chips);
 
-  // + DIE menu
+  // + DIE opens the Pool builder window (the old menu is gone in Prime)
   await page.click(`${sheet} [data-action="addDie"]`);
-  await wait(300);
-  const menu = await page.locator(`${sheet} .lv-pool-menu-item`).count();
-  record("+ DIE menu lists d4..d12 (and Money)", menu >= 5, menu);
-  await page.locator(`${sheet} .lv-pool-menu-item`).filter({ hasText: /d6$/ }).click();
+  await page.locator(".lv-pool-builder .lv-pb-chip").first().waitFor({ timeout: 5000 });
+  const dieChips = await page.locator(".lv-pool-builder .lv-pb-chip--die").count();
+  record("+ DIE builder offers loose dice d4..d12", dieChips >= 5, dieChips);
+  await page.locator('.lv-pool-builder .lv-pb-chip--die[data-ref="d6"]').click();
+  await wait(400);
+  await page.locator('.lv-pool-builder [data-action="done"]').click();
   await wait(400);
   t = await tray();
   record("loose d6 added", /^4 /.test(t.count), t.count);

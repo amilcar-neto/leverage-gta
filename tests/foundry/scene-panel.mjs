@@ -37,8 +37,9 @@ try {
   record("shows the global Trait", text.includes("[TEST] Dark Corners"), text);
   record("shows the Complication", text.includes("[TEST] Cops on the way"), text);
   const box = await panel.boundingBox();
-  const nav = await page.locator("#scene-navigation-viewed").boundingBox();
+  // v14: no `#scene-navigation-viewed`; the strip sits right of the nav's expand control (#scene-navigation-expand), same row.
   const expand = await page.locator("#scene-navigation-expand").boundingBox();
+  const nav = expand;
   record("beside the scene navigation, no overlap", box && nav && expand && box.x >= Math.max(nav.x + nav.width, expand.x + expand.width), { box, nav, expand });
   record("same row as the navigation bar", box && nav && Math.abs(box.y - nav.y) <= 4, { box, nav });
   record("visible (nothing on top of it)", await panel.evaluate((el) => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + 12, r.y + 12)); }));

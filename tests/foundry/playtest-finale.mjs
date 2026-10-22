@@ -3,7 +3,7 @@
  * end of Job. Runs on the state left by playtest-setup.mjs + playtest-play.mjs. Data stays in the world.
  */
 import { requireEnv } from "./lib.mjs";
-import { setCounter, openTable, shot, step, report, S, itemId, addDie, pressRoll, rollFlag, closeApps } from "./playtest-lib.mjs";
+import { useClassicRolls, setCounter, openTable, shot, step, report, S, itemId, addDie, pressRoll, rollFlag, closeApps } from "./playtest-lib.mjs";
 
 const env = requireEnv();
 const ROSA = "Jogadora Rosa";
@@ -15,6 +15,7 @@ const table = await openTable(env, [ROSA, MARCO]);
 const gm = table.gm.page;
 const rosa = table.players[ROSA].page;
 const marco = table.players[MARCO].page;
+const restoreMode = await useClassicRolls(gm);
 
 const state = (page, name) => page.evaluate((n) => {
   const a = game.actors.getName(n);
@@ -40,6 +41,9 @@ const jobState = () => gm.evaluate((S) => ({ ...lvTestJob.get(), complications: 
 
 await step("Sol creates a scene Asset (1 PP) with + Adicionar", async () => {
   await ensureSheet(rosa);
+  // Sheets start locked (+ ADD is hidden): unlock Sol's like a player would with the seal (the flag is the seal's state).
+  await rosa.evaluate(() => game.user.character.setFlag("leverage-gta", "sheetUnlocked", true));
+  await rosa.waitForSelector(".crew-sheet [data-action=addAsset]", { timeout: 8000 });
   const before = await state(rosa, SOL);
   // Bug probe: confirm with the Nome field blank.
   const errs0 = table.players[ROSA].log.errors.length;
@@ -47,6 +51,10 @@ await step("Sol creates a scene Asset (1 PP) with + Adicionar", async () => {
   await rosa.waitForSelector(".lv-dialog input[name=name]");
   await rosa.locator('.lv-dialog button[data-action="ok"]').first().click();
   await rosa.waitForTimeout(1500);
+  // The dialog guard keeps the dialog open on a blank name (that is the fix being probed); close it before reopening.
+  const stillOpen = await rosa.locator(".lv-dialog input[name=name]").count();
+  await rosa.locator(".lv-dialog [data-action=cancel], .lv-dialog button[data-action=close]").first().click({ timeout: 3000 }).catch(() => rosa.keyboard.press("Escape"));
+  await rosa.locator(".lv-dialog").waitFor({ state: "detached", timeout: 5000 }).catch(() => {});
   const blankErrors = table.players[ROSA].log.errors.slice(errs0).map((e) => e.slice(0, 160));
   const blank = await state(rosa, SOL);
   await shot(rosa, "sol-asset-blank-name-bug");
@@ -59,7 +67,7 @@ await step("Sol creates a scene Asset (1 PP) with + Adicionar", async () => {
   await rosa.waitForTimeout(1500);
   const after = await state(rosa, SOL);
   await shot(rosa, "sol-asset-created");
-  return { blankErrors, ppAfterBlank: blank.pp, ppBefore: before.pp, ppAfter: after.pp, scene: after.scene };
+  return { blankDialogStayedOpen: stillOpen === 1, blankErrors, ppAfterBlank: blank.pp, ppBefore: before.pp, ppAfter: after.pp, scene: after.scene };
 }, rosa);
 
 await step("Sol uses the new scene Asset in a roll; GM sees 1s and adds a Complication from the card", async () => {
@@ -176,5 +184,7 @@ await step("GM ends the Job (tool dialog)", async () => {
 }, gm);
 
 console.log(JSON.stringify({ own: { gm: table.gm.log.own(), rosa: table.players[ROSA].log.own(), marco: table.players[MARCO].log.own() }, other: { gm: table.gm.log.other().slice(0, 5) } }));
+await rosa.evaluate(() => game.user.character.unsetFlag("leverage-gta", "sheetUnlocked")).catch(() => {});
+await restoreMode();
 await table.close();
 process.exit(report.every((r) => r.ok) ? 0 : 1);

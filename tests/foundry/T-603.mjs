@@ -73,6 +73,8 @@ try {
     const msg = await game.leverage.rollPool({ actor, refs: ["attributes.agility", "roles.thief", "money"] });
     return { posted: Boolean(msg), steps: actor.system.money.steps };
   }, ids.a);
+  // In Prime the Money step drops when the card is resolved (P-prime.mjs); this check uses the classic automatic roll.
+  const priorMode = await page.evaluate(async (s) => { const m = game.settings.get(s, "rules.rollMode"); await game.settings.set(s, "rules.rollMode", "classic"); return m; }, S);
   const rolled = await roll();
   record("pool: Money roll posts and drops one step", rolled.posted && rolled.steps === 7, rolled);
   await page.evaluate((s) => game.settings.set(s, "houseRules.money", false), S);
@@ -80,6 +82,7 @@ try {
   const off = await roll();
   record("pool: Money refused with the house rule off", !off.posted && off.steps === 7, off);
   await page.evaluate(([s, v]) => game.settings.set(s, "houseRules.money", v), [S, savedRule]);
+  await page.evaluate(([s, m]) => game.settings.set(s, "rules.rollMode", m), [S, priorMode]);
   await setSteps(ids.a, 8);
 
   // ---- Lend dialog (Player, through the Fixer) ----

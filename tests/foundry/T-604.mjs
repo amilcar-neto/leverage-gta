@@ -29,8 +29,6 @@ const wanted = () => page.evaluate((s) => game.settings.get(s, "wanted"), S);
 const level = async () => (await wanted()).level;
 const steps = () => page.evaluate((id) => game.actors.get(id).system.money.steps, ids.a);
 const setWanted = (city, lvl) => page.evaluate(([s, c, l]) => game.settings.set(s, "wanted", { city: c, level: l }), [S, city, lvl]);
-/** Polls until the check passes (socket round trips), at most 10 s. */
-const until = async (check) => { for (let i = 0; i < 40; i++) { if (await check()) return true; await wait(250); } return false; };
 const lines = () => page.evaluate(() => game.messages.filter((m) => m.content.includes("lv-stars-line")).length);
 
 try {
@@ -84,7 +82,7 @@ try {
   r = await act(page, "lowerByDisguise", "simple", { sketched: true });
   record("liberty: composite sketch blocks the disguise", !r.ok && r.error === "sketched", r);
   record("refusals post no chat line", (await lines()) === before, [before, await lines()]);
-  r = await act(page, "giveIn", A);
+  r = await act(page, "lastResort", A, { confirmed: true });
   await wait(500);
   record("liberty: give in -> 0 stars", r.to === 0 && (await level()) === 0, r);
 
@@ -95,7 +93,8 @@ try {
   await win.waitFor({ timeout: 8000 });
   await wait(500);
   record("window: 6 level buttons, level 2 on", (await win.locator(".lv-wanted-level").count()) === 6 && (await win.locator(".lv-wanted-level.is-on .lv-wanted-n").innerText()) === "2");
-  record("window: tooltips carry the rules", (await win.locator('[data-action="buySilence"]').getAttribute("title")).includes("d6"));
+  // Help texts were removed from the dialogs (commit 121cb6f), so there is no tooltip with the rules to read any more.
+  record("window: silence button present", (await win.locator('[data-action="buySilence"]').count()) === 1);
   await win.screenshot({ path: `${SHOTS}/T-604-dialog.png` });
   await win.locator('[data-action="setLevel"][data-level="4"]').click();
   await wait(800);
@@ -133,30 +132,26 @@ try {
   record("rule on again: shortcut and actions back", (await opp.locator('[data-action="togglePolice"]').count()) === 1 && (await win.locator('[data-action="raise"]').count()) === 1);
   await page.evaluate(() => { for (const app of foundry.applications.instances.values()) if (["leverage-wanted-dialog", "leverage-opposition-roller"].includes(app.id)) app.close(); });
 
-  // ---- Player: through the Fixer ----
+  // ---- Player: refused ----
   await setWanted("carcer", 3);
   await page.evaluate((id) => game.actors.get(id).update({ "system.money.steps": 8 }), ids.a);
   playerBrowser = await openBrowser(env, { secondary: true });
   const pp = playerBrowser.page;
   collectConsole(pp);
   await login(pp, { ...env, FOUNDRY_USER: "[TEST] Player", FOUNDRY_PASSWORD: "" });
+  // Stars actions are Fixer only now (`mayStart` in stars-actions.mjs): every player attempt is refused and changes nothing.
   r = await act(pp, "buySilence", A);
-  await wait(4000);
-  record("player: silence goes through the Fixer (3 -> 1, 8 -> 6)", r.pending && (await until(async () => (await level()) === 1 && (await steps()) === 6)), [r, await level(), await steps()]);
-  const own = await pp.evaluate(() => game.messages.contents.at(-1).content.includes("lv-stars-line"));
-  record("player: the line is posted", own);
+  await wait(1000);
+  record("player: silence refused (Fixer only)", !r.ok && r.error === "notAllowed" && (await level()) === 3 && (await steps()) === 8, [r, await level(), await steps()]);
   r = await act(pp, "raise", 1);
-  await wait(1000);
-  record("player: raise is refused", !r.ok && (await level()) === 1, r);
+  await wait(500);
+  record("player: raise is refused", !r.ok && (await level()) === 3, r);
   r = await act(pp, "lowerByWaiting", 1);
-  record("player: wait is refused", !r.ok && (await level()) === 1, r);
+  record("player: wait is refused", !r.ok && (await level()) === 3, r);
+  r = await act(pp, "lastResort", A, { confirmed: true });
+  await wait(500);
+  record("player: last resort is refused", !r.ok && (await level()) === 3, [r, await level()]);
   await setWanted("liberty", 3);
-  r = await act(pp, "buySilence", A);
-  await wait(1000);
-  record("player: silence refused where it does not work", !r.ok && (await level()) === 3 && (await steps()) === 6, r);
-  r = await act(pp, "giveIn", A);
-  await wait(4000);
-  record("player: give in -> 0", (await level()) === 0, [r, await level()]);
 
   // ---- Chat screenshot ----
   await page.evaluate(() => { ui.sidebar?.expand?.(); ui.sidebar?.changeTab?.("chat", "primary"); });

@@ -131,7 +131,8 @@ await step("Rosa: pool builder", async () => {
   if (c > 2) { await tabs.nth(2).click(); await wait(rosa, 500); await shot(rosa, "rosa-pool-builder-tab"); }
   return { c };
 }, rosa);
-await rosa.keyboard.press("Escape");
+// The builder is its own window now: close it with its button (Escape would also close the sheet behind it).
+await rosa.locator('.lv-pool-builder [data-action="done"]').click().catch(() => {});
 await wait(rosa, 500);
 
 await step("Rosa: build pool and roll", async () => {

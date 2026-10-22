@@ -133,6 +133,7 @@ await closeAll(gm);
 
 await step("scene strip chips click (GM)", async () => {
   const sizes = await gm.evaluate(() => [...document.querySelectorAll(".lv-sp button, .lv-sp .lv-sp-chip")].map((b) => `${b.className.split(" ").slice(0, 2).join(".")}:${Math.round(b.getBoundingClientRect().width)}x${Math.round(b.getBoundingClientRect().height)}`));
+  if (!(await gm.locator(".lv-sp-chip--trait").count())) return { sizes, note: "no scene Trait chip in the world, nothing to click" };
   await gm.locator(".lv-sp-chip--trait").first().click({ timeout: 4000 });
   await wait(gm, 1200);
   await shot(gm, "gm-strip-chip-click");

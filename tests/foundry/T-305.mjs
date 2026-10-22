@@ -15,10 +15,10 @@ const wait = (ms) => page.waitForTimeout(ms);
 async function setup() {
   const actor = await Actor.create({ name: "[TEST] Folder", type: "crew", system: { plotPoints: { value: 1 } } });
   await actor.createEmbeddedDocuments("Item", [
-    { name: "Borrowed Hatchback With A Very Long Name To Force An Ellipsis", type: "asset", system: { duration: "signature", die: 8, note: "Rusty, loud, and it never stalls." } },
-    { name: "Lockpick Roll", type: "asset", system: { duration: "scene", die: 6 } },
-    { name: "Dockside Job", type: "job", system: { payout: { total: 8, share: 2 } } },
-    { name: "Tow-Truck Job", type: "job", system: { spent: true, payout: { total: 4, share: 1 } } }
+    { name: "Borrowed Hatchback With A Very Long Name To Force An Ellipsis", type: "asset", sort: 100, system: { duration: "signature", die: 8, note: "Rusty, loud, and it never stalls." } },
+    { name: "Lockpick Roll", type: "asset", sort: 200, system: { duration: "scene", die: 6 } },
+    { name: "Dockside Job", type: "job", sort: 300, system: { payout: { total: 8, share: 2 } } },
+    { name: "Tow-Truck Job", type: "job", sort: 400, system: { spent: true, payout: { total: 4, share: 1 } } }
   ]);
   await actor.sheet.render({ force: true });
   await new Promise((r) => setTimeout(r, 1500));
@@ -152,6 +152,9 @@ try {
 } finally {
   await page.evaluate(async () => {
     for (const a of game.actors.filter((x) => x.name.startsWith("[TEST]"))) { await a.sheet.close(); await a.delete(); }
+    // Train Up / recall Job post chat lines named after the [TEST] actor: remove them too.
+    const lines = game.messages.filter((m) => m.content.includes("[TEST]")).map((m) => m.id);
+    if (lines.length) await ChatMessage.deleteDocuments(lines);
   }).catch(() => {});
 }
 for (const r of results) console.log(`${r.ok ? "PASS" : "FAIL"} ${r.name}${r.detail ? ` ${r.detail}` : ""}`);

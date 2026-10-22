@@ -69,7 +69,7 @@ try {
   await page.evaluate(() => { canvas.tokens?.releaseAll(); });
   await page.evaluate(() => game.settings.set("leverage-gta", "hud.showPartyMoney", true));
   await page.waitForSelector("#leverage-hud .lv-hud-party", { timeout: 8000 });
-  const rows = await page.evaluate(() => [...document.querySelectorAll("#leverage-hud .lv-hud-party-row")].map((r) => r.textContent.trim().replace(/\s+/g, " ")));
+  const rows = await page.evaluate(() => [...document.querySelectorAll("#leverage-hud .lv-hud-panel-row")].map((r) => r.textContent.trim().replace(/\s+/g, " ")));
   record("GM with nothing selected sees player rows", rows.some((r) => r.includes("Lock Hero")), rows);
   record("player-only rows (Broke Pal is not a player's)", !rows.some((r) => r.includes("Broke Pal")), rows);
   await page.screenshot({ path: `${SHOTS}/hud-party.png`, clip: { x: 1100, y: 0, width: 820, height: 400 } });

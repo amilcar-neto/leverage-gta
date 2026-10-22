@@ -40,7 +40,9 @@ await step("GM builds scene, tokens, Job, stars, PP", async () => {
     await scene.createEmbeddedDocuments("Token", tokens);
     await scene.activate();
     await scene.view();
-    // Job.
+    // Job. Earlier runs' Jobs of the same name are removed first, or every run piles up another pair.
+    const oldJobs = game.items.filter((i) => i.type === "job" && !i.parent && i.name.startsWith("O Cofre do Moretti")).map((i) => i.id);
+    if (oldJobs.length) await Item.deleteDocuments(oldJobs);
     await game.leverage.job.new("O Cofre do Moretti");
     const job = lvTestJob.get();
     await lvTestJob.set({

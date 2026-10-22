@@ -22,9 +22,11 @@ export async function openTable(env, names) {
   const gm = await openBrowser(env);
   await login(gm.page, env);
   const table = { gm: { ...gm, log: collectConsole(gm.page) }, players: {} };
+  gm.page.on("crash", () => console.log("CRASH page of the GM"));
   for (const name of names) {
     const b = await openBrowser(env, { secondary: true });
     b.log = collectConsole(b.page);
+    b.page.on("crash", () => console.log(`CRASH page of ${name}`));
     await loginAs(b.page, env, name);
     table.players[name] = b;
   }
@@ -67,12 +69,34 @@ export async function step(name, fn, page) {
 /** The ids of a crew actor's items by name. */
 export const itemId = (page, actorName, itemName) => page.evaluate(([a, i]) => game.actors.getName(a).items.find((x) => x.name === i)?.id, [actorName, itemName]);
 
-/** Clicks a pool-menu entry (opens the + DIE menu first). */
+/**
+ * Adds a die through the Pool builder window ("+ DIE" opens it; the old dropdown menu is gone). `text` is a loose die
+ * ("d4") or the name of a Trait/Asset/Talent/Specialty/Wallet chip. The window is closed with "done" afterwards.
+ */
 export async function addDie(page, text) {
-  await page.locator(".crew-sheet [data-action=addDie]").click();
-  await page.locator(".lv-pool-menu").waitFor({ timeout: 5000 });
-  await page.locator(".lv-pool-menu-item", { hasText: text }).first().click();
-  await page.waitForTimeout(400);
+  if (!(await page.locator(".lv-pool-builder").count())) {
+    await page.locator(".crew-sheet [data-action=addDie]").click();
+    await page.locator(".lv-pool-builder .lv-pb-chip").first().waitFor({ timeout: 5000 });
+  }
+  const loose = /^d\d+$/.test(text);
+  const chip = loose
+    ? page.locator(`.lv-pool-builder .lv-pb-chip[data-ref="${text}"]`).first()
+    : page.locator(".lv-pool-builder .lv-pb-chip", { hasText: text }).first();
+  await chip.click();
+  await page.waitForTimeout(300);
+  await page.locator('.lv-pool-builder [data-action="done"]').click();
+  await page.locator(".lv-pool-builder").waitFor({ state: "detached", timeout: 5000 }).catch(() => {});
+  await page.waitForTimeout(300);
+}
+
+/**
+ * The playtest narrates the classic automatic roll (KEEP button, totals on the card): switches the world to it and
+ * returns a function that puts the previous mode back. The Prime flow has its own scripts (P-prime.mjs ...).
+ * @param {import("playwright").Page} gm
+ */
+export async function useClassicRolls(gm) {
+  const prior = await gm.evaluate(async (s) => { const m = game.settings.get(s, "rules.rollMode"); await game.settings.set(s, "rules.rollMode", "classic"); return m; }, S);
+  return () => gm.evaluate(([s, m]) => game.settings.set(s, "rules.rollMode", m), [S, prior]).catch(() => {});
 }
 
 /** Current pool chips text of the open crew sheet. */

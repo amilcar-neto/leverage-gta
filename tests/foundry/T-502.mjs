@@ -12,6 +12,7 @@ const record = (name, ok, detail = "") => results.push({ name, ok: Boolean(ok), 
 const wait = (ms) => page.waitForTimeout(ms);
 const sheet = ".application.crew-sheet";
 let playerBrowser = null;
+let priorMode = null;
 
 /** Runs in the page: Rosa Delgado with the Traits of the mockup. */
 async function setup() {
@@ -67,6 +68,8 @@ const roll = async () => {
 
 try {
   await login(page, env);
+  // Classic automatic roll: the Prime default (player chooses the dice) is covered by P-prime.mjs.
+  priorMode = await page.evaluate(async () => { const m = game.settings.get("leverage-gta", "rules.rollMode"); await game.settings.set("leverage-gta", "rules.rollMode", "classic"); return m; });
   const id = await page.evaluate(setup);
   const ids = await page.evaluate((i) => Object.fromEntries(game.actors.get(i).items.map((x) => [x.name, x.id])), id);
 
@@ -110,7 +113,9 @@ try {
   await clickRow("Agility");
   await clickRow("Thief");
   await page.click(`${sheet} [data-action="addDie"]`);
-  await page.locator(".lv-pool-menu-item").last().click();
+  await page.locator('.lv-pool-builder .lv-pb-chip[data-kind="money"]').first().click();
+  await wait(400);
+  await page.locator('.lv-pool-builder [data-action="done"]').click();
   await wait(400);
   await roll();
   r = await page.evaluate(lastRoll, id);
@@ -126,6 +131,7 @@ try {
   record("run", false, err.message.split("\n").slice(0, 6).join(" | "));
   await page.screenshot({ path: `${SHOTS}/T-502-failure.png` }).catch(() => {});
 } finally {
+  if (priorMode) await page.evaluate((m) => game.settings.set("leverage-gta", "rules.rollMode", m), priorMode).catch(() => {});
   await playerBrowser?.close().catch(() => {});
   await page.evaluate(async () => {
     const test = game.actors.filter((x) => x.name.startsWith("[TEST]"));
