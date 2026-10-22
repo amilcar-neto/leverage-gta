@@ -230,3 +230,26 @@ Decisões que não estavam nos documentos, tomadas durante a construção. Forma
   (cancelar). Edição no lugar com ProseMirror sem barra de ferramentas (atalhos e digitação estilo Markdown funcionam). Salva ao sair do campo
   ou com Ctrl+Enter; Escape cancela; duplo clique no texto começa a editar. A altura da página não muda.
 - **Descartado:** textarea simples (o campo é HTML); manter barra do ProseMirror (clique na barra tira o foco e salvaria cedo).
+
+## Decisões do dono sobre as pendências (2026-10-21, pelo celular)
+
+- **Cortex Prime: aprovado, com o fluxo ajustado pelo dono.** Não existe rolagem automática.
+  1. O jogador monta a Pool e clica ROLL.
+  2. O card entra no chat **inativo** (pendente, sem total) e, na máquina de quem rolou, abre a janela **Escolher dados**
+     (estilo "Roll & Keep" do L5R5e).
+  3. O jogador escolhe 2 dados para o total e 1 para o efeito e **lança no card**. Só então o card vale.
+  4. Card **resumido** no chat: só o decidido (os 2 dados do total, a soma e o dado de efeito).
+  5. Card **expandido** (clique): a rolagem inteira (todos os dados, hitches, dados pagos com PP).
+  6. Fechar a janela sem confirmar **não** resolve nada: o card segue inativo e tem o botão "Escolher dados".
+  Isto substitui a "escolha automática inicial" e o `status: pending` com total automático de
+  `docs/research/cortex-prime-upgrade.md` (seções 2, 5.1, 5.3). `autoSelection` vira só um atalho "Máx. total" dentro
+  da janela. O modo `classic` (rede de segurança) continua só como configuração `rules.rollMode`.
+  Oposição do Fixer: sem janela por padrão (`rules.oppositionChoice = "auto"`), como estava.
+- **Job como Item de mundo: aprovado, com um só tipo.** O dono perguntou por que `heist` e não `job`: o tipo se chama
+  `job`. O Item de mundo é o Job (planejado/ativo/concluído); o Item embutido na ficha continua sendo o Record
+  (cópia criada ao encerrar o Job, como hoje). Diferença por `item.isEmbedded`. Campos enxutos: nome, status,
+  objetivo, notas, Complications, Traços de cena, pagamento. **Fora:** ligações a NPCs/Locais/Cenas (J-08), pack de
+  golpes (J-09), `gmNotes`. Substitui a seção A.4 do `docs/research/jobs-e-locais.md` ("dois tipos").
+- **Local ligado à Cena por flag: aprovado** como em `jobs-e-locais.md` (Parte B).
+- **Painel único do mestre: rejeitado.** Não implementar o P1.2 de `REVIEW-USABILIDADE.md`.
+- **Scripts antigos de `tests/foundry` com `traitsLocked`: atualizar** (tarefa T-1100).

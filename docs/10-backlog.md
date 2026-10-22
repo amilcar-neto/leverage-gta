@@ -138,3 +138,16 @@ arquivos não se cruzam). Cada tarefa de código passa por `tester` + `reviewer`
   Foundry, clicando em tudo como mestre e como jogador (prints). Builders corrigem. Segunda rodada do revisor só nos
   pontos corrigidos. Escreva `docs/log/FINAL-REPORT.md`: o que ficou pronto, o que ficou de fora e por quê, problemas
   conhecidos, decisões tomadas sozinho, o que o dono precisa testar na mesa. Depois: `DONE` em `STATUS.md`.
+
+## Fase 10 — Manutenção, Local por Cena, Job como Item, Cortex Prime (aprovada pelo dono em 2026-10-21)
+
+Ajustes do dono em `docs/log/DECISIONS.md` (última seção) valem sobre as notas de pesquisa.
+
+- [ ] **T-1100 Atualizar os scripts de `tests/foundry`** que ainda gravam `traitsLocked` (phase1, sheet-states,
+  sheet-structure, T-303, T-307-lock, T-401, T-505, T-702) para o comportamento atual. *Dep:* nenhuma.
+- [ ] **L-01..L-05 Local ligado à Cena por flag** (`docs/research/jobs-e-locais.md`, Parte B + R-FL). *Dep:* nenhuma.
+- [ ] **J-01..J-07, J-10, R-FJ Job como Item de mundo, tipo `job` único**, sem J-08/J-09 (`jobs-e-locais.md`, Parte A,
+  com o ajuste de tipo único e campos enxutos). *Dep:* nenhuma.
+- [ ] **T-1001..T-1016, R-F10, R-FINAL-2 Cortex Prime** (`docs/research/cortex-prime-upgrade.md`), com o fluxo do dono:
+  card inativo + janela Escolher dados + lançar no card; resumido mostra só o decidido, expandido mostra tudo.
+  Ajustar T-1005..T-1007 a esse fluxo. *Dep:* J-04 (para `versus`/Opportunities usarem o Job novo).
