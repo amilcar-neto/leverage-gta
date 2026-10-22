@@ -109,3 +109,19 @@ Formato: `## <id> — <título>` · **Gravidade** (bloqueia / importante / menor
   Fixer, para Complication contra a Crew. Futuro: o efeito vencedor do jogador poderia virar Traço/Complication do NPC alvo.
 - **Baixa, aberto:** a rolagem cega/privada do Fixer não é testada ao vivo (o servidor pode nem entregar a mensagem ao jogador); a
   regra `visibleTo` está coberta por teste unitário.
+
+## 2026-10-22 — Deploy esvaziava os compêndios no Foundry em execução
+- **O que é:** `npm run deploy` apagava e recriava a pasta do sistema com o Foundry rodando; os bancos LevelDB dos compêndios
+  (`packs/`) ficavam vazios (T-902 viu 0 entradas nos 4 packs).
+- **Gravidade:** média (só ambiente de teste/deploy; o zip de release não é afetado).
+- **Resolvido:** `tools/deploy.mjs` agora preserva `packs/` por padrão; só envia com `--packs` (ou no primeiro deploy, se o
+  servidor ainda não tem `packs/`). Com `--packs`, reinicie o servidor Foundry depois.
+- **Dono precisa:** para atualizar os compêndios no VPS (os textos de Talent/Rosa mudaram na 0.2.0), rode
+  `node tools/release.mjs --dev && node tools/deploy.mjs --packs` e reinicie o Foundry. Instalação via zip não precisa disso.
+
+## 2026-10-22 — Editor de Background fecha se a ficha re-renderiza durante a digitação
+- A ficha re-renderizada (por exemplo, outro update do ator) fecha o editor de Background; o texto digitado é salvo no foco
+  perdido, então nada se perde, mas a sessão de edição termina. Teste T-305 falha por isso. Gravidade: baixa.
+- **Resolvido:** a causa era o `focusout` do editor: o re-render remove o campo, o foco some e o handler salvava e encerrava a
+  edição. Agora o handler ignora campos já desconectados (o rascunho já era copiado antes do render e restaurado depois).
+  T-305 passa (o teste clicava no lápis para salvar; durante a edição o botão é `saveBackground`, corrigido).

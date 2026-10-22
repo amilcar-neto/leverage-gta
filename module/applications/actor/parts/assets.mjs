@@ -317,7 +317,8 @@ function attachBackgroundEditor(sheet, signal) {
   el.addEventListener("focusout", (event) => {
     const field = event.target.closest?.(EDITOR);
     if (!field || field.contains(event.relatedTarget)) return;
-    setTimeout(() => { if (!field.contains(document.activeElement)) saveBackground(sheet); }, 0);
+    // A field removed by a re-render also loses focus: that is not the player leaving it, so keep the draft.
+    setTimeout(() => { if (field.isConnected && !field.contains(document.activeElement)) saveBackground(sheet); }, 0);
   }, { signal });
   el.addEventListener("keydown", (event) => {
     if (!event.target.closest?.(EDITOR)) return;

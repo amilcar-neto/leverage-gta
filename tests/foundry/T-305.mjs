@@ -139,7 +139,7 @@ try {
   await wait(1200);
   const kept = await page.evaluate(() => document.querySelector(".crew-sheet prose-mirror.lv-bg-editor")?.value ?? null);
   record("background: typed text survives a full re-render", /Dock Row/.test(kept ?? ""), kept);
-  await page.click(`${sheet} [data-action="editBackground"]`);
+  await page.click(`${sheet} [data-action="saveBackground"]`);
   await wait(900);
   s = await page.evaluate(readState, id);
   record("background saved", /Dock Row/.test(s.background), s.background);

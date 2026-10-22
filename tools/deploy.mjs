@@ -5,6 +5,10 @@
  * Needs in .env: VPS_SSH (user@host), VPS_SYSTEM_DIR (must end with /systems/leverage-gta),
  * optional VPS_SSH_PORT and VPS_SSH_KEY. The key's passphrase must already be loaded in ssh-agent;
  * BatchMode makes ssh fail fast instead of waiting for a password nobody will type.
+ *
+ * `packs/` is NOT replaced by default: the running Foundry keeps the compendium databases (LevelDB) open, and replacing
+ * them underneath it leaves them empty. Pass `--packs` (and restart Foundry afterwards) when the compendia changed.
+ * On a first deploy, when the server has no `packs/` yet, they are sent anyway.
  */
 import { existsSync, rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -44,10 +48,12 @@ const archive = "dist/leverage-gta.tgz";
 const remoteTmp = "/tmp/leverage-gta-deploy.tgz";
 run("tar", ["-czf", archive, "-C", "dist", "leverage-gta"]);
 run(winBin("scp"), [...sshOpts, "-P", port, archive, `${env.VPS_SSH}:${remoteTmp}`]);
+const withPacks = process.argv.includes("--packs");
 const remote = [
   `mkdir -p '${dir}'`,
-  `find '${dir}' -mindepth 1 -delete`,
-  `tar -xzf ${remoteTmp} -C '${dir}' --strip-components=1`,
+  `if ${withPacks ? "false" : "true"} && [ -d '${dir}/packs' ]; then KEEP=yes; else KEEP=no; fi`,
+  `if [ "$KEEP" = yes ]; then find '${dir}' -mindepth 1 -maxdepth 1 ! -name packs -exec rm -rf {} +; else find '${dir}' -mindepth 1 -delete; fi`,
+  `if [ "$KEEP" = yes ]; then tar -xzf ${remoteTmp} -C '${dir}' --strip-components=1 --exclude='leverage-gta/packs'; else tar -xzf ${remoteTmp} -C '${dir}' --strip-components=1; fi`,
   `rm -f ${remoteTmp}`,
   `chown -R foundry:foundry '${dir}'`,
   "echo deployed"
@@ -55,3 +61,4 @@ const remote = [
 run(winBin("ssh"), [...sshOpts, "-p", port, env.VPS_SSH, remote]);
 rmSync(archive, { force: true });
 console.log(`Deployed to ${env.VPS_SSH}:${dir}. Reload the Foundry page (relaunch the world if system.json changed).`);
+if (withPacks) console.log("Compendia were replaced: restart the Foundry server so it reopens the pack databases.");
