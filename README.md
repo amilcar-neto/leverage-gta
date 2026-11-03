@@ -4,13 +4,13 @@ Sistema de jogo para o *Leverage RPG* (motor Cortex) no Foundry VTT, com regras 
 
 > 🚧 **Em desenvolvimento** (v0.2.0). Já roda e é testado num servidor Foundry, mas ainda não tem release pública.
 
-![Ficha de personagem no Foundry](docs/img/ficha.png)
+![Ficha de personagem no Foundry](docs/img/ficha-equipe.png)
 
 ## Destaques
 
-- **Construído por agentes de IA de forma autônoma:** 87 dos 88 commits são do Claude Code, com papéis separados: Sonnet implementa, Haiku faz o trabalho mecânico e Opus revisa. Um script relança a sessão sozinho quando o limite de uso acaba. Eu defini as regras do jogo, a especificação, os mockups e as decisões de design, e reviso o resultado.
+- **Construído por agentes de IA de forma autônoma:** 87 dos 90 commits são do Claude Code, com papéis separados: Sonnet implementa, Haiku faz o trabalho mecânico e Opus revisa. Um script relança a sessão sozinho quando o limite de uso acaba. Eu defini as regras do jogo, a especificação, os mockups e as decisões de design, e reviso o resultado.
 - **Tudo registrado:** cada etapa, decisão, problema e revisão fica em [`docs/log/`](docs/log/).
-- **Testado de verdade:** ~370 testes unitários em 45 arquivos (`node --test`) e testes de ponta a ponta com Playwright num servidor Foundry real, com ~480 capturas de tela como evidência ([`tests/foundry/screenshots/`](tests/foundry/screenshots/)).
+- **Testado de verdade:** 375 testes unitários em 45 arquivos (`node --test`) e testes de ponta a ponta com Playwright num servidor Foundry real, com ~480 capturas de tela como evidência ([`tests/foundry/screenshots/`](tests/foundry/screenshots/)).
 - **Código:** ~14 mil linhas de JavaScript (ESM) no Foundry v14 (`ApplicationV2`, `TypeDataModel`, sockets), Handlebars e CSS. Regras puras separadas da interface, internacionalização en/pt-BR e deploy por SSH.
 
 ## Como os agentes trabalham
@@ -25,6 +25,7 @@ As definições dos agentes estão em [`.claude/agents/`](.claude/agents/). Para
 ## Instalação
 
 - `npm run release` cria `dist/leverage-gta.zip`. Extraia dentro de `Data/systems/leverage-gta/` (o `system.json` fica direto nessa pasta) e reinicie o Foundry.
+- Testes: `npm test` roda os 375 testes unitários, sem precisar de instalar nada antes.
 - Como jogar (ficha, rolagens, HUD, ferramentas do mestre): [docs/USO.md](docs/USO.md) e [docs/macros.md](docs/macros.md).
 
 ## Estrutura
