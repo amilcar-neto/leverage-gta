@@ -3,6 +3,20 @@
 Sistema de jogo para o *Leverage RPG* com regras da casa inspiradas no GTA da era 3D (estrelas, Vida e Colete, Grana em
 escada).
 
+<img src="tests/foundry/screenshots/F10-prime-10-card-expanded.png" alt="Card de rolagem no chat" width="290" align="right">
+
+> 🚧 **Em desenvolvimento** (v0.2.0). Já roda e é testado num servidor Foundry, mas ainda não tem release pública.
+
+## Destaques
+
+- **Construído por agentes de IA de forma autônoma:** 87 dos 88 commits são do Claude Code. Os papéis eram separados: Sonnet implementa, Haiku faz o trabalho mecânico e Opus revisa. Um script relança a sessão sozinho quando o limite de uso acaba. Eu defini as regras do jogo, a especificação e as decisões de design, e revisei e testei nas mesas.
+- **Tudo registrado:** cada etapa, decisão, problema e revisão fica em [`docs/log/`](docs/log/), com relatório final em [`docs/log/FINAL-REPORT.md`](docs/log/FINAL-REPORT.md).
+- **Testado de verdade:** ~370 testes unitários em 45 arquivos (`node --test`) e testes de ponta a ponta com Playwright num servidor Foundry real, com ~480 capturas de tela como evidência ([`tests/foundry/screenshots/`](tests/foundry/screenshots/)).
+- **Código:** ~14 mil linhas de JavaScript (ESM) no Foundry v14 (`ApplicationV2`, `TypeDataModel`, sockets), Handlebars e CSS. Regras puras separadas da interface, internacionalização en/pt-BR e deploy por SSH.
+
+> Projeto de fã, sem fins lucrativos e sem ligação com os donos de *Leverage RPG* / *Cortex Prime* ou de *Grand Theft Auto*.
+> O repositório não inclui texto dos livros. Para jogar, você precisa dos livros oficiais.
+
 - **Para jogar:** leia [docs/USO.md](docs/USO.md) (instalação, ficha, rolagens, HUD, ferramentas do mestre) e
   [docs/macros.md](docs/macros.md).
 - **Instalação pelo zip:** `npm run release` cria `dist/leverage-gta.zip`. Extraia-o dentro de
@@ -19,7 +33,7 @@ O restante deste arquivo descreve como o projeto foi construído sozinho pelo Cl
 | `docs/` | Visão geral, regras, regras da casa, decisões de design, arquitetura, dados, telas, backlog, fluxo |
 | `docs/log/` | **Onde você acompanha tudo:** status, progresso, decisões, problemas, revisões, relatório final |
 | `reference/mockups/` | PNGs e HTML das telas (ficha, item, card de rolagem, HUD) e os arquivos-fonte do design |
-| `reference/books/` | Texto extraído dos dois livros (os PDFs vêm no segundo zip) |
+| `reference/books/` | (não publicado) Texto dos livros, usado só localmente durante o desenvolvimento |
 | `.claude/` | Agentes (Sonnet constrói, Haiku faz o mecânico, Opus revisa), comando `/work`, permissões |
 | `scripts/run-autonomous.*` | Roda o Claude sem parar, recomeçando sozinho depois do limite de uso |
 | `tools/` | Montagem do pacote (`release.mjs`) e envio para o VPS (`deploy.mjs`) |
